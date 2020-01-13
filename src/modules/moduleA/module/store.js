@@ -1,6 +1,8 @@
 export default {
 	namespaced: true,
-	state: {},
+	state: {
+    name: 'moduleA',
+  },
 	getters: {},
 	mutations: {},
 	actions: {
