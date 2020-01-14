@@ -5,6 +5,14 @@ import App from './App.vue'
 import system from './modules/system/module'
 import siteModule from './modules/site/module'
 import moduleA from './modules/moduleA/module'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+
+Vue.use(BootstrapVue)
+Vue.use(ElementUI)
 
 /* Initialize System Module */
 Store.registerModule('system', system.store)
@@ -13,9 +21,8 @@ Store.dispatch('system/initializeModule', siteModule)
 // Store.dispatch('system/initializeModule', moduleA)
 
 new Vue({
-  el: '#app',
   template: '<App/>',
   router: Router,
   store: Store,
   render: h => h(App)
-})
+}).$mount('#app')

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1>Trees</h1>
-		<p>[ Tree List ]</p>
+		<h1>CRM</h1>
+		<p>[ CRM List ]</p>
 	</div>
 </template>

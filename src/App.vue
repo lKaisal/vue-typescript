@@ -1,29 +1,25 @@
 <template lang="pug">
   include ./tools/bemto.pug
 
-  +b.container
-    <div>
-      <h2>Module Main</h2>
-      <ul>
-        <li><router-link to="/">Home</router-link></li>
-        <li><router-link to="/contact">Contact</router-link></li>
-        <li><router-link to="/faq">FAQ</router-link></li>
-      </ul>
-    </div>
-    <div v-if="moduleALoaded">
-      <h2>Module A</h2>
-      <ul>
-        <li><router-link to="/trees">Trees</router-link></li>
-        <li><router-link to="/colors">Colors</router-link></li>
-        <li><router-link to="/buildings">Buildings</router-link></li>
-      </ul>
-    </div>
-    <button @click="loadModuleA" :disabled="moduleALoaded">Load Module A</button>
-    <button @click="deleteModuleA" :disabled="!moduleALoaded">Delete Module A</button>
-    <div>
-      <h3>-------------</h3>
+  +b.container.container
+    +e.modules
+      +e.module
+        <h2>Module Main</h2>
+        el-menu(mode="horizontal")
+          el-menu-item(v-for="(item, index) in mainItems" :index="index + 1")
+            +e.ROUTER-LINK(:to="item.link" v-html="item.name")
+          //- <li><router-link to="/contact">Contact</router-link></li>
+          //- <li><router-link to="/faq">FAQ</router-link></li>
+        </ul>
+      +e.module(v-if="moduleALoaded")
+        <h2>Module A</h2>
+        el-menu(mode="horizontal")
+          el-menu-item(v-for="(item, index) in aItems" :index="index + 1")
+            +e.ROUTER-LINK(:to="item.link" v-html="item.name")
+    <el-button type="primary" @click="loadModuleA" :disabled="moduleALoaded">Load Module A</el-button>
+    <el-button type="primary" @click="deleteModuleA" :disabled="!moduleALoaded">Delete Module A</el-button>
+    +e.page
       <router-view></router-view>
-    </div>
 </template>
 
 <script>
@@ -32,6 +28,10 @@ import Vue from 'vue'
 
 export default Vue.extend({
   name: 'app',
+  data: () => ({
+    mainItems: [{ name: 'Home', link: '/' }, { name: 'Contact', link: '/contact' }, { name: 'FAQ', link: '/faq' }],
+    aItems: [{ name: 'Banners', link: '/banners' }, { name: 'Suppliers', link: '/suppliers' }, { name: 'CRM', link: '/crm' }]
+  }),
   computed: {
     moduleALoaded() { return !!this.$store.state.moduleA },
   },
@@ -50,13 +50,17 @@ export default Vue.extend({
 @import '~@/styles/tools'
 
 .container
+  padding-top 100px
+  padding-bottom 100px
 
-  ul
+  &__modules
     display flex
-    li
-      &:not(:last-child)
-        margin-right 40px
-      a
-        color black
-        text-decoration none
+    margin-bottom 50px
+
+  &__module
+    &:not(:last-child)
+      margin-right 150px
+
+  &__page
+    margin-top 5vh
 </style>

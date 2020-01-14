@@ -1853,19 +1853,19 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/colornames/-/colornames-1.1.1.tgz#f8889030685c7c4ff9e2a559f5077eb76a816f96"
     integrity sha1-+IiQMGhcfE/54qVZ9Qd+t2qBb5Y=
   
-  colors@^1.2.1:
+  suppliers@^1.2.1:
     version "1.4.0"
-    resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
+    resolved "https://registry.yarnpkg.com/suppliers/-/suppliers-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
     integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
   
-  colors@~1.1.2:
+  suppliers@~1.1.2:
     version "1.1.2"
-    resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
+    resolved "https://registry.yarnpkg.com/suppliers/-/suppliers-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
     integrity sha1-FopHAXVran9RoSzgyXv6KMCE7WM=
   
-  colorspace@1.1.x:
+  supplierspace@1.1.x:
     version "1.1.2"
-    resolved "https://registry.yarnpkg.com/colorspace/-/colorspace-1.1.2.tgz#e0128950d082b86a2168580796a0aa5d6c68d8c5"
+    resolved "https://registry.yarnpkg.com/supplierspace/-/supplierspace-1.1.2.tgz#e0128950d082b86a2168580796a0aa5d6c68d8c5"
     integrity sha512-vt+OoIP2d76xLhjwbBaucYlNSpPsrJWPlBTtwCpQKIu6/CSMutyzX93O/Do0qzpH3YoHEes8YEFXyZ797rEhzQ==
     dependencies:
       color "3.0.x"
@@ -2567,7 +2567,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/diagnostics/-/diagnostics-1.1.1.tgz#cab6ac33df70c9d9a727490ae43ac995a769b22a"
     integrity sha512-8wn1PmdunLJ9Tqbx+Fx/ZEuHfJf4NKSN2ZBj7SJC/OWRWha843+WsTjqMe1B5E3p28jqBlp+mJ2fPVxPyNgYKQ==
     dependencies:
-      colorspace "1.1.x"
+      supplierspace "1.1.x"
       enabled "1.0.x"
       kuler "1.0.x"
   
@@ -4762,7 +4762,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/logform/-/logform-2.1.2.tgz#957155ebeb67a13164069825ce67ddb5bb2dd360"
     integrity sha512-+lZh4OpERDBLqjiwDLpAWNQu6KMjnlXH2ByZwCuSqVPJletw0kTWJf5CgSNAUKn1KUkv3m2cUz/LK8zyEy7wzQ==
     dependencies:
-      colors "^1.2.1"
+      suppliers "^1.2.1"
       fast-safe-stringify "^2.0.4"
       fecha "^2.3.3"
       ms "^2.1.1"
@@ -7649,7 +7649,7 @@ Lockfile:
     integrity sha1-n1dyQTlSE1xv779Ar+ak+qiLS7U=
     dependencies:
       coa "~1.0.1"
-      colors "~1.1.2"
+      suppliers "~1.1.2"
       csso "~2.3.1"
       js-yaml "~3.7.0"
       mkdirp "~0.5.1"

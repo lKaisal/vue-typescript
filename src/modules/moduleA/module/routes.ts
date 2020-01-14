@@ -1,10 +1,10 @@
-import Trees from '../pages/Trees.vue'
-import Colors from '../pages/Colors.vue'
-import Buildings from '../pages/Buildings.vue'
+import Banners from '../pages/Banners.vue'
+import Suppliers from '../pages/Suppliers.vue'
+import CRM from '../pages/CRM.vue'
 
 export default [
-  { path: '', component: Colors },
-  { path: '/colors', component: Colors },
-  { path: '/buildings', component: Buildings },
-  { path: '/trees', component: Trees }
+  { path: '', component: Suppliers },
+  { path: '/suppliers', component: Suppliers },
+  { path: '/crm', component: CRM },
+  { path: '/banners', component: Banners }
 ]
