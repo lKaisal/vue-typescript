@@ -1,5 +1,7 @@
-<template>
-  <div class="container">
+<template lang="pug">
+  include ./tools/bemto.pug
+
+  +b.container
     <div>
       <h2>Module Main</h2>
       <ul>
@@ -21,7 +23,6 @@
       <h3>-------------</h3>
       <router-view></router-view>
     </div>
-  </div>
 </template>
 
 <script>
@@ -32,3 +33,10 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+@import '~@/styles/tools'
+
+.container
+  // 
+</style>
