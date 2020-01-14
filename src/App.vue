@@ -17,7 +17,10 @@
       </ul>
       <!-- <button @click="loadModuleA">Load Module A</button> -->
     </div>
-    <router-view></router-view>
+    <div>
+      <h3>-------------</h3>
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
