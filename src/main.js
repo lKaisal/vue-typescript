@@ -10,12 +10,12 @@ import moduleA from './modules/moduleA/module'
 Store.registerModule('system', system.store)
 Router.addRoutes(system.routes)
 Store.dispatch('system/initializeModule', siteModule)
-Store.dispatch('system/initializeModule', moduleA)
+// Store.dispatch('system/initializeModule', moduleA)
 
-new Vue({ // eslint-disable-line no-new
-	el: '#app',
-	template: '<App/>',
-	router: Router,
-	store: Store,
-	render: h => h(App)
+new Vue({
+  el: '#app',
+  template: '<App/>',
+  router: Router,
+  store: Store,
+  render: h => h(App)
 })
