@@ -1,15 +1,15 @@
 {
   "name": "admin-js",
   "version": "1.0.0",
+  "private": true,
   "description": "A Vue.js project",
   "author": "Kaisa",
-  "private": true,
   "scripts": {
-    "start": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
-    "serve-prd": "vue-cli-service serve --mode production",
     "build": "vue-cli-service build --dest www && ln -s www dist",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "serve-prd": "vue-cli-service serve --mode production",
+    "start": "vue-cli-service serve"
   },
   "dependencies": {
     "@vue/cli-service": "^4.1.2",
@@ -17,11 +17,14 @@
     "pug-plain-loader": "^1.0.0",
     "svg-sprite": "^1.5.0",
     "vue": "^2.5.2",
+    "vue-class-component": "^7.0.2",
+    "vue-property-decorator": "^8.3.0",
     "vue-router": "^3.0.1",
     "vuex": "^2.5.0",
     "yarn": "^1.21.1"
   },
   "devDependencies": {
+    "@vue/cli-plugin-typescript": "^4.1.2",
     "autoprefixer": "^7.1.5",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
@@ -52,6 +55,7 @@
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "sw-precache-webpack-plugin": "^0.11.4",
+    "typescript": "~3.5.3",
     "uglify-es": "^3.1.3",
     "url-loader": "^0.6.2",
     "vue-loader": "^13.3.0",
@@ -63,13 +67,13 @@
     "webpack-hot-middleware": "^2.19.1",
     "webpack-merge": "^4.1.0"
   },
-  "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
-  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 3.0.0"
+  }
 }

@@ -28,8 +28,9 @@
 
 <script>
 import moduleA from './modules/moduleA/module'
+import Vue from 'vue'
 
-export default {
+export default Vue.extend({
   name: 'app',
   computed: {
     moduleALoaded() { return !!this.$store.state.moduleA },
@@ -42,7 +43,7 @@ export default {
       this.$store.dispatch('system/removeModule', moduleA)
     }
   }
-}
+})
 </script>
 
 <style lang="stylus">
