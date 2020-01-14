@@ -17,7 +17,7 @@
         <li><router-link to="/colors">Colors</router-link></li>
         <li><router-link to="/buildings">Buildings</router-link></li>
       </ul>
-      <!-- <button @click="loadModuleA">Load Module A</button> -->
+      //- <button @click="loadModuleA">Load Module A</button>
     </div>
     <div>
       <h3>-------------</h3>
