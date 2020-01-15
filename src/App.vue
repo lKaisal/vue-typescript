@@ -1,55 +1,41 @@
 <template lang="pug">
   include ./tools/bemto.pug
 
-  +b.container.container
+  +b.app.container
     +e.modules
-      +e.module
-        <h2>Module Main</h2>
-        el-menu(mode="horizontal")
-          el-menu-item(v-for="(item, index) in mainItems" :index="index + 1")
-            +e.ROUTER-LINK(:to="item.link" v-html="item.name")
-          //- <li><router-link to="/contact">Contact</router-link></li>
-          //- <li><router-link to="/faq">FAQ</router-link></li>
-        </ul>
-      +e.module(v-if="moduleALoaded")
-        <h2>Module A</h2>
-        el-menu(mode="horizontal")
-          el-menu-item(v-for="(item, index) in aItems" :index="index + 1")
-            +e.ROUTER-LINK(:to="item.link" v-html="item.name")
+      ModuleSite(class="app__module")
+      ModuleA(v-if="moduleALoaded" class="app_module")
     <el-button type="primary" @click="loadModuleA" :disabled="moduleALoaded">Load Module A</el-button>
     <el-button type="primary" @click="deleteModuleA" :disabled="!moduleALoaded">Delete Module A</el-button>
     +e.page
       <router-view></router-view>
 </template>
 
-<script>
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator'
+import ModuleSite from './modules/site/ModuleSite.vue'
+import ModuleA from './modules/moduleA/ModuleA.vue'
 import moduleA from './modules/moduleA/module'
-import Vue from 'vue'
 
-export default Vue.extend({
-  name: 'app',
-  data: () => ({
-    mainItems: [{ name: 'Home', link: '/' }, { name: 'Contact', link: '/contact' }, { name: 'FAQ', link: '/faq' }],
-    aItems: [{ name: 'Banners', link: '/banners' }, { name: 'Suppliers', link: '/suppliers' }, { name: 'CRM', link: '/crm' }]
-  }),
-  computed: {
-    moduleALoaded() { return !!this.$store.state.moduleA },
-  },
-  methods: {
-    loadModuleA() {
-      this.$store.dispatch('system/initializeModule', moduleA)
-    },
-    deleteModuleA() {
-      this.$store.dispatch('system/removeModule', moduleA)
-    }
+@Component({
+  components: {
+    ModuleSite,
+    ModuleA
   }
 })
+
+export default class App extends Vue {
+  get moduleALoaded() { return !!this.$store.state.moduleA }
+
+  loadModuleA() { this.$store.dispatch('system/initializeModule', moduleA) }
+  deleteModuleA() { this.$store.dispatch('system/removeModule', moduleA) }
+}
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '~@/styles/tools'
 
-.container
+.app
   padding-top 100px
   padding-bottom 100px
 
