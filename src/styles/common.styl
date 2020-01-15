@@ -38,18 +38,7 @@ a
 
 .container
   grid-container()
+  max-width none
 
 .is-hidden
   display none
-
-// ScrollObserver animation class
-.js-voa
-  transition-property transform, opacity
-  transition-duration $tSlow
-  transition-delay 66.6ms
-  +lt-md()
-    transition-duration $tFast
-
-.js-voa-start
-  opacity 0
-  transform translateY(30px)

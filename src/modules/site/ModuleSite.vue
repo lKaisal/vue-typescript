@@ -14,7 +14,7 @@ import Vue from 'vue'
 export default Vue.extend({
   name: 'ModuleSite',
   data: () => ({
-    mainItems: [{ name: 'Home', link: '/' }, { name: 'Contact', link: '/contact' }, { name: 'FAQ', link: '/faq' }],
+    mainItems: [{ name: 'Home', link: '/home' }, { name: 'Contact', link: '/contact' }, { name: 'FAQ', link: '/faq' }],
   }),
 })
 </script>
