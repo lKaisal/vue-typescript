@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/Cellar/node/13.6.0/bin/node /usr/local/Cellar/yarn/1.21.1/libexec/bin/yarn.js
+  /usr/local/Cellar/node/13.6.0/bin/node /usr/local/Cellar/yarn/1.21.1/libexec/bin/yarn.js add vue-cli-service
 
 PATH: 
   /Users/kaisa/prj/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/kaisa/prj/bin
@@ -14,17 +14,17 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/ansi-suppliers/-/ansi-suppliers-3.2.4.tgz: Request failed "404 Not Found"
-      at ResponseError.ExtendableBuiltin (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:696:66)
-      at new ResponseError (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:802:124)
-      at Request.<anonymous> (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:67017:16)
+  Error: https://registry.yarnpkg.com/vue-cli-service: Not found
+      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:66947:18)
+      at Request.self.callback (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:140665:22)
       at Request.emit (events.js:193:13)
-      at Request.module.exports.Request.onRequestResponse (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:141542:10)
-      at ClientRequest.emit (events.js:198:15)
-      at HTTPParser.parserOnIncomingClient [as onIncoming] (_http_client.js:560:23)
-      at HTTPParser.parserOnHeadersComplete (_http_common.js:113:17)
-      at TLSSocket.socketOnData (_http_client.js:447:22)
-      at TLSSocket.emit (events.js:193:13)
+      at Request.<anonymous> (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:141637:10)
+      at Request.emit (events.js:193:13)
+      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:141559:12)
+      at Object.onceWrapper (events.js:281:20)
+      at IncomingMessage.emit (events.js:198:15)
+      at endReadableNT (_stream_readable.js:1139:12)
+      at processTicksAndRejections (internal/process/task_queues.js:81:17)
 
 npm manifest: 
   {
@@ -329,9 +329,9 @@ Lockfile:
     integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
   
   "@types/node@*":
-    version "13.1.6"
-    resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.6.tgz#076028d0b0400be8105b89a0a55550c86684ffec"
-    integrity sha512-Jg1F+bmxcpENHP23sVKkNuU3uaxPnsBMW0cLjleiikFKomJQbsn0Cqk2yDvQArqzZN6ABfBkZ0To7pQ8sLdWDg==
+    version "13.1.7"
+    resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.7.tgz#db51d28b8dfacfe4fb2d0da88f5eb0a2eca00675"
+    integrity sha512-HU0q9GXazqiKwviVxg9SI/+t/nAsGkvLDkIdxz+ObejG2nX6Si00TeLqHMoS+a/1tjH7a8YpKVQwtgHuMQsldg==
   
   "@types/normalize-package-data@^2.4.0":
     version "2.4.0"
@@ -749,9 +749,9 @@ Lockfile:
     dependencies:
       string-width "^2.0.0"
   
-  ansi-suppliers@^3.0.0:
+  ansi-colors@^3.0.0:
     version "3.2.4"
-    resolved "https://registry.yarnpkg.com/ansi-suppliers/-/ansi-suppliers-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"
+    resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"
     integrity sha512-hHUXGagefjN2iRrID63xckIvotOXOojhQKWIPUZ4mNUZ9nLZW+7FMNoE1lOkEhNWYsx/7ysGIuJYCiMAA9FnrA==
   
   ansi-html@0.0.7:
@@ -986,16 +986,16 @@ Lockfile:
       postcss-value-parser "^3.2.3"
   
   autoprefixer@^9.7.2:
-    version "9.7.3"
-    resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.7.3.tgz#fd42ed03f53de9beb4ca0d61fb4f7268a9bb50b4"
-    integrity sha512-8T5Y1C5Iyj6PgkPSFd0ODvK9DIleuPKUPYniNxybS47g2k2wFgLZ46lGQHlBuGKIAEV8fbCDfKCCRS1tvOgc3Q==
+    version "9.7.4"
+    resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.7.4.tgz#f8bf3e06707d047f0641d87aee8cfb174b2a5378"
+    integrity sha512-g0Ya30YrMBAEZk60lp+qfX5YQllG+S5W3GYCFvyHTvhOki0AEQJLPEcIuGRsqVwLi8FvXPVtwTGhfr38hVpm0g==
     dependencies:
-      browserslist "^4.8.0"
-      caniuse-lite "^1.0.30001012"
+      browserslist "^4.8.3"
+      caniuse-lite "^1.0.30001020"
       chalk "^2.4.2"
       normalize-range "^0.1.2"
       num2fraction "^1.2.2"
-      postcss "^7.0.23"
+      postcss "^7.0.26"
       postcss-value-parser "^4.0.2"
   
   aws-sign2@~0.7.0:
@@ -1942,7 +1942,7 @@ Lockfile:
       caniuse-lite "^1.0.30000844"
       electron-to-chromium "^1.3.47"
   
-  browserslist@^4.0.0, browserslist@^4.7.3, browserslist@^4.8.0:
+  browserslist@^4.0.0, browserslist@^4.7.3, browserslist@^4.8.3:
     version "4.8.3"
     resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.8.3.tgz#65802fcd77177c878e015f0e3189f2c4f627ba44"
     integrity sha512-iU43cMMknxG1ClEZ2MDKeonKE1CCrFVkQK2AqO2YWFmvIrx4JWrvQ4w4hQez6EpVI8rHTtqh/ruHHDHSOKxvUg==
@@ -2172,14 +2172,14 @@ Lockfile:
       lodash.uniq "^4.5.0"
   
   caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-    version "1.0.30001020"
-    resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30001020.tgz#30c82517d283d6a64df76ea7734fade566e7e5e7"
-    integrity sha512-KMZ0k2Xg+UiQemGBh+cFKnnFi/oEYZcuGWSb1B0gofoP89ZI/fmjYJ8J9lQb9OnSupdG6cHZSxn+LtFli2Q07w==
+    version "1.0.30001021"
+    resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30001021.tgz#ee4ad516fb2530abd90d2b32e986b172808672e5"
+    integrity sha512-FNfovmJx9ssO2hpvdN7D9daRAZHZ80gDV2KQRC0+icpm7QjyWm6Ea2TUEAk0rpNrRQYMeRbVOVsWwq9CE7V2zw==
   
-  caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000792, caniuse-lite@^1.0.30000805, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30001012, caniuse-lite@^1.0.30001017:
-    version "1.0.30001020"
-    resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001020.tgz#3f04c1737500ffda78be9beb0b5c1e2070e15926"
-    integrity sha512-yWIvwA68wRHKanAVS1GjN8vajAv7MBFshullKCeq/eKpK7pJBVDgFFEqvgWTkcP2+wIDeQGYFRXECjKZnLkUjA==
+  caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000792, caniuse-lite@^1.0.30000805, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30001017, caniuse-lite@^1.0.30001020:
+    version "1.0.30001021"
+    resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001021.tgz#e75ed1ef6dbadd580ac7e7720bb16f07b083f254"
+    integrity sha512-wuMhT7/hwkgd8gldgp2jcrUjOU9RXJ4XxGumQeOsUr91l3WwmM68Cpa/ymCnWEDqakwFXhuDQbaKNHXBPgeE9g==
   
   capture-stack-trace@^1.0.0:
     version "1.0.1"
@@ -2545,19 +2545,19 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/colornames/-/colornames-1.1.1.tgz#f8889030685c7c4ff9e2a559f5077eb76a816f96"
     integrity sha1-+IiQMGhcfE/54qVZ9Qd+t2qBb5Y=
   
-  suppliers@^1.2.1:
+  colors@^1.2.1:
     version "1.4.0"
-    resolved "https://registry.yarnpkg.com/suppliers/-/suppliers-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
+    resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
     integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
   
-  suppliers@~1.1.2:
+  colors@~1.1.2:
     version "1.1.2"
-    resolved "https://registry.yarnpkg.com/suppliers/-/suppliers-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
+    resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
     integrity sha1-FopHAXVran9RoSzgyXv6KMCE7WM=
   
-  supplierspace@1.1.x:
+  colorspace@1.1.x:
     version "1.1.2"
-    resolved "https://registry.yarnpkg.com/supplierspace/-/supplierspace-1.1.2.tgz#e0128950d082b86a2168580796a0aa5d6c68d8c5"
+    resolved "https://registry.yarnpkg.com/colorspace/-/colorspace-1.1.2.tgz#e0128950d082b86a2168580796a0aa5d6c68d8c5"
     integrity sha512-vt+OoIP2d76xLhjwbBaucYlNSpPsrJWPlBTtwCpQKIu6/CSMutyzX93O/Do0qzpH3YoHEes8YEFXyZ797rEhzQ==
     dependencies:
       color "3.0.x"
@@ -3395,7 +3395,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/diagnostics/-/diagnostics-1.1.1.tgz#cab6ac33df70c9d9a727490ae43ac995a769b22a"
     integrity sha512-8wn1PmdunLJ9Tqbx+Fx/ZEuHfJf4NKSN2ZBj7SJC/OWRWha843+WsTjqMe1B5E3p28jqBlp+mJ2fPVxPyNgYKQ==
     dependencies:
-      supplierspace "1.1.x"
+      colorspace "1.1.x"
       enabled "1.0.x"
       kuler "1.0.x"
   
@@ -3571,9 +3571,9 @@ Lockfile:
     integrity sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==
   
   electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30, electron-to-chromium@^1.3.322, electron-to-chromium@^1.3.47:
-    version "1.3.333"
-    resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.333.tgz#b835de183afbaaf8655a14f542db06d67a00cba1"
-    integrity sha512-7MJfCpa/tmhqYy2lZ1NEbkSxH7q3KiZiepiSs2ayTPAweAjdzGXotij+7OKPPb3OwJD2ZuBKPrA2HIuuSi6ahw==
+    version "1.3.334"
+    resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.334.tgz#0588359f4ac5c4185ebacdf5fc7e1937e2c99872"
+    integrity sha512-RcjJhpsVaX0X6ntu/WSBlW9HE9pnCgXS9B8mTUObl1aDxaiOa0Lu+NMveIS5IDC+VELzhM32rFJDCC+AApVwcA==
   
   element-ui@^2.13.0:
     version "2.13.0"
@@ -3690,9 +3690,9 @@ Lockfile:
       stackframe "^1.1.1"
   
   es-abstract@^1.17.0-next.1:
-    version "1.17.0"
-    resolved "https://registry.yarnpkg.com/es-abstract/-/es-abstract-1.17.0.tgz#f42a517d0036a5591dbb2c463591dc8bb50309b1"
-    integrity sha512-yYkE07YF+6SIBmg1MsJ9dlub5L48Ek7X0qz+c/CPCHS9EBXfESorzng4cJQjJW5/pB6vDF41u7F8vUhLVDqIug==
+    version "1.17.1"
+    resolved "https://registry.yarnpkg.com/es-abstract/-/es-abstract-1.17.1.tgz#1331afa4cba2628b63e988104b9846c2d631b380"
+    integrity sha512-WmWNHWmm/LDwK8jaeZic/g6sU1ZckM+vvOyCV1qFRhJJ6hzve6DRgthNQB7Lra1ocrw68HexLKYgtdxIPcb3Fg==
     dependencies:
       es-to-primitive "^1.2.1"
       function-bind "^1.1.1"
@@ -6091,7 +6091,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/logform/-/logform-2.1.2.tgz#957155ebeb67a13164069825ce67ddb5bb2dd360"
     integrity sha512-+lZh4OpERDBLqjiwDLpAWNQu6KMjnlXH2ByZwCuSqVPJletw0kTWJf5CgSNAUKn1KUkv3m2cUz/LK8zyEy7wzQ==
     dependencies:
-      suppliers "^1.2.1"
+      colors "^1.2.1"
       fast-safe-stringify "^2.0.4"
       fecha "^2.3.3"
       ms "^2.1.1"
@@ -8017,7 +8017,7 @@ Lockfile:
       source-map "^0.6.1"
       supports-color "^5.4.0"
   
-  postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.16, postcss@^7.0.23, postcss@^7.0.5, postcss@^7.0.6:
+  postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.16, postcss@^7.0.23, postcss@^7.0.26, postcss@^7.0.5, postcss@^7.0.6:
     version "7.0.26"
     resolved "https://registry.yarnpkg.com/postcss/-/postcss-7.0.26.tgz#5ed615cfcab35ba9bbb82414a4fa88ea10429587"
     integrity sha512-IY4oRjpXWYshuTDFxMVkJDtWIk2LhsTlu8bZnbEJA4+bYT16Lvpo8Qv6EvDumhYRgzjZl489pmsY3qVgJQ08nA==
@@ -8813,9 +8813,9 @@ Lockfile:
       ajv-keywords "^3.1.0"
   
   schema-utils@^2.0.0, schema-utils@^2.5.0, schema-utils@^2.6.0, schema-utils@^2.6.1:
-    version "2.6.1"
-    resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.1.tgz#eb78f0b945c7bcfa2082b3565e8db3548011dc4f"
-    integrity sha512-0WXHDs1VDJyo+Zqs9TKLKyD/h7yDpHUhEFsM2CzkICFdoX1av+GBq/J2xRTFfsQO5kBfhZzANf2VcIm84jqDbg==
+    version "2.6.2"
+    resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.2.tgz#9205ec5978709b0d9edbccb9a316faf11617a017"
+    integrity sha512-sazKNMBX/jwrXRkOI7N6dtiTVYqzSckzol8SGuHt0lE/v3xSW6cUkOqzu6Bq2tW+dlUzq3CWIqHU3ZKauliqdg==
     dependencies:
       ajv "^6.10.2"
       ajv-keywords "^3.4.1"
@@ -9568,7 +9568,7 @@ Lockfile:
     integrity sha1-n1dyQTlSE1xv779Ar+ak+qiLS7U=
     dependencies:
       coa "~1.0.1"
-      suppliers "~1.1.2"
+      colors "~1.1.2"
       csso "~2.3.1"
       js-yaml "~3.7.0"
       mkdirp "~0.5.1"
@@ -10295,9 +10295,9 @@ Lockfile:
       vue-class-component "^7.1.0"
   
   vue-router@^3.0.1:
-    version "3.1.3"
-    resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.1.3.tgz#e6b14fabc0c0ee9fda0e2cbbda74b350e28e412b"
-    integrity sha512-8iSa4mGNXBjyuSZFCCO4fiKfvzqk+mhL0lnKuGcQtO1eoj8nq3CmbEG8FwK5QqoqwDgsjsf1GDuisDX4cdb/aQ==
+    version "3.1.4"
+    resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.1.4.tgz#98a6a4dd38fca0db3b9f3c04bfbd008a3b6d958d"
+    integrity sha512-pX2BGvZg5/MOXbJoYsRppoZM+0B4LSszvIXQvLPZ7govbgbBorYQ4JHx99lDTjzEBkbTyKfRG+ru1VCnMuVcUg==
   
   vue-style-loader@^3.0.0, vue-style-loader@^3.0.3:
     version "3.1.2"
@@ -10464,7 +10464,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/webpack-log/-/webpack-log-2.0.0.tgz#5b7928e0637593f119d32f6227c1e0ac31e1b47f"
     integrity sha512-cX8G2vR/85UYG59FgkoMamwHUIkSSlV3bBMRsbxVXVUk2j6NleCKjQ/WE9eYg9WY4w25O9w8wKP4rzNZFmUcUg==
     dependencies:
-      ansi-suppliers "^3.0.0"
+      ansi-colors "^3.0.0"
       uuid "^3.3.2"
   
   webpack-merge@^4.1.0, webpack-merge@^4.2.2:
