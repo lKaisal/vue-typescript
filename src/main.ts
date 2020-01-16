@@ -18,6 +18,9 @@ Store.registerModule('system', system.store)
 Router.addRoutes(system.routes)
 Store.dispatch('system/initializeModule', siteModule)
 
+
+Vue.config.productionTip = false
+
 new Vue({
   template: '<App/>',
   router: Router,

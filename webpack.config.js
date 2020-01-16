@@ -1,6 +1,6 @@
 {
   mode: 'development',
-  context: '/Users/kaisa/prj/module-example-part-1',
+  context: '/Users/kaisa/prj/admin-js',
   node: {
     setImmediate: false,
     process: 'mock',
@@ -11,14 +11,14 @@
     child_process: 'empty'
   },
   output: {
-    path: '/Users/kaisa/prj/module-example-part-1/dist',
+    path: '/Users/kaisa/prj/admin-js/dist',
     filename: 'js/[name].js',
     publicPath: '/',
     chunkFilename: 'js/[name].js'
   },
   resolve: {
     alias: {
-      '@': '/Users/kaisa/prj/module-example-part-1/src',
+      '@': '/Users/kaisa/prj/admin-js/src',
       vue$: 'vue/dist/vue.runtime.esm.js'
     },
     extensions: [
@@ -33,16 +33,16 @@
     ],
     modules: [
       'node_modules',
-      '/Users/kaisa/prj/module-example-part-1/node_modules',
-      '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules'
+      '/Users/kaisa/prj/admin-js/node_modules',
+      '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules'
     ]
   },
   resolveLoader: {
     modules: [
-      '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-plugin-typescript/node_modules',
+      '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-plugin-typescript/node_modules',
       'node_modules',
-      '/Users/kaisa/prj/module-example-part-1/node_modules',
-      '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules'
+      '/Users/kaisa/prj/admin-js/node_modules',
+      '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules'
     ]
   },
   module: {
@@ -54,21 +54,21 @@
         use: [
           /* config.module.rule('vue').use('cache-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js',
             options: {
-              cacheDirectory: '/Users/kaisa/prj/module-example-part-1/node_modules/.cache/vue-loader',
-              cacheIdentifier: '70b17ddd'
+              cacheDirectory: '/Users/kaisa/prj/admin-js/node_modules/.cache/vue-loader',
+              cacheIdentifier: '312f6d95'
             }
           },
           /* config.module.rule('vue').use('vue-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-loader/lib/index.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-loader/lib/index.js',
             options: {
               compilerOptions: {
                 whitespace: 'condense'
               },
-              cacheDirectory: '/Users/kaisa/prj/module-example-part-1/node_modules/.cache/vue-loader',
-              cacheIdentifier: '70b17ddd'
+              cacheDirectory: '/Users/kaisa/prj/admin-js/node_modules/.cache/vue-loader',
+              cacheIdentifier: '312f6d95'
             }
           }
         ]
@@ -79,7 +79,7 @@
         use: [
           /* config.module.rule('images').use('url-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/url-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/url-loader/dist/cjs.js',
             options: {
               limit: 4096,
               fallback: {
@@ -98,7 +98,7 @@
         use: [
           /* config.module.rule('svg').use('file-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/file-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/file-loader/dist/cjs.js',
             options: {
               name: 'img/[name].[hash:8].[ext]'
             }
@@ -111,7 +111,7 @@
         use: [
           /* config.module.rule('media').use('url-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/url-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/url-loader/dist/cjs.js',
             options: {
               limit: 4096,
               fallback: {
@@ -130,7 +130,7 @@
         use: [
           /* config.module.rule('fonts').use('url-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/url-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/url-loader/dist/cjs.js',
             options: {
               limit: 4096,
               fallback: {
@@ -153,7 +153,7 @@
             use: [
               /* config.module.rule('pug').oneOf('pug-vue').use('pug-plain-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/pug-plain-loader/index.js'
+                loader: '/Users/kaisa/prj/admin-js/node_modules/pug-plain-loader/index.js'
               }
             ]
           },
@@ -166,7 +166,7 @@
               },
               /* config.module.rule('pug').oneOf('pug-template').use('pug-plain-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/pug-plain-loader/index.js'
+                loader: '/Users/kaisa/prj/admin-js/node_modules/pug-plain-loader/index.js'
               }
             ]
           }
@@ -182,7 +182,7 @@
             use: [
               /* config.module.rule('css').oneOf('vue-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -190,7 +190,7 @@
               },
               /* config.module.rule('css').oneOf('vue-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -201,7 +201,7 @@
               },
               /* config.module.rule('css').oneOf('vue-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -217,7 +217,7 @@
             use: [
               /* config.module.rule('css').oneOf('vue').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -225,7 +225,7 @@
               },
               /* config.module.rule('css').oneOf('vue').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -233,7 +233,7 @@
               },
               /* config.module.rule('css').oneOf('vue').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -249,7 +249,7 @@
             use: [
               /* config.module.rule('css').oneOf('normal-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -257,7 +257,7 @@
               },
               /* config.module.rule('css').oneOf('normal-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -268,7 +268,7 @@
               },
               /* config.module.rule('css').oneOf('normal-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -283,7 +283,7 @@
             use: [
               /* config.module.rule('css').oneOf('normal').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -291,7 +291,7 @@
               },
               /* config.module.rule('css').oneOf('normal').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -299,7 +299,7 @@
               },
               /* config.module.rule('css').oneOf('normal').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -321,7 +321,7 @@
             use: [
               /* config.module.rule('postcss').oneOf('vue-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -329,7 +329,7 @@
               },
               /* config.module.rule('postcss').oneOf('vue-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -340,7 +340,7 @@
               },
               /* config.module.rule('postcss').oneOf('vue-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -356,7 +356,7 @@
             use: [
               /* config.module.rule('postcss').oneOf('vue').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -364,7 +364,7 @@
               },
               /* config.module.rule('postcss').oneOf('vue').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -372,7 +372,7 @@
               },
               /* config.module.rule('postcss').oneOf('vue').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -388,7 +388,7 @@
             use: [
               /* config.module.rule('postcss').oneOf('normal-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -396,7 +396,7 @@
               },
               /* config.module.rule('postcss').oneOf('normal-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -407,7 +407,7 @@
               },
               /* config.module.rule('postcss').oneOf('normal-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -422,7 +422,7 @@
             use: [
               /* config.module.rule('postcss').oneOf('normal').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -430,7 +430,7 @@
               },
               /* config.module.rule('postcss').oneOf('normal').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -438,7 +438,7 @@
               },
               /* config.module.rule('postcss').oneOf('normal').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -460,7 +460,7 @@
             use: [
               /* config.module.rule('scss').oneOf('vue-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -468,7 +468,7 @@
               },
               /* config.module.rule('scss').oneOf('vue-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -479,7 +479,7 @@
               },
               /* config.module.rule('scss').oneOf('vue-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -502,7 +502,7 @@
             use: [
               /* config.module.rule('scss').oneOf('vue').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -510,7 +510,7 @@
               },
               /* config.module.rule('scss').oneOf('vue').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -518,7 +518,7 @@
               },
               /* config.module.rule('scss').oneOf('vue').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -541,7 +541,7 @@
             use: [
               /* config.module.rule('scss').oneOf('normal-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -549,7 +549,7 @@
               },
               /* config.module.rule('scss').oneOf('normal-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -560,7 +560,7 @@
               },
               /* config.module.rule('scss').oneOf('normal-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -582,7 +582,7 @@
             use: [
               /* config.module.rule('scss').oneOf('normal').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -590,7 +590,7 @@
               },
               /* config.module.rule('scss').oneOf('normal').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -598,7 +598,7 @@
               },
               /* config.module.rule('scss').oneOf('normal').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -627,7 +627,7 @@
             use: [
               /* config.module.rule('sass').oneOf('vue-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -635,7 +635,7 @@
               },
               /* config.module.rule('sass').oneOf('vue-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -646,7 +646,7 @@
               },
               /* config.module.rule('sass').oneOf('vue-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -672,7 +672,7 @@
             use: [
               /* config.module.rule('sass').oneOf('vue').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -680,7 +680,7 @@
               },
               /* config.module.rule('sass').oneOf('vue').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -688,7 +688,7 @@
               },
               /* config.module.rule('sass').oneOf('vue').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -714,7 +714,7 @@
             use: [
               /* config.module.rule('sass').oneOf('normal-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -722,7 +722,7 @@
               },
               /* config.module.rule('sass').oneOf('normal-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -733,7 +733,7 @@
               },
               /* config.module.rule('sass').oneOf('normal-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -758,7 +758,7 @@
             use: [
               /* config.module.rule('sass').oneOf('normal').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -766,7 +766,7 @@
               },
               /* config.module.rule('sass').oneOf('normal').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -774,7 +774,7 @@
               },
               /* config.module.rule('sass').oneOf('normal').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -806,7 +806,7 @@
             use: [
               /* config.module.rule('less').oneOf('vue-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -814,7 +814,7 @@
               },
               /* config.module.rule('less').oneOf('vue-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -825,7 +825,7 @@
               },
               /* config.module.rule('less').oneOf('vue-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -848,7 +848,7 @@
             use: [
               /* config.module.rule('less').oneOf('vue').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -856,7 +856,7 @@
               },
               /* config.module.rule('less').oneOf('vue').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -864,7 +864,7 @@
               },
               /* config.module.rule('less').oneOf('vue').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -887,7 +887,7 @@
             use: [
               /* config.module.rule('less').oneOf('normal-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -895,7 +895,7 @@
               },
               /* config.module.rule('less').oneOf('normal-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -906,7 +906,7 @@
               },
               /* config.module.rule('less').oneOf('normal-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -928,7 +928,7 @@
             use: [
               /* config.module.rule('less').oneOf('normal').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -936,7 +936,7 @@
               },
               /* config.module.rule('less').oneOf('normal').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -944,7 +944,7 @@
               },
               /* config.module.rule('less').oneOf('normal').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -973,7 +973,7 @@
             use: [
               /* config.module.rule('stylus').oneOf('vue-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -981,7 +981,7 @@
               },
               /* config.module.rule('stylus').oneOf('vue-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -992,7 +992,7 @@
               },
               /* config.module.rule('stylus').oneOf('vue-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -1002,7 +1002,7 @@
               },
               /* config.module.rule('stylus').oneOf('vue-modules').use('stylus-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/stylus-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/stylus-loader/index.js',
                 options: {
                   sourceMap: false,
                   preferPathResolver: 'webpack'
@@ -1016,7 +1016,7 @@
             use: [
               /* config.module.rule('stylus').oneOf('vue').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -1024,7 +1024,7 @@
               },
               /* config.module.rule('stylus').oneOf('vue').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -1032,7 +1032,7 @@
               },
               /* config.module.rule('stylus').oneOf('vue').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -1042,7 +1042,7 @@
               },
               /* config.module.rule('stylus').oneOf('vue').use('stylus-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/stylus-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/stylus-loader/index.js',
                 options: {
                   sourceMap: false,
                   preferPathResolver: 'webpack'
@@ -1056,7 +1056,7 @@
             use: [
               /* config.module.rule('stylus').oneOf('normal-modules').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -1064,7 +1064,7 @@
               },
               /* config.module.rule('stylus').oneOf('normal-modules').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2,
@@ -1075,7 +1075,7 @@
               },
               /* config.module.rule('stylus').oneOf('normal-modules').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -1085,7 +1085,7 @@
               },
               /* config.module.rule('stylus').oneOf('normal-modules').use('stylus-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/stylus-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/stylus-loader/index.js',
                 options: {
                   sourceMap: false,
                   preferPathResolver: 'webpack'
@@ -1098,7 +1098,7 @@
             use: [
               /* config.module.rule('stylus').oneOf('normal').use('vue-style-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/vue-style-loader/index.js',
                 options: {
                   sourceMap: false,
                   shadowMode: false
@@ -1106,7 +1106,7 @@
               },
               /* config.module.rule('stylus').oneOf('normal').use('css-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/node_modules/css-loader/dist/cjs.js',
                 options: {
                   sourceMap: false,
                   importLoaders: 2
@@ -1114,7 +1114,7 @@
               },
               /* config.module.rule('stylus').oneOf('normal').use('postcss-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/postcss-loader/src/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/postcss-loader/src/index.js',
                 options: {
                   sourceMap: false,
                   plugins: [
@@ -1124,7 +1124,7 @@
               },
               /* config.module.rule('stylus').oneOf('normal').use('stylus-loader') */
               {
-                loader: '/Users/kaisa/prj/module-example-part-1/node_modules/stylus-loader/index.js',
+                loader: '/Users/kaisa/prj/admin-js/node_modules/stylus-loader/index.js',
                 options: {
                   sourceMap: false,
                   preferPathResolver: 'webpack'
@@ -1140,15 +1140,15 @@
         use: [
           /* config.module.rule('ts').use('cache-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js',
             options: {
-              cacheDirectory: '/Users/kaisa/prj/module-example-part-1/node_modules/.cache/ts-loader',
+              cacheDirectory: '/Users/kaisa/prj/admin-js/node_modules/.cache/ts-loader',
               cacheIdentifier: '73a4055b'
             }
           },
           /* config.module.rule('ts').use('ts-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/ts-loader/index.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/ts-loader/index.js',
             options: {
               transpileOnly: true,
               appendTsSuffixTo: [
@@ -1165,15 +1165,15 @@
         use: [
           /* config.module.rule('tsx').use('cache-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js',
             options: {
-              cacheDirectory: '/Users/kaisa/prj/module-example-part-1/node_modules/.cache/ts-loader',
+              cacheDirectory: '/Users/kaisa/prj/admin-js/node_modules/.cache/ts-loader',
               cacheIdentifier: '73a4055b'
             }
           },
           /* config.module.rule('tsx').use('ts-loader') */
           {
-            loader: '/Users/kaisa/prj/module-example-part-1/node_modules/ts-loader/index.js',
+            loader: '/Users/kaisa/prj/admin-js/node_modules/ts-loader/index.js',
             options: {
               transpileOnly: true,
               happyPackMode: false,
@@ -1275,7 +1275,7 @@
     new HtmlWebpackPlugin(
       {
         templateParameters: function () { /* omitted long function */ },
-        template: '/Users/kaisa/prj/module-example-part-1/node_modules/@vue/cli-service/lib/config/index-default.html'
+        template: '/Users/kaisa/prj/admin-js/node_modules/@vue/cli-service/lib/config/index-default.html'
       }
     ),
     /* config.plugin('preload') */
@@ -1300,8 +1300,8 @@
     new CopyPlugin(
       [
         {
-          from: '/Users/kaisa/prj/module-example-part-1/public',
-          to: '/Users/kaisa/prj/module-example-part-1/dist',
+          from: '/Users/kaisa/prj/admin-js/public',
+          to: '/Users/kaisa/prj/admin-js/dist',
           toType: 'dir',
           ignore: [
             '.DS_Store',

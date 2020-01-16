@@ -4,7 +4,7 @@
   +b.module
     <h2>Module A</h2>
     el-menu(mode="horizontal" :default-acctive="1")
-      el-menu-item(v-for="(item, index) in aItems" :key="index" :index="index + 1")
+      el-menu-item(v-for="(item, index) in aItems" :key="index" :index="(index + 1).toString()")
         +e.ROUTER-LINK(:to="item.link" v-html="item.name")
 </template>
 

@@ -3,8 +3,7 @@
 
   +b.navbar-app
     el-menu(class="navbar-app__el-menu" mode="horizontal")
-      el-menu-item(v-for="(item, index) in menuItems" :key="index" :index="index + 1" v-html="item.name" @click="handleClick(item.link)" class="navbar-app__el-item")
-        //- +e.ROUTER-LINK.link(:to="item.link" v-html="item.name")
+      el-menu-item(v-for="(item, index) in menuItems" :key="index" :index="(index + 1).toString()" v-html="item.name" @click="handleClick(item.link)" class="navbar-app__el-item")
 </template>
 
 <script lang="ts">
