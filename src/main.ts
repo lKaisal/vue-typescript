@@ -4,6 +4,7 @@ import Store from './services/store'
 import App from './App.vue'
 import system from './modules/system/module'
 import siteModule from './modules/site/module'
+import bannersModule from './modules/banners/module'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -17,6 +18,7 @@ Vue.use(ElementUI)
 Store.registerModule('system', system.store)
 Router.addRoutes(system.routes)
 Store.dispatch('system/initializeModule', siteModule)
+// Store.dispatch('system/initializeModule', bannersModule)
 
 
 Vue.config.productionTip = false

@@ -32,4 +32,7 @@ export default class App extends Vue {
     width-between-property 'padding-top' 1441 20 1920 30 false true
     width-between-property 'padding-bottom' 600 10 1000 20 true true
     width-between-property 'padding-bottom' 1441 20 1920 30 false true
+
+  &__navbar
+    margin-bottom 50px
 </style>

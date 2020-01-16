@@ -8,19 +8,9 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import ListBanners from './components/ListBanners.vue'
-import BannersStore from './module/store'
-import Axios from 'axios'
+import { State, Getter, Action, Mutation, namespace } from 'vuex-class'
 
-// const Mappers = Vue.extend({
-//   computed: {
-//     ...BannersStore.mapGetters(["double"])
-//   },
-//   methods: {
-//     ...BannersStore.mapActions({
-//       incAsync: 'incrementAsync'
-//     })
-//   }
-// });
+// const bannersModule = namespace('./module/store')
 
 @Component({
   components: {
@@ -29,9 +19,11 @@ import Axios from 'axios'
 })
 
 export default class ModuleBanners extends Vue {
-  async created() {
-    Axios.get('/api/banners-list')
-      .then(response => console.log(response));
+  // @bannersModule.Action('getList') getList: any
+
+  async mounted() {
+    await this.$nextTick()
+    this.$store.dispatch('banners/getList')
   }
 }
 </script>
