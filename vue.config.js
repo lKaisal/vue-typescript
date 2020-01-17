@@ -1,12 +1,14 @@
 module.exports = {
   devServer: {
+    port: 8080,
     proxy: {
-      '/api': {
-        target: 'http://api.sm-admin-banner-service.svc.k8s.devel/api/v1',
+      '/api/v1': {
+        // target: 'http://api.sm-admin-banner-service.svc.k8s.devel/api/v1',
+        target: 'http://localhost:8088',
         changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
+        // pathRewrite: {
+        //   '^/api/v1': ''
+        // }
       }
     }
   }

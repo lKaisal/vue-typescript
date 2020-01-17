@@ -18,7 +18,7 @@ Vue.use(ElementUI)
 Store.registerModule('system', system.store)
 Router.addRoutes(system.routes)
 Store.dispatch('system/initializeModule', siteModule)
-// Store.dispatch('system/initializeModule', bannersModule)
+Store.dispatch('system/initializeModule', bannersModule)
 
 
 Vue.config.productionTip = false

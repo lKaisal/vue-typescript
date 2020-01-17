@@ -42,7 +42,7 @@ export const actions: ActionTree<BannersState, BannersState> = {
   },
   async getList({commit}) {
     return new Promise((resolve, reject) => {
-      Axios.get('/api/banners-list')
+      Axios.get('/api/v1/banners-list')
         .then((data: AxiosResponse<any>) => {
           if (data.status === 200) {
             commit('saveList', data.data.data)

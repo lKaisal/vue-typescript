@@ -2,7 +2,7 @@
   include ../tools/bemto.pug
 
   +b.page-banners
-    ModuleBanners(v-if="moduleLoaded")
+    ModuleBanners
 </template>
 
 <script lang="ts">
@@ -18,10 +18,6 @@ import moduleBanners from '@/modules/banners/module'
 
 export default class PageBanners extends Vue {
   get moduleLoaded() { return !!this.$store.state.banners }
-
-  created() {
-    this.$store.dispatch('system/initializeModule', moduleBanners)
-  }
 }
 </script>
 

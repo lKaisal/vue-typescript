@@ -6,8 +6,10 @@
       +e.img-wrapper
         IMG.item-banner__img(:src="banner.bannerImageUrl")
       +e.info
-        +e.bannerDate(v-html="banner.bannerDate")
-        +e.createdAt(v-html="banner.createdAt")
+        +e.info-item._banner-date(v-if="banner.bannerDate")
+          +e.title Banner Date:&nbsp;<span class="item-banner__text">{{ banner.bannerDate }}</span>
+        +e.info-item._created-at(v-if="banner.createdAt")
+          +e.title Created At:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
 </template>
 
 <script lang="ts">
@@ -20,7 +22,7 @@ import { Banner } from '../models'
 })
 
 export default class ListBanners extends Vue {
-  @Prop() banner: Banner
+  @Prop() banner!: Object
 
   get list(): Banner[] { return this.$store.state.banners.list }
 }
@@ -52,4 +54,13 @@ export default class ListBanners extends Vue {
     transform translate(-50%, -50%)
     max-width 100%
     max-height 100%
+
+  &__info-item
+    display flex
+
+  &__title
+    font-weight 700
+
+  &__text
+    font-weight 300
 </style>
