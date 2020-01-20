@@ -1,14 +1,22 @@
 module.exports = {
-  devServer: {
-    port: 8080,
-    proxy: {
-      '/api/v1': {
-        // target: 'http://api.sm-admin-banner-service.svc.k8s.devel/api/v1',
-        target: 'http://localhost:8088',
-        changeOrigin: true,
-        // pathRewrite: {
-        //   '^/api/v1': ''
-        // }
+  // devServer: {
+  //   port: 8080,
+  //   proxy: {
+  //     '/api/v1': {
+  //       // target: 'http://api.sm-admin-banner-service.svc.k8s.devel/api/v1',
+  //       target: 'http://localhost:8088',
+  //       changeOrigin: true,
+  //       // pathRewrite: {
+  //       //   '^/api/v1': ''
+  //       // }
+  //     }
+  //   }
+  // }
+  configureWebpack: {
+    mode: 'production',
+    resolve: {
+      alias: {
+        'vue$': 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' для webpack 1
       }
     }
   }

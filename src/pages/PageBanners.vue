@@ -7,8 +7,8 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import ModuleBanners from '@/modules/banners/ModuleBanners.vue'
-import moduleBanners from '@/modules/banners/module'
+import ModuleBanners from '@/modules/banners-es/module-banners.esm'
+// const ModuleBanners = require ('@/modules/banners-es/module-banners.esm')
 
 @Component({
   components: {
@@ -17,7 +17,6 @@ import moduleBanners from '@/modules/banners/module'
 })
 
 export default class PageBanners extends Vue {
-  get moduleLoaded() { return !!this.$store.state.banners }
 }
 </script>
 
