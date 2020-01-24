@@ -10350,6 +10350,13 @@ vue-loader@^15.7.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-mixin-decorator@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/vue-mixin-decorator/-/vue-mixin-decorator-1.2.0.tgz#b391704b004b56efb134ef83a6ae65fceea39964"
+  integrity sha512-+34zqPctdrVK8YXg5xwYJWShvhwK0W2gGMSwAJYK9qUy2DNkBTrlb2nrdgk5edJrS6U81Rv0B0LF3cXYlNnpZg==
+  dependencies:
+    vue-class-component "^7.1.0"
+
 vue-property-decorator@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/vue-property-decorator/-/vue-property-decorator-8.3.0.tgz#536f027dc7d626f37c8d85a2dc02f0a6cb979440"
