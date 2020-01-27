@@ -8,7 +8,7 @@ body
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
   color black
-  -webkit-tap-highlight-color rgba($cOrange, .25)
+  -webkit-tap-highlight-color rgba($cBrand, .25)
 
 ::selection
   background-color $cOrange
@@ -23,33 +23,48 @@ a
   +hover()
     hoverStyle()
 
+body
+  &.modal-open
+    overflow hidden
+
 #__nuxt
 #__layout
 .app
-  // min-height 100vh
+  min-height 100vh
   height 100%
 
 .page
+  min-height 100%
+  height 100%
   transition()
-  transition-duration $tSlow
   &.v-enter
   &.v-leave-to
     opacity 0
 
 .container
   grid-container()
+  max-width none
 
 .is-hidden
   display none
 
-// ScrollObserver animation class
-.js-voa
-  transition-property transform, opacity
-  transition-duration $tSlow
-  transition-delay 66.6ms
-  +lt-md()
-    transition-duration $tFast
+.modal
+  z-index 999
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  display flex
+  justify-content center
+  align-items center
+  background-color rgba(0,0,0,.5)
+  overflow hidden
+  transition()
+  &.v-enter
+  &.v-leave-to
+    opacity 0
 
-.js-voa-start
-  opacity 0
-  transform translateY(30px)
+h1.page-title
+  margin-bottom 35px
+  fontMedium()

@@ -1,6 +1,6 @@
 import Store from '../../../services/store'
 import Router from '../../../services/router'
-import siteModule from '../../site/module'
+import { registerModule, unregisterModule } from 'vuex-smart-module'
 
 export default {
   namespaced: true,
@@ -12,18 +12,14 @@ export default {
   mutations: {},
   
   actions: {
-    initialize ({ dispatch }) {
-      console.info('System initializing...')
-      console.info('System initialized.')
-      dispatch('initializeModule', siteModule)
-    },
-    initializeModule ({ dispatch }, module) {
-      Store.registerModule(module.name, module.store)
+    initializeModule ({ dispatch }, module: any) {
+      // Store.registerModule(module.name, module.store)
+      registerModule(Store, [module.name], `${module.name}/`, module.store)
       Router.addRoutes(module.routes)
-      dispatch(module.name + '/initialize', null, { root: true })
+      // dispatch(module.name + '/initialize', null, { root: true })
     },
-    removeModule ({ dispatch }, module) {
-      dispatch(module.name + '/uninitialize', null, { root: true })
+    removeModule ({ dispatch }, module: any) {
+      // dispatch(module.name + '/uninitialize', null, { root: true })
       Store.unregisterModule(module.name)
     }
   }
