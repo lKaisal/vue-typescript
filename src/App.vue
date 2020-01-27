@@ -1,9 +1,10 @@
 <template lang="pug">
   include ./tools/bemto.pug
 
-  +b.app.container
-    +e.page
-      <router-view></router-view>
+  +b.app
+    +e.container.container
+      transition(mode="out-in")
+        router-view(class="app__page")
 </template>
 
 <script lang="ts">
@@ -15,28 +16,26 @@ import { Vue, Component } from 'vue-property-decorator'
 })
 
 export default class App extends Vue {
-  // get moduleALoaded() { return !!this.$store.state.moduleA }
-
-  // loadModuleA() { this.$store.dispatch('system/initializeModule', moduleA) }
-  // deleteModuleA() { this.$store.dispatch('system/removeModule', moduleA) }
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 @import '~@/styles/tools'
+@import '~@/styles/app'
 
 .app
-  padding-top 100px
-  padding-bottom 100px
 
-  &__modules
+  &__container
+    min-height 100%
+    min-height 100vh
     display flex
-    margin-bottom 50px
-
-  &__module
-    &:not(:last-child)
-      margin-right 150px
+    width-between-property 'padding-top' 600 10 1000 20 true true
+    width-between-property 'padding-top' 1441 20 1920 30 false true
+    width-between-property 'padding-bottom' 600 10 1000 20 true true
+    width-between-property 'padding-bottom' 1441 20 1920 30 false true
 
   &__page
-    // margin-top 5vh
+    &.page-create
+      width 100%
+      align-self center
 </style>

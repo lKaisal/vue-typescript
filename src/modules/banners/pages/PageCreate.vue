@@ -64,7 +64,7 @@ export default class PageCreate extends Mixins(Mappers, MsgBoxTools) {
         }
       })
   }
-  goToPageMain() { this.$router.push({ name: 'PageBanners' }) }
+  goToPageMain() { this.$router.push({ path: '/banners' }) }
 }
 </script>
 

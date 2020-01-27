@@ -62,6 +62,7 @@ export default class DrapDrop extends Mappers {
   getImagePreviews(){
     let reader = new FileReader();
     reader.addEventListener('load', () => this.imgUrl = reader.result, false);
+    // @ts-ignore
     reader.readAsDataURL(this.file);
   }
   removeImg() {

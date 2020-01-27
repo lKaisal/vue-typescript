@@ -101,8 +101,8 @@ class BannersGetters extends Getters<BannersState> {
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || ''
     formData.file = this.getters.formFile.value
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
-    formData.pageType = this.getters.formPageType && this.getters.formPageType.toString() || ''
-    formData.sort = this.getters.formSort && this.getters.formSort.toString() || ''
+    formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
+    formData.sort = this.getters.formSort.value && this.getters.formSort.value.toString() || ''
 
     return formData
   }

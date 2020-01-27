@@ -11,7 +11,7 @@
   "sm": 4,
   "md": 6,
   "lg": 8,
-  "xl": 10
+  "xl": 12
   },
   "gutters": {
   "xs": 22,
@@ -40,5 +40,5 @@
   "gt-md": "(min-width: 1000px)",
   "gt-lg": "(min-width: 1440px)"
   },
-  "containerMaxWidth": false
+  "containerMaxWidth": 1920
   }

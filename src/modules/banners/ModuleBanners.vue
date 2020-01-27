@@ -3,11 +3,7 @@
 
   +b.module-banners
     +e.container.container
-      //- transition(mode="out-in")
-      //-   router-view(class="module-banners__page")
-      el-menu(v-if="bannersRoutes" mode="horizontal" :default-acctive="1")
-        el-menu-item(v-for="(item, index) in bannersRoutes" :index="(index + 1).toString()")
-          +e.ROUTER-LINK(:to="item.path" v-html="item.name")
+      //- PageMain(v-if="isPageHome")
       transition
         MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :loading="msgBoxIsLoading" @close="closeMsgBox" @reset="loadData" class="module-banners__msg-box modal")
 </template>
@@ -17,10 +13,10 @@ import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { State, Getter, Action, Mutation, namespace } from 'vuex-class'
 // import Store from './module/store'
 import { MsgBoxContent, Banner } from './models'
-import msgBoxTools from './mixins/msgBoxTools'
-import MessageBox from './components/MessageBox.vue'
 import { bannersMapper } from '../banners/module/store'
-import bannersRoutes from './module/routes'
+import msgBoxTools from './mixins/msgBoxTools'
+import PageMain from './pages/PageMain.vue'
+import MessageBox from './components/MessageBox.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -33,7 +29,8 @@ const Mappers = Vue.extend({
 
 @Component({
   components: {
-    MessageBox
+    MessageBox,
+    PageMain
   },
   mixins: [
     msgBoxTools
@@ -46,9 +43,8 @@ export default class ModuleBanners extends Mixins(Mappers, msgBoxTools) {
     msg: 'Произошла ошибка при загрузке данных',
     loadBtn: 'Загрузить повторно'
   }
-
-  get bannersRoutes() { return bannersRoutes }
   get list() { return this.listSorted }
+  get isPageHome() { return this.$route.fullPath === '/banners' }
 
   async created() {
     if (!this.list || !this.list.length) this.loadData()
@@ -74,7 +70,7 @@ export default class ModuleBanners extends Mixins(Mappers, msgBoxTools) {
 
   &__container
     min-height 100%
-    min-height 100vh
+    // min-height 100vh
     display flex
     width-between-property 'padding-top' 600 10 1000 20 true true
     width-between-property 'padding-top' 1441 20 1920 30 false true
