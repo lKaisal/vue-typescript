@@ -9,6 +9,7 @@ module.exports = function() {
      * @return {boolean} is file exists (`true/false`)
      */
     style.define('file-exists', function(path) {
+      // @ts-ignore
       return !!stylus.utils.lookup(path.string, this.paths);
     });
   };

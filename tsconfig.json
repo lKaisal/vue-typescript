@@ -9,13 +9,14 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "dom-inputevent"
     ],
     "typeRoots": [
-      "src/modules/banners-es/types",
       "../../node_modules/@types"
     ],
     "paths": {

@@ -3,36 +3,39 @@
 
   +b.app
     +e.container.container
-      NavbarApp(class="app__navbar")
-      router-view
+      transition(mode="out-in")
+        +e.btn-wrapper(v-if="isPageHome")
+          el-button(type="primary" @click="onClick") Enter BannersModule
+        router-view(v-else class="app__page")
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import NavbarApp from '@/components/NavbarApp.vue'
 
 @Component({
   components: {
-    NavbarApp
   }
 })
 
 export default class App extends Vue {
+  get isPageHome() { return this.$route && this.$route.fullPath === '/' }
+
+  onClick() { this.$router.push({path: '/banners'}) }
 }
 </script>
 
-<style lang="stylus" scoped>
-@import './styles/app'
+<style lang="stylus">
 @import '~@/styles/tools'
+@import '~@/styles/app'
 
 .app
 
   &__container
+    min-height 100%
+    min-height 100vh
+    display flex
     width-between-property 'padding-top' 600 10 1000 20 true true
     width-between-property 'padding-top' 1441 20 1920 30 false true
     width-between-property 'padding-bottom' 600 10 1000 20 true true
     width-between-property 'padding-bottom' 1441 20 1920 30 false true
-
-  &__navbar
-    margin-bottom 50px
 </style>

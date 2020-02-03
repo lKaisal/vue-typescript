@@ -40,5 +40,5 @@
   "gt-md": "(min-width: 1000px)",
   "gt-lg": "(min-width: 1440px)"
   },
-  "containerMaxWidth": false
+  "containerMaxWidth": 1920
   }
