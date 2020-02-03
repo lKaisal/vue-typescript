@@ -88,6 +88,8 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 @import '../../../styles/tools'
 
 .page-create
+  width 100%
+  align-self center
 
   &__container
     position relative

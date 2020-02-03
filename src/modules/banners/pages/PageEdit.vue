@@ -180,6 +180,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 @import '../../../styles/tools'
 
 .page-edit
+  width 100%
+  align-self center
 
   &__container
     position relative

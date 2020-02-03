@@ -34,8 +34,6 @@ export default class ListBanners extends Mappers {
   activeIndex: string = '1'
 
   get list() { return this.listSorted }
-  get listActive() { return this.listActive }
-  get listInactive() { return this.listInactive }
   // get list() { return this.state.list }
   get activeList() {
     if (this.activeIndex === '2') return this.listActive

@@ -7,11 +7,12 @@ html
 body
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
-  color black
+  color $cPrimaryText
   -webkit-tap-highlight-color rgba($cBrand, .25)
+  fontReg()
 
 ::selection
-  background-color $cOrange
+  background-color $cBrand
   color white
 
 a
@@ -68,3 +69,6 @@ body
 h1.page-title
   margin-bottom 35px
   fontMedium()
+
+.el-loading-mask
+  position fixed !important

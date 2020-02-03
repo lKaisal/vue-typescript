@@ -11,8 +11,6 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import PageMain from '@/modules/banners/pages/PageMain.vue'
-import PageCreate from '@/modules/banners/pages/PageCreate.vue'
 
 @Component({
   components: {
@@ -40,9 +38,4 @@ export default class App extends Vue {
     width-between-property 'padding-top' 1441 20 1920 30 false true
     width-between-property 'padding-bottom' 600 10 1000 20 true true
     width-between-property 'padding-bottom' 1441 20 1920 30 false true
-
-  &__page
-    &.page-create
-      width 100%
-      align-self center
 </style>
