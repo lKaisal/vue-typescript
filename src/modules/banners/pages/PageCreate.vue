@@ -5,66 +5,82 @@
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Создание баннера
-        FormCreate(class="page-create__form")
+        FormApp(class="page-create__form")
         +e.btns
           +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
           +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
           +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :loading="msgBoxIsLoading" @close="closeMsgBox" @reset="submitForm" class="page-create__msg-box modal")
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator'
-import { State, Getter, Action, Mutation, namespace } from 'vuex-class'
-import { MsgBoxContent } from '../models'
+import { MsgBoxContent, Banner, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
-import FormCreate from '../components/FormCreate.vue'
+import FormApp from '../components/FormApp.vue'
 import MessageBox from '../components/MessageBox.vue'
+import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 
-const Mappers = Vue.extend ({
+const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapGetters([
-      'formIsValid'
-    ])
+    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById'])
   },
   methods: {
-    ...bannersMapper.mapMutations([
-      'clearForm'
-    ]),
-    ...bannersMapper.mapActions([
-      'createBanner'
-    ])
+    ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
+    ...bannersMapper.mapActions(['getList', 'deleteBanner'])
   }
 })
 
 @Component({
   components: {
-    FormCreate,
+    FormApp,
     MessageBox
   }
 })
 
-export default class PageCreate extends Mixins(Mappers, MsgBoxTools) {
-  msgBoxIsShown: boolean = false
-  msgBoxIsLoading: boolean = false
-  msgBoxContent: MsgBoxContent = {
-    title: 'Ошибка при отправке',
-    msg: 'Не удалось отправить данные',
-    loadBtn: 'Отправить повторно',
+export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
+  bannerId: number = null
+  secondBtn: Button = null
+
+  get formIsValid() { return this.formIsValid }
+
+  created() {
+    this.setFormType('create')
+    this.clearForm()
   }
 
+  // edit or retry to create
+  onFirstBtnClick() {
+    if (this.requestStatus === 'successCreate') this.goToPageEdit()
+    else this.submitForm()
+  }
+  onSecondBtnClick() {
+    if (this.requestStatus === 'successCreate') this.goToPageMain()
+    else this.closeMsgBox()
+  }
   submitForm() {
     this.createBanner()
+      .then(async(id) => {
+        this.bannerId = id
+        this.secondBtn = { type: 'success', isPlain: true }
+        this.requestStatus = 'successCreate'
+        this.openMsgBox()
+        await sleep(1500)
+        this.closeMsgBox()
+        this.goToPageEdit()
+      })
       .catch(error => {
-        console.log(error)
         if (this.formIsValid) {
-          this.onErrorCatch()
+          this.secondBtn = { type: 'danger', isPlain: true }
+          this.requestStatus = 'failCreate'
+          this.openMsgBox()
         }
       })
   }
-  goToPageMain() { this.$router.push({ path: '/banners' }) }
+  goToPageMain() { this.$router.push({ name: 'PageBanners' }).catch(err => {}) }
+  goToPageEdit() { this.$router.push({ name: 'PageEdit', params: { id: this.bannerId.toString() } }).catch(err => {}) }
 }
 </script>
 

@@ -13,20 +13,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Ref } from 'vue-property-decorator'
-import { namespace } from 'vuex-class'
-import { bannersMapper } from '../module/store'
+import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
+import { bannersMapper, banners } from '../module/store'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapGetters([
-      'formFile'
-    ])
+    ...bannersMapper.mapGetters(['formFile', 'bannerById'])
   },
   methods: {
-    ...bannersMapper.mapMutations([
-      'updateField'
-    ])
+    ...bannersMapper.mapMutations(['updateField'])
   }
 })
 
@@ -35,35 +30,44 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class DrapDrop extends Mappers {
-  imgUrl: string | ArrayBuffer | null = ''
+export default class DragDrop extends Mappers {
+  imgUrl: string | ArrayBuffer = ''
   dropDeleteIsShown: boolean = false
 
   get fileField() { return this.formFile }
-
   get file() { return this.fileField.value }
   set file(value) { this.updateFile(value) }
+  get banner() { return this.bannerById(Number(this.$route.params.id)) }
+  get bannerImgUrl() { return this.banner && this.banner.bannerImageUrl }
 
   @Ref() readonly fileinput!: HTMLInputElement
+
+  @Watch('file', { immediate: true })
+  onFileChange(val) {
+    if (val) this.getImagePreviews()
+  }
 
   // METHODS
   updateFile(value) { return this.updateField({name: 'file', value}) }
   onDropImg(evt: DragEvent) {
     this.file = evt.dataTransfer && evt.dataTransfer.files[0]
 
-    if (this.file) this.getImagePreviews();
+    // if (this.file) this.getImagePreviews();
   }
   onInputImg(evt: InputEvent) {
     const target = <HTMLInputElement>evt.target
     this.file = target.files && target.files[0]
 
-    if (this.file) this.getImagePreviews()
+    // if (this.file) this.getImagePreviews()
   }
-  getImagePreviews(){
-    let reader = new FileReader();
-    reader.addEventListener('load', () => this.imgUrl = reader.result, false);
-    // @ts-ignore
-    reader.readAsDataURL(this.file);
+  getImagePreviews() {
+    if (this.file.type) {
+      let reader = new FileReader();
+      reader.addEventListener('load', () => this.imgUrl = reader.result, false);
+      reader.readAsDataURL(this.file);
+    } else {
+      this.imgUrl = this.file
+    }
   }
   removeImg() {
     this.updateFile(null)
@@ -121,7 +125,6 @@ export default class DrapDrop extends Mappers {
     cursor pointer
 
   &__img
-    z-index 1000
     position absolute
     top 0
     right 0

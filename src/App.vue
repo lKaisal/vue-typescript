@@ -4,11 +4,15 @@
   +b.app
     +e.container.container
       transition(mode="out-in")
-        router-view(class="app__page")
+        +e.btn-wrapper(v-if="isPageHome")
+          el-button(type="primary" @click="onClick") Enter BannersModule
+        router-view(v-else class="app__page")
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
+import PageMain from '@/modules/banners/pages/PageMain.vue'
+import PageCreate from '@/modules/banners/pages/PageCreate.vue'
 
 @Component({
   components: {
@@ -16,6 +20,9 @@ import { Vue, Component } from 'vue-property-decorator'
 })
 
 export default class App extends Vue {
+  get isPageHome() { return this.$route && this.$route.fullPath === '/' }
+
+  onClick() { this.$router.push({path: '/banners'}) }
 }
 </script>
 

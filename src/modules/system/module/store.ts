@@ -4,13 +4,9 @@ import { registerModule, unregisterModule } from 'vuex-smart-module'
 
 export default {
   namespaced: true,
-  
   state: {},
-  
   getters: {},
-  
   mutations: {},
-  
   actions: {
     initializeModule ({ dispatch }, module: any) {
       // Store.registerModule(module.name, module.store)

@@ -8,15 +8,12 @@ import system from './modules/system/module'
 // import 'bootstrap-vue/dist/bootstrap-vue.css'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import ModuleA from './modules/moduleA/ModuleA.vue'
 import banners from './modules/banners/module'
-import { createStore } from 'vuex-smart-module'
-// import BannersStore from './modules/banners/module/store'
 
 // Vue.use(BootstrapVue)
 Vue.use(ElementUI)
 
-const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './modules/banners/ModuleBanners.vue');
+// const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './modules/banners/ModuleBanners.vue');
 
 /* Initialize System Module */
 Store.registerModule('system', system.store)

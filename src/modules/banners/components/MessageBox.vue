@@ -2,33 +2,39 @@
   include ../../../tools/bemto.pug
 
   +b.msg-box
-    +e.container(:key="loading")
+    +e.container
       +e.header
-        +e.title {{ content.title }}
+        +e.title(v-if="content && content.title") {{ content.title }}
         +e.btn-close(@click="onCloseClick")
           i.el-icon-close.msg-box__icon-close
-      +e.content {{ content.msg }}
+      +e.content(v-if="content && content.msg") {{ content.msg }}
       +e.btns
-        +e.EL-BUTTON(type="primary" @click="onResetClick" :loading="loading") {{ content.loadBtn }}
-        //- +e.EL-BUTTON(type="primary" plain @click="onCloseClick") Закрыть
+        +e.EL-BUTTON(v-if="content && content.firstBtn" :type="firstBtn.type" :plain="firstBtn.isPlain" @click="onFirstBtnClick") {{ content.firstBtn }}
+        +e.EL-BUTTON(v-if="content && content.secondBtn" :type="secondBtn.type" :plain="secondBtn.isPlain" @click="onSecondBtnClick") {{ content.secondBtn }}
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { MsgBoxContent } from '../models'
+import { MsgBoxContent, Button } from '../models'
+import msgBoxTools from '../mixins/msgBoxTools'
 
 @Component({
 })
 
-export default class MessageBox extends Vue {
+export default class MessageBox extends msgBoxTools {
   @Prop() content: MsgBoxContent
-  @Prop() loading: boolean
+  // @Prop() loading: boolean
+  @Prop( { default: function() { return { type: 'primary', isPlain: false }} }) firstBtn: Button
+  @Prop( { default: function() { return { type: 'success', isPlain: true }} }) secondBtn: Button
 
   onCloseClick() {
     this.$emit('close')
   }
-  onResetClick() {
-    this.$emit('reset')
+  onFirstBtnClick() {
+    this.$emit('firstBtnClicked')
+  }
+  onSecondBtnClick() {
+    this.$emit('secondBtnClicked')
   }
 }
 </script>
@@ -39,7 +45,7 @@ export default class MessageBox extends Vue {
 .msg-box
 
   &__container
-    width 420px
+    min-width 420px
     padding 15px
     background-color white
     border 1px solid $cLighterBorder
