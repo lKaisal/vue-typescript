@@ -1,7 +1,7 @@
 import PageBanners from '../pages/PageMain.vue'
 import PageCreate from '../pages/PageCreate.vue'
 import PageEdit from '../pages/PageEdit.vue'
-import ModuleBanners from '../../../pages/PageBanners.vue'
+import ModuleBanners from '../../../pages/ModuleBanners.vue'
 
 export default [
   { path: '/banners/list', component: PageBanners, name: 'PageBanners' },

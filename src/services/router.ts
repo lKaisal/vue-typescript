@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import PageBanners from '@/pages/PageBanners.vue'
+// import PageBanners from '@/pages/PageBanners.vue'
 // import PageDemo from '@/pages/PageDemo.vue'
 
 Vue.use(VueRouter)
@@ -8,7 +8,6 @@ Vue.use(VueRouter)
 export default new VueRouter({
   mode: 'history',
   routes: [
-    { path: '/banners', component: PageBanners },
     // { path: '/modules', component: PageDemo },
   ]
 })

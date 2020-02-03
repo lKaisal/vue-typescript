@@ -35,7 +35,7 @@ class BannersGetters extends Getters<BannersState> {
   get listSorted() {
     return this.state.list && this.state.list.sort((a, b) => {
       const keyA = a.sort
-      const keyB = a.sort
+      const keyB = b.sort
 
       if (keyA > keyB) return 1
       else if (keyA < keyB) return -1

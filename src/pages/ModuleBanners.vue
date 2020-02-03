@@ -34,8 +34,5 @@ export default class ModuleBanners extends Vue {
 @import '../styles/tools'
 
 .module-banners
-
-  .page-create
-    width 100%
-    align-self center
+  // 
 </style>
