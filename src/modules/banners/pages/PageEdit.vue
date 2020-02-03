@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-edit.page
+  +b.page-edit.page(v-loading="isLoading")
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Редактирование баннера
@@ -32,11 +32,12 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById'])
+    ...bannersMapper.mapState(['isLoading']),
+    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById', 'formIsValid'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
-    ...bannersMapper.mapActions(['getList', 'deleteBanner', 'updateFormByBannerData', 'getBannerById'])
+    ...bannersMapper.mapActions(['getList', 'editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById'])
   }
 })
 
@@ -50,8 +51,6 @@ const Mappers = Vue.extend({
 export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   banner: Banner = null
   secondBtn: Button = null
-
-  get formIsValid() { return this.formIsValid }
 
   created() {
     this.setFormType('edit')
@@ -121,7 +120,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
     }
   }
-  goToPageMain() { this.$router.push({ name: 'PageBanners' }).catch(err => {}) }
+  goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
   submitForm() {
     this.editBanner(this.banner.id)
       .then(async () => {
@@ -180,11 +179,11 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 @import '../../../styles/tools'
 
 .page-edit
-  width 100%
-  align-self center
 
   &__container
     position relative
+    width 100%
+    display flex
     // &:before
     //   z-index -1
     //   content ''
@@ -203,7 +202,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     grid-size(4, 4, 5.5, 5, 6)
     margin-right auto
     margin-left auto
-    min-height 100%
+    // min-height 100%
+    align-self center
     // display flex
     // align-items center
     // width 100%

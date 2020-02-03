@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-create.page
+  +b.page-create.page(v-loading="isLoading")
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Создание баннера
@@ -25,11 +25,12 @@ import { bannersMapper } from '../module/store'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById'])
+    ...bannersMapper.mapState(['isLoading']),
+    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById', 'formIsValid'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
-    ...bannersMapper.mapActions(['getList', 'deleteBanner'])
+    ...bannersMapper.mapActions(['getList', 'deleteBanner', 'createBanner'])
   }
 })
 
@@ -43,8 +44,6 @@ const Mappers = Vue.extend({
 export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   bannerId: number = null
   secondBtn: Button = null
-
-  get formIsValid() { return this.formIsValid }
 
   created() {
     this.setFormType('create')
@@ -79,8 +78,8 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         }
       })
   }
-  goToPageMain() { this.$router.push({ name: 'PageBanners' }).catch(err => {}) }
-  goToPageEdit() { this.$router.push({ name: 'PageEdit', params: { id: this.bannerId.toString() } }).catch(err => {}) }
+  goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
+  goToPageEdit() { this.$router.push({ path: '/banners/edit', params: { id: this.bannerId.toString() } }).catch(err => {}) }
 }
 </script>
 
@@ -88,11 +87,11 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 @import '../../../styles/tools'
 
 .page-create
-  width 100%
-  align-self center
 
   &__container
     position relative
+    display flex
+    width 100%
     // &:before
     //   z-index -1
     //   content ''
@@ -111,10 +110,11 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     grid-size(4, 4, 4, 5, 6)
     margin-right auto
     margin-left auto
-    min-height 100%
+    // min-height 100%
     // display flex
     // align-items center
     padding 50px
+    align-self center
     // width 100%
     background-color $cExLightBorder
     border-radius 6px

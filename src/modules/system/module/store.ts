@@ -12,6 +12,7 @@ export default {
       // Store.registerModule(module.name, module.store)
       registerModule(Store, [module.name], `${module.name}/`, module.store)
       Router.addRoutes(module.routes)
+      // console.log(Router, module.routes)
       // dispatch(module.name + '/initialize', null, { root: true })
     },
     removeModule ({ dispatch }, module: any) {

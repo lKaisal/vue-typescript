@@ -1,11 +1,11 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-main.page
+  +b.page-main.page(v-loading="isLoading")
     +e.container
       +e.title.H1.page-title Список баннеров
       el-button.page-main__btn(type="primary" @click="onCreateClick") Создать баннер
-      ListBanners(@deleteItem="onDeleteClick" class="page-main__list")
+      ListBanners(:key="listSorted && listSorted.length" @deleteItem="onDeleteClick" class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox" :secondBtn="secondBtn" class="app__msg-box modal")
 </template>
@@ -22,6 +22,7 @@ import { bannersMapper } from '../module/store'
 
 const Mappers = Vue.extend({
   computed: {
+    ...bannersMapper.mapState(['isLoading']),
     ...bannersMapper.mapGetters(['listSorted'])
   },
   methods: {

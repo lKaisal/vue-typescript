@@ -32,13 +32,13 @@
       +e.error(v-html="isActiveField.errorMsg")
     +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy }")
       +e.LABEL.label(for="sortBy") Положение баннера
-      +e.EL-SELECT.select(ref="select" v-model="sortBy" :placeholder="(maxSortBy + 1).toString()")
-        +e.EL-OPTION(v-for="n in maxSortBy + 1" :key="n" :label="n" :value="n")
+      +e.EL-SELECT.select(ref="select" v-model="sortBy" :placeholder="(maxSortBy + 1 || 1).toString()")
+        +e.EL-OPTION(v-for="n in maxSortBy + 1 || 1" :key="n" :label="n || 1" :value="n || 1")
       +e.error(v-html="sortField.errorMsg")
 </template>
 
 <script lang="ts">
-import { Vue, Component, Ref } from 'vue-property-decorator'
+import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
 import trim from 'validator/lib/trim'
 import { Banner, BannerForm, MsgBoxContent } from '../models'
 import DragDrop from './DragDrop.vue'
@@ -49,11 +49,10 @@ import { bannersMapper } from '../module/store'
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form']),
-    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById', 'formActiveFrom', 'formActiveTo', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
+    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'formActiveFrom', 'formActiveTo', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setFormType', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['getList', 'deleteBanner'])
+    ...bannersMapper.mapMutations(['setValidationIsShown', 'updateField']),
   }
 })
 
@@ -96,6 +95,11 @@ export default class FormApp extends Mappers {
   get sortBy() { return this.sortField.value }
   set sortBy(value) { this.updateField({name: 'sort', value}) }
 
+  // @Watch('list', { immediate: true })
+  // onListChanged(val) {
+  //   if (val && val.length) this.initPickers()
+  // }
+
   mounted() {
     this.initPickers()
   }
@@ -119,7 +123,6 @@ export default class FormApp extends Mappers {
     this.pickrTo = flatpickr(this.toRef, configTo)
     if (this.activeToField.value) this.pickrTo.setDate(this.activeToField.value)
   }
-  // FORM METHODS
   isInvalid(field) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
 }
 </script>

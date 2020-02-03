@@ -13,8 +13,10 @@
       +e.info
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        +e.info-item(v-if="banner.sort")
-          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sort }}</span>
+        +e.info-item(v-if="banner.sortCalculated")
+          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
+        //- +e.info-item(v-if="banner.sort")
+        //-   +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sort }}</span>
         +e.info-item
           +e.title Отображать в приложении:&nbsp;<span class="item-banner__text">{{ banner.isActive ? 'Да' : 'Нет' }}</span>
         +e.info-item(v-if="banner.activeFrom || banner.activeTo")
@@ -32,7 +34,7 @@ import { Banner } from '../models'
 export default class ItemBanners extends Vue {
   @Prop() banner: Banner
   onEditClick() {
-    this.$router.push({ name: 'PageEdit', params: { id: this.banner.id.toString() } })
+    this.$router.push({ path: `/banners/edit/${this.banner.id.toString()}` })
   }
 
   onDeleteClick() {

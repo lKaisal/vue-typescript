@@ -15,6 +15,7 @@ type Banner = {
   isActive: boolean,
   pageType: string
   sort: number,
+  sortCalculated: number
 }
 
 type Form = {

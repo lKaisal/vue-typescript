@@ -33,7 +33,11 @@ class BannersState {
 
 class BannersGetters extends Getters<BannersState> {
   get listSorted() {
-    return this.state.list && this.state.list.sort((a, b) => {
+    const list = this.state.list
+
+    if (!list || !list.length) return
+
+    const listSorted = list.sort((a, b) => {
       const keyA = a.sort
       const keyB = b.sort
 
@@ -41,6 +45,11 @@ class BannersGetters extends Getters<BannersState> {
       else if (keyA < keyB) return -1
       else return 0
     })
+
+    const listActiveIds = listSorted.filter(item => item.isActive).map(b => b.id)
+    listSorted.forEach((b, index) => b.isActive ? b.sortCalculated = listActiveIds.indexOf(b.id) + 1 : b.sortCalculated = null)
+
+    return listSorted
   }
   get listActive() { return this.getters.listSorted.filter(item => item.isActive) }
   get listInactive() { return this.getters.listSorted.filter(item => !item.isActive) }
@@ -263,7 +272,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.commit('updateField', { name: field.name, value: data.pageType })
           break
         case 'sort':
-          this.commit('updateField', { name: field.name, value: data.sort })
+          this.commit('updateField', { name: field.name, value: data.sortCalculated }) // takes sortCalculated value, not sort (sort mmay be a huge number)
           break
         }
     })
