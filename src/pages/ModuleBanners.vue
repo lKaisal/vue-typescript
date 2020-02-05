@@ -2,53 +2,49 @@
   include ../tools/bemto.pug
 
   +b.module-banners
-    //- +e.intro
-      +e.H1.title.page-title Module Banners
-      +e.btn-wrapper
-        el-button(type="primary" @click="onClick") Показать список
-    router-view(class="module-banners__page")
+    transition(mode="out-in")
+      router-view(@updateList="loadData" class="module-banners__page page")
+    transition
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import PageBanners from '@/modules/banners/pages/PageMain.vue'
-import PageCreate from '@/modules/banners/pages/PageCreate.vue'
-import PageEdit from '@/modules/banners/pages/PageEdit.vue'
+import MessageBox from '@/modules/banners/components/MessageBox.vue'
+import { bannersMapper } from '@/modules/banners/module/store'
+import MsgBoxTools from '@/modules/banners/mixins/msgBoxTools'
 
-@Component({
-  components: {
-    PageBanners,
-    PageCreate,
-    PageEdit
+const Mappers = Vue.extend({
+  methods: {
+    ...bannersMapper.mapActions(['getList'])
   }
 })
 
-export default class ModuleBanners extends Vue {
-  get isOnPageBanners() { return this.$route.path && this.$route.path.includes('banners/list') }
-  get isOnPageCreate() { return this.$route.path && this.$route.path.includes('banners/create') }
-  get isOnPageEdit() { return this.$route.path && this.$route.path.includes('banners/edit') }
+@Component({
+  components: {
+    MessageBox,
+  }
+})
 
+export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
   created() {
-    // let { routes } =this.$router.options;
-    // let routeData = routes.find(r => r.path === this.$route.path);
-    // console.log(routes, routeData)
-    // routeData.children = [
-    //   { path: 'bar', component: Bar },
-    //   { path: 'baz', component: Baz },
-    // ]
-    // this.$router.addRoutes([routeData])
+    this.loadData()
   }
 
-  onClick() { this.$router.push({ path: '/banners/list' }) }
-
-  @Watch('$route')
-  onRouteChange(val) {
-    console.log(val)
+  loadData() {
+    this.getList()
+      .then(() => {
+        console.log('List loaded!')
+        this.closeMsgBox()
+      })
+      .catch(async (error) => {
+        this.openMsgBox()
+      })
   }
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import '../styles/tools'
 
 .module-banners

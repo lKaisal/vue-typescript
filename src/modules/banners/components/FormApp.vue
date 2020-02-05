@@ -15,7 +15,7 @@
         +e.LABEL(for="pageType") Тип страницы
       +e.EL-INPUT.input(placeholder="type" v-model="pageType")
       +e.error(v-html="pageTypeField.errorMsg")
-    +e.row
+    //- +e.row
       +e.field._active-from(:class="{ 'is-filled': !!activeFrom }")
         +e.label
           +e.LABEL.label(for="activeFrom") Дата начала
@@ -30,10 +30,10 @@
       +e.LABEL.label(for="isActive") Показывать в приложении
       +e.EL-CHECKBOX.checkbox(v-model="isActive")
       +e.error(v-html="isActiveField.errorMsg")
-    +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy }")
+    +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
       +e.LABEL.label(for="sortBy") Положение баннера
-      +e.EL-SELECT.select(ref="select" v-model="sortBy" :placeholder="(maxSortBy + 1 || 1).toString()")
-        +e.EL-OPTION(v-for="n in maxSortBy + 1 || 1" :key="n" :label="n || 1" :value="n || 1")
+      +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
+        +e.EL-OPTION(v-for="n in activeAmount" :key="n" :label="n" :value="n")
       +e.error(v-html="sortField.errorMsg")
 </template>
 
@@ -48,8 +48,8 @@ import { bannersMapper } from '../module/store'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form']),
-    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'formActiveFrom', 'formActiveTo', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
+    ...bannersMapper.mapState(['form', 'activeAmount']),
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown', 'updateField']),
@@ -68,9 +68,6 @@ export default class FormApp extends Mappers {
   dateFormat: string = 'd-m-Y H:i'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
-
-  get list() { return this.listSorted }
-  get maxSortBy() { return this.list && this.list.length }
 
   // FORM FIELDS
   get activeFromField() { return this.formActiveFrom }
@@ -92,16 +89,11 @@ export default class FormApp extends Mappers {
   set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: trim(value)}) }
-  get sortBy() { return this.sortField.value }
-  set sortBy(value) { this.updateField({name: 'sort', value}) }
-
-  // @Watch('list', { immediate: true })
-  // onListChanged(val) {
-  //   if (val && val.length) this.initPickers()
-  // }
+  get sortBy() { return this.isActive ? this.sortField.value : null }
+  set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value}) : null }
 
   mounted() {
-    this.initPickers()
+    // this.initPickers()
   }
 
   beforeDestroy() {

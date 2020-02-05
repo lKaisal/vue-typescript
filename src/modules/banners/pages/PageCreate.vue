@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-create.page(v-loading="isLoading")
+  +b.page-create.page(v-loading.fullscreen.lock="isLoading")
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Создание баннера
@@ -10,8 +10,9 @@
           +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
           +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
           +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
-    transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
+    transition-group(tag="div")
+      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
+      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="closePopupForm" @discard="closePopupForm" class="page-create__popup modal")
 </template>
 
 <script lang="ts">
@@ -20,13 +21,14 @@ import { MsgBoxContent, Banner, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import FormApp from '../components/FormApp.vue'
 import MessageBox from '../components/MessageBox.vue'
+import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['isLoading']),
-    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById', 'formIsValid'])
+    ...bannersMapper.mapGetters(['listSorted', 'listActive', 'formSort', 'bannerById', 'formIsValid'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
@@ -37,20 +39,25 @@ const Mappers = Vue.extend({
 @Component({
   components: {
     FormApp,
-    MessageBox
+    MessageBox,
+    PopupForm
   }
 })
 
 export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   bannerId: number = null
   secondBtn: Button = null
+  bannerConflictId: number = null
+  popupFormIsShown: boolean = false
+
+  get bannerConflict() { return this.bannerById(this.bannerConflictId) }
 
   created() {
     this.setFormType('create')
     this.clearForm()
   }
 
-  // edit or retry to create
+  // CLICK HANDLERS
   onFirstBtnClick() {
     if (this.requestStatus === 'successCreate') this.goToPageEdit()
     else this.submitForm()
@@ -59,9 +66,12 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     if (this.requestStatus === 'successCreate') this.goToPageMain()
     else this.closeMsgBox()
   }
+  goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
+  goToPageEdit() { this.$router.push({ path: `/banners/edit/${this.bannerId.toString()}` }).catch(err => {}) }
+  // STORE ACTIONS CALL
   submitForm() {
     this.createBanner()
-      .then(async(id) => {
+      .then(async (id) => {
         this.bannerId = id
         this.secondBtn = { type: 'success', isPlain: true }
         this.requestStatus = 'successCreate'
@@ -72,14 +82,25 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       })
       .catch(error => {
         if (this.formIsValid) {
-          this.secondBtn = { type: 'danger', isPlain: true }
-          this.requestStatus = 'failCreate'
-          this.openMsgBox()
+          this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
+          if (this.bannerConflictId) this.openPopupForm()
+          else {
+            this.secondBtn = { type: 'danger', isPlain: true }
+            this.requestStatus = 'failCreate'
+            this.openMsgBox()
+          }
         }
       })
   }
-  goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
-  goToPageEdit() { this.$router.push({ path: '/banners/edit', params: { id: this.bannerId.toString() } }).catch(err => {}) }
+  openPopupForm() {
+    document.body.classList.add('modal-open')
+    this.popupFormIsShown = true
+  }
+  closePopupForm() {
+    document.body.classList.remove('modal-open')
+    this.popupFormIsShown = false
+    this.bannerConflictId = null
+  }
 }
 </script>
 
@@ -124,4 +145,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     margin-top 60px
     display flex
     align-items flex-end
+
+  &__popup
+    // 
 </style>

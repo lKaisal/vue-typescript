@@ -51,14 +51,10 @@ export default class DragDrop extends Mappers {
   updateFile(value) { return this.updateField({name: 'file', value}) }
   onDropImg(evt: DragEvent) {
     this.file = evt.dataTransfer && evt.dataTransfer.files[0]
-
-    // if (this.file) this.getImagePreviews();
   }
   onInputImg(evt: InputEvent) {
     const target = <HTMLInputElement>evt.target
     this.file = target.files && target.files[0]
-
-    // if (this.file) this.getImagePreviews()
   }
   getImagePreviews() {
     if (this.file.type) {

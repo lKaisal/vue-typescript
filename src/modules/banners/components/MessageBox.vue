@@ -21,9 +21,8 @@ import msgBoxTools from '../mixins/msgBoxTools'
 @Component({
 })
 
-export default class MessageBox extends msgBoxTools {
+export default class MessageBox extends Vue{
   @Prop() content: MsgBoxContent
-  // @Prop() loading: boolean
   @Prop( { default: function() { return { type: 'primary', isPlain: false }} }) firstBtn: Button
   @Prop( { default: function() { return { type: 'success', isPlain: true }} }) secondBtn: Button
 

@@ -3,20 +3,22 @@
 
   +b.item-banner
     +e.container
-      +e.icons
+      +e.icons(v-if="editIconsShown")
         +e.icon(@click="onEditClick")
           i(class="el-icon-edit")
         +e.icon(@click="onDeleteClick")
           i(class="el-icon-delete")
       +e.img-wrapper
-        IMG.item-banner__img(:src="banner.bannerImageUrl")
+        transition
+          IMG.item-banner__img(v-if="imgLoaded" :src="banner.bannerImageUrl")
+          +e.img._loading(v-else)
       +e.info
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
         +e.info-item(v-if="banner.sortCalculated")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
-        //- +e.info-item(v-if="banner.sort")
-        //-   +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sort }}</span>
+        +e.info-item(v-if="banner.sort")
+          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sort }}</span>
         +e.info-item
           +e.title Отображать в приложении:&nbsp;<span class="item-banner__text">{{ banner.isActive ? 'Да' : 'Нет' }}</span>
         +e.info-item(v-if="banner.activeFrom || banner.activeTo")
@@ -27,16 +29,24 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Banner } from '../models'
+import preloadImages from '@/mixins/preloadImages'
 
 @Component({
 })
 
 export default class ItemBanners extends Vue {
   @Prop() banner: Banner
+  @Prop({ default: true }) editIconsShown: boolean
+  imgLoaded: boolean = false
+
+  created() {
+    preloadImages(this.banner.bannerImageUrl)
+      .then(() => this.imgLoaded = true)
+  }
+
   onEditClick() {
     this.$router.push({ path: `/banners/edit/${this.banner.id.toString()}` })
   }
-
   onDeleteClick() {
     this.$emit('delete', this.banner.id)
   }
@@ -55,15 +65,11 @@ export default class ItemBanners extends Vue {
     flex-wrap wrap
     width 100%
     height 100%
-    padding 75px 50px 50px
-    border 1px solid rgba(0,0,0,.125)
-    border-radius .25rem
-    background-color white
 
   &__icons
     position absolute
-    top 25px
-    right 25px
+    top -50px
+    right -25px
     display flex
 
   &__icon
@@ -100,7 +106,7 @@ export default class ItemBanners extends Vue {
   &__img-wrapper
     position relative
     width 100%
-    padding-top 56.25%
+    padding-top 59.7%
     // height 50%
     overflow hidden
     margin-bottom 50px
@@ -112,6 +118,20 @@ export default class ItemBanners extends Vue {
     transform translate(-50%, -50%)
     max-width 100%
     max-height none
+    transition(opacity)
+    &.v-enter
+    &.v-leave-to
+      opacity 0
+    &_loading
+      top 0
+      right 0
+      bottom 0
+      left 0
+      transform none
+      animation placeholderShimmer 1.8s forwards linear infinite
+      background #f6f7f8
+      background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
+      background-size 200% 100%
 
   &__info
     align-self flex-end

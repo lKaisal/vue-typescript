@@ -25,9 +25,10 @@ class BannersState {
         { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
         { name: 'newsId', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
         { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-        { name: 'sort', value: null, validationRequired: false, isValid: true, errorType: null, errorMsg: null }
+        { name: 'sort', value: 4, validationRequired: false, isValid: true, errorType: null, errorMsg: null }
       ],
     }
+    activeAmount: number = 4
   // }
 }
 
@@ -77,7 +78,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || ''
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
-    formData.sort = this.getters.formSort.value && this.getters.formSort.value.toString() || ''
+    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || ''
 
     if (this.getters.formFile.value && this.getters.formFile.value.type) formData.file = this.getters.formFile.value
     else formData.file = null
@@ -115,7 +116,7 @@ class BannersMutations extends Mutations<BannersState> {
     const fields = this.state.form.data
 
     fields.forEach(field => {
-      field.value = field.name === 'isActive' ? true : null
+      field.value = field.name === 'isActive' ? true : (field.name === 'sort' ? this.state.activeAmount : null)
       field.isValid = false
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
       field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
@@ -272,7 +273,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.commit('updateField', { name: field.name, value: data.pageType })
           break
         case 'sort':
-          this.commit('updateField', { name: field.name, value: data.sortCalculated }) // takes sortCalculated value, not sort (sort mmay be a huge number)
+          this.commit('updateField', { name: field.name, value: data.sortCalculated }) // takes sortCalculated value, not sort (sort may be a huge number)
           break
         }
     })

@@ -5,9 +5,9 @@
     +e.container(v-if="list && list.length")
       +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
-      transition(mode="out-in")
+      transition(mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeIndex")
-          ItemBanner(v-for="item in activeList" :key="item.id" :banner="item" @delete="onDeleteItem" class="list-banners__item")
+          ItemBanner(v-for="item in activeList" :key="item.id" :banner="item" @delete="onDeleteItem" class="list-banners__item js-voa js-voa-start")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -16,6 +16,8 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 import { Banner } from '../models'
 import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
+import animateIfVisible from '@/mixins/animateIfVisible'
+import sleep from '@/mixins/sleep'
 
 const Mappers = Vue.extend({
   computed: {
@@ -30,15 +32,19 @@ const Mappers = Vue.extend({
 })
 
 export default class ListBanners extends Mappers {
-  sortItems: String[] = [ 'Все баннеры', 'Активные (показаны в приложении)', 'Неактивные (не показаны в приложении)' ]
   activeIndex: string = '1'
 
   get list() { return this.listSorted }
-  // get list() { return this.state.list }
   get activeList() {
     if (this.activeIndex === '2') return this.listActive
     else if (this.activeIndex === '3') return this.listInactive
     else return this.list
+  }
+  get sortItems() { return [ `Все баннеры (${this.list.length})`, `Активные (${this.listActive.length})`, `Неактивные (${this.listInactive.length})` ] }
+
+  async mounted() {
+    await this.$nextTick()
+    animateIfVisible()
   }
 
   handleSelect(index) {
@@ -46,6 +52,9 @@ export default class ListBanners extends Mappers {
   }
   onDeleteItem(id) {
     this.$emit('deleteItem', id)
+  }
+  animateOneMoreTime() {
+    animateIfVisible()
   }
 }
 </script>
@@ -75,6 +84,10 @@ export default class ListBanners extends Mappers {
     display flex
     flex-direction column
     align-items center
+    padding 75px 50px 50px
+    border 1px solid rgba(0,0,0,.125)
+    border-radius .25rem
+    background-color white
     +xl()
       margin-bottom 75px
     +lt-xl()

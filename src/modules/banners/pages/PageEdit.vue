@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-edit.page(v-loading="isLoading")
+  +b.page-edit.page(v-loading.fullscreen.lock="isLoading")
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Редактирование баннера
@@ -11,17 +11,19 @@
           +e.EL-BUTTON.btn(type="warning" plain @click="resetForm") Отменить изменения
           +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
           +e.EL-BUTTON.btn(type="success" plain @click="goToPageMain") Вернуться к списку
-    transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
+    transition-group(tag="div")
+      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal")
+      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="closePopupForm" @discard="closePopupForm" class="page-edit__popup modal")
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Banner, RequestStatus, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import FormApp from '../components/FormApp.vue'
 import MessageBox from '../components/MessageBox.vue'
+import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 
@@ -32,56 +34,41 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['isLoading']),
-    ...bannersMapper.mapGetters(['listSorted', 'formSort', 'bannerById', 'formIsValid'])
+    ...bannersMapper.mapState(['list', 'isLoading']),
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
-    ...bannersMapper.mapActions(['getList', 'editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById'])
+    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById'])
   }
 })
 
 @Component({
   components: {
     FormApp,
-    MessageBox
+    MessageBox,
+    PopupForm
   }
 })
 
 export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   banner: Banner = null
   secondBtn: Button = null
+  bannerConflictId: number = null
+  popupFormIsShown: boolean = false
+
+  get bannerConflict() { return this.bannerById(this.bannerConflictId) }
 
   created() {
     this.setFormType('edit')
-    const id = Number(this.$route.params.id)
-    let banner = this.bannerById(id)
-
-    if (!banner) {
-      this.getBannerById(id)
-        .then((res) => {
-          banner = res
-          this.updateFormByBannerData(banner)
-          this.closeMsgBox()
-          this.banner = banner
-        })
-        .catch(() => {
-          this.requestStatus = 'failFetchBanner'
-          this.secondBtn = { type: 'danger', isPlain: true }
-          // vm.openMsgBox()
-          return
-        })
-    } else {
-      this.updateFormByBannerData(banner)
-      this.closeMsgBox()
-      this.banner = banner
-    }
+    this.updateBannerData()
   }
 
   beforeDestroy() {
     this.clearForm()
   }
 
+  // CLICK HANDLERS
   onCloseClick() {
     switch (this.requestStatus) {
       case 'failFetchBanner':
@@ -120,7 +107,48 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
     }
   }
+  onClickDelete() {
+    this.deleteBanner(this.banner.id)
+      .then(async () => {
+        this.requestStatus = 'successDelete'
+        this.secondBtn = { type: 'success', isPlain: true }
+        this.openMsgBox()
+        await sleep(1500)
+        this.goToPageMain()
+        this.closeMsgBox()
+      })
+      .catch(() => {
+        this.requestStatus = 'failDelete'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
+  }
   goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
+  // STORE ACTIONS CALL
+  updateBannerData() {
+    const id = Number(this.$route.params.id)
+    let banner = this.bannerById(id) || this.banner
+
+    if (!banner) {
+      this.getBannerById(id)
+        .then((res) => {
+          banner = res
+          this.updateFormByBannerData(banner)
+          this.closeMsgBox()
+          this.banner = banner
+        })
+        .catch(() => {
+          this.requestStatus = 'failFetchBanner'
+          this.secondBtn = { type: 'danger', isPlain: true }
+          // vm.openMsgBox()
+          return
+        })
+    } else {
+      this.updateFormByBannerData(banner)
+      this.closeMsgBox()
+      this.banner = banner
+    }
+  }
   submitForm() {
     this.editBanner(this.banner.id)
       .then(async () => {
@@ -132,9 +160,13 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       })
       .catch(error => {
         if (this.formIsValid) {
-          this.requestStatus = 'failEdit'
-          this.secondBtn = { type: 'danger', isPlain: true }
-          // this.openMsgBox()
+          this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
+          if (this.bannerConflictId) this.openPopupForm()
+          else {
+            this.requestStatus = 'failEdit'
+            this.secondBtn = { type: 'danger', isPlain: true }
+            // this.openMsgBox()
+          }
         }
       })
   }
@@ -156,21 +188,14 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
     if (this.banner) this.updateFormByBannerData(this.banner)
   }
-  onClickDelete() {
-    this.deleteBanner(this.banner.id)
-      .then(async () => {
-        this.requestStatus = 'successDelete'
-        this.secondBtn = { type: 'success', isPlain: true }
-        // this.openMsgBox()
-        await sleep(1500)
-        this.closeMsgBox()
-        this.goToPageMain()
-      })
-      .catch(() => {
-        this.requestStatus = 'failDelete'
-        this.secondBtn = { type: 'danger', isPlain: true }
-        // this.openMsgBox()
-      })
+  // POPUP-BANNER TOGGLE METHODS
+  openPopupForm() {
+    document.body.classList.add('modal-open')
+    this.popupFormIsShown = true
+  }
+  closePopupForm() {
+    document.body.classList.remove('modal-open')
+    this.popupFormIsShown = false
   }
 }
 </script>

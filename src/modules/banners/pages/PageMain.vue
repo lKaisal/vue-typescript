@@ -1,13 +1,13 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-main.page(v-loading="isLoading")
+  +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container
       +e.title.H1.page-title Список баннеров
       el-button.page-main__btn(type="primary" @click="onCreateClick") Создать баннер
       ListBanners(:key="listSorted && listSorted.length" @deleteItem="onDeleteClick" class="page-main__list")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox" :secondBtn="secondBtn" class="app__msg-box modal")
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox" :secondBtn="secondBtn" class="page-main__msg-box modal")
 </template>
 
 <script lang="ts">
@@ -18,7 +18,6 @@ import MessageBox from '../components/MessageBox.vue'
 import msgBoxTools from '../mixins/msgBoxTools'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
-
 
 const Mappers = Vue.extend({
   computed: {
@@ -48,6 +47,7 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
     this.updateList()
   }
 
+  // CLICK HANDLERS
   onCreateClick() { this.$router.push({ path: '/banners/create' }) }
   onDeleteClick(id) {
     // store id here in case of repeated request
@@ -67,6 +67,7 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
         this.closeMsgBox()
     }
   }
+  // STORE ACTIONS CALL
   deleteItem() {
     this.deleteBanner(this.deleteId)
       .then(async() => {
@@ -86,15 +87,7 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
       })
   }
   updateList() {
-    // this.$emit('updateList')
-    this.getList()
-      .then(() => {
-        console.log('List loaded!')
-        this.closeMsgBox()
-      })
-      .catch(async (error) => {
-        this.openMsgBox()
-      })
+    this.$emit('updateList')
   }
 }
 </script>
