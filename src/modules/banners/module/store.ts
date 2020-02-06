@@ -23,9 +23,9 @@ class BannersState {
         { name: 'activeTo', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
         { name: 'isActive', value: true, validationRequired: false, isValid: true, errorType: null, errorMsg: null },
         { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-        { name: 'newsId', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
+        { name: 'newsId', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
         { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-        { name: 'sort', value: 4, validationRequired: false, isValid: true, errorType: null, errorMsg: null }
+        { name: 'sort', value: 4, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
       ],
     }
     activeAmount: number = 4
@@ -80,6 +80,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
     formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || ''
 
+    // @ts-ignore
     if (this.getters.formFile.value && this.getters.formFile.value.type) formData.file = this.getters.formFile.value
     else formData.file = null
 
@@ -102,13 +103,6 @@ class BannersMutations extends Mutations<BannersState> {
   saveList(payload: Banner[]) { this.state.list = payload }
   // FORM MUTATIONS
   setFormType(payload: FormType) { this.state.form.type = payload }
-  updateField({name, value}) {
-    const field = this.state.form.data.find(field => field.name === name)
-    field.value = value
-    field.isValid = !!field.value
-    field.errorType = !field.value && !field.validationRequired && 'empty'
-    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
-  }
   setValidationIsShown(payload) {
     this.state.form.validationIsShown = payload
   }
@@ -116,8 +110,9 @@ class BannersMutations extends Mutations<BannersState> {
     const fields = this.state.form.data
 
     fields.forEach(field => {
-      field.value = field.name === 'isActive' ? true : (field.name === 'sort' ? this.state.activeAmount : null)
-      field.isValid = false
+      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount : null)
+      field.isValid = field.name === 'sort'
+      field.validationRequired = field.name === 'file' || field.name === 'pageType' || field.name === 'sort'
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
       field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
     })
@@ -136,6 +131,52 @@ class BannersMutations extends Mutations<BannersState> {
 }
 
 class BannersActions extends Actions<BannersState, BannersGetters, BannersMutations, BannersActions> {
+  updateField({name, value}: {name: keyof BannerForm, value: FormField["value"]}) {
+    const field = this.state.form.data.find(field => field.name === name)
+
+    field.value = value
+
+    switch (name) {
+      case 'isActive':
+        const sort = this.state.form.data.find(f => f.name === 'sort')
+        if (field.value) {
+          sort.validationRequired = true
+          this.dispatch('updateField', ({ name: 'sort', value: sort.value }))
+        } else {
+          sort.validationRequired = false
+          this.dispatch('updateField', ({name: 'sort', value: null}))
+        }
+        field.isValid = !!field.value
+        break
+      case 'newsId':
+        const pageType = this.state.form.data.find(f => f.name === 'pageType')
+        if (pageType.value !== 'news') field.validationRequired = false
+        field.isValid = !!field.value
+        break
+      case 'pageType':
+        const newsId = this.state.form.data.find(f => f.name === 'newsId')
+        if (field.value === 'news') {
+          newsId.validationRequired = true
+          this.dispatch('updateField', ({name: 'newsId', value: newsId.value}))
+        }
+        else newsId.validationRequired = false
+        field.isValid = !!field.value
+        break
+      case 'sort':
+        field.value = sort.value > this.state.activeAmount || !sort.value ? this.state.activeAmount : sort.value
+
+        const isActive = this.state.form.data.find(f => f.name === 'isActive')
+        if (isActive.value) field.validationRequired = true
+        else field.validationRequired = false
+        field.isValid = !isActive.value || !!field.value
+        break
+      default:
+        field.isValid = !!field.value
+    }
+
+    field.errorType = !field.value && field.validationRequired && 'empty'
+    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
+  }
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('setIsLoading', true)
@@ -158,16 +199,15 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   }
   async createBanner() {
     return new Promise((resolve, reject) => {
-      this.commit('setIsLoading', true)
       const formIsValid = this.getters.formIsValid
-
-      // if (!formIsValid) {
-      //   this.commit('setValidationIsShown', true)
-      //   this.commit('setIsLoading', false)
-      //   reject()
-      //   return
-      // }
-
+      
+      if (!formIsValid) {
+        this.commit('setValidationIsShown', true)
+        reject()
+        return
+      }
+      
+      this.commit('setIsLoading', true)
       const data = this.getters.preparedFormData
 
       service.post('/api/v1/banner', data)
@@ -255,25 +295,25 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     fields.forEach(field => {
       switch (field.name) {
         case 'activeFrom':
-          this.commit('updateField', { name: field.name, value: data.activeFrom })
+          this.dispatch('updateField', { name: field.name, value: data.activeFrom })
           break
         case 'activeTo':
-          this.commit('updateField', { name: field.name, value: data.activeTo })
+          this.dispatch('updateField', { name: field.name, value: data.activeTo })
           break
         case 'isActive':
-          this.commit('updateField', { name: field.name, value: data.isActive })
+          this.dispatch('updateField', { name: field.name, value: data.isActive })
           break
         case 'file':
-          this.commit('updateField', { name: field.name, value: data.bannerImageUrl })
+          this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break
         case 'newsId':
-          this.commit('updateField', { name: field.name, value: data.appLink && getNewsIdFromAppLink(data.appLink) })
+          this.dispatch('updateField', { name: field.name, value: data.appLink && getNewsIdFromAppLink(data.appLink) })
           break
         case 'pageType':
-          this.commit('updateField', { name: field.name, value: data.pageType })
+          this.dispatch('updateField', { name: field.name, value: data.pageType })
           break
         case 'sort':
-          this.commit('updateField', { name: field.name, value: data.sortCalculated }) // takes sortCalculated value, not sort (sort may be a huge number)
+          this.dispatch('updateField', { name: field.name, value: data.sortCalculated || data.sort }) // HACK: // FIXME: takes sortCalculated value, not sort (sort may be a huge number)
           break
         }
     })

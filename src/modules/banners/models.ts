@@ -29,46 +29,11 @@ type FormType = 'create' | 'edit'
 
 type FormField = {
   name: keyof BannerForm,
-  value: any,
+  value: BannerForm[FormField["name"]],
   validationRequired: boolean,
   isValid: boolean,
   errorType: string,
   errorMsg: string
-}
-
-interface ActiveFrom extends FormField {
-  name: 'activeFrom',
-  value: string
-}
-
-interface ActiveTo extends FormField {
-  name: 'activeTo',
-  value: string
-}
-
-interface IsActive extends FormField {
-  name: 'isActive',
-  value: boolean
-}
-
-interface FileField extends FormField {
-  name: 'file',
-  value: File | Blob
-}
-
-interface NewsId extends FormField {
-  name: 'newsId',
-  value: number
-}
-
-interface PageType extends FormField {
-  name: 'pageType',
-  value: string
-}
-
-interface SortField extends FormField {
-  name: 'sort',
-  value: number
 }
 
 type BannerForm = {

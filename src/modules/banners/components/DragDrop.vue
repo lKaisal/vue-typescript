@@ -24,7 +24,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['formFile', 'bannerById'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['updateField'])
+    ...bannersMapper.mapActions(['updateField'])
   }
 })
 
@@ -77,9 +77,11 @@ export default class DragDrop extends Mappers {
     this.file = target.files && target.files[0]
   }
   getImagePreviews() {
+    // @ts-ignore
     if (this.file.type) {
       let reader = new FileReader();
       reader.addEventListener('load', () => this.imgUrl = reader.result, false);
+      // @ts-ignore
       reader.readAsDataURL(this.file);
     } else {
       this.imgUrl = this.file
@@ -159,6 +161,9 @@ export default class DragDrop extends Mappers {
     &.v-enter
     &.v-leave-to
       opacity 0
+    &.v-enter-active
+    &.v-leave-active
+      transition-duration $tVerySlow
     &_loading
       position absolute
       top 0

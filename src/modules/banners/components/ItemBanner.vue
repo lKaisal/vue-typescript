@@ -9,7 +9,7 @@
         +e.icon(@click="onDeleteClick")
           i(class="el-icon-delete")
       +e.img-wrapper
-        transition
+        transition(mode="in-out")
           IMG.item-banner__img(v-if="imgLoaded" :src="banner.bannerImageUrl")
           +e.img._loading(v-else)
       +e.info
@@ -30,6 +30,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
+import sleep from '@/mixins/sleep'
 
 @Component({
 })
@@ -41,7 +42,13 @@ export default class ItemBanners extends Vue {
 
   created() {
     preloadImages(this.banner.bannerImageUrl)
-      .then(() => this.imgLoaded = true)
+      // .then((res) => {
+      //   debugger
+      // })
+      .then(async () => {
+        await sleep(3000)
+        this.imgLoaded = true
+      })
   }
 
   onEditClick() {
@@ -118,11 +125,13 @@ export default class ItemBanners extends Vue {
     transform translate(-50%, -50%)
     max-width 100%
     max-height none
+    width 100%
     transition(opacity)
     &.v-enter
     &.v-leave-to
       opacity 0
     &_loading
+      z-index 1
       top 0
       right 0
       bottom 0

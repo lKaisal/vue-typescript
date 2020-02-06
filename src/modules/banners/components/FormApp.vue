@@ -52,7 +52,8 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setValidationIsShown', 'updateField']),
+    ...bannersMapper.mapMutations(['setValidationIsShown']),
+    ...bannersMapper.mapActions(['updateField'])
   }
 })
 
@@ -90,7 +91,7 @@ export default class FormApp extends Mappers {
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: trim(value)}) }
   get sortBy() { return this.isActive ? this.sortField.value : null }
-  set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value}) : null }
+  set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount}) : null }
 
   mounted() {
     // this.initPickers()

@@ -154,7 +154,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       .then(async () => {
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
-        // this.openMsgBox()
+        this.openMsgBox()
         await sleep(1500)
         this.closeMsgBox()
       })
@@ -165,7 +165,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           else {
             this.requestStatus = 'failEdit'
             this.secondBtn = { type: 'danger', isPlain: true }
-            // this.openMsgBox()
+            this.openMsgBox()
           }
         }
       })
@@ -182,7 +182,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         .catch((error) => {
           this.requestStatus = 'failFetchBanner'
           this.secondBtn = { type: 'danger', isPlain: true }
-          // this.openMsgBox()
+          this.openMsgBox()
         })
     }
 
