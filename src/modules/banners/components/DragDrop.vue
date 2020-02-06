@@ -7,14 +7,17 @@
         i(class="el-icon-plus drag-drop__drop-plus")
         +e.drop(@drop.prevent="onDropImg")
         +e.INPUT.input-img(ref="fileinput" type="file" @input="onInputImg")
+      +e.img-preview._loading(v-if="!imgLoaded && imgUrl" key="loading")
       +e.img(v-show="file" @mouseenter.self="dropDeleteIsShown=true" @mouseleave="dropDeleteIsShown=false" @click="removeImg" key="img")
-        IMG(:src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="drag-drop__img-preview")
+        transition
+          IMG(v-if="imgLoaded" :src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="drag-drop__img-preview")
         i(v-show="dropDeleteIsShown" class="el-icon-delete-solid drag-drop__drop-delete")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
 import { bannersMapper, banners } from '../module/store'
+import preloadImages from '@/mixins/preloadImages'
 
 const Mappers = Vue.extend({
   computed: {
@@ -31,8 +34,9 @@ const Mappers = Vue.extend({
 })
 
 export default class DragDrop extends Mappers {
-  imgUrl: string | ArrayBuffer = ''
+  imgUrl: any = ''
   dropDeleteIsShown: boolean = false
+  imgLoaded: boolean = false
 
   get fileField() { return this.formFile }
   get file() { return this.fileField.value }
@@ -45,6 +49,22 @@ export default class DragDrop extends Mappers {
   @Watch('file', { immediate: true })
   onFileChange(val) {
     if (val) this.getImagePreviews()
+  }
+
+  created() {
+    if (this.imgUrl) {
+      preloadImages(this.imgUrl)
+        .then(() => this.imgLoaded = true)
+    }
+  }
+
+  @Watch('imgUrl')
+  onImgUrlChange(val) {
+    if (val) {
+      this.imgLoaded = false
+      preloadImages(this.imgUrl)
+        .then(() => this.imgLoaded = true)
+    }
   }
 
   // METHODS
@@ -136,6 +156,20 @@ export default class DragDrop extends Mappers {
     transition()
     &.is-faded
       opacity .5
+    &.v-enter
+    &.v-leave-to
+      opacity 0
+    &_loading
+      position absolute
+      top 0
+      right 0
+      bottom 0
+      left 0
+      transform none
+      animation placeholderShimmer 1.8s forwards linear infinite
+      background #f6f7f8
+      background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
+      background-size 200% 100%
 
   &__drop-plus
   &__drop-delete
