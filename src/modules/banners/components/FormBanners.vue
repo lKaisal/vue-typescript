@@ -1,9 +1,9 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.form-app
+  +b.form-banners
     +e.field._img(:class="{ 'is-invalid': isInvalid(fileField) }")
-      DragDrop(class="form-app__drag-drop")
+      DragDrop(class="form-banners__drag-drop")
       +e.error(v-html="fileField.errorMsg")
     +e.field._news-id(:class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
       +e.label
@@ -33,7 +33,7 @@
     +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
       +e.LABEL.label(for="sortBy") Положение баннера
       +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
-        +e.EL-OPTION(v-for="n in activeAmount" :key="n" :label="n" :value="n")
+        +e.EL-OPTION(v-for="n in activeAmount / 10" :key="n" :label="n * 10" :value="n * 10")
       +e.error(v-html="sortField.errorMsg")
 </template>
 
@@ -63,7 +63,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class FormApp extends Mappers {
+export default class FormBanners extends Mappers {
   pickrFrom = null
   pickrTo = null
   dateFormat: string = 'd-m-Y H:i'
@@ -124,13 +124,13 @@ export default class FormApp extends Mappers {
 @import '../../../styles/tools'
 @import '../../../../node_modules/flatpickr/dist/flatpickr.min.css'
 
-.form-app
+.form-banners
 
   &__row
     display flex
     justify-content space-between
     flex-wrap wrap
-    .form-app__field
+    .form-banners__field
       &:not(:last-child)
         margin-right 10px
 
@@ -174,13 +174,13 @@ export default class FormApp extends Mappers {
     font-size 15px
     color $cPrimaryText
     white-space nowrap
-    .form-app__field_is-active &,
-    .form-app__field_sort &
+    .form-banners__field_is-active &,
+    .form-banners__field_sort &
       margin-right 25px
-    .form-app__field_news-id &,
-    .form-app__field_page-type &
-    .form-app__field_active-from &
-    .form-app__field_active-to &
+    .form-banners__field_news-id &,
+    .form-banners__field_page-type &
+    .form-banners__field_active-from &
+    .form-banners__field_active-to &
       margin-bottom 10px
 
   &__input

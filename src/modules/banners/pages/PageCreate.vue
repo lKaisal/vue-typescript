@@ -5,7 +5,7 @@
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Создание баннера
-        FormApp(class="page-create__form")
+        FormBanners(class="page-create__form")
         +e.btns
           +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
           +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
@@ -19,7 +19,7 @@
 import { Vue, Component, Mixins } from 'vue-property-decorator'
 import { MsgBoxContent, Banner, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
-import FormApp from '../components/FormApp.vue'
+import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
@@ -38,7 +38,7 @@ const Mappers = Vue.extend({
 
 @Component({
   components: {
-    FormApp,
+    FormBanners,
     MessageBox,
     PopupForm
   }
@@ -51,6 +51,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   popupFormIsShown: boolean = false
 
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
+  get isPageCreate() { return this.$route.path.includes('/banners/create') }
 
   created() {
     this.setFormType('create')
@@ -77,8 +78,10 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         this.requestStatus = 'successCreate'
         this.openMsgBox()
         await sleep(1500)
-        this.closeMsgBox()
-        this.goToPageEdit()
+        if (this.isPageCreate) {
+          this.closeMsgBox()
+          this.goToPageEdit()
+        }
       })
       .catch(error => {
         if (this.formIsValid) {

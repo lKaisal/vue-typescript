@@ -9,26 +9,26 @@ const namespaced = true
 
 class BannersState {
   // return {
-    isLoading: boolean = false
-    list: Banner[] = null
-    form: Form = {
-      type: null,
-      validationIsShown: false,
-      errors: [
-        { type: 'empty', msg: 'Поле не должно быть пустым' },
-        { type: 'default', msg: 'Недопустимое значение' }
-      ],
-      data: [
-        { name: 'activeFrom', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
-        { name: 'activeTo', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
-        { name: 'isActive', value: true, validationRequired: false, isValid: true, errorType: null, errorMsg: null },
-        { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-        { name: 'newsId', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
-        { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-        { name: 'sort', value: 4, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
-      ],
-    }
-    activeAmount: number = 4
+  isLoading: boolean = false
+  list: Banner[] = null
+  form: Form = {
+    type: null,
+    validationIsShown: false,
+    errors: [
+      { type: 'empty', msg: 'Поле не должно быть пустым' },
+      { type: 'default', msg: 'Недопустимое значение' }
+    ],
+    data: [
+      { name: 'activeFrom', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
+      { name: 'activeTo', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
+      { name: 'isActive', value: true, validationRequired: false, isValid: true, errorType: null, errorMsg: null },
+      { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
+      { name: 'newsId', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
+      { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
+      { name: 'sort', value: 40, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
+    ],
+  }
+  activeAmount: number = 40
   // }
 }
 
@@ -39,16 +39,22 @@ class BannersGetters extends Getters<BannersState> {
     if (!list || !list.length) return
 
     const listSorted = list.sort((a, b) => {
-      const keyA = a.sort
-      const keyB = b.sort
+      const isActiveA = a.isActive
+      const isActiveB = b.isActive
+      const sortA = a.sort
+      const sortB = b.sort
 
-      if (keyA > keyB) return 1
-      else if (keyA < keyB) return -1
-      else return 0
+      if (isActiveA === isActiveB) {
+        if (sortA > sortB) return 1
+        else if (sortA < sortB) return -1
+        else return 0
+      } else {
+        if (isActiveA) return -1
+        else return 1
+      }
     })
 
-    const listActiveIds = listSorted.filter(item => item.isActive).map(b => b.id)
-    listSorted.forEach((b, index) => b.isActive ? b.sortCalculated = listActiveIds.indexOf(b.id) + 1 : b.sortCalculated = null)
+    listSorted.forEach(b => b.newsId = b.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(b.appLink)))
 
     return listSorted
   }
@@ -163,8 +169,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         field.isValid = !!field.value
         break
       case 'sort':
-        field.value = sort.value > this.state.activeAmount || !sort.value ? this.state.activeAmount : sort.value
-
+        field.value = field.value > this.state.activeAmount || !field.value ? this.state.activeAmount : field.value
         const isActive = this.state.form.data.find(f => f.name === 'isActive')
         if (isActive.value) field.validationRequired = true
         else field.validationRequired = false
@@ -277,7 +282,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('setIsLoading', true)
       service.get(`/api/v1/banner/${id}`)
         .then((res: AxiosResponse<any>) => {
-          resolve(res.data)
+          const banner: Banner = res.data
+          banner.newsId = banner.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(banner.appLink))
+          resolve(banner)
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
@@ -307,13 +314,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break
         case 'newsId':
-          this.dispatch('updateField', { name: field.name, value: data.appLink && getNewsIdFromAppLink(data.appLink) })
+          this.dispatch('updateField', { name: field.name, value: data.newsId })
           break
         case 'pageType':
           this.dispatch('updateField', { name: field.name, value: data.pageType })
           break
         case 'sort':
-          this.dispatch('updateField', { name: field.name, value: data.sortCalculated || data.sort }) // HACK: // FIXME: takes sortCalculated value, not sort (sort may be a huge number)
+          this.dispatch('updateField', { name: field.name, value: data.sort })
           break
         }
     })

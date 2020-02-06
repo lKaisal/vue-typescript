@@ -60,6 +60,7 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
   onFirstBtnClick() {
     switch (this.requestStatus) {
       case 'beforeDelete':
+        this.closeMsgBox()
         this.deleteItem()
       case 'failFetchList':
         this.updateList()
@@ -82,8 +83,8 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
       .catch(() => {
         this.secondBtn = { type: 'danger', isPlain: true }
         this.requestStatus = 'failDelete'
-        this.openMsgBox()
         this.updateList()
+        this.openMsgBox()
       })
   }
   updateList() {

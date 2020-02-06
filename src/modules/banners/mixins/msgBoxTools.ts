@@ -24,7 +24,7 @@ export default class msgBoxTools extends Vue {
     },
     failFetchBanner: {
       title: 'Данные не найдены',
-      msg: 'Информации по указанному адресу не найдено',
+      msg: 'Вероятно баннер был удален ранее',
       firstBtn: 'Вернуться к списку',
     },
     successCreate: {

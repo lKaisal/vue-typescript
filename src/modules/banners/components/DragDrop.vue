@@ -9,7 +9,7 @@
         +e.INPUT.input-img(ref="fileinput" type="file" @input="onInputImg")
       +e.img-preview._loading(v-if="!imgLoaded && imgUrl" key="loading")
       +e.img(v-show="file" @mouseenter.self="dropDeleteIsShown=true" @mouseleave="dropDeleteIsShown=false" @click="removeImg" key="img")
-        transition
+        transition(mode="in-out")
           IMG(v-if="imgLoaded" :src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="drag-drop__img-preview")
         i(v-show="dropDeleteIsShown" class="el-icon-delete-solid drag-drop__drop-delete")
 </template>

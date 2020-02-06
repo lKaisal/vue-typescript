@@ -13,9 +13,9 @@ type Banner = {
   createdAt: string,
   id: number,
   isActive: boolean,
+  newsId: number,
   pageType: string
   sort: number,
-  sortCalculated: number
 }
 
 type Form = {

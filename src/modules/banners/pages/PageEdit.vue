@@ -5,10 +5,10 @@
     +e.container
       +e.form-wrapper
         +e.H1.title.page-title Редактирование баннера
-        FormApp(class="page-edit__form")
+        FormBanners(class="page-edit__form")
         +e.btns
-          +e.EL-BUTTON.btn(type="primary" @click="submitForm") Сохранить баннер
-          +e.EL-BUTTON.btn(type="warning" plain @click="resetForm") Отменить изменения
+          +e.EL-BUTTON.btn(type="primary" :disabled="!isSmthToUpdate" @click="submitForm") Сохранить баннер
+          +e.EL-BUTTON.btn(type="warning" :disabled="!isSmthToUpdate" plain @click="resetForm") Отменить изменения
           +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
           +e.EL-BUTTON.btn(type="success" plain @click="goToPageMain") Вернуться к списку
     transition-group(tag="div")
@@ -21,7 +21,7 @@
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Banner, RequestStatus, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
-import FormApp from '../components/FormApp.vue'
+import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
@@ -34,18 +34,18 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list', 'isLoading']),
+    ...bannersMapper.mapState(['list', 'isLoading', 'form']),
     ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
-    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById'])
+    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList'])
   }
 })
 
 @Component({
   components: {
-    FormApp,
+    FormBanners,
     MessageBox,
     PopupForm
   }
@@ -56,8 +56,31 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   secondBtn: Button = null
   bannerConflictId: number = null
   popupFormIsShown: boolean = false
+  // isSmthToUpdate: boolean = false
 
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
+  get isSmthToUpdate() {
+    if (!this.banner) return false
+
+    // check all fields equality except img
+    const form = this.form.data
+    const banner = this.banner
+
+    for (const field of form) {
+      switch (field.name) {
+        case 'file':
+          // @ts-ignore
+          if (!field.value || !!field.value.type) return true
+          break
+        case 'sort':
+          if (!form.find(f => f.name === 'isActive').value) break
+        default:
+          if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
+      }
+    }
+
+    return false
+  }
 
   created() {
     this.setFormType('edit')
@@ -87,6 +110,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       case 'failEdit':
         this.submitForm()
         break
+      case 'failDelete':
+        this.onClickDelete()
       case 'failFetchBanner':
       case 'successDelete':
       default:
@@ -140,7 +165,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         .catch(() => {
           this.requestStatus = 'failFetchBanner'
           this.secondBtn = { type: 'danger', isPlain: true }
-          // vm.openMsgBox()
+          this.openMsgBox()
           return
         })
     } else {
@@ -155,6 +180,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
+        await this.getList()
+        this.banner = this.bannerById(this.banner.id)
         await sleep(1500)
         this.closeMsgBox()
       })

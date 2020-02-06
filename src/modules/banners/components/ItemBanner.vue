@@ -15,9 +15,7 @@
       +e.info
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        +e.info-item(v-if="banner.sortCalculated")
-          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
-        +e.info-item(v-if="banner.sort")
+        +e.info-item(v-if="banner.sort && banner.isActive")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sort }}</span>
         +e.info-item
           +e.title Отображать в приложении:&nbsp;<span class="item-banner__text">{{ banner.isActive ? 'Да' : 'Нет' }}</span>
@@ -42,11 +40,8 @@ export default class ItemBanners extends Vue {
 
   created() {
     preloadImages(this.banner.bannerImageUrl)
-      // .then((res) => {
-      //   debugger
-      // })
       .then(async () => {
-        await sleep(3000)
+        // await sleep(1000)
         this.imgLoaded = true
       })
   }
@@ -117,6 +112,7 @@ export default class ItemBanners extends Vue {
     // height 50%
     overflow hidden
     margin-bottom 50px
+    align-self flex-start
 
   &__img
     position absolute
@@ -143,7 +139,6 @@ export default class ItemBanners extends Vue {
       background-size 200% 100%
 
   &__info
-    align-self flex-end
     line-height 1.25
     font-size 16px
     // +gt-md()
