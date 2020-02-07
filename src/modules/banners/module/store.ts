@@ -10,7 +10,11 @@ const namespaced = true
 class BannersState {
   // return {
   isLoading: boolean = false
-  list: Banner[] = null
+  // list: Banner[] = null
+  list: Banner[] = [
+    { activeFrom: '', activeTo: '', appLink: '/news/100', bannerDate: '', bannerImageUrl: '/static/images/kangoo.jpg',
+    createdAt: '', id: 64, isActive: true, newsId: 100, pageType: 'news', sort: 10 }
+  ]
   form: Form = {
     type: null,
     validationIsShown: false,

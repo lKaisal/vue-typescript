@@ -180,7 +180,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
-        await this.getList()
+        // await this.getList()
         this.banner = this.bannerById(this.banner.id)
         await sleep(1500)
         this.closeMsgBox()

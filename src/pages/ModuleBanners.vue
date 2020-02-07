@@ -32,14 +32,14 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
   }
 
   loadData() {
-    this.getList()
-      .then(() => {
-        console.log('List loaded!')
-        this.closeMsgBox()
-      })
-      .catch(async (error) => {
-        this.openMsgBox()
-      })
+    // this.getList()
+    //   .then(() => {
+    //     console.log('List loaded!')
+    //     this.closeMsgBox()
+    //   })
+    //   .catch(async (error) => {
+    //     this.openMsgBox()
+    //   })
   }
 }
 </script>
