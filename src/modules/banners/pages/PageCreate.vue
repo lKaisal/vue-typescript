@@ -7,9 +7,12 @@
         +e.H1.title.page-title Создание баннера
         FormBanners(class="page-create__form")
         +e.btns
-          +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
-          +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
-          +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
+          ButtonApp(color-class="is-primary" :disabled="!isSmthToCommit" @clicked="submitForm" text="Сохранить баннер" class="page-create__btn")
+          ButtonApp(color-class="is-warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
+          ButtonApp(color-class="is-danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
+          //- +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
+          //- +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
+          //- +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
       PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="closePopupForm" @discard="closePopupForm" class="page-create__popup modal")
@@ -24,10 +27,11 @@ import MessageBox from '../components/MessageBox.vue'
 import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
+import ButtonApp from '@/components/ButtonApp.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['isLoading']),
+    ...bannersMapper.mapState(['isLoading', 'form', 'activeAmount']),
     ...bannersMapper.mapGetters(['listSorted', 'listActive', 'formSort', 'bannerById', 'formIsValid'])
   },
   methods: {
@@ -40,7 +44,8 @@ const Mappers = Vue.extend({
   components: {
     FormBanners,
     MessageBox,
-    PopupForm
+    PopupForm,
+    ButtonApp
   }
 })
 
@@ -52,6 +57,15 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
   get isPageCreate() { return this.$route.path.includes('/banners/create') }
+  get isSmthToCommit() {
+    // check if any field was changed
+    const form = this.form.data
+    const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
+    const isActiveToCommit = !form.find(f => f.name === 'isActive').value
+    const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort').map(f => f.value).some(f => !!f)
+
+    return sortToCommit || smthElseToCommit || isActiveToCommit
+  }
 
   created() {
     this.setFormType('create')
@@ -131,7 +145,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
   &__form-wrapper
     // z-index 1
-    grid-size(4, 4, 4, 5, 6)
+    grid-size(4, 4, 5.5, 5, 6)
     margin-right auto
     margin-left auto
     // min-height 100%
@@ -148,6 +162,10 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     margin-top 60px
     display flex
     align-items flex-end
+
+  &__btn
+    &:not(:last-child)
+      margin-right 10px
 
   &__popup
     // 

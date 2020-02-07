@@ -2,39 +2,42 @@
   include ../../../tools/bemto.pug
 
   +b.form-banners
-    +e.field._img(:class="{ 'is-invalid': isInvalid(fileField) }")
-      DragDrop(class="form-banners__drag-drop")
-      +e.error(v-html="fileField.errorMsg")
-    +e.field._news-id(:class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
-      +e.label
-        +e.LABEL(for="newsId") Id новости
-      +e.EL-INPUT.input(placeholder="000" v-model="newsId")
-      +e.error(v-html="newsIdField.errorMsg")
-    +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': !!pageType }")
-      +e.label
-        +e.LABEL(for="pageType") Тип страницы
-      +e.EL-INPUT.input(placeholder="type" v-model="pageType")
-      +e.error(v-html="pageTypeField.errorMsg")
-    //- +e.row
-      +e.field._active-from(:class="{ 'is-filled': !!activeFrom }")
-        +e.label
-          +e.LABEL.label(for="activeFrom") Дата начала
-        +e.INPUT.pickr.el-input__inner(ref="fromRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeFrom")
-        +e.error(v-html="activeFromField.errorMsg")
-      +e.field._active-to(:class="{ 'is-filled': !!activeTo }")
-        +e.label
-          +e.LABEL.label(for="activeTo") Дата окончания
-        +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
-        +e.error(v-html="activeToField.errorMsg")
-    +e.field._is-active(:class="{ 'is-invalid': isInvalid(isActiveField) }")
-      +e.LABEL.label(for="isActive") Показывать в приложении
-      +e.EL-CHECKBOX.checkbox(v-model="isActive")
-      +e.error(v-html="isActiveField.errorMsg")
-    +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
-      +e.LABEL.label(for="sortBy") Положение баннера
-      +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
-        +e.EL-OPTION(v-for="n in activeAmount / 10" :key="n" :label="n * 10" :value="n * 10")
-      +e.error(v-html="sortField.errorMsg")
+    +e.container
+      +e.column
+        +e.field._img(:class="{ 'is-invalid': isInvalid(fileField) }")
+          DragDrop(class="form-banners__drag-drop")
+          +e.error(v-html="fileField.errorMsg")
+      +e.column
+        +e.field._news-id(:class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
+          +e.label
+            +e.LABEL(for="newsId") Id новости
+          +e.EL-INPUT.input(placeholder="000" v-model="newsId")
+          +e.error(v-html="newsIdField.errorMsg")
+        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': !!pageType }")
+          +e.label
+            +e.LABEL(for="pageType") Тип страницы
+          +e.EL-INPUT.input(placeholder="type" v-model="pageType")
+          +e.error(v-html="pageTypeField.errorMsg")
+        //- +e.row
+          +e.field._active-from(:class="{ 'is-filled': !!activeFrom }")
+            +e.label
+              +e.LABEL.label(for="activeFrom") Дата начала
+            +e.INPUT.pickr.el-input__inner(ref="fromRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeFrom")
+            +e.error(v-html="activeFromField.errorMsg")
+          +e.field._active-to(:class="{ 'is-filled': !!activeTo }")
+            +e.label
+              +e.LABEL.label(for="activeTo") Дата окончания
+            +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
+            +e.error(v-html="activeToField.errorMsg")
+        +e.field._is-active(:class="{ 'is-invalid': isInvalid(isActiveField) }")
+          +e.LABEL.label(for="isActive") Показывать в приложении
+          +e.EL-CHECKBOX.checkbox(v-model="isActive")
+          +e.error(v-html="isActiveField.errorMsg")
+        +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
+          +e.LABEL.label(for="sortBy") Положение баннера
+          +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
+            +e.EL-OPTION(v-for="n in activeAmount / 10" :key="n" :label="n * 10" :value="n * 10")
+          +e.error(v-html="sortField.errorMsg")
 </template>
 
 <script lang="ts">
@@ -126,6 +129,14 @@ export default class FormBanners extends Mappers {
 
 .form-banners
 
+  &__container
+    +gt-md()
+      display flex
+      justify-content space-between
+
+  &__column
+    width calc(50% - 10px)
+
   &__row
     display flex
     justify-content space-between
@@ -174,10 +185,10 @@ export default class FormBanners extends Mappers {
     font-size 15px
     color $cPrimaryText
     white-space nowrap
-    .form-banners__field_is-active &,
-    .form-banners__field_sort &
+    .form-banners__field_is-active &
+    // .form-banners__field_sort &
       margin-right 25px
-    .form-banners__field_news-id &,
+    .form-banners__field_news-id &
     .form-banners__field_page-type &
     .form-banners__field_active-from &
     .form-banners__field_active-to &
@@ -197,6 +208,9 @@ export default class FormBanners extends Mappers {
     .is-invalid &
       >>> input
         border-color $cDanger
+
+  &__select
+    margin-top 10px
 
   &__input
     display block

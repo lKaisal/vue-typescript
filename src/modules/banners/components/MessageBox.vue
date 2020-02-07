@@ -9,22 +9,28 @@
           i.el-icon-close.msg-box__icon-close
       +e.content(v-if="content && content.msg") {{ content.msg }}
       +e.btns
-        +e.EL-BUTTON(v-if="content && content.firstBtn" :type="firstBtn.type" :plain="firstBtn.isPlain" @click="onFirstBtnClick") {{ content.firstBtn }}
-        +e.EL-BUTTON(v-if="content && content.secondBtn" :type="secondBtn.type" :plain="secondBtn.isPlain" @click="onSecondBtnClick") {{ content.secondBtn }}
+        ButtonApp(v-if="content && content.firstBtn" colorClass="firstBtn.type" :plain="firstBtn.isPlain" @clicked="onFirstBtnClick" text="content.firstBtn")
+        ButtonApp(v-if="content && content.secondBtn" colorClass="secondBtn.type" :plain="secondBtn.isPlain" @clicked="onSecondBtnClick" text="content.secondBtn")
+        //- +e.EL-BUTTON(v-if="content && content.firstBtn" :type="firstBtn.type" :plain="firstBtn.isPlain" @click="onFirstBtnClick") {{ content.firstBtn }}
+        //- +e.EL-BUTTON(v-if="content && content.secondBtn" :type="secondBtn.type" :plain="secondBtn.isPlain" @click="onSecondBtnClick") {{ content.secondBtn }}
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
 import msgBoxTools from '../mixins/msgBoxTools'
+import ButtonApp from '@/components/ButtonApp.vue'
 
 @Component({
+  components: {
+    ButtonApp
+  }
 })
 
 export default class MessageBox extends Vue{
   @Prop() content: MsgBoxContent
-  @Prop( { default: function() { return { type: 'primary', isPlain: false }} }) firstBtn: Button
-  @Prop( { default: function() { return { type: 'success', isPlain: true }} }) secondBtn: Button
+  @Prop( { default: function() { return { type: 'is-primary', isPlain: false }} }) firstBtn: Button
+  @Prop( { default: function() { return { type: 'is-success', isPlain: true }} }) secondBtn: Button
 
   onCloseClick() {
     this.$emit('close')

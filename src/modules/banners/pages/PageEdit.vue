@@ -7,10 +7,14 @@
         +e.H1.title.page-title Редактирование баннера
         FormBanners(class="page-edit__form")
         +e.btns
-          +e.EL-BUTTON.btn(type="primary" :disabled="!isSmthToUpdate" @click="submitForm") Сохранить баннер
-          +e.EL-BUTTON.btn(type="warning" :disabled="!isSmthToUpdate" plain @click="resetForm") Отменить изменения
-          +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
-          +e.EL-BUTTON.btn(type="success" plain @click="goToPageMain") Вернуться к списку
+          ButtonApp(class="page-edit__btn" colorClass="is-primary" :disabled="!isSmthToUpdate" @click="submitForm" text="Сохранить баннер")
+          ButtonApp(class="page-edit__btn" colorClass="is-warning" :disabled="!isSmthToUpdate" :isPlain="true" @click="resetForm" text="Отменить изменения")
+          ButtonApp(class="page-edit__btn" colorClass="is-danger" :isPlain="true" @click="onClickDelete" text="Удалить баннер")
+          ButtonApp(class="page-edit__btn" colorClass="is-success" :isPlain="true" @click="goToPageMain" text="Вернуться к списку")
+          //- +e.EL-BUTTON.btn(type="primary" :disabled="!isSmthToUpdate" @click="submitForm") Сохранить баннер
+          //- +e.EL-BUTTON.btn(type="warning" :disabled="!isSmthToUpdate" plain @click="resetForm") Отменить изменения
+          //- +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
+          //- +e.EL-BUTTON.btn(type="success" plain @click="goToPageMain") Вернуться к списку
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal")
@@ -26,6 +30,7 @@ import MessageBox from '../components/MessageBox.vue'
 import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
+import ButtonApp from '@/components/ButtonApp.vue'
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -47,7 +52,8 @@ const Mappers = Vue.extend({
   components: {
     FormBanners,
     MessageBox,
-    PopupForm
+    PopupForm,
+    ButtonApp
   }
 })
 
@@ -279,4 +285,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
   &__btn
     margin-bottom 10px
+    &:not(:last-child)
+      margin-right 10px
 </style>

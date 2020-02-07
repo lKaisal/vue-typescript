@@ -6,8 +6,10 @@
       +e.text Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
       ItemBanner(:banner="banner" :editIconsShown="false" class="popup-form__item")
       +e.btns
-        +e.EL-BUTTON(type="primary" @click="confirm") Заменить
-        +e.EL-BUTTON(type="danger" @click="discard") Отмена
+        ButtonApp(colorClass="is-primary" @clicked="confirm" text="Заменить")
+        ButtonApp(colorClass="is-danger" @clicked="discard" text="Отмена")
+        //- +e.EL-BUTTON(type="primary" @click="confirm") Заменить
+        //- +e.EL-BUTTON(type="danger" @click="discard") Отмена
 </template>
 
 <script lang="ts">
@@ -15,7 +17,8 @@ import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 import { bannersMapper } from '../module/store'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import ItemBanner from '../components/ItemBanner.vue'
-import { Banner } from '../models' 
+import { Banner } from '../models'
+import ButtonApp from '@/components/ButtonApp.vue'
 
 const Mappers = Vue.extend({
   methods: {
@@ -24,7 +27,8 @@ const Mappers = Vue.extend({
 
 @Component({
   components: {
-    ItemBanner
+    ItemBanner,
+    ButtonApp
   }
 })
 
