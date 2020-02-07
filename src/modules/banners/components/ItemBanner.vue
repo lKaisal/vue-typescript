@@ -4,9 +4,9 @@
   +b.item-banner
     +e.container
       +e.icons(v-if="editIconsShown")
-        +e.icon(@click="onEditClick")
+        +e.icon(@click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
           i(class="el-icon-edit")
-        +e.icon(@click="onDeleteClick")
+        +e.icon(@click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
           i(class="el-icon-delete")
       +e.img-wrapper
         transition(mode="in-out")
@@ -37,6 +37,8 @@ export default class ItemBanners extends Vue {
   @Prop() banner: Banner
   @Prop({ default: true }) editIconsShown: boolean
   imgLoaded: boolean = false
+  editHovered: boolean = false
+  deleteHovered: boolean = false
 
   created() {
     preloadImages(this.banner.bannerImageUrl)
@@ -67,43 +69,90 @@ export default class ItemBanners extends Vue {
     flex-wrap wrap
     width 100%
     height 100%
+    padding 50px 50px 50px
+    border 1px solid rgba(0,0,0,.125)
+    border-radius .25rem
+    background-color white
+    transition(border-color)
+    overflow hidden
+    &:hover
+      border-color $cBrand
 
   &__icons
+    z-index 1
     position absolute
-    top -50px
-    right -25px
+    // top 20px
+    top 0
+    bottom 0
+    right 0
+    left 0
+    width 100%
+    padding 15px
+    border-radius .25rem
+    // top -50px
+    // right -25px
     display flex
+    justify-content center
+    opacity 0
+    transform translateY(100px)
+    transition(opacity\, transform)
+    .item-banner__container:hover &
+      opacity 1
+      transform none
+    &:before
+      ghost()
+      background white
+      opacity .75
 
   &__icon
-    padding 7px
-    margin -7px
+    z-index 5
+    // padding 7px
+    // margin -7px
+    margin-top 20%
+    margin-bottom 45%
+    width 30%
     display flex
-    justify-content space-between
+    justify-content center
     align-items center
-    border-radius 50%
+    // border-radius 50%
+    // border 1px solid $cSecondaryText
     cursor pointer
     transition(background-color)
     >>> i
-      font-size 20px
-      transition(color)
+      font-size 60px
+      color $cBrand
+      opacity .75
+      transition(color\, opacity\, transform)
     &:not(:last-child)
       margin-right 15px
     &:first-child
-      border 1px solid $cBrand
-      >>> i
-        color $cBrand
-      &:hover
-        background-color $cBrand
+      // border 1px solid $cBrand
+      &.is-active
+        // border-color $cBrand
         >>> i
-          color white
+          color $cBrand
+          // opacity 1
+      &:hover
+        // background-color $cBrand
+        >>> i
+          // color white
+          transform scale(1.25) translate3d(0,0,0)
+          opacity 1
+          // color $cBrand
     &:last-child
-      border 1px solid $cDanger
+      // border 1px solid $cDanger
+      border-color $cDanger
       >>> i
         color $cDanger
-      &:hover
-        background-color $cDanger
+      &.is-active
         >>> i
-          color white
+          color $cDanger
+          // opacity 1
+      &:hover
+        >>> i
+          transform scale(1.25) translate3d(0,0,0)
+          opacity 1
+        // background-color $cDanger
 
   &__img-wrapper
     position relative
@@ -113,6 +162,9 @@ export default class ItemBanners extends Vue {
     overflow hidden
     margin-bottom 50px
     align-self flex-start
+    transition(transform)
+    .item-banner__container:hover &
+      // transform scale(.9)
 
   &__img
     position absolute

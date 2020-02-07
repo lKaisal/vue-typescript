@@ -4,7 +4,8 @@
   +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container
       +e.title.H1.page-title Список баннеров
-      el-button.page-main__btn(type="primary" @click="onCreateClick") Создать баннер
+      //- el-button.page-main__btn(type="primary" @click="onCreateClick") Создать баннер
+      ButtonApp(text="Создать баннер" @clicked="onCreateClick" class="page-main__btn")
       ListBanners(:key="listSorted && listSorted.length" @deleteItem="onDeleteClick" class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox" :secondBtn="secondBtn" class="page-main__msg-box modal")
@@ -18,6 +19,7 @@ import MessageBox from '../components/MessageBox.vue'
 import msgBoxTools from '../mixins/msgBoxTools'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
+import ButtonApp from '@/components/ButtonApp.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -32,7 +34,8 @@ const Mappers = Vue.extend({
 @Component({
   components: {
     ListBanners,
-    MessageBox
+    MessageBox,
+    ButtonApp
   },
   mixins: [
     msgBoxTools

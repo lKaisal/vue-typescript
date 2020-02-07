@@ -7,7 +7,7 @@
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
       transition(mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeIndex")
-          ItemBanner(v-for="item in activeList" :key="item.id" :banner="item" @delete="onDeleteItem" class="list-banners__item js-voa js-voa-start")
+          ItemBanner(v-for="(item, index) in [...activeList, ...activeList, ...activeList]" :key="item.id + index" :banner="item" @delete="onDeleteItem" class="list-banners__item js-voa js-voa-start")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -84,10 +84,13 @@ export default class ListBanners extends Mappers {
     display flex
     flex-direction column
     align-items center
-    padding 75px 50px 50px
-    border 1px solid rgba(0,0,0,.125)
-    border-radius .25rem
-    background-color white
+    // padding 75px 50px 50px
+    // border 1px solid rgba(0,0,0,.125)
+    // border-radius .25rem
+    // background-color white
+    // transition(border-color)
+    // &:hover
+    //   border-color $cBrand
     +xl()
       margin-bottom 75px
     +lt-xl()
