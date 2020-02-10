@@ -14,8 +14,7 @@
           ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
           ButtonApp(class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Удалить баннер")
           ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Отмена")
-      //- +e.row-other
-        +e.item(v-for="(item, index) in other")
+      //- OtherBanners(:list="listOther" class="page-edit__other")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
@@ -32,6 +31,7 @@ import PopupForm from '../components/PopupForm.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 import ButtonApp from '@/components/ButtonApp.vue'
+import OtherBanners from '../components/OtherBanners.vue'
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -41,7 +41,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'isLoading', 'form']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'listSorted'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading']),
@@ -54,7 +54,8 @@ const Mappers = Vue.extend({
     FormBanners,
     MessageBox,
     PopupForm,
-    ButtonApp
+    ButtonApp,
+    OtherBanners
   }
 })
 
@@ -89,20 +90,29 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
     return false
   }
+  get listOther() {
+    if (!this.banner) return
 
-  @Watch('list')
+    if (this.banner.isActive) return this.listActive.filter(b => b.id !== this.banner.id)
+    else {
+      const shuffled = [...this.listSorted].sort(() => .5 - Math.random())
+      return shuffled.slice(0, 4)
+    }
+  }
+
+  @Watch('list', { immediate: true })
   onListChanged(val) {
     if (val) {
       const id = Number(this.$route.params.id)
       this.banner = this.bannerById(id)
 
       if (this.banner) this.updateFormByBannerData(this.banner)
+      else {
+        this.requestStatus = 'failFetchBanner'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      }
     }
-  }
-
-  @Watch('banner')
-  onBannerUpd(val) {
-    console.log(val)
   }
 
   created() {
@@ -293,6 +303,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   &__container
     position relative
     display flex
+    flex-direction column
     width 100%
     grid-size(4, 4, 5.5, 6, 8)
     margin-right auto
@@ -354,4 +365,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     margin-bottom 10px
     &:not(:last-child)
       margin-right 10px
+
+  &__other
+    position absolute
+    top calc(100% + 100px)
+    right 0
+    left 0
 </style>

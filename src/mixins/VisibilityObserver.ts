@@ -1,5 +1,5 @@
 /** Обзервер вызывает коллбэк при появлении HTML-элементов (targets) в области видимости */
-export interface Options {
+export interface VisibilityObserverOptions {
   /** HTML-элемент или массив/нодлист/коллекцию элементов */
   targets: Element | Element[] | NodeList | HTMLCollection
   /** Отступ от края элемента - величина видимой части элемента для вызова коллбэка ifIntoView */
@@ -12,10 +12,10 @@ export interface Options {
 }
 
 export class VisibilityObserver {
-  options: Options
+  options: VisibilityObserverOptions
   observer: any
 
-  constructor(options: Options) {
+  constructor(options: VisibilityObserverOptions) {
     this.options = options
     let targets = options.targets
 
@@ -59,4 +59,5 @@ export class VisibilityObserver {
   }
 }
 
+// export default {VisibilityObserver, VisibilityObserverOptions}
 export default VisibilityObserver

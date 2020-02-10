@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component, Watch, Ref } from 'vue-property-decorator'
 import { Banner } from '../models'
 import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
@@ -33,6 +33,7 @@ const Mappers = Vue.extend({
 
 export default class ListBanners extends Mappers {
   activeIndex: string = '1'
+  observer = null
 
   get list() { return this.listSorted }
   get activeList() {

@@ -29,6 +29,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
+import { VisibilityObserver, VisibilityObserverOptions } from '@/mixins/VisibilityObserver'
 
 @Component({
 })
@@ -39,20 +40,34 @@ export default class ItemBanners extends Vue {
   imgLoaded: boolean = false
   editHovered: boolean = false
   deleteHovered: boolean = false
+  observer = null
 
-  created() {
-    preloadImages(this.banner.bannerImageUrl)
-      .then(async () => {
-        // await sleep(1000)
-        this.imgLoaded = true
-      })
+  mounted() {
+    this.initObserver()
   }
 
+  initObserver() {
+    const targets = this.$el
+    const options = {
+      targets,
+      offset: 50,
+      ifIntoView: () => this.preloadImage()
+    }
+
+    this.observer = new VisibilityObserver(options)
+  }
   onEditClick() {
     this.$router.push({ path: `/banners/edit/${this.banner.id.toString()}` })
   }
   onDeleteClick() {
     this.$emit('delete', this.banner.id)
+  }
+  preloadImage() {
+    preloadImages(this.banner.bannerImageUrl)
+      .then(async () => {
+        // await sleep(1000)
+        this.imgLoaded = true
+      })
   }
 }
 </script>
