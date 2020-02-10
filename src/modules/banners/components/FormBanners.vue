@@ -135,7 +135,7 @@ export default class FormBanners extends Mappers {
       justify-content space-between
 
   &__column
-    width calc(50% - 10px)
+    width calc(50% - 30px)
 
   &__row
     display flex

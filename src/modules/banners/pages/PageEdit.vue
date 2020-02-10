@@ -3,14 +3,17 @@
 
   +b.page-edit.page(v-loading.fullscreen.lock="isLoading")
     +e.container
+      +e.row-back(@click="goToPageMain")
+        i(class="el-icon-back page-edit__icon-back")
+        +e.text-back Вернуться к списку
       +e.form-wrapper
         +e.H1.title.page-title Редактирование баннера
         FormBanners(class="page-edit__form")
         +e.btns
           ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="submitForm" text="Сохранить баннер")
-          ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Отменить изменения")
+          ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
           ButtonApp(class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Удалить баннер")
-          ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Вернуться к списку")
+          ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Отмена")
           //- +e.EL-BUTTON.btn(type="primary" :disabled="!isSmthToUpdate" @click="submitForm") Сохранить баннер
           //- +e.EL-BUTTON.btn(type="warning" :disabled="!isSmthToUpdate" plain @click="resetForm") Отменить изменения
           //- +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
@@ -275,35 +278,48 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
   &__container
     position relative
-    width 100%
     display flex
-    // &:before
-    //   z-index -1
-    //   content ''
-    //   position fixed
-    //   top 0
-    //   right 0
-    //   bottom 0
-    //   left 0
-    //   width 100vw
-    //   height 100vh
-    //   background-image url('http://frontend.crm-supplier.svc.k8s.stage/img/header.e4a2e38c.svg')
-    //   background-repeat repeat
-
-  &__form-wrapper
-    // z-index 1
-    grid-size(4, 4, 5.5, 5, 6)
+    width 100%
+    grid-size(4, 4, 5.5, 6, 8)
     margin-right auto
     margin-left auto
-    // min-height 100%
     align-self center
-    // display flex
-    // align-items center
-    // width 100%
-    background-color $cExLightBorder
-    border-radius 6px
+    +lt-md()
+      flex-direction column
+
+  &__row-back
+    display flex
+    flex-wrap nowrap
+    padding 10px
+    margin -10px
+    cursor pointer
+    fontMedium()
+    transition()
+    &:hover
+      opacity .75
+    +gt-md()
+      position absolute
+      top -50px
+      left 0
+    +lt-md()
+      margin-bottom 25px
+
+  &__icon-back
+    transition(transform)
+    .page-edit__row-back:hover &
+      transform translateX(-5px)
+
+  &__text-back
+    margin-left 10px
+    white-space nowrap
+
+  &__form-wrapper
+    padding 50px
+    width 100%
     +gt-sm()
-      padding 50px
+      border-radius 6px
+      border 2px solid $cBrand
+      box-shadow 0 1rem 3rem rgba(0,0,0,.175)!important
     +xs()
       position relative
       left 50%
@@ -317,6 +333,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     display flex
     align-items flex-end
     flex-wrap wrap
+    +xl()
+      margin-top 100px
 
   &__btn
     margin-bottom 10px

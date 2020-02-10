@@ -8,13 +8,8 @@ import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-mo
 const namespaced = true
 
 class BannersState {
-  // return {
   isLoading: boolean = false
   list: Banner[] = null
-  // list: Banner[] = [
-  //   { activeFrom: '', activeTo: '', appLink: '/news/100', bannerDate: '', bannerImageUrl: '/static/images/kangoo.jpg',
-  //   createdAt: '', id: 64, isActive: true, newsId: 100, pageType: 'news', sort: 10 }
-  // ]
   form: Form = {
     type: null,
     validationIsShown: false,
@@ -33,7 +28,6 @@ class BannersState {
     ],
   }
   activeAmount: number = 4
-  // }
 }
 
 class BannersGetters extends Getters<BannersState> {
@@ -235,7 +229,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.commit('setValidationIsShown', true)
           if (!!error.response.data && error.response.data.errors) {
             const errors = error.response.data.errors
-            debugger
             if (errors.bannerId) reject({ bannerId: errors.bannerId })
             else {
               this.commit('handleFormErrors', errors)
@@ -354,8 +347,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('setIsLoading', true)
       service.post(`/api/v1/inactivate/${id}`)
         .then(() => resolve())
-        .catch(() => reject())
-        .finally(() => this.commit('setIsLoading', false))
+        .catch(() => {
+          this.commit('setIsLoading', false)
+          reject()
+        })
+        .finally()
     })
   }
 }

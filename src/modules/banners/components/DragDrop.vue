@@ -103,8 +103,8 @@ export default class DragDrop extends Mappers {
 
   &__container
     position relative
-    width 320px
-    height 180px
+    width 100%
+    padding-bottom 59%
     border 1px dashed $cInfo
     border-radius 6px
     background-color white
@@ -125,6 +125,7 @@ export default class DragDrop extends Mappers {
       opacity 0
 
   &__loaders
+    position absolute
     width 100%
     height 100%
     display flex

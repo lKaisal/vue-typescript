@@ -3,6 +3,9 @@
 
   +b.page-create.page(v-loading.fullscreen.lock="isLoading")
     +e.container
+      +e.row-back(@click="goToPageMain")
+        i(class="el-icon-back page-create__icon-back")
+        +e.text-back Вернуться к списку
       +e.form-wrapper
         +e.H1.title.page-title Создание баннера
         FormBanners(class="page-create__form")
@@ -127,7 +130,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         }
       })
       .catch(error => {
-        debugger
         if (this.formIsValid) {
           if (error.bannerId) {
             this.bannerConflictId = error.bannerId
@@ -168,43 +170,64 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     position relative
     display flex
     width 100%
-    // &:before
-    //   z-index -1
-    //   content ''
-    //   position fixed
-    //   top 0
-    //   right 0
-    //   bottom 0
-    //   left 0
-    //   width 100vw
-    //   height 100vh
-    //   background-image url('http://frontend.crm-supplier.svc.k8s.stage/img/header.e4a2e38c.svg')
-    //   background-repeat repeat
-
-  &__form-wrapper
-    // z-index 1
-    grid-size(4, 4, 5.5, 5, 7)
+    grid-size(4, 4, 5.5, 6, 8)
     margin-right auto
     margin-left auto
-    // min-height 100%
-    // display flex
-    // align-items center
-    padding 50px
     align-self center
-    // width 100%
-    background-color $cExLightBorder
-    border-radius 6px
+    +lt-md()
+      flex-direction column
+
+  &__row-back
+    display flex
+    flex-wrap nowrap
+    padding 10px
+    margin -10px
+    cursor pointer
+    fontMedium()
+    transition()
+    &:hover
+      opacity .75
+    +gt-md()
+      position absolute
+      top -50px
+      left 0
+    +lt-md()
+      margin-bottom 25px
+
+  &__icon-back
+    transition(transform)
+    .page-edit__row-back:hover &
+      transform translateX(-5px)
+
+  &__text-back
+    margin-left 10px
+    white-space nowrap
+
+  &__form-wrapper
+    padding 50px
+    width 100%
+    +gt-sm()
+      border-radius 6px
+      border 2px solid $cBrand
+      box-shadow 0 1rem 3rem rgba(0,0,0,.175)!important
+    +xs()
+      position relative
+      left 50%
+      transform translateX(-50%)
+      width 100vw
+      padding 25px
 
   &__btns
     position relative
     margin-top 60px
     display flex
     align-items flex-end
+    flex-wrap wrap
+    +xl()
+      margin-top 100px
 
   &__btn
+    margin-bottom 10px
     &:not(:last-child)
       margin-right 10px
-
-  &__popup
-    // 
 </style>
