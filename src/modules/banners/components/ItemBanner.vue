@@ -15,8 +15,8 @@
       +e.info
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        +e.info-item(v-if="banner.sort && banner.isActive")
-          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sort }}</span>
+        +e.info-item(v-if="banner.sortCalculated && banner.isActive")
+          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
         +e.info-item
           +e.title Отображать в приложении:&nbsp;<span class="item-banner__text">{{ banner.isActive ? 'Да' : 'Нет' }}</span>
         +e.info-item(v-if="banner.activeFrom || banner.activeTo")
@@ -79,7 +79,7 @@ export default class ItemBanners extends Vue {
       border-color $cBrand
 
   &__icons
-    z-index 1
+    z-index 2
     position absolute
     // top 20px
     top 0

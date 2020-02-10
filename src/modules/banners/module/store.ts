@@ -10,11 +10,11 @@ const namespaced = true
 class BannersState {
   // return {
   isLoading: boolean = false
-  // list: Banner[] = null
-  list: Banner[] = [
-    { activeFrom: '', activeTo: '', appLink: '/news/100', bannerDate: '', bannerImageUrl: '/static/images/kangoo.jpg',
-    createdAt: '', id: 64, isActive: true, newsId: 100, pageType: 'news', sort: 10 }
-  ]
+  list: Banner[] = null
+  // list: Banner[] = [
+  //   { activeFrom: '', activeTo: '', appLink: '/news/100', bannerDate: '', bannerImageUrl: '/static/images/kangoo.jpg',
+  //   createdAt: '', id: 64, isActive: true, newsId: 100, pageType: 'news', sort: 10 }
+  // ]
   form: Form = {
     type: null,
     validationIsShown: false,
@@ -29,10 +29,10 @@ class BannersState {
       { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
       { name: 'newsId', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
       { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-      { name: 'sort', value: 40, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
+      { name: 'sort', value: 4, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
     ],
   }
-  activeAmount: number = 40
+  activeAmount: number = 4
   // }
 }
 
@@ -58,7 +58,12 @@ class BannersGetters extends Getters<BannersState> {
       }
     })
 
-    listSorted.forEach(b => b.newsId = b.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(b.appLink)))
+    const sortArr = listSorted.map(b => b.sort)
+
+    listSorted.forEach((b) => {
+      b.newsId = b.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(b.appLink))
+      b.sortCalculated = b.isActive ? sortArr.indexOf(b.sort) + 1 : b.sort
+    })
 
     return listSorted
   }
@@ -324,7 +329,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.dispatch('updateField', { name: field.name, value: data.pageType })
           break
         case 'sort':
-          this.dispatch('updateField', { name: field.name, value: data.sort })
+          this.dispatch('updateField', { name: field.name, value: data.sortCalculated })
           break
         }
     })

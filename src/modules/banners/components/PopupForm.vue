@@ -6,8 +6,8 @@
       +e.text Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
       ItemBanner(:banner="banner" :editIconsShown="false" class="popup-form__item")
       +e.btns
-        ButtonApp(colorClass="is-primary" @clicked="confirm" text="Заменить")
-        ButtonApp(colorClass="is-danger" @clicked="discard" text="Отмена")
+        ButtonApp(btnType="primary" @clicked="confirm" text="Заменить")
+        ButtonApp(btnType="danger" @clicked="discard" text="Отмена")
         //- +e.EL-BUTTON(type="primary" @click="confirm") Заменить
         //- +e.EL-BUTTON(type="danger" @click="discard") Отмена
 </template>

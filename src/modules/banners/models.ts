@@ -16,6 +16,7 @@ type Banner = {
   newsId: number,
   pageType: string
   sort: number,
+  sortCalculated: number
 }
 
 type Form = {
@@ -43,7 +44,7 @@ type BannerForm = {
   file: File | Blob,
   newsId: Number,
   pageType: String,
-  sort: Number
+  sort: Number,
 }
 
 type FormError = {

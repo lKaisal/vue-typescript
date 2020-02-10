@@ -36,7 +36,7 @@
         +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
           +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
-            +e.EL-OPTION(v-for="n in activeAmount / 10" :key="n" :label="n * 10" :value="n * 10")
+            +e.EL-OPTION(v-for="n in activeAmount" :key="n" :label="n" :value="n")
           +e.error(v-html="sortField.errorMsg")
 </template>
 

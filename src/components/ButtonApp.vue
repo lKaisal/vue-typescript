@@ -2,7 +2,7 @@
   include ../tools/bemto.pug
 
   +b.button-app
-    +e.container(:class="[colorClass, { 'is-plain': isPlain, 'is-disabled': disabled }]" @click="onClick")
+    +e.container(:class="[btnType, { 'is-plain': isPlain, 'is-disabled': disabled }]" @click="onClick")
       +e.text(v-html="text")
 </template>
 
@@ -13,7 +13,7 @@ import { Vue, Component, Prop, Ref, Watch } from 'vue-property-decorator'
 })
 
 export default class ButtonApp extends Vue {
-  @Prop({default: 'is-primary'}) colorClass: string
+  @Prop({default: 'primary'}) btnType: string
   @Prop() isPlain: boolean
   @Prop() text: string
   @Prop() disabled: boolean
@@ -42,7 +42,7 @@ export default class ButtonApp extends Vue {
     &.is-disabled
       opacity .75
       cursor url("/static/images/block.png"), not-allowed
-    &.is-primary
+    &.primary
       background-color $cBrand
       border 1px solid $cBrand
       transition(background-color\, color)
@@ -57,7 +57,7 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cBrand
             color white
-    &.is-danger
+    &.danger
       background-color $cDanger
       border 1px solid $cDanger
       transition(background-color\, color)
@@ -72,7 +72,7 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cDanger
             color white
-    &.is-warning
+    &.warning
       background-color $cWarning
       border 1px solid $cWarning
       transition(background-color\, color)
@@ -87,7 +87,7 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cWarning
             color white
-    &.is-success
+    &.success
       background-color $cSuccess
       border 1px solid $cSuccess
       transition(background-color\, color)

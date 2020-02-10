@@ -7,10 +7,10 @@
         +e.H1.title.page-title Редактирование баннера
         FormBanners(class="page-edit__form")
         +e.btns
-          ButtonApp(class="page-edit__btn" colorClass="is-primary" :disabled="!isSmthToUpdate" @click="submitForm" text="Сохранить баннер")
-          ButtonApp(class="page-edit__btn" colorClass="is-warning" :disabled="!isSmthToUpdate" :isPlain="true" @click="resetForm" text="Отменить изменения")
-          ButtonApp(class="page-edit__btn" colorClass="is-danger" :isPlain="true" @click="onClickDelete" text="Удалить баннер")
-          ButtonApp(class="page-edit__btn" colorClass="is-success" :isPlain="true" @click="goToPageMain" text="Вернуться к списку")
+          ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="submitForm" text="Сохранить баннер")
+          ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Отменить изменения")
+          ButtonApp(class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Удалить баннер")
+          ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Вернуться к списку")
           //- +e.EL-BUTTON.btn(type="primary" :disabled="!isSmthToUpdate" @click="submitForm") Сохранить баннер
           //- +e.EL-BUTTON.btn(type="warning" :disabled="!isSmthToUpdate" plain @click="resetForm") Отменить изменения
           //- +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
@@ -80,6 +80,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           break
         case 'sort':
           if (!form.find(f => f.name === 'isActive').value) break
+          else return banner.sortCalculated !== field.value
         default:
           if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
       }

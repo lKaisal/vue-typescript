@@ -7,9 +7,9 @@
         +e.H1.title.page-title Создание баннера
         FormBanners(class="page-create__form")
         +e.btns
-          ButtonApp(color-class="is-primary" :disabled="!isSmthToCommit" @clicked="submitForm" text="Сохранить баннер" class="page-create__btn")
-          ButtonApp(color-class="is-warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
-          ButtonApp(color-class="is-danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
+          ButtonApp(btnType="primary" :disabled="!isSmthToCommit" @clicked="submitForm" text="Сохранить баннер" class="page-create__btn")
+          ButtonApp(btnType="warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
+          ButtonApp(btnType="danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
           //- +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
           //- +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
           //- +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
