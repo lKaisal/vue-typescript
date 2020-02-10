@@ -122,10 +122,10 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         this.secondBtn = { type: 'success', isPlain: true }
         this.requestStatus = 'successCreate'
         this.openMsgBox()
+        await this.getList()
         await sleep(1500)
         if (this.isPageCreate) {
           this.closeMsgBox()
-          this.getList()
           this.goToPageEdit()
         }
       })
@@ -196,7 +196,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
   &__icon-back
     transition(transform)
-    .page-edit__row-back:hover &
+    .page-create__row-back:hover &
       transform translateX(-5px)
 
   &__text-back

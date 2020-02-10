@@ -64,7 +64,7 @@ class BannersGetters extends Getters<BannersState> {
   get listActive() { return this.getters.listSorted.filter(item => item.isActive) }
   get listInactive() { return this.getters.listSorted.filter(item => !item.isActive) }
   get bannerById() {
-    return (id: Banner['id']) => { return this.state.list && this.state.list.find(b => b.id.toString() === id.toString()) }
+    return (id: Banner['id']) => { return this.getters.listSorted && this.getters.listSorted.find(b => b.id.toString() === id.toString()) }
   }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }

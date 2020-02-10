@@ -14,10 +14,8 @@
           ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
           ButtonApp(class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Удалить баннер")
           ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Отмена")
-          //- +e.EL-BUTTON.btn(type="primary" :disabled="!isSmthToUpdate" @click="submitForm") Сохранить баннер
-          //- +e.EL-BUTTON.btn(type="warning" :disabled="!isSmthToUpdate" plain @click="resetForm") Отменить изменения
-          //- +e.EL-BUTTON.btn(type="danger" plain @click="onClickDelete") Удалить баннер
-          //- +e.EL-BUTTON.btn(type="success" plain @click="goToPageMain") Вернуться к списку
+      //- +e.row-other
+        +e.item(v-for="(item, index) in other")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
@@ -46,7 +44,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
+    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading']),
     ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList', 'deactivateBanner'])
   }
 })
@@ -93,13 +91,29 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   }
 
   @Watch('list')
-  onListChanged() {
-    this.updateBannerData()
+  onListChanged(val) {
+    if (val) {
+      const id = Number(this.$route.params.id)
+      this.banner = this.bannerById(id)
+
+      if (this.banner) this.updateFormByBannerData(this.banner)
+    }
+  }
+
+  @Watch('banner')
+  onBannerUpd(val) {
+    console.log(val)
   }
 
   created() {
+    this.clearForm()
     this.setFormType('edit')
-    this.updateBannerData()
+    // this.updateBannerData()
+    const id = Number(this.$route.params.id)
+    this.banner = this.bannerById(id)
+
+    if (this.banner) this.updateFormByBannerData(this.banner)
+    else this.setIsLoading(true)
   }
 
   beforeDestroy() {
@@ -174,28 +188,28 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
   // STORE ACTIONS CALL
   updateBannerData() {
-    const id = Number(this.$route.params.id)
-    let banner = this.bannerById(id) || this.banner
+    // const id = Number(this.$route.params.id)
+    // let banner = this.bannerById(id) || this.banner
 
-    if (!banner) {
-      this.getBannerById(id)
-        .then((res) => {
-          banner = res
-          this.updateFormByBannerData(banner)
-          this.closeMsgBox()
-          this.banner = banner
-        })
-        .catch(() => {
-          this.requestStatus = 'failFetchBanner'
-          this.secondBtn = { type: 'danger', isPlain: true }
-          this.openMsgBox()
-          return
-        })
-    } else {
-      this.updateFormByBannerData(banner)
-      this.closeMsgBox()
-      this.banner = banner
-    }
+    // if (!banner) {
+    //   this.getBannerById(id)
+    //     .then((res) => {
+    //       banner = res
+    //       this.updateFormByBannerData(banner)
+    //       this.closeMsgBox()
+    //       this.banner = banner
+    //     })
+    //     .catch(() => {
+    //       this.requestStatus = 'failFetchBanner'
+    //       this.secondBtn = { type: 'danger', isPlain: true }
+    //       this.openMsgBox()
+    //       return
+    //     })
+    // } else {
+    //   this.updateFormByBannerData(banner)
+    //   this.closeMsgBox()
+    //   this.banner = banner
+    // }
   }
   submitForm() {
     this.editBanner(this.banner.id)
@@ -203,7 +217,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
-        this.getList()
+        await this.getList()
         // this.getBannerById(this.banner.id)
           .then(async () => {
             // this.banner = res
@@ -229,18 +243,18 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   async resetForm() {
     this.clearForm()
 
-    if (!this.banner) {
-      await this.getBannerById(Number(this.$route.params.id))
-        .then((res) => {
-          this.banner = res
-          this.closeMsgBox()
-        })
-        .catch((error) => {
-          this.requestStatus = 'failFetchBanner'
-          this.secondBtn = { type: 'danger', isPlain: true }
-          this.openMsgBox()
-        })
-    }
+    // if (!this.banner) {
+    //   await this.getBannerById(Number(this.$route.params.id))
+    //     .then((res) => {
+    //       this.banner = res
+    //       this.closeMsgBox()
+    //     })
+    //     .catch((error) => {
+    //       this.requestStatus = 'failFetchBanner'
+    //       this.secondBtn = { type: 'danger', isPlain: true }
+    //       this.openMsgBox()
+    //     })
+    // }
 
     if (this.banner) this.updateFormByBannerData(this.banner)
   }
