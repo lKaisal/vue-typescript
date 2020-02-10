@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
 import ListBanners from '../components/ListBanners.vue'
 import MessageBox from '../components/MessageBox.vue'

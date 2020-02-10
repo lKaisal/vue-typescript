@@ -6,8 +6,8 @@
       +e.text Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
       ItemBanner(:banner="banner" :editIconsShown="false" class="popup-form__item")
       +e.btns
-        ButtonApp(btnType="primary" @clicked="confirm" text="Заменить")
-        ButtonApp(btnType="danger" @clicked="discard" text="Отмена")
+        ButtonApp(btnType="primary" @clicked="confirm" text="Заменить" class="popup-form__btn")
+        ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-form__btn")
         //- +e.EL-BUTTON(type="primary" @click="confirm") Заменить
         //- +e.EL-BUTTON(type="danger" @click="discard") Отмена
 </template>
@@ -63,6 +63,7 @@ export default class PopupForm extends Mixins(Mappers, MsgBoxTools) {
   &__text
     margin-bottom 50px
     fontMedium()
+    line-height 1.25
 
   &__item
     margin-bottom 25px
@@ -70,4 +71,8 @@ export default class PopupForm extends Mixins(Mappers, MsgBoxTools) {
   &__btns
     display flex
     justify-content center
+
+  &__btn
+    &:not(:last-child)
+      margin-right 10px
 </style>

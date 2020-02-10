@@ -15,7 +15,7 @@
           //- +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
-      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="closePopupForm" @discard="closePopupForm" class="page-create__popup modal")
+      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupForm" class="page-create__popup modal")
 </template>
 
 <script lang="ts">
@@ -36,7 +36,7 @@ const Mappers = Vue.extend({
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
-    ...bannersMapper.mapActions(['getList', 'deleteBanner', 'createBanner'])
+    ...bannersMapper.mapActions(['getList', 'deleteBanner', 'createBanner', 'deactivateBanner'])
   }
 })
 
@@ -72,14 +72,42 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     this.clearForm()
   }
 
+  openPopupForm() {
+    document.body.classList.add('modal-open')
+    this.popupFormIsShown = true
+  }
+  closePopupForm() {
+    document.body.classList.remove('modal-open')
+    this.popupFormIsShown = false
+    this.bannerConflictId = null
+  }
   // CLICK HANDLERS
   onFirstBtnClick() {
-    if (this.requestStatus === 'successCreate') this.goToPageEdit()
-    else this.submitForm()
+    switch (this.requestStatus) {
+      case 'successCreate':
+        this.goToPageEdit()
+        break
+      case 'failDeactivate':
+        this.deactivateBannerConflict()
+        break
+      default:
+        this.submitForm()
+        break
+    }
   }
   onSecondBtnClick() {
-    if (this.requestStatus === 'successCreate') this.goToPageMain()
-    else this.closeMsgBox()
+    switch (this.requestStatus) {
+      case ('successCreate'):
+        this.goToPageMain()
+        break
+      case 'failDeactivate':
+        this.closeMsgBox()
+        this.closePopupForm()
+        break
+      default:
+        this.closeMsgBox()
+        break
+    }
   }
   goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
   goToPageEdit() { this.$router.push({ path: `/banners/edit/${this.bannerId.toString()}` }).catch(err => {}) }
@@ -94,14 +122,18 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         await sleep(1500)
         if (this.isPageCreate) {
           this.closeMsgBox()
+          this.getList()
           this.goToPageEdit()
         }
       })
       .catch(error => {
+        debugger
         if (this.formIsValid) {
-          this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
-          if (this.bannerConflictId) this.openPopupForm()
-          else {
+          if (error.bannerId) {
+            this.bannerConflictId = error.bannerId
+            // this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
+            this.openPopupForm()
+          } else {
             this.secondBtn = { type: 'danger', isPlain: true }
             this.requestStatus = 'failCreate'
             this.openMsgBox()
@@ -109,14 +141,20 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         }
       })
   }
-  openPopupForm() {
-    document.body.classList.add('modal-open')
-    this.popupFormIsShown = true
-  }
-  closePopupForm() {
-    document.body.classList.remove('modal-open')
-    this.popupFormIsShown = false
-    this.bannerConflictId = null
+  deactivateBannerConflict() {
+    this.deactivateBanner(this.bannerConflictId)
+      .then(() => {
+        console.log('Success deactivate!')
+        this.closeMsgBox()
+        this.closePopupForm()
+        this.submitForm()
+      })
+      .catch(() => {
+        console.log('Fail deactivate :(')
+        this.requestStatus = 'failDeactivate'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
   }
 }
 </script>
@@ -145,7 +183,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
   &__form-wrapper
     // z-index 1
-    grid-size(4, 4, 5.5, 5, 6)
+    grid-size(4, 4, 5.5, 5, 7)
     margin-right auto
     margin-left auto
     // min-height 100%

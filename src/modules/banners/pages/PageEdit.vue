@@ -17,8 +17,8 @@
           //- +e.EL-BUTTON.btn(type="success" plain @click="goToPageMain") Вернуться к списку
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
-        class="page-edit__msg-box modal")
-      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="closePopupForm" @discard="closePopupForm" class="page-edit__popup modal")
+        class="page-edit__msg-box modal modal-msg")
+      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupForm" class="page-edit__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -44,7 +44,7 @@ const Mappers = Vue.extend({
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
-    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList'])
+    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList', 'deactivateBanner'])
   }
 })
 
@@ -89,6 +89,11 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     return false
   }
 
+  @Watch('list')
+  onListChanged() {
+    this.updateBannerData()
+  }
+
   created() {
     this.setFormType('edit')
     this.updateBannerData()
@@ -119,6 +124,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
       case 'failDelete':
         this.onClickDelete()
+        break
+      case 'failDeactivate':
+        this.deactivateBannerConflict()
+        break
       case 'failFetchBanner':
       case 'successDelete':
       default:
@@ -132,6 +141,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       case 'failEdit':
       case 'failDelete':
         this.closeMsgBox()
+        break
+      case 'failDeactivate':
+        this.closeMsgBox()
+        this.closePopupForm()
         break
       case 'successEdit':
       default:
@@ -187,16 +200,22 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
-        // await this.getList()
-        this.banner = this.bannerById(this.banner.id)
-        await sleep(1500)
-        this.closeMsgBox()
+        this.getList()
+        // this.getBannerById(this.banner.id)
+          .then(async () => {
+            // this.banner = res
+            this.banner = this.bannerById(this.banner.id)
+            this.updateFormByBannerData(this.banner)
+            await sleep(1500)
+            this.closeMsgBox()
+          })
       })
       .catch(error => {
         if (this.formIsValid) {
-          this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
-          if (this.bannerConflictId) this.openPopupForm()
-          else {
+          if (error.bannerId) {
+            this.bannerConflictId = error.bannerId
+            this.openPopupForm()
+          } else {
             this.requestStatus = 'failEdit'
             this.secondBtn = { type: 'danger', isPlain: true }
             this.openMsgBox()
@@ -221,6 +240,21 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     }
 
     if (this.banner) this.updateFormByBannerData(this.banner)
+  }
+  deactivateBannerConflict() {
+    this.deactivateBanner(this.bannerConflictId)
+      .then(() => {
+        console.log('Success deactivate!')
+        this.closeMsgBox()
+        this.closePopupForm()
+        this.submitForm()
+      })
+      .catch(() => {
+        console.log('Fail deactivate :(')
+        this.requestStatus = 'failDeactivate'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
   }
   // POPUP-BANNER TOGGLE METHODS
   openPopupForm() {

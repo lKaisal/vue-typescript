@@ -49,8 +49,8 @@ class BannersGetters extends Getters<BannersState> {
       const sortB = b.sort
 
       if (isActiveA === isActiveB) {
-        if (sortA > sortB) return 1
-        else if (sortA < sortB) return -1
+        if (sortA < sortB) return 1
+        else if (sortA > sortB) return -1
         else return 0
       } else {
         if (isActiveA) return -1
@@ -58,11 +58,11 @@ class BannersGetters extends Getters<BannersState> {
       }
     })
 
-    const sortArr = listSorted.map(b => b.sort)
+    const sortArr = listSorted.filter(b => b.isActive).map(b => b.sort)
 
     listSorted.forEach((b) => {
       b.newsId = b.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(b.appLink))
-      b.sortCalculated = b.isActive ? sortArr.indexOf(b.sort) + 1 : b.sort
+      b.sortCalculated = b.isActive ? sortArr.indexOf(b.sort) + 1 : null
     })
 
     return listSorted
@@ -140,6 +140,7 @@ class BannersMutations extends Mutations<BannersState> {
       for (const name of names) {
         const field = this.state.form.data.find(f => f.name === name)
         field.errorMsg = errors[name]
+        field.isValid = false
       }
     }
   }
@@ -214,7 +215,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   async createBanner() {
     return new Promise((resolve, reject) => {
       const formIsValid = this.getters.formIsValid
-      
+
       if (!formIsValid) {
         this.commit('setValidationIsShown', true)
         reject()
@@ -232,8 +233,15 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
           this.commit('setValidationIsShown', true)
-          if (!!error.response.data && error.response.data.errors) this.commit('handleFormErrors', error.response.data.errors)
-          reject(error.response)
+          if (!!error.response.data && error.response.data.errors) {
+            const errors = error.response.data.errors
+            debugger
+            if (errors.bannerId) reject({ bannerId: errors.bannerId })
+            else {
+              this.commit('handleFormErrors', errors)
+              reject()
+            }
+          }
         })
         .finally(() => {
           this.commit('setIsLoading', false)
@@ -262,8 +270,14 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
           this.commit('setValidationIsShown', true)
-          if (!!error.response.data && error.response.data.errors) this.commit('handleFormErrors', error.response.data.errors)
-          reject(error.response)
+          if (!!error.response.data && error.response.data.errors) {
+            const errors = error.response.data.errors
+            if (errors.bannerId) reject({ bannerId: errors.bannerId })
+            else {
+              this.commit('handleFormErrors', error.response.data.errors)
+              reject(error.response)
+            }
+          }
         })
         .finally(() => {
           this.commit('setIsLoading', false)
@@ -332,6 +346,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.dispatch('updateField', { name: field.name, value: data.sortCalculated })
           break
         }
+    })
+  }
+  /** Deactivate banner by Id */
+  deactivateBanner(id: Banner['id']) {
+    return new Promise((resolve, reject) => {
+      this.commit('setIsLoading', true)
+      service.post(`/api/v1/inactivate/${id}`)
+        .then(() => resolve())
+        .catch(() => reject())
+        .finally(() => this.commit('setIsLoading', false))
     })
   }
 }

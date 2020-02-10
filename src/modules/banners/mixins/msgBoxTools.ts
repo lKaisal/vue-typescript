@@ -68,6 +68,12 @@ export default class msgBoxTools extends Vue {
       firstBtn: 'Подтвердить',
       secondBtn: 'Отмена'
     },
+    failDeactivate: {
+      title: 'Ошибка!',
+      msg: 'Не удалось заменить баннер',
+      firstBtn: 'Повторить попытку',
+      secondBtn: 'Отмена'
+    }
   }
 
   get msgBoxContent() { return this.msgBoxContents[this.requestStatus] }

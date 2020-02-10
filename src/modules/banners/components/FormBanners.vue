@@ -167,6 +167,12 @@ export default class FormBanners extends Mappers {
       flex-direction column
       align-items flex-start
       margin-bottom 60px !important
+    &_sort
+      display flex
+      +xl()
+        align-items center
+      +lt-xl()
+        flex-direction column
 
   &__error
     position absolute
@@ -193,6 +199,9 @@ export default class FormBanners extends Mappers {
     .form-banners__field_active-from &
     .form-banners__field_active-to &
       margin-bottom 10px
+    .form-banners__field_sort &
+      +xl()
+        margin-right 25px
 
   &__input
   &__select
@@ -210,7 +219,8 @@ export default class FormBanners extends Mappers {
         border-color $cDanger
 
   &__select
-    margin-top 10px
+    +lt-xl()
+      margin-top 10px
 
   &__input
     display block
