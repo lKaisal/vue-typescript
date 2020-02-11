@@ -18,7 +18,7 @@
           //- +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
-      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupForm" class="page-create__popup modal")
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-create__popup modal")
 </template>
 
 <script lang="ts">
@@ -27,7 +27,7 @@ import { MsgBoxContent, Banner, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
-import PopupForm from '../components/PopupForm.vue'
+import PopupConflict from '../components/PopupConflict.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 import ButtonApp from '@/components/ButtonApp.vue'
@@ -47,7 +47,7 @@ const Mappers = Vue.extend({
   components: {
     FormBanners,
     MessageBox,
-    PopupForm,
+    PopupConflict,
     ButtonApp
   }
 })
@@ -73,16 +73,27 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   created() {
     this.setFormType('create')
     this.clearForm()
+    document.addEventListener('keydown', this.keydownHandler)
+  }
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.keydownHandler)
   }
 
-  openPopupForm() {
+  openPopupConflict() {
     document.body.classList.add('modal-open')
     this.popupFormIsShown = true
   }
-  closePopupForm() {
+  closePopupConflict() {
     document.body.classList.remove('modal-open')
     this.popupFormIsShown = false
     this.bannerConflictId = null
+  }
+  keydownHandler(evt: KeyboardEvent) {
+    if (evt.key === 'Escape') {
+      if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
+      else if (this.popupFormIsShown) this.closePopupConflict()
+      else if (this.msgBoxIsShown) this.closeMsgBox()
+    }
   }
   // CLICK HANDLERS
   onFirstBtnClick() {
@@ -105,7 +116,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         break
       case 'failDeactivate':
         this.closeMsgBox()
-        this.closePopupForm()
+        this.closePopupConflict()
         break
       default:
         this.closeMsgBox()
@@ -134,7 +145,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
           if (error.bannerId) {
             this.bannerConflictId = error.bannerId
             // this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
-            this.openPopupForm()
+            this.openPopupConflict()
           } else {
             this.secondBtn = { type: 'danger', isPlain: true }
             this.requestStatus = 'failCreate'
@@ -148,7 +159,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       .then(() => {
         console.log('Success deactivate!')
         this.closeMsgBox()
-        this.closePopupForm()
+        this.closePopupConflict()
         this.submitForm()
       })
       .catch(() => {

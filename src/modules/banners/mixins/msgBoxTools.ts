@@ -73,6 +73,12 @@ export default class msgBoxTools extends Vue {
       msg: 'Не удалось заменить баннер',
       firstBtn: 'Повторить попытку',
       secondBtn: 'Отмена'
+    },
+    failSetAmount: {
+      title: 'Ошибка!',
+      msg: 'Не удалось обновить количество',
+      firstBtn: 'Повторить попытку',
+      secondBtn: 'Отмена'
     }
   }
 

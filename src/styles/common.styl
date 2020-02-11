@@ -69,6 +69,20 @@ body
 .modal-msg
   z-index 1000
 
+.modal-popup-container
+  padding 50px
+  border 1px solid rgba(0,0,0,.125)
+  border-radius .25rem
+  background-color white
+  transition(transform)
+  .v-enter &
+  .v-leave-to &
+    transform translateY(-30px)
+
+.modal-icon-close
+  color $cSecondaryText
+  font-size 16px
+
 h1.page-title
   margin-bottom 35px
   fontMedium()

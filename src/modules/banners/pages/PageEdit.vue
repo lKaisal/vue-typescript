@@ -18,7 +18,7 @@
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupForm(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupForm" class="page-edit__popup modal modal-popup")
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -27,7 +27,7 @@ import { MsgBoxContent, Banner, RequestStatus, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
-import PopupForm from '../components/PopupForm.vue'
+import PopupConflict from '../components/PopupConflict.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 import ButtonApp from '@/components/ButtonApp.vue'
@@ -53,7 +53,7 @@ const Mappers = Vue.extend({
   components: {
     FormBanners,
     MessageBox,
-    PopupForm,
+    PopupConflict,
     ButtonApp,
     OtherBanners
   }
@@ -124,12 +124,21 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
     if (this.banner) this.updateFormByBannerData(this.banner)
     else this.setIsLoading(true)
-  }
 
+    document.addEventListener('keydown', this.keydownHandler)
+  }
   beforeDestroy() {
     this.clearForm()
+    document.removeEventListener('keydown', this.keydownHandler)
   }
 
+  keydownHandler(evt: KeyboardEvent) {
+    if (evt.key === 'Escape') {
+      if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
+      else if (this.popupFormIsShown) this.closePopupConflict()
+      else if (this.msgBoxIsShown) this.closeMsgBox()
+    }
+  }
   // CLICK HANDLERS
   onCloseClick() {
     switch (this.requestStatus) {
@@ -171,7 +180,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
       case 'failDeactivate':
         this.closeMsgBox()
-        this.closePopupForm()
+        this.closePopupConflict()
         break
       case 'successEdit':
       default:
@@ -241,7 +250,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         if (this.formIsValid) {
           if (error.bannerId) {
             this.bannerConflictId = error.bannerId
-            this.openPopupForm()
+            this.openPopupConflict()
           } else {
             this.requestStatus = 'failEdit'
             this.secondBtn = { type: 'danger', isPlain: true }
@@ -273,7 +282,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       .then(() => {
         console.log('Success deactivate!')
         this.closeMsgBox()
-        this.closePopupForm()
+        this.closePopupConflict()
         this.submitForm()
       })
       .catch(() => {
@@ -284,11 +293,11 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       })
   }
   // POPUP-BANNER TOGGLE METHODS
-  openPopupForm() {
+  openPopupConflict() {
     document.body.classList.add('modal-open')
     this.popupFormIsShown = true
   }
-  closePopupForm() {
+  closePopupConflict() {
     document.body.classList.remove('modal-open')
     this.popupFormIsShown = false
   }

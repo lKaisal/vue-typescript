@@ -24,7 +24,7 @@ class BannersState {
       { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
       { name: 'newsId', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
       { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-      { name: 'sort', value: 4, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
+      { name: 'sort', value: null, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
     ],
   }
   activeAmount: number = 4
@@ -352,6 +352,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           reject()
         })
         .finally()
+    })
+  }
+  /** Change active banners amount */
+  updateActiveAmount(payload: number) {
+    return new Promise(async (resolve, reject) => {
+      this.state.activeAmount = payload
+      resolve()
     })
   }
 }

@@ -19,8 +19,7 @@
         +e.info-item(v-if="banner.sortCalculated && banner.isActive")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
         +e.info-item(v-if="banner.createdAt")
-          +e.title Создан: 
-          +e.text {{ banner.createdAt }}
+          +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
         //- +e.info-item(v-if="banner.activeFrom || banner.activeTo")
           +e.title Срок действия: 
           +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
@@ -114,10 +113,10 @@ export default class ItemBanners extends Vue {
     transition(opacity\, transform)
     &.v-enter
       opacity 0
-      transform translateX(-100%)
+      // transform translateX(-100%)
     &.v-leave-to
       opacity 0
-      transform translateX(100%)
+      // transform translateX(100%)
     &.v-enter-active
     &.v-leave-active
       pointer-events none

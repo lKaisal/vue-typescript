@@ -1,13 +1,13 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.popup-form
-    +e.container
+  +b.popup-conflict
+    +e.container.modal-popup-container
       +e.text Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
-      ItemBanner(:banner="banner" :editIconsShown="false" class="popup-form__item")
+      ItemBanner(:banner="banner" :editIconsShown="false" class="popup-conflict__item")
       +e.btns
-        ButtonApp(btnType="primary" @clicked="confirm" text="Заменить" class="popup-form__btn")
-        ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-form__btn")
+        ButtonApp(btnType="primary" @clicked="confirm" text="Заменить" class="popup-conflict__btn")
+        ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-conflict__btn")
         //- +e.EL-BUTTON(type="primary" @click="confirm") Заменить
         //- +e.EL-BUTTON(type="danger" @click="discard") Отмена
 </template>
@@ -32,7 +32,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PopupForm extends Mixins(Mappers, MsgBoxTools) {
+export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
   @Prop() banner: Banner
 
   confirm() {
@@ -48,17 +48,10 @@ export default class PopupForm extends Mixins(Mappers, MsgBoxTools) {
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.popup-form
+.popup-conflict
 
   &__container
-    padding 50px
-    border 1px solid rgba(0,0,0,.125)
-    border-radius .25rem
-    background-color white
-    transition(transform)
-    .v-enter &
-    .v-leave-to &
-      transform translateY(-30px)
+    //
 
   &__text
     margin-bottom 50px

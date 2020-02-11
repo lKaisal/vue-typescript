@@ -59,7 +59,8 @@ type MsgBoxContent = {
   secondBtn?: string
 }
 
-type RequestStatus = 'successFetchList' | 'failFetchList' | 'successFetchBanner' | 'failFetchBanner' | 'successCreate' | 'failCreate' | 'successEdit' | 'failEdit' | 'successDelete' | 'failDelete' | 'beforeDelete' | 'failDeactivate'
+type RequestStatus = 'successFetchList' | 'failFetchList' | 'successFetchBanner' | 'failFetchBanner' | 'successCreate' | 'failCreate' | 'successEdit' | 'failEdit' | 'successDelete' | 
+                     'failDelete' | 'beforeDelete' | 'failDeactivate' | 'failSetAmount'
 
 type Button = {
   type: 'primary' | 'danger' | 'success' | 'warning' | 'info'

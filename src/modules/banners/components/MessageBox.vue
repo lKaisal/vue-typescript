@@ -6,7 +6,7 @@
       +e.header
         +e.title(v-if="content && content.title") {{ content.title }}
         +e.btn-close(@click="onCloseClick")
-          i.el-icon-close.msg-box__icon-close
+          +e.I.icon-close.el-icon-close.modal-icon-close
       +e.content(v-if="content && content.msg") {{ content.msg }}
       +e.btns
         ButtonApp(v-if="content && content.firstBtn" :btnType="firstBtn.type" :isPlain="firstBtn.isPlain" @clicked="onFirstBtnClick" :text="content.firstBtn" class="msg-box__btn")
@@ -71,10 +71,6 @@ export default class MessageBox extends Vue{
 
   &__btn-close
     cursor pointer
-
-  &__icon-close
-    color $cSecondaryText
-    font-size 16px
 
   &__title
     color $cPrimaryText

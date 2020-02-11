@@ -4,24 +4,25 @@
   +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container
       +e.title.H1.page-title Список баннеров
-      //- el-button.page-main__btn(type="primary" @click="onCreateClick") Создать баннер
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn")
-      //- AmountToggle(class="page-main__amount")
+      ToggleAmount(@editClicked="openPopupAmount" class="page-main__amount")
       ListBanners(:key="listSorted && listSorted.length" @deleteItem="onDeleteClick" class="page-main__list")
-    transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox" :secondBtn="secondBtn" class="page-main__msg-box modal")
+    transition-group(tag="div")
+      MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn" class="page-main__msg-box modal modal-msg")
+      PopupAmount(v-show="popupAmountIsShown" key="popupAmount" @confirm="updateAmount" @cancel="closePopupAmount" class="page-main__popup-amount modal")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
 import { bannersMapper } from '../module/store'
-import msgBoxTools from '../mixins/msgBoxTools'
 import sleep from '@/mixins/sleep'
+import ButtonApp from '@/components/ButtonApp.vue'
+import msgBoxTools from '../mixins/msgBoxTools'
 import ListBanners from '../components/ListBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
-import ButtonApp from '@/components/ButtonApp.vue'
-import AmountToggle from '../components/AmountToggle.vue'
+import ToggleAmount from '../components/ToggleAmount.vue'
+import PopupAmount from '../components/PopupAmount.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -29,7 +30,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['listSorted'])
   },
   methods: {
-    ...bannersMapper.mapActions(['getList', 'deleteBanner'])
+    ...bannersMapper.mapActions(['getList', 'deleteBanner', 'updateActiveAmount'])
   }
 })
 
@@ -38,7 +39,8 @@ const Mappers = Vue.extend({
     ListBanners,
     MessageBox,
     ButtonApp,
-    AmountToggle
+    ToggleAmount,
+    PopupAmount
   },
   mixins: [
     msgBoxTools
@@ -48,6 +50,8 @@ const Mappers = Vue.extend({
 export default class PageMain extends Mixins(msgBoxTools, Mappers) {
   deleteId: number = null
   secondBtn: Button = null
+  popupAmountIsShown: boolean = false
+  amountForUpdate: number = null
 
   created() {
     this.updateList()
@@ -68,15 +72,35 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
       case 'beforeDelete':
         this.closeMsgBox()
         this.deleteItem()
+        break
       case 'failFetchList':
         this.updateList()
+        break
+      case 'failSetAmount':
+        this.updateAmount(this.amountForUpdate)
       default:
         this.closeMsgBox()
     }
   }
+  onSecondBtnClicked() {
+    switch (this.requestStatus) {
+      case 'failSetAmount':
+        this.closePopupAmount()
+      default:
+        this.closeMsgBox()
+    }
+  }
+  async openPopupAmount() {
+    this.popupAmountIsShown = true
+    document.body.classList.add('modal-open')
+  }
+  closePopupAmount() {
+    this.popupAmountIsShown = false
+    document.body.classList.remove('modal-open')
+  }
   // STORE ACTIONS CALL
   deleteItem() {
-    // TODO: переписать на метод отправи в архив (когда появится)
+    // TODO: переписать на метод отправки в архив (когда появится)
     this.deleteBanner(this.deleteId)
       .then(async() => {
         this.secondBtn = { type: 'success', isPlain: true }
@@ -97,6 +121,19 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
   updateList() {
     this.$emit('updateList')
   }
+  updateAmount(amount) {
+    this.amountForUpdate = amount // HACK: stored here in case of repeated request
+    this.updateActiveAmount(amount)
+      .then(() => {
+          this.closePopupAmount()
+          this.closeMsgBox()
+        })
+        .catch(() => {
+        this.requestStatus = 'failSetAmount'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
+  }
 }
 </script>
 
@@ -110,6 +147,9 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
 
   &__btn
     margin-bottom 50px
+
+  &__amount
+    margin-bottom 25px
 
   &__list
     width 100%

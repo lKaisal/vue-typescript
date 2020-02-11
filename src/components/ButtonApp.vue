@@ -44,6 +44,7 @@ export default class ButtonApp extends Vue {
     // justify-content center
     align-items center
     padding 14px 20px
+    max-height 100%
     color white
     border-radius 4px
     cursor pointer
