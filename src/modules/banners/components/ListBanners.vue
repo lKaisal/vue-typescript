@@ -5,9 +5,9 @@
     +e.container(v-if="list && list.length")
       +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
-      transition(mode="out-in" @enter="animateOneMoreTime")
+      transition(keep-alive mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeIndex")
-          ItemBanner(v-for="(item, index) in activeList" :key="item.id" :banner="item" @delete="onDeleteItem" class="list-banners__item js-voa js-voa-start")
+          ItemBanner(v-for="(item, index) in activeList" :key="item.id" :banner="item" @delete="onDeleteItem" @dblclick.prevent.native="goToPageEdit(item.id)" class="list-banners__item js-voa js-voa-start")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -37,11 +37,11 @@ export default class ListBanners extends Mappers {
 
   get list() { return this.listSorted }
   get activeList() {
-    if (this.activeIndex === '2') return this.listActive
-    else if (this.activeIndex === '3') return this.listInactive
-    else return this.list
+    if (this.activeIndex === '1') return this.listActive
+    else if (this.activeIndex === '2') return this.listInactive
+    // else return this.list
   }
-  get sortItems() { return [ `Все баннеры (${this.list.length})`, `Активные (${this.listActive.length})`, `Неактивные (${this.listInactive.length})` ] }
+  get sortItems() { return [ `Активные (${this.listActive.length})`, `Архивные (${this.listInactive.length})` ] }
 
   async mounted() {
     await this.$nextTick()
@@ -57,6 +57,7 @@ export default class ListBanners extends Mappers {
   animateOneMoreTime() {
     animateIfVisible()
   }
+  goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/banners/edit/${id}` }).catch(err => {}) }
 }
 </script>
 

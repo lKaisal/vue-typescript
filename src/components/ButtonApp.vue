@@ -4,12 +4,19 @@
   +b.button-app
     +e.container(:class="[btnType, { 'is-plain': isPlain, 'is-disabled': disabled }]" @click="onClick")
       +e.text(v-html="text")
+      +e.icon-wrapper(v-if="icon")
+        +e.I.icon(:class="icon")
+      //- IconSvg(icon="clean" class="button-app__icon")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Ref, Watch } from 'vue-property-decorator'
+import IconSvg from '@/components/IconSvg.vue'
 
 @Component({
+  components: {
+    IconSvg
+  }
 })
 
 export default class ButtonApp extends Vue {
@@ -17,6 +24,7 @@ export default class ButtonApp extends Vue {
   @Prop() isPlain: boolean
   @Prop() text: string
   @Prop() disabled: boolean
+  @Prop() icon: string
 
   onClick() {
     if (this.disabled) return
@@ -32,9 +40,9 @@ export default class ButtonApp extends Vue {
 .button-app
 
   &__container
-    display inline-block
+    display inline-flex
     // justify-content center
-    // align-items center
+    align-items center
     padding 14px 20px
     color white
     border-radius 4px
@@ -104,8 +112,22 @@ export default class ButtonApp extends Vue {
             color white
 
   &__text
+    // display inline-block
     white-space nowrap
     font-size 14px
     fontMedium()
     user-select none
+
+  &__icon-wrapper
+    position relative
+    // display inline-block
+    margin-left 10px
+    fill white
+    width 20px
+    height 20px
+
+  &__icon
+    position absolute
+    width 100%
+    height 100%
 </style>

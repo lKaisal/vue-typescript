@@ -5,7 +5,8 @@
     +e.container
       +e.title.H1.page-title Список баннеров
       //- el-button.page-main__btn(type="primary" @click="onCreateClick") Создать баннер
-      ButtonApp(text="Создать баннер" @clicked="onCreateClick" class="page-main__btn")
+      ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn")
+      //- AmountToggle(class="page-main__amount")
       ListBanners(:key="listSorted && listSorted.length" @deleteItem="onDeleteClick" class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox" :secondBtn="secondBtn" class="page-main__msg-box modal")
@@ -14,12 +15,13 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
-import ListBanners from '../components/ListBanners.vue'
-import MessageBox from '../components/MessageBox.vue'
+import { bannersMapper } from '../module/store'
 import msgBoxTools from '../mixins/msgBoxTools'
 import sleep from '@/mixins/sleep'
-import { bannersMapper } from '../module/store'
+import ListBanners from '../components/ListBanners.vue'
+import MessageBox from '../components/MessageBox.vue'
 import ButtonApp from '@/components/ButtonApp.vue'
+import AmountToggle from '../components/AmountToggle.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -35,7 +37,8 @@ const Mappers = Vue.extend({
   components: {
     ListBanners,
     MessageBox,
-    ButtonApp
+    ButtonApp,
+    AmountToggle
   },
   mixins: [
     msgBoxTools
@@ -73,6 +76,7 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
   }
   // STORE ACTIONS CALL
   deleteItem() {
+    // TODO: переписать на метод отправи в архив (когда появится)
     this.deleteBanner(this.deleteId)
       .then(async() => {
         this.secondBtn = { type: 'success', isPlain: true }

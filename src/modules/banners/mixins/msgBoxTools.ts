@@ -63,8 +63,8 @@ export default class msgBoxTools extends Vue {
       secondBtn: 'Отменить'
     },
     beforeDelete: {
-      title: 'Вы уверены?',
-      msg: 'Данное действие нельзя отменить',
+      title: 'Отправить в архив?',
+      msg: 'После перевода в архив баннер перестанет отображаться в приложении',
       firstBtn: 'Подтвердить',
       secondBtn: 'Отмена'
     },

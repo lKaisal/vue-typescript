@@ -2,12 +2,13 @@
   include ../../../tools/bemto.pug
 
   +b.item-banner
-    +e.container
-      +e.icons(v-if="editIconsShown")
-        +e.icon(@click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
-          i(class="el-icon-edit")
-        +e.icon(@click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
-          i(class="el-icon-delete")
+    +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false")
+      transition
+        +e.icons(v-show="editIconsShown && cardIsHovered")
+          +e.icon._edit(@click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
+            i(class="el-icon-edit")
+          +e.icon._delete(v-if="banner.isActive" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
+            i(class="el-icon-delete")
       +e.img-wrapper
         transition(mode="in-out")
           IMG.item-banner__img(v-if="imgLoaded" :src="banner.bannerImageUrl")
@@ -17,9 +18,10 @@
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
         +e.info-item(v-if="banner.sortCalculated && banner.isActive")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
-        +e.info-item
-          +e.title Отображать в приложении:&nbsp;<span class="item-banner__text">{{ banner.isActive ? 'Да' : 'Нет' }}</span>
-        +e.info-item(v-if="banner.activeFrom || banner.activeTo")
+        +e.info-item(v-if="banner.createdAt")
+          +e.title Создан: 
+          +e.text {{ banner.createdAt }}
+        //- +e.info-item(v-if="banner.activeFrom || banner.activeTo")
           +e.title Срок действия: 
           +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
 </template>
@@ -40,6 +42,7 @@ export default class ItemBanners extends Vue {
   imgLoaded: boolean = false
   editHovered: boolean = false
   deleteHovered: boolean = false
+  cardIsHovered: boolean = false
   observer = null
 
   mounted() {
@@ -108,12 +111,20 @@ export default class ItemBanners extends Vue {
     // right -25px
     display flex
     justify-content center
-    opacity 0
-    transform translateY(100px)
     transition(opacity\, transform)
-    .item-banner__container:hover &
-      opacity 1
-      transform none
+    &.v-enter
+      opacity 0
+      transform translateX(-100%)
+    &.v-leave-to
+      opacity 0
+      transform translateX(100%)
+    &.v-enter-active
+    &.v-leave-active
+      pointer-events none
+      transition-duration $tFast
+    // .item-banner__container:hover &
+    //   opacity 1
+    //   transform none
     &:before
       ghost()
       background white
@@ -140,13 +151,13 @@ export default class ItemBanners extends Vue {
       transition(color\, opacity\, transform)
     &:not(:last-child)
       margin-right 15px
-    &:first-child
+    &_edit
       // border 1px solid $cBrand
       &.is-active
         // border-color $cBrand
         >>> i
           color $cBrand
-          // opacity 1
+          opacity 1
       &:hover
         // background-color $cBrand
         >>> i
@@ -154,7 +165,7 @@ export default class ItemBanners extends Vue {
           transform scale(1.25) translate3d(0,0,0)
           opacity 1
           // color $cBrand
-    &:last-child
+    &_delete
       // border 1px solid $cDanger
       border-color $cDanger
       >>> i
@@ -162,7 +173,7 @@ export default class ItemBanners extends Vue {
       &.is-active
         >>> i
           color $cDanger
-          // opacity 1
+          opacity 1
       &:hover
         >>> i
           transform scale(1.25) translate3d(0,0,0)
@@ -217,6 +228,7 @@ export default class ItemBanners extends Vue {
     // display flex
     // justify-content center
     text-align center
+    white-space nowrap
     +xs()
       justify-content flex-start
     &:not(:last-child)

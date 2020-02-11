@@ -8,6 +8,10 @@
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
       +e.column
+        +e.field._is-active(:class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
+          +e.EL-CHECKBOX.checkbox(v-model="isActive")
+          +e.LABEL.label(for="isActive") Активировать
+          +e.error(v-html="isActiveField.errorMsg")
         +e.field._news-id(:class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
           +e.label
             +e.LABEL(for="newsId") Id новости
@@ -29,10 +33,6 @@
               +e.LABEL.label(for="activeTo") Дата окончания
             +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
             +e.error(v-html="activeToField.errorMsg")
-        +e.field._is-active(:class="{ 'is-invalid': isInvalid(isActiveField) }")
-          +e.LABEL.label(for="isActive") Показывать в приложении
-          +e.EL-CHECKBOX.checkbox(v-model="isActive")
-          +e.error(v-html="isActiveField.errorMsg")
         +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
           +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
@@ -173,6 +173,8 @@ export default class FormBanners extends Mappers {
         align-items center
       +lt-xl()
         flex-direction column
+    &_is-active
+      // margin-top 50px
 
   &__error
     position absolute
@@ -192,8 +194,9 @@ export default class FormBanners extends Mappers {
     color $cPrimaryText
     white-space nowrap
     .form-banners__field_is-active &
-    // .form-banners__field_sort &
       margin-right 25px
+      fontMedium()
+      font-size 18px
     .form-banners__field_news-id &
     .form-banners__field_page-type &
     .form-banners__field_active-from &
@@ -226,6 +229,7 @@ export default class FormBanners extends Mappers {
     display block
 
   &__checkbox
+    margin-right 15px
     >>> .el-checkbox__inner
       width 18px
       height 18px
