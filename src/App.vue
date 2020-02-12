@@ -8,15 +8,19 @@
           //- el-button(type="primary" @click="onClick") Enter BannersModule
           ButtonApp(text="Enter BannersModule" @clicked="onClick" class="app__btn")
         router-view(v-else class="app__page page")
+      //- +e.up-arrow
+        IconSvg(icon="back" class="app__icon-up")
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
+import IconSvg from '@/components/IconSvg.vue'
 
 @Component({
   components: {
-    ButtonApp
+    ButtonApp,
+    IconSvg
   }
 })
 
@@ -31,9 +35,13 @@ export default class App extends Vue {
 @import '~@/styles/tools'
 @import '~@/styles/app'
 
+$arrowOffset = $offsetXl / 4
+$arrowSize = $offsetXl / 2
+
 .app
 
   &__container
+    position relative
     min-height 100%
     min-height 100vh
     display flex
@@ -49,4 +57,19 @@ export default class App extends Vue {
     display flex
     flex-direction column
     flex-grow 1
+
+  &__up-arrow
+    position fixed
+    right $arrowOffset
+    bottom $arrowOffset
+    width $arrowSize
+    height $arrowSize
+
+  &__icon-up
+    position absolute
+    top 0
+    right 0
+    bottom 0
+    left 0
+    transform rotateZ(90deg)
 </style>
