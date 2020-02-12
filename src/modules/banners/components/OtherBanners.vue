@@ -17,7 +17,7 @@ import sleep from '@/mixins/sleep'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapGetters(['listSorted', 'listActive', 'listInactive'])
+    ...bannersMapper.mapGetters(['listActive', 'listInactive'])
   },
 })
 

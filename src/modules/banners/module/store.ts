@@ -31,40 +31,28 @@ class BannersState {
 }
 
 class BannersGetters extends Getters<BannersState> {
-  get listSorted() {
-    const list = this.state.list
+  get listActive() {
+    return this.state.list.filter(item => item.isActive).sort((a, b) => {
+      const sortA = a.position
+      const sortB = b.position
 
-    if (!list || !list.length) return
-
-    const listSorted = list.sort((a, b) => {
-      const isActiveA = a.isActive
-      const isActiveB = b.isActive
-      const sortA = a.sort
-      const sortB = b.sort
-
-      if (isActiveA === isActiveB) {
-        if (sortA < sortB) return 1
-        else if (sortA > sortB) return -1
-        else return 0
-      } else {
-        if (isActiveA) return -1
-        else return 1
-      }
+      if (sortA > sortB) return 1
+      else if (sortA < sortB) return -1
+      else return 0
     })
-
-    const sortArr = listSorted.filter(b => b.isActive).map(b => b.sort)
-
-    listSorted.forEach((b) => {
-      b.newsId = b.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(b.appLink))
-      b.sortCalculated = b.isActive ? sortArr.indexOf(b.sort) + 1 : null
-    })
-
-    return listSorted
   }
-  get listActive() { return this.getters.listSorted.filter(item => item.isActive) }
-  get listInactive() { return this.getters.listSorted.filter(item => !item.isActive) }
+  get listInactive() {
+    return this.state.list.filter(item => !item.isActive).sort((a, b) => {
+      const updatedAtA = dateParser(a.updatedAt)
+      const updatedAtB = dateParser(b.updatedAt)
+
+      if (updatedAtA < updatedAtB) return 1
+      else if (updatedAtA > updatedAtB) return -1
+      else return 0
+    })
+  }
   get bannerById() {
-    return (id: Banner['id']) => { return this.getters.listSorted && this.getters.listSorted.find(b => b.id.toString() === id.toString()) }
+    return (id: Banner['id']) => { return this.state.list && this.state.list.find(b => b.id.toString() === id.toString()) }
   }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
@@ -367,6 +355,20 @@ const getNewsIdFromAppLink = (str) => {
   const regex = /\d+$/;
 
   return regex.exec(str)[0]
+}
+
+const dateParser = (date) => {
+  const dateParser = /(\d{2})\-(\d{2})\-(\d{4}) (\d{2}):(\d{2})/;
+  const match = date.match(dateParser);
+  const newDate = new Date(
+      Number(match[3]),  // year
+      Number(match[2])-1,  // monthIndex
+      Number(match[1]),  // day
+      Number(match[4]),  // hours
+      Number(match[5]),  // minutes
+  );
+
+  return Date.parse(newDate.toString())
 }
 
 export const banners = new Module({

@@ -21,7 +21,8 @@ import sleep from '@/mixins/sleep'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapGetters(['listSorted', 'listActive', 'listInactive'])
+    ...bannersMapper.mapState(['list']),
+    ...bannersMapper.mapGetters(['listActive', 'listInactive'])
   },
 })
 
@@ -35,7 +36,6 @@ export default class ListBanners extends Mappers {
   activeIndex: string = '1'
   observer = null
 
-  get list() { return this.listSorted }
   get activeList() {
     if (this.activeIndex === '1') return this.listActive
     else if (this.activeIndex === '2') return this.listInactive

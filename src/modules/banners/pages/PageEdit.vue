@@ -41,7 +41,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'isLoading', 'form']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'listSorted'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading']),
@@ -95,7 +95,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
     if (this.banner.isActive) return this.listActive.filter(b => b.id !== this.banner.id)
     else {
-      const shuffled = [...this.listSorted].sort(() => .5 - Math.random())
+      const shuffled = [...this.list].sort(() => .5 - Math.random())
       return shuffled.slice(0, 4)
     }
   }

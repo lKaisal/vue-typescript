@@ -14,12 +14,14 @@
           IMG.item-banner__img(v-if="imgLoaded" :src="banner.bannerImageUrl")
           +e.img._loading(v-else)
       +e.info
-        +e.info-item(v-if="banner.appLink")
-          +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        +e.info-item(v-if="banner.sortCalculated && banner.isActive")
-          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.sortCalculated }}</span>
+        +e.info-item(v-if="banner.position && banner.isActive")
+          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.position }}</span>
+        +e.info-item(v-if="banner.updatedAt")
+          +e.title Обновлен:&nbsp;<span class="item-banner__text">{{ banner.updatedAt }}</span>
         +e.info-item(v-if="banner.createdAt")
           +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
+        +e.info-item(v-if="banner.appLink")
+          +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
         //- +e.info-item(v-if="banner.activeFrom || banner.activeTo")
           +e.title Срок действия: 
           +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
@@ -43,6 +45,7 @@ export default class ItemBanners extends Vue {
   deleteHovered: boolean = false
   cardIsHovered: boolean = false
   observer = null
+  count: number = 0
 
   mounted() {
     this.initObserver()
@@ -65,11 +68,15 @@ export default class ItemBanners extends Vue {
     this.$emit('delete', this.banner.id)
   }
   preloadImage() {
+    if (this.count > 3) return
+
     preloadImages(this.banner.bannerImageUrl)
       .then(async () => {
         // await sleep(1000)
         this.imgLoaded = true
       })
+      .catch(() => this.preloadImage())
+      .finally(() => this.count++)
   }
 }
 </script>

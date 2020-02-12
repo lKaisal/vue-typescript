@@ -35,7 +35,7 @@ import ButtonApp from '@/components/ButtonApp.vue'
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['isLoading', 'form', 'activeAmount']),
-    ...bannersMapper.mapGetters(['listSorted', 'listActive', 'formSort', 'bannerById', 'formIsValid'])
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),
