@@ -8,8 +8,9 @@
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
       +e.column
-        +e.field._is-active(:class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
-          +e.EL-CHECKBOX.checkbox(v-model="isActive")
+        +e.field._is-active(@click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
+          +e.checkbox
+            +e.I.checkbox-icon.el-icon-check
           +e.LABEL.label(for="isActive") Активировать
           +e.error(v-html="isActiveField.errorMsg")
         +e.field._news-id(:class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
@@ -174,7 +175,11 @@ export default class FormBanners extends Mappers {
       +lt-xl()
         flex-direction column
     &_is-active
-      // margin-top 50px
+      display inline-flex
+      padding 5px
+      margin -5px
+      margin-bottom 30px
+      cursor pointer
 
   &__error
     position absolute
@@ -194,9 +199,10 @@ export default class FormBanners extends Mappers {
     color $cPrimaryText
     white-space nowrap
     .form-banners__field_is-active &
-      margin-right 25px
+      // margin-right 25px
       fontMedium()
       font-size 18px
+      pointer-events none
     .form-banners__field_news-id &
     .form-banners__field_page-type &
     .form-banners__field_active-from &
@@ -230,10 +236,32 @@ export default class FormBanners extends Mappers {
 
   &__checkbox
     margin-right 15px
-    >>> .el-checkbox__inner
-      width 18px
-      height 18px
-      &:after
-        top 3px
-        left 6px
+    display flex
+    justify-content center
+    align-items center
+    width 18px
+    height 18px
+    border 1px solid $cBaseBorder
+    border-radius 2px
+    pointer-events none
+    transition(background-color\, border-color)
+    >>> i
+      font-size 14px
+      color transparent
+      transform scale(0)
+      transition(color\, transform)
+    .form-banners__field:hover &
+      >>> i
+        color $cBrand
+        transform scale(.75)
+    .is-active &
+      background-color $cBrand
+      border-color $cBrand
+      >>> i
+        color white
+        transform scale(1)
+    .form-banners__field.is-active:hover &
+      >>> i
+        color white
+        transform scale(.75)
 </style>
