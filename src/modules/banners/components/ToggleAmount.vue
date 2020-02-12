@@ -48,13 +48,13 @@ export default class ToggleAmount extends Mixins(Mappers) {
 
   &__label
     margin-right 10px
-    fontMedium()
+    // fontMedium()
 
   &__data
     // padding 10px
     // width 60px
     display flex
-    border 1px solid $cBrand
+    border 1px solid $cBaseBorder
     border-radius 4px
     overflow hidden
 

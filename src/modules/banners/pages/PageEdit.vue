@@ -82,7 +82,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           break
         case 'sort':
           if (!form.find(f => f.name === 'isActive').value) break
-          else return banner.sortCalculated !== field.value
+          else return banner.position !== field.value
         default:
           if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
       }

@@ -20,14 +20,16 @@ class BannersState {
     data: [
       { name: 'activeFrom', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
       { name: 'activeTo', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
+      { name: 'appLink', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
       { name: 'isActive', value: true, validationRequired: false, isValid: true, errorType: null, errorMsg: null },
       { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-      { name: 'newsId', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
-      { name: 'pageType', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
-      { name: 'sort', value: null, validationRequired: true, isValid: true, errorType: null, errorMsg: null }
+      { name: 'newsId', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
+      { name: 'pageType', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
+      { name: 'sort', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null }
     ],
   }
   activeAmount: number = 4
+  pageTypes: string[] = ['Новость', 'Раздел']
 }
 
 class BannersGetters extends Getters<BannersState> {
@@ -57,6 +59,7 @@ class BannersGetters extends Getters<BannersState> {
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
   get formActiveTo() { return this.state.form.data.find(field => field.name === 'activeTo') }
+  get formAppLink() { return this.state.form.data.find(field => field.name === 'appLink') }
   get formIsActive() { return this.state.form.data.find(field => field.name === 'isActive') }
   get formFile() { return this.state.form.data.find(field => field.name === 'file') }
   get formNewsId() { return this.state.form.data.find(field => field.name === 'newsId') }
@@ -72,6 +75,7 @@ class BannersGetters extends Getters<BannersState> {
 
     formData.activeForm = this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
     formData.activeTo = this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
+    formData.appLink = this.getters.formAppLink.value && this.getters.formAppLink.value.toString() || ''
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || ''
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
@@ -113,9 +117,9 @@ class BannersMutations extends Mutations<BannersState> {
     const fields = this.state.form.data
 
     fields.forEach(field => {
-      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount : null)
-      field.isValid = field.name === 'sort'
-      field.validationRequired = field.name === 'file' || field.name === 'pageType' || field.name === 'sort'
+      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount : (field.name === 'pageType' ? 0 : null))
+      field.isValid = field.name === 'sort' || field.name === 'pageType'
+      field.validationRequired = field.name === 'file' || field.name === 'newsId'
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
       field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
     })
@@ -246,7 +250,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Get single banner data by bannerId */
+  /** Get single banner data by bannerId - currently NOT USED */
   getBannerById(id: Banner['id']) {
     return new Promise((resolve, reject) => {
       this.commit('setIsLoading', true)
@@ -266,46 +270,39 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     })
   }
   /** Action for form v-model. Updates proposed field and all related fields if they exist.
-   * For example: isActive / sort, pageType / newsId
+   * For example: isActive / sort, pageType / newsId / appLink
    */
   updateField({name, value}: {name: keyof BannerForm, value: FormField["value"]}) {
     const field = this.state.form.data.find(field => field.name === name)
+    const appLink = this.state.form.data.find(f => f.name === 'appLink')
+    const newsId = this.state.form.data.find(f => f.name === 'newsId')
 
     field.value = value
 
     switch (name) {
       case 'isActive':
         const sort = this.state.form.data.find(f => f.name === 'sort')
-        if (field.value) {
-          sort.validationRequired = true
-          this.dispatch('updateField', ({ name: 'sort', value: sort.value }))
-        } else {
-          sort.validationRequired = false
-          this.dispatch('updateField', ({name: 'sort', value: null}))
-        }
-        field.isValid = !!field.value
+        const sortValue = field.value ? sort.value : null
+        this.dispatch('updateField', ({ name: 'sort', value: sortValue }))
         break
-      case 'newsId':
-        const pageType = this.state.form.data.find(f => f.name === 'pageType')
-        if (pageType.value !== 'news') field.validationRequired = false
-        field.isValid = !!field.value
-        break
+
       case 'pageType':
-        const newsId = this.state.form.data.find(f => f.name === 'newsId')
-        if (field.value === 'news') {
+        if (field.value === 0) {
           newsId.validationRequired = true
           this.dispatch('updateField', ({name: 'newsId', value: newsId.value}))
+          appLink.validationRequired = false
         }
-        else newsId.validationRequired = false
-        field.isValid = !!field.value
+        else {
+          appLink.validationRequired = true
+          this.dispatch('updateField', ({name: 'appLink', value: appLink.value}))
+          newsId.validationRequired = false
+        }
         break
+
       case 'sort':
         field.value = field.value > this.state.activeAmount || !field.value ? this.state.activeAmount : field.value
-        const isActive = this.state.form.data.find(f => f.name === 'isActive')
-        if (isActive.value) field.validationRequired = true
-        else field.validationRequired = false
-        field.isValid = !isActive.value || !!field.value
         break
+
       default:
         field.isValid = !!field.value
     }
@@ -319,28 +316,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
     fields.forEach(field => {
       switch (field.name) {
-        case 'activeFrom':
-          this.dispatch('updateField', { name: field.name, value: data.activeFrom })
-          break
-        case 'activeTo':
-          this.dispatch('updateField', { name: field.name, value: data.activeTo })
-          break
-        case 'isActive':
-          this.dispatch('updateField', { name: field.name, value: data.isActive })
-          break
         case 'file':
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break
-        case 'newsId':
-          this.dispatch('updateField', { name: field.name, value: data.newsId })
-          break
-        case 'pageType':
-          this.dispatch('updateField', { name: field.name, value: data.pageType })
-          break
         case 'sort':
-          this.dispatch('updateField', { name: field.name, value: data.sortCalculated })
+          this.dispatch('updateField', { name: field.name, value: data.position })
           break
-        }
+        default:
+          this.dispatch('updateField', { name: field.name, value: data[field.name] })
+          break
+      }
     })
   }
   /** Deactivate banner by Id */
@@ -377,6 +362,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   updateActiveAmount(payload: number) {
     return new Promise(async (resolve, reject) => {
       this.commit('setIsLoading', true)
+
       service.post(`/api/v1/active-count/${payload}`)
       .then((res: AxiosResponse<any>) => {
         this.commit('setActiveAmount', res.data.count)

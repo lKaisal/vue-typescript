@@ -13,9 +13,6 @@
           ButtonApp(btnType="primary" :disabled="!isSmthToCommit" @clicked="submitForm" text="Сохранить баннер" class="page-create__btn")
           ButtonApp(btnType="warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
           ButtonApp(btnType="danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
-          //- +e.EL-BUTTON(type="primary" @click="submitForm") Сохранить баннер
-          //- +e.EL-BUTTON(type="warning" plain @click="clearForm") Очистить форму
-          //- +e.EL-BUTTON(type="danger" plain @click="goToPageMain") Отменить
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
       PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-create__popup modal")
@@ -63,11 +60,12 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   get isSmthToCommit() {
     // check if any field was changed
     const form = this.form.data
-    const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
     const isActiveToCommit = !form.find(f => f.name === 'isActive').value
-    const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort').map(f => f.value).some(f => !!f)
+    const pageTypeToCommit = form.find(f => f.name === 'pageType').value > 0
+    const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
+    const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType').map(f => f.value).some(f => !!f)
 
-    return sortToCommit || smthElseToCommit || isActiveToCommit
+    return smthElseToCommit
   }
 
   created() {

@@ -42,6 +42,7 @@ type FormField = {
 type BannerForm = {
   activeFrom: String,
   activeTo: String,
+  appLink: String,
   isActive: Boolean,
   file: File | Blob,
   newsId: Number,

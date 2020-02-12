@@ -50,7 +50,7 @@ export default class ButtonApp extends Vue {
     cursor pointer
     &.is-disabled
       opacity .75
-      cursor url("/static/images/block.png"), not-allowed
+      cursor url('/static/images/block.png'), not-allowed
     &.primary
       background-color $cBrand
       border 1px solid $cBrand
@@ -121,7 +121,9 @@ export default class ButtonApp extends Vue {
 
   &__icon-wrapper
     position relative
-    // display inline-block
+    display flex
+    justify-content center
+    align-items center
     margin-left 10px
     fill white
     width 20px
@@ -131,4 +133,5 @@ export default class ButtonApp extends Vue {
     position absolute
     width 100%
     height 100%
+    text-align center
 </style>

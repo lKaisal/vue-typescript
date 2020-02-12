@@ -4,36 +4,50 @@
   +b.form-banners
     +e.container
       +e.column
+        //- file (image)
         +e.field._img(:class="{ 'is-invalid': isInvalid(fileField) }")
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
-      +e.column
+        //- isActive
         +e.field._is-active(@click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
           +e.checkbox
             +e.I.checkbox-icon.el-icon-check
           +e.LABEL.label(for="isActive") Активировать
           +e.error(v-html="isActiveField.errorMsg")
-        +e.field._news-id(:class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
-          +e.label
-            +e.LABEL(for="newsId") Id новости
-          +e.EL-INPUT.input(placeholder="000" v-model="newsId")
-          +e.error(v-html="newsIdField.errorMsg")
-        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': !!pageType }")
+      +e.column
+        //- pageType
+        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': true }")
           +e.label
             +e.LABEL(for="pageType") Тип страницы
-          +e.EL-INPUT.input(placeholder="type" v-model="pageType")
+          +e.EL-SELECT.select(ref="select" v-model="pageType" :placeholder="pageTypes[0]")
+            +e.EL-OPTION(v-for="(type, index) in pageTypes.length" :key="index" :label="pageTypes[index]" :value="index")
           +e.error(v-html="pageTypeField.errorMsg")
-        //- +e.row
-          +e.field._active-from(:class="{ 'is-filled': !!activeFrom }")
+        +e.fields
+          //- newsId
+          +e.field._news-id(v-if="isNewsType" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
             +e.label
-              +e.LABEL.label(for="activeFrom") Дата начала
-            +e.INPUT.pickr.el-input__inner(ref="fromRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeFrom")
-            +e.error(v-html="activeFromField.errorMsg")
-          +e.field._active-to(:class="{ 'is-filled': !!activeTo }")
+              +e.LABEL(for="newsId") Id новости
+            +e.EL-INPUT.input(placeholder="000" v-model="newsId")
+            +e.error(v-html="newsIdField.errorMsg")
+          //- appLink
+          +e.field._app-link(v-else :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink }")
             +e.label
-              +e.LABEL.label(for="activeTo") Дата окончания
-            +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
-            +e.error(v-html="activeToField.errorMsg")
+              +e.LABEL(for="appLink") Ссылка на раздел
+            +e.EL-INPUT.input(placeholder="/link" v-model="appLink")
+            +e.error(v-html="appLinkField.errorMsg")
+        //- activeFrom / activeTo
+          //- +e.row
+            +e.field._active-from(:class="{ 'is-filled': !!activeFrom }")
+              +e.label
+                +e.LABEL.label(for="activeFrom") Дата начала
+              +e.INPUT.pickr.el-input__inner(ref="fromRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeFrom")
+              +e.error(v-html="activeFromField.errorMsg")
+            +e.field._active-to(:class="{ 'is-filled': !!activeTo }")
+              +e.label
+                +e.LABEL.label(for="activeTo") Дата окончания
+              +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
+              +e.error(v-html="activeToField.errorMsg")
+        //- sort
         +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
           +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
@@ -52,8 +66,8 @@ import { bannersMapper } from '../module/store'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
+    ...bannersMapper.mapState(['form', 'activeAmount', 'pageTypes']),
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown']),
@@ -77,6 +91,7 @@ export default class FormBanners extends Mappers {
   // FORM FIELDS
   get activeFromField() { return this.formActiveFrom }
   get activeToField() { return this.formActiveTo }
+  get appLinkField() { return this.formAppLink }
   get isActiveField() { return this.formIsActive }
   get fileField() { return this.formFile }
   get newsIdField() { return this.formNewsId }
@@ -88,14 +103,19 @@ export default class FormBanners extends Mappers {
   set activeFrom(value) { this.updateField({name: 'activeFrom', value}) }
   get activeTo() { return this.pickrTo && this.pickrTo.selectedDates.length && this.pickrTo.formatDate(this.pickrTo.selectedDates[0], this.dateFormat) }
   set activeTo(value) { this.updateField({name: 'activeTo', value}) }
+  get appLink() { return this.appLinkField.value }
+  set appLink(value) { this.updateField({name: 'appLink', value: trim(value)}) }
   get isActive() { return this.isActiveField.value }
   set isActive(value) { this.updateField({name: 'isActive', value}) }
   get newsId() { return this.newsIdField.value }
   set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
-  set pageType(value) { this.updateField({name: 'pageType', value: trim(value)}) }
+  set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
   get sortBy() { return this.isActive ? this.sortField.value : null }
   set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount}) : null }
+
+  // other computed
+  get isNewsType() { return this.pageType === 0 }
 
   mounted() {
     // this.initPickers()
@@ -105,6 +125,7 @@ export default class FormBanners extends Mappers {
     this.setValidationIsShown(false)
   }
 
+  isInvalid(field) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
   initPickers() {
     // activeFrom
     const configFrom = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true, onChange: (dateStr) => {
@@ -120,7 +141,6 @@ export default class FormBanners extends Mappers {
     this.pickrTo = flatpickr(this.toRef, configTo)
     if (this.activeToField.value) this.pickrTo.setDate(this.activeToField.value)
   }
-  isInvalid(field) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
 }
 </script>
 
@@ -159,7 +179,9 @@ export default class FormBanners extends Mappers {
 
   &__field
   &__row
-    max-width 500px
+    max-width 450px
+    &_img
+      max-width 550px
 
   &__field
     position relative
@@ -168,12 +190,6 @@ export default class FormBanners extends Mappers {
       flex-direction column
       align-items flex-start
       margin-bottom 60px !important
-    &_sort
-      display flex
-      +xl()
-        align-items center
-      +lt-xl()
-        flex-direction column
     &_is-active
       display inline-flex
       padding 5px
@@ -194,23 +210,21 @@ export default class FormBanners extends Mappers {
       opacity 1
 
   &__label
+    display block
+    margin-bottom 10px
     fontLight()
     font-size 15px
     color $cPrimaryText
     white-space nowrap
+    transition(opacity)
     .form-banners__field_is-active &
       // margin-right 25px
       fontMedium()
       font-size 18px
       pointer-events none
-    .form-banners__field_news-id &
-    .form-banners__field_page-type &
-    .form-banners__field_active-from &
-    .form-banners__field_active-to &
-      margin-bottom 10px
-    .form-banners__field_sort &
-      +xl()
-        margin-right 25px
+      opacity .75
+    .form-banners__field_is-active.is-active &
+        opacity 1
 
   &__input
   &__select
@@ -228,6 +242,7 @@ export default class FormBanners extends Mappers {
         border-color $cDanger
 
   &__select
+    display block
     +lt-xl()
       margin-top 10px
 
