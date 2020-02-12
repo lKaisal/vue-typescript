@@ -3,7 +3,7 @@
 
   +b.other-banners
     +e.H2.title Другие баннеры
-    +e.row(v-if="list && list.length")
+    +e.row(v-if="list.data && list.data.length")
       +e.item(v-for="(item, index) in list" :key="item.id")
         +e.img-wrapper
           IMG(:src="item.bannerImageUrl")

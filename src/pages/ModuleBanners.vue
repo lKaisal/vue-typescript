@@ -1,9 +1,9 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-banners
+  +b.module-banners(v-loading.fullscreen.lock="isLoading || list.isLoading")
     transition(mode="out-in")
-      router-view(@updateList="loadData" class="module-banners__page page")
+      router-view(@updateList="updateList" class="module-banners__page page")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal")
 </template>
@@ -15,8 +15,11 @@ import { bannersMapper } from '@/modules/banners/module/store'
 import MsgBoxTools from '@/modules/banners/mixins/msgBoxTools'
 
 const Mappers = Vue.extend({
+  computed: {
+    ...bannersMapper.mapState(['isLoading', 'list'])
+  },
   methods: {
-    ...bannersMapper.mapActions(['getList'])
+    ...bannersMapper.mapActions(['getList', 'getActiveAmount'])
   }
 })
 
@@ -32,12 +35,32 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
   }
 
   loadData() {
+    if (this.list.isLoading) return
+
+    if (this.msgBoxIsShown) this.closeMsgBox()
+
+    const promisesArr = [this.getList(), this.getActiveAmount()]
+    Promise.all(promisesArr)
+      .then(() => {
+        console.log('Data loaded!')
+        if (this.msgBoxIsShown) this.closeMsgBox()
+      })
+      .catch(() => {
+        this.openMsgBox()
+      })
+  }
+
+  updateList() {
+    if (this.list.isLoading) return
+
+    if (this.msgBoxIsShown) this.closeMsgBox()
+
     this.getList()
       .then(() => {
         console.log('List loaded!')
-        this.closeMsgBox()
+        if (this.msgBoxIsShown) this.closeMsgBox()
       })
-      .catch(async (error) => {
+      .catch(() => {
         this.openMsgBox()
       })
   }

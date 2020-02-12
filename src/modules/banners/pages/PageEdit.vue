@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-edit.page(v-loading.fullscreen.lock="isLoading")
+  +b.page-edit.page
     +e.container
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-edit__icon-back")
@@ -23,15 +23,15 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
+import sleep from '@/mixins/sleep'
+import ButtonApp from '@/components/ButtonApp.vue'
 import { MsgBoxContent, Banner, RequestStatus, Button } from '../models'
+import { bannersMapper } from '../module/store'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import PopupConflict from '../components/PopupConflict.vue'
-import sleep from '@/mixins/sleep'
-import { bannersMapper } from '../module/store'
-import ButtonApp from '@/components/ButtonApp.vue'
-import OtherBanners from '../components/OtherBanners.vue'
+// import OtherBanners from '../components/OtherBanners.vue'
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -55,7 +55,7 @@ const Mappers = Vue.extend({
     MessageBox,
     PopupConflict,
     ButtonApp,
-    OtherBanners
+    // OtherBanners
   }
 })
 
@@ -95,7 +95,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
     if (this.banner.isActive) return this.listActive.filter(b => b.id !== this.banner.id)
     else {
-      const shuffled = [...this.list].sort(() => .5 - Math.random())
+      const shuffled = [...this.list.data].sort(() => .5 - Math.random())
       return shuffled.slice(0, 4)
     }
   }

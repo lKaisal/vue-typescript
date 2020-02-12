@@ -9,7 +9,7 @@ const namespaced = true
 
 class BannersState {
   isLoading: boolean = false
-  list: Banner[] = null
+  list: { data: Banner[], isLoading: boolean } = { data: null, isLoading: false }
   form: Form = {
     type: null,
     validationIsShown: false,
@@ -32,7 +32,7 @@ class BannersState {
 
 class BannersGetters extends Getters<BannersState> {
   get listActive() {
-    return this.state.list.filter(item => item.isActive).sort((a, b) => {
+    return this.state.list.data.filter(item => item.isActive).sort((a, b) => {
       const sortA = a.position
       const sortB = b.position
 
@@ -42,7 +42,7 @@ class BannersGetters extends Getters<BannersState> {
     })
   }
   get listInactive() {
-    return this.state.list.filter(item => !item.isActive).sort((a, b) => {
+    return this.state.list.data.filter(item => !item.isActive).sort((a, b) => {
       const updatedAtA = dateParser(a.updatedAt)
       const updatedAtB = dateParser(b.updatedAt)
 
@@ -52,7 +52,7 @@ class BannersGetters extends Getters<BannersState> {
     })
   }
   get bannerById() {
-    return (id: Banner['id']) => { return this.state.list && this.state.list.find(b => b.id.toString() === id.toString()) }
+    return (id: Banner['id']) => { return this.state.list.data && this.state.list.data.find(b => b.id.toString() === id.toString()) }
   }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
@@ -97,7 +97,13 @@ class BannersGetters extends Getters<BannersState> {
 
 class BannersMutations extends Mutations<BannersState> {
   setIsLoading(payload: boolean) { this.state.isLoading = payload }
-  saveList(payload: Banner[]) { this.state.list = payload }
+  saveList(payload: Banner[]) {
+    this.state.list.data = payload
+    this.state.list.isLoading = false
+  }
+  startListLoading() {
+    this.state.list.isLoading = true
+  }
   // FORM MUTATIONS
   setFormType(payload: FormType) { this.state.form.type = payload }
   setValidationIsShown(payload) {
@@ -126,57 +132,16 @@ class BannersMutations extends Mutations<BannersState> {
       }
     }
   }
+  setActiveAmount(payload: number) {
+    this.state.activeAmount = payload
+  }
 }
 
 class BannersActions extends Actions<BannersState, BannersGetters, BannersMutations, BannersActions> {
-  updateField({name, value}: {name: keyof BannerForm, value: FormField["value"]}) {
-    const field = this.state.form.data.find(field => field.name === name)
-
-    field.value = value
-
-    switch (name) {
-      case 'isActive':
-        const sort = this.state.form.data.find(f => f.name === 'sort')
-        if (field.value) {
-          sort.validationRequired = true
-          this.dispatch('updateField', ({ name: 'sort', value: sort.value }))
-        } else {
-          sort.validationRequired = false
-          this.dispatch('updateField', ({name: 'sort', value: null}))
-        }
-        field.isValid = !!field.value
-        break
-      case 'newsId':
-        const pageType = this.state.form.data.find(f => f.name === 'pageType')
-        if (pageType.value !== 'news') field.validationRequired = false
-        field.isValid = !!field.value
-        break
-      case 'pageType':
-        const newsId = this.state.form.data.find(f => f.name === 'newsId')
-        if (field.value === 'news') {
-          newsId.validationRequired = true
-          this.dispatch('updateField', ({name: 'newsId', value: newsId.value}))
-        }
-        else newsId.validationRequired = false
-        field.isValid = !!field.value
-        break
-      case 'sort':
-        field.value = field.value > this.state.activeAmount || !field.value ? this.state.activeAmount : field.value
-        const isActive = this.state.form.data.find(f => f.name === 'isActive')
-        if (isActive.value) field.validationRequired = true
-        else field.validationRequired = false
-        field.isValid = !isActive.value || !!field.value
-        break
-      default:
-        field.isValid = !!field.value
-    }
-
-    field.errorType = !field.value && field.validationRequired && 'empty'
-    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
-  }
   async getList() {
     return new Promise((resolve, reject) => {
-      this.commit('setIsLoading', true)
+      // this.commit('setIsLoading', true)
+      this.commit('startListLoading')
 
       service.get('/api/v1/banners-list')
         .then((res: AxiosResponse<any>) => {
@@ -187,10 +152,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch(error => {
           console.log(error.response)
+          this.commit('saveList', null)
           reject()
         })
         .finally(() => {
-          this.commit('setIsLoading', false)
+          // this.commit('setIsLoading', false)
         })
     })
   }
@@ -299,6 +265,54 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
+  /** Action for form v-model. Updates proposed field and all related fields if they exist.
+   * For example: isActive / sort, pageType / newsId
+   */
+  updateField({name, value}: {name: keyof BannerForm, value: FormField["value"]}) {
+    const field = this.state.form.data.find(field => field.name === name)
+
+    field.value = value
+
+    switch (name) {
+      case 'isActive':
+        const sort = this.state.form.data.find(f => f.name === 'sort')
+        if (field.value) {
+          sort.validationRequired = true
+          this.dispatch('updateField', ({ name: 'sort', value: sort.value }))
+        } else {
+          sort.validationRequired = false
+          this.dispatch('updateField', ({name: 'sort', value: null}))
+        }
+        field.isValid = !!field.value
+        break
+      case 'newsId':
+        const pageType = this.state.form.data.find(f => f.name === 'pageType')
+        if (pageType.value !== 'news') field.validationRequired = false
+        field.isValid = !!field.value
+        break
+      case 'pageType':
+        const newsId = this.state.form.data.find(f => f.name === 'newsId')
+        if (field.value === 'news') {
+          newsId.validationRequired = true
+          this.dispatch('updateField', ({name: 'newsId', value: newsId.value}))
+        }
+        else newsId.validationRequired = false
+        field.isValid = !!field.value
+        break
+      case 'sort':
+        field.value = field.value > this.state.activeAmount || !field.value ? this.state.activeAmount : field.value
+        const isActive = this.state.form.data.find(f => f.name === 'isActive')
+        if (isActive.value) field.validationRequired = true
+        else field.validationRequired = false
+        field.isValid = !isActive.value || !!field.value
+        break
+      default:
+        field.isValid = !!field.value
+    }
+
+    field.errorType = !field.value && field.validationRequired && 'empty'
+    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
+  }
   /** Update form by existing banner data */
   updateFormByBannerData(data: Banner) {
     const fields = this.state.form.data
@@ -342,11 +356,37 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .finally()
     })
   }
+  /** Get active banners amount */
+  async getActiveAmount() {
+    return new Promise((resolve, reject) => {
+      this.commit('setIsLoading', true)
+
+      service.get('/api/v1/active-count')
+        .then((res: AxiosResponse<any>) => {
+          this.commit('setActiveAmount', res.data.count)
+          resolve()
+        })
+        .catch((error: AxiosError) => {
+          console.log(error)
+          reject()
+        })
+        .finally(() => this.commit('setIsLoading', false))
+    })
+  }
   /** Change active banners amount */
   updateActiveAmount(payload: number) {
     return new Promise(async (resolve, reject) => {
-      this.state.activeAmount = payload
-      resolve()
+      this.commit('setIsLoading', true)
+      service.post(`/api/v1/active-count/${payload}`)
+      .then((res: AxiosResponse<any>) => {
+        this.commit('setActiveAmount', res.data.count)
+        resolve()
+      })
+      .catch((error: AxiosError) => {
+        console.log(error)
+        reject()
+      })
+      .finally(() => this.commit('setIsLoading', false))
     })
   }
 }

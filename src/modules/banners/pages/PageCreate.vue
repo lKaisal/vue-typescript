@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-create.page(v-loading.fullscreen.lock="isLoading")
+  +b.page-create.page
     +e.container
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-create__icon-back")
@@ -34,7 +34,7 @@ import ButtonApp from '@/components/ButtonApp.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['isLoading', 'form', 'activeAmount']),
+    ...bannersMapper.mapState(['form', 'activeAmount']),
     ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid'])
   },
   methods: {

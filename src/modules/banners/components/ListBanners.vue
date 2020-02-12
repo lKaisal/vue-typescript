@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.list-banners
-    +e.container(v-if="list && list.length")
+    +e.container(v-if="list.data && list.data.length")
       +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
       transition(keep-alive mode="out-in" @enter="animateOneMoreTime")
