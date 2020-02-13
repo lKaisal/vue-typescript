@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-edit.page
-    +e.container
+    +e.container(v-click-outside="onClickOutside")
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-edit__icon-back")
         +e.text-back Вернуться к списку
@@ -31,6 +31,7 @@ import MsgBoxTools from '../mixins/msgBoxTools'
 import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import PopupConflict from '../components/PopupConflict.vue'
+import vClickOutside from 'v-click-outside'
 // import OtherBanners from '../components/OtherBanners.vue'
 
 Component.registerHooks([
@@ -50,6 +51,9 @@ const Mappers = Vue.extend({
 })
 
 @Component({
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: {
     FormBanners,
     MessageBox,
@@ -142,6 +146,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       else if (this.msgBoxIsShown) this.closeMsgBox()
     }
   }
+  onClickOutside(evt) { this.goToPageMain() }
   // CLICK HANDLERS
   onCloseClick() {
     switch (this.requestStatus) {

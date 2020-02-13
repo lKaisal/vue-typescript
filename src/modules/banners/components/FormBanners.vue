@@ -54,7 +54,7 @@
               +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
               +e.error(v-html="activeToField.errorMsg")
         //- sort
-        +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
+        +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
           +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
             +e.EL-OPTION(v-for="n in activeAmount.value" :key="n" :label="n" :value="n")
@@ -129,11 +129,11 @@ export default class FormBanners extends Mappers {
   // other computed
   get isNewsType() { return this.pageType === 0 }
   get isWrongImgExt() { return this.fileField.errorType === 'img-extension' }
+  get activeAmountValue() { return this.activeAmount.value }
 
-  @Watch('isNewsType')
-  async onIsNewsTypeChange(val) {
-    await this.$nextTick()
-    // if (val) this.setInputmasks()
+  @Watch('activeAmountValue', { immediate: true })
+  async onActiveAmount(val) {
+    if (val) this.updateField({name: 'sort', value: val})
   }
 
   async mounted() {

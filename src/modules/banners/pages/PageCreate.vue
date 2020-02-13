@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-create.page
-    +e.container
+    +e.container(v-click-outside="onClickOutside")
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-create__icon-back")
         +e.text-back Вернуться к списку
@@ -28,6 +28,7 @@ import PopupConflict from '../components/PopupConflict.vue'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
 import ButtonApp from '@/components/ButtonApp.vue'
+import vClickOuside from 'v-click-outside'
 
 const Mappers = Vue.extend({
   computed: {
@@ -41,6 +42,9 @@ const Mappers = Vue.extend({
 })
 
 @Component({
+  directives: {
+    clickOutside: vClickOuside.directive
+  },
   components: {
     FormBanners,
     MessageBox,
@@ -58,14 +62,16 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
   get isPageCreate() { return this.$route.path.includes('/banners/create') }
   get isSmthToCommit() {
-    // check if any field was changed
-    const form = this.form.data
-    const isActiveToCommit = !form.find(f => f.name === 'isActive').value
-    const pageTypeToCommit = form.find(f => f.name === 'pageType').value > 0
-    const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
-    const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType').map(f => f.value).some(f => !!f)
+    try {
+      // check if any field was changed
+      const form = this.form.data
+      const isActiveToCommit = !form.find(f => f.name === 'isActive').value
+      const pageTypeToCommit = form.find(f => f.name === 'pageType').value > 0
+      const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
+      const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType').map(f => f.value).some(f => !!f)
 
-    return smthElseToCommit
+      return smthElseToCommit
+    } catch{}
   }
 
   created() {
@@ -92,6 +98,9 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       else if (this.popupFormIsShown) this.closePopupConflict()
       else if (this.msgBoxIsShown) this.closeMsgBox()
     }
+  }
+  onClickOutside() {
+    this.goToPageMain()
   }
   // CLICK HANDLERS
   onFirstBtnClick() {

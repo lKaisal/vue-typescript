@@ -5,15 +5,17 @@
     +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false")
       transition
         +e.icons(v-show="editIconsShown && cardIsHovered")
-          +e.icon._edit(@click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
+          +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
             i(class="el-icon-edit")
-          +e.icon._delete(v-if="banner.isActive" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
+          +e.icon._delete(v-if="banner && banner.isActive" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
             i(class="el-icon-delete")
+          +e.icon._add(v-if="!banner" @click="goToPageCreate")
+            i(class="el-icon-plus")
       +e.img-wrapper
         transition(mode="in-out")
-          IMG.item-banner__img(v-if="imgLoaded" :src="banner.bannerImageUrl")
-          +e.img._loading(v-else)
-      +e.info
+          IMG.item-banner__img(v-if="banner && imgLoaded" :src="banner.bannerImageUrl")
+          +e.img.bg-empty(v-else :class="{ 'item-banner__img_loading': imgIsLoading }")
+      +e.info(v-if="banner")
         +e.info-item(v-if="banner.position && banner.isActive")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.position }}</span>
         +e.info-item(v-if="banner.updatedAt")
@@ -25,6 +27,8 @@
         //- +e.info-item(v-if="banner.activeFrom || banner.activeTo")
           +e.title Срок действия: 
           +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
+      +e.info(v-else)
+        +e.info-item._empty.bg-empty(v-for="n in 4")
 </template>
 
 <script lang="ts">
@@ -40,6 +44,7 @@ import { VisibilityObserver, VisibilityObserverOptions } from '@/mixins/Visibili
 export default class ItemBanners extends Vue {
   @Prop() banner: Banner
   @Prop({ default: true }) editIconsShown: boolean
+  imgIsLoading: boolean = false
   imgLoaded: boolean = false
   editHovered: boolean = false
   deleteHovered: boolean = false
@@ -61,6 +66,7 @@ export default class ItemBanners extends Vue {
 
     this.observer = new VisibilityObserver(options)
   }
+  goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
   onEditClick() {
     this.$router.push({ path: `/banners/edit/${this.banner.id.toString()}` })
   }
@@ -68,7 +74,7 @@ export default class ItemBanners extends Vue {
     this.$emit('delete', this.banner.id)
   }
   preloadImage() {
-    if (this.count > 3) return
+    if (!this.banner || this.count > 3) return
 
     preloadImages(this.banner.bannerImageUrl)
       .then(async () => {
@@ -185,6 +191,12 @@ export default class ItemBanners extends Vue {
           transform scale(1.25) translate3d(0,0,0)
           opacity 1
         // background-color $cDanger
+    &_add
+      opacity 1
+      &:hover
+        >>> i
+          transform scale(1.25) translate3d(0,0,0)
+          opacity 1
 
   &__img-wrapper
     position relative
@@ -210,19 +222,21 @@ export default class ItemBanners extends Vue {
     &.v-enter
     &.v-leave-to
       opacity 0
-    &_loading
+    &.bg-empty
       z-index 1
       top 0
       right 0
       bottom 0
       left 0
       transform none
+    &_loading
       animation placeholderShimmer 1.8s forwards linear infinite
-      background #f6f7f8
-      background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
+      // background #f6f7f8
+      // background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
       background-size 200% 100%
 
   &__info
+    width 100%
     line-height 1.25
     font-size 16px
     // +gt-md()
@@ -233,6 +247,7 @@ export default class ItemBanners extends Vue {
   &__info-item
     // display flex
     // justify-content center
+    margin 0 auto
     text-align center
     white-space nowrap
     +xs()
@@ -242,6 +257,12 @@ export default class ItemBanners extends Vue {
         margin-bottom 15px
       +lt-xl()
         margin-bottom 10px
+    &_empty
+      width 75%
+      height 20px
+      &:first-child
+      &:last-child
+        width 50%
 
   &__title
     fontMedium()

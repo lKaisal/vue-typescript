@@ -5,10 +5,10 @@
     +e.container
       +e.title.H1.page-title Список баннеров
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn")
-      ToggleAmount(@editClicked="openPopupAmount" class="page-main__amount")
+      ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount")
       ListBanners(:key="list.isLoading" @deleteItem="onDeleteClick" class="page-main__list")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown && !isLoading" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn" class="page-main__msg-box modal modal-msg")
+      MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn" class="page-main__msg-box modal modal-msg")
       PopupAmount(v-show="popupAmountIsShown" key="popupAmount" @confirm="updateAmount" @cancel="closePopupAmount" class="page-main__popup-amount modal")
 </template>
 
@@ -26,7 +26,7 @@ import PopupAmount from '../components/PopupAmount.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list']),
+    ...bannersMapper.mapState(['list', 'activeAmount']),
     ...bannersMapper.mapGetters(['isLoading'])
   },
   methods: {

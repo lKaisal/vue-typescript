@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.msg-box
-    +e.container
+    +e.container(v-click-outside="onClickOutside")
       +e.header
         +e.title(v-if="content && content.title") {{ content.title }}
         +e.btn-close(@click="onCloseClick")
@@ -20,8 +20,12 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
 import msgBoxTools from '../mixins/msgBoxTools'
 import ButtonApp from '@/components/ButtonApp.vue'
+import vCLickOutside from 'v-click-outside'
 
 @Component({
+  directives: {
+    clickOutside: vCLickOutside.directive
+  },
   components: {
     ButtonApp
   }
@@ -40,6 +44,9 @@ export default class MessageBox extends Vue{
   }
   onSecondBtnClick() {
     this.$emit('secondBtnClicked')
+  }
+  onClickOutside(evt) {
+    this.onCloseClick()
   }
 }
 </script>

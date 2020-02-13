@@ -7,7 +7,10 @@
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
       transition(keep-alive mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeIndex")
-          ItemBanner(v-for="(item, index) in activeList" :key="item.id" :banner="item" @delete="onDeleteItem" @dblclick.prevent.native="goToPageEdit(item.id)" class="list-banners__item js-voa js-voa-start")
+          ItemBanner(v-for="(item, index) in activeAmount.value" :key="item.id" :banner="activeList.find(b => b.position === index + 1)"
+            @delete="onDeleteItem" @dblclick.prevent.native="emptyPositions.indexOf(index + 1) >= 0 ? goToPageCreate() : goToPageEdit(item.id)"
+            :class="[{ 'list-banners__item_free': emptyPositions.indexOf(index + 1) >= 0 }]" class="list-banners__item js-voa js-voa-start")
+          //- ItemBanner(v-for="n in emptyCount" class="list-banners__item list-banners__item_free")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -21,7 +24,7 @@ import sleep from '@/mixins/sleep'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list']),
+    ...bannersMapper.mapState(['list', 'activeAmount']),
     ...bannersMapper.mapGetters(['listActive', 'listInactive'])
   },
 })
@@ -42,6 +45,16 @@ export default class ListBanners extends Mappers {
     // else return this.list
   }
   get sortItems() { return [ `Активные (${this.listActive.length})`, `Архивные (${this.listInactive.length})` ] }
+  get emptyPositions() { 
+    const count = this.activeAmount.value
+    const positions = this.activeList.map(b => b.position)
+    const empty = []
+    for (let i = 0; i < count; i++) {
+      if (positions.every(p => p !== i)) empty.push(i)
+    }
+
+    return empty
+  }
 
   async mounted() {
     await this.$nextTick()
@@ -57,6 +70,7 @@ export default class ListBanners extends Mappers {
   animateOneMoreTime() {
     animateIfVisible()
   }
+  goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
   goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/banners/edit/${id}` }).catch(err => {}) }
 }
 </script>
