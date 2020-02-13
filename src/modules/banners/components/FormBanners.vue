@@ -15,22 +15,28 @@
           +e.LABEL.label(for="isActive") Активировать
           +e.error(v-html="isActiveField.errorMsg")
       +e.column
+        //- title
+        +e.field._title(:class="{ 'is-invalid': isInvalid(titleField), 'is-filled': title }")
+          +e.label
+            +e.LABEL(for="title") Имя баннера
+          +e.EL-INPUT.input(placeholder="Title" v-model="title")
+          +e.error(v-html="titleField.errorMsg")
         //- pageType
         +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': true }")
           +e.label
             +e.LABEL(for="pageType") Тип страницы
-          +e.EL-SELECT.select(ref="select" v-model="pageType" :placeholder="pageTypes[0]")
-            +e.EL-OPTION(v-for="(type, index) in pageTypes.length" :key="index" :label="pageTypes[index]" :value="index")
+          +e.EL-SELECT.select(ref="select" v-model="pageType" :placeholder="pageTypesDisplayed[0]")
+            +e.EL-OPTION(v-for="(type, index) in pageTypesDisplayed.length" :key="index" :label="pageTypesDisplayed[index]" :value="index")
           +e.error(v-html="pageTypeField.errorMsg")
         +e.fields
           //- newsId
-          +e.field._news-id(v-if="isNewsType" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
+          +e.field._news-id(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
             +e.label
               +e.LABEL(for="newsId") Id новости
-            +e.EL-INPUT.input(placeholder="000" v-model="newsId")
+            +e.EL-INPUT.input(placeholder="111" type="number" v-model="newsId" ref="newsIdRef")
             +e.error(v-html="newsIdField.errorMsg")
           //- appLink
-          +e.field._app-link(v-else :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink }")
+          +e.field._app-link(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink }")
             +e.label
               +e.LABEL(for="appLink") Ссылка на раздел
             +e.EL-INPUT.input(placeholder="/link" v-model="appLink")
@@ -63,11 +69,13 @@ import DragDrop from './DragDrop.vue'
 import flatpickr from 'flatpickr'
 import { Russian } from 'flatpickr/dist/l10n/ru.js'
 import { bannersMapper } from '../module/store'
+import Inputmask from 'inputmask'
+import { ElInput } from 'element-ui/types/input'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'pageTypes']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId', 'formPageType'])
+    ...bannersMapper.mapState(['form', 'activeAmount']),
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId', 'formPageType', 'formTitle', 'pageTypesDisplayed'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown']),
@@ -87,6 +95,7 @@ export default class FormBanners extends Mappers {
   dateFormat: string = 'd-m-Y H:i'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
+  @Ref() newsIdRef: ElInput
 
   // FORM FIELDS
   get activeFromField() { return this.formActiveFrom }
@@ -97,6 +106,7 @@ export default class FormBanners extends Mappers {
   get newsIdField() { return this.formNewsId }
   get pageTypeField() { return this.formPageType }
   get sortField() { return this.formSort }
+  get titleField() { return this.formTitle }
 
   // FORM SET/GET FIELDS VALUES
   get activeFrom() { return this.pickrFrom && this.pickrFrom.selectedDates.length && this.pickrFrom.formatDate(this.pickrFrom.selectedDates[0], this.dateFormat) }
@@ -113,14 +123,23 @@ export default class FormBanners extends Mappers {
   set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
   get sortBy() { return this.isActive ? this.sortField.value : null }
   set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount}) : null }
+  get title() { return this.titleField.value }
+  set title(value) { this.updateField({name: 'title', value: trim(value)}) }
 
   // other computed
   get isNewsType() { return this.pageType === 0 }
 
-  mounted() {
-    // this.initPickers()
+  @Watch('isNewsType')
+  async onIsNewsTypeChange(val) {
+    await this.$nextTick()
+    // if (val) this.setInputmasks()
   }
 
+  async mounted() {
+    await this.$nextTick()
+    // this.initPickers()
+    // this.setInputmasks()
+  }
   beforeDestroy() {
     this.setValidationIsShown(false)
   }
@@ -140,6 +159,17 @@ export default class FormBanners extends Mappers {
     const configTo = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true }
     this.pickrTo = flatpickr(this.toRef, configTo)
     if (this.activeToField.value) this.pickrTo.setDate(this.activeToField.value)
+  }
+  setInputmasks() {
+    // pageType
+    const inp = this.newsIdRef.$el.firstElementChild
+    const options = {
+      regex: '[0-9]*',
+      placeholder: '111',
+    }
+
+    const inputmask = Inputmask(options).mask(inp)
+    console.log(inputmask)
   }
 }
 </script>

@@ -40,14 +40,15 @@ type FormField = {
 }
 
 type BannerForm = {
-  activeFrom: String,
-  activeTo: String,
-  appLink: String,
-  isActive: Boolean,
+  activeFrom: string,
+  activeTo: string,
+  appLink: string,
+  isActive: boolean,
   file: File | Blob,
-  newsId: Number,
-  pageType: String,
-  sort: Number,
+  newsId: number,
+  pageType: string,
+  sort: number,
+  title: string
 }
 
 type FormError = {

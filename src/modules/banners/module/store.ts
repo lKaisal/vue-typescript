@@ -25,11 +25,12 @@ class BannersState {
       { name: 'file', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
       { name: 'newsId', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
       { name: 'pageType', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
-      { name: 'sort', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null }
+      { name: 'sort', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
+      { name: 'title', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null }
     ],
   }
   activeAmount: number = 4
-  pageTypes: string[] = ['Новость', 'Раздел']
+  pageTypes: {displayed: string[], sent: string[]} = { displayed: ['Новость', 'Раздел'], sent: ['news', 'notnews'] }
 }
 
 class BannersGetters extends Getters<BannersState> {
@@ -65,6 +66,7 @@ class BannersGetters extends Getters<BannersState> {
   get formNewsId() { return this.state.form.data.find(field => field.name === 'newsId') }
   get formPageType() { return this.state.form.data.find(field => field.name === 'pageType') }
   get formSort() { return this.state.form.data.find(field => field.name === 'sort') }
+  get formTitle() { return this.state.form.data.find(field => field.name === 'title') }
   get formIsValid () {
     const required = this.state.form.data.filter(field => field.validationRequired)
 
@@ -76,10 +78,11 @@ class BannersGetters extends Getters<BannersState> {
     formData.activeForm = this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
     formData.activeTo = this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
     formData.appLink = this.getters.formAppLink.value && this.getters.formAppLink.value.toString() || ''
-    formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || ''
+    formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
-    formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
+    formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
     formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || ''
+    formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
     if (this.getters.formFile.value && this.getters.formFile.value.type) formData.file = this.getters.formFile.value
@@ -88,15 +91,21 @@ class BannersGetters extends Getters<BannersState> {
     return formData
   }
   get preparedFormData() {
-    const formData = new FormData()
-
-    Object.keys(this.getters.formData).forEach(key => {
-      const value = this.getters.formData[key]
-      if (!!value || this.state.form.type === 'create') formData.append(key, value)
-    })
-
-    return formData
+    try {
+      const formData = new FormData()
+  
+      Object.keys(this.getters.formData).forEach(key => {
+        const value = this.getters.formData[key]
+        if (!!value || this.state.form.type === 'create') formData.append(key, value)
+      })
+  
+      return formData
+    } catch(err) {
+      console.log(err)
+    }
   }
+  get pageTypesDisplayed() { return this.state.pageTypes.displayed }
+  get pageTypesSent() { return this.state.pageTypes.sent }
 }
 
 class BannersMutations extends Mutations<BannersState> {
@@ -119,7 +128,7 @@ class BannersMutations extends Mutations<BannersState> {
     fields.forEach(field => {
       field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount : (field.name === 'pageType' ? 0 : null))
       field.isValid = field.name === 'sort' || field.name === 'pageType'
-      field.validationRequired = field.name === 'file' || field.name === 'newsId'
+      field.validationRequired = field.name === 'file' || field.name === 'newsId' || field.name === 'title'
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
       field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
     })
@@ -173,7 +182,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         reject()
         return
       }
-      
+
       this.commit('setIsLoading', true)
       const data = this.getters.preparedFormData
 
@@ -278,12 +287,20 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     const newsId = this.state.form.data.find(f => f.name === 'newsId')
 
     field.value = value
+    field.errorType = !field.value && field.validationRequired && 'empty'
+    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
 
     switch (name) {
       case 'isActive':
         const sort = this.state.form.data.find(f => f.name === 'sort')
         const sortValue = field.value ? sort.value : null
         this.dispatch('updateField', ({ name: 'sort', value: sortValue }))
+        break
+
+      case 'newsId':
+        field.isValid = !!Number(field.value)
+        if (value && value.toString() && !field.isValid) field.errorType = 'default'
+        field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
         break
 
       case 'pageType':
@@ -304,11 +321,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       default:
-        field.isValid = !!field.value
+        field.isValid = field.value && !!field.value.toString()
     }
-
-    field.errorType = !field.value && field.validationRequired && 'empty'
-    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
   }
   /** Update form by existing banner data */
   updateFormByBannerData(data: Banner) {
@@ -318,6 +332,12 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       switch (field.name) {
         case 'file':
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
+          break
+        case 'pageType':
+          const valueSent = data.pageType
+          const index = this.getters.pageTypesSent.indexOf(valueSent)
+          const value = index >= 0 ? index : 1
+          this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
           this.dispatch('updateField', { name: field.name, value: data.position })
@@ -352,7 +372,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           resolve()
         })
         .catch((error: AxiosError) => {
-          console.log(error)
+          console.log(error.response)
           reject()
         })
         .finally(() => this.commit('setIsLoading', false))
@@ -369,7 +389,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         resolve()
       })
       .catch((error: AxiosError) => {
-        console.log(error)
+        console.log(error.response)
         reject()
       })
       .finally(() => this.commit('setIsLoading', false))

@@ -41,7 +41,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'isLoading', 'form']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading']),
@@ -64,7 +64,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   secondBtn: Button = null
   bannerConflictId: number = null
   popupFormIsShown: boolean = false
-  // isSmthToUpdate: boolean = false
 
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
   get isSmthToUpdate() {
@@ -79,6 +78,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         case 'file':
           // @ts-ignore
           if (!field.value || !!field.value.type) return true
+          break
+        case 'pageType':
+          const bannerPageTypeIndex = this.pageTypesSent.indexOf(banner[field.name])
+          if (bannerPageTypeIndex !== field.value) return true
           break
         case 'sort':
           if (!form.find(f => f.name === 'isActive').value) break
