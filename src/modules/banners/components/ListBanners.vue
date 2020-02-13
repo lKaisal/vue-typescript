@@ -5,12 +5,15 @@
     +e.container(v-if="list.data && list.data.length")
       +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
-      transition(keep-alive mode="out-in" @enter="animateOneMoreTime")
-        +e.items(:key="activeIndex")
+      transition(mode="out-in" @enter="animateOneMoreTime")
+        +e.items._active(v-if="activeIndex === '1'" key="activeList")
           ItemBanner(v-for="(item, index) in activeAmount.value" :key="item.id" :banner="activeList.find(b => b.position === index + 1)"
             @delete="onDeleteItem" @dblclick.prevent.native="emptyPositions.indexOf(index + 1) >= 0 ? goToPageCreate() : goToPageEdit(item.id)"
-            :class="[{ 'list-banners__item_free': emptyPositions.indexOf(index + 1) >= 0 }]" class="list-banners__item js-voa js-voa-start")
+            :class="[{ 'list-banners__item_free': emptyPositions.indexOf(index + 1) >= 0 }, 'list-banners__item js-voa js-voa-start' ]")
           //- ItemBanner(v-for="n in emptyCount" class="list-banners__item list-banners__item_free")
+          +e.item._fake(v-for="n in 3")
+        +e.items._inactive(v-else key="inactiveList")
+          ItemBanner(v-for="(item, index) in listInactive" :key="item.id" :banner="item" @dblclick.prevent.native="goToPageEdit(item.id)" class="list-banners__item js-voa js-voa-start")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -87,7 +90,7 @@ export default class ListBanners extends Mappers {
     display flex
     justify-content space-between
     flex-wrap wrap
-    transition()
+    transition(opacity)
     &.v-enter
     &.v-leave-to
       opacity 0
