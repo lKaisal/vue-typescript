@@ -9,7 +9,7 @@
             i(class="el-icon-edit")
           +e.icon._delete(v-if="banner && banner.isActive" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
             i(class="el-icon-delete")
-          +e.icon._add(v-if="!banner" @click="goToPageCreate")
+          +e.icon._add(v-if="!banner" @click="onCreateClick")
             i(class="el-icon-plus")
       +e.img-wrapper
         transition(mode="in-out")
@@ -67,12 +67,9 @@ export default class ItemBanners extends Vue {
     this.observer = new VisibilityObserver(options)
   }
   goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
-  onEditClick() {
-    this.$router.push({ path: `/banners/edit/${this.banner.id.toString()}` })
-  }
-  onDeleteClick() {
-    this.$emit('delete', this.banner.id)
-  }
+  onEditClick() { this.$emit('editClicked') }
+  onDeleteClick() { this.$emit('deleteClicked') }
+  onCreateClick() { this.$emit('createClicked') }
   preloadImage() {
     if (!this.banner || this.count > 3) return
 

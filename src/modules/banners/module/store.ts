@@ -85,7 +85,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
-    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || ''
+    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
@@ -312,12 +312,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         }
         break
 
-      case 'isActive':
-        const sort = this.state.form.data.find(f => f.name === 'sort')
-        const sortValue = field.value ? sort.value : null
-        this.dispatch('updateField', ({ name: 'sort', value: sortValue }))
-        break
-
       case 'newsId':
         field.isValid = !!Number(field.value)
         if (value && value.toString() && !field.isValid) field.errorType = 'default'
@@ -337,7 +331,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'sort':
-        field.value = field.value > this.state.activeAmount.value || !field.value ? this.state.activeAmount.value : field.value
+        field.value = (field.value > this.state.activeAmount.value && this.state.activeAmount.value) || !field.value ? this.state.activeAmount.value : field.value
         break
     }
 

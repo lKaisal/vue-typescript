@@ -2,18 +2,17 @@
   include ../../../tools/bemto.pug
 
   +b.list-banners
-    +e.container(v-if="list.data && list.data.length")
+    +e.container
       +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
-      transition(mode="out-in" @enter="animateOneMoreTime")
-        +e.items._active(v-if="activeIndex === '1'" key="activeList")
-          ItemBanner(v-for="(item, index) in activeAmount.value" :key="item.id" :banner="activeList.find(b => b.position === index + 1)"
-            @delete="onDeleteItem" @dblclick.prevent.native="emptyPositions.indexOf(index + 1) >= 0 ? goToPageCreate() : goToPageEdit(item.id)"
-            :class="[{ 'list-banners__item_free': emptyPositions.indexOf(index + 1) >= 0 }, 'list-banners__item js-voa js-voa-start' ]")
-          //- ItemBanner(v-for="n in emptyCount" class="list-banners__item list-banners__item_free")
+      transition(mode="out-in")
+        +e.items(:key="activeIndex")
+          ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item.data"
+            @editClicked="goToPageEdit(item.data.id)" @deleteClicked="onDeleteItem(item.data.id)" @createClicked="createClicked(index + 1)" @dblclick.prevent.native="onDblClick(item.data, index + 1)"
+            :class="[{ 'list-banners__item_free': !item.data }, 'list-banners__item js-voa' ]")
           +e.item._fake(v-for="n in 3")
-        +e.items._inactive(v-else key="inactiveList")
-          ItemBanner(v-for="(item, index) in listInactive" :key="item.id" :banner="item" @dblclick.prevent.native="goToPageEdit(item.id)" class="list-banners__item js-voa js-voa-start")
+        //- +e.items._inactive(v-else key="inactiveList")
+          ItemBanner(v-for="(item, index) in listInactive" :key="item.id" :banner="item" @dblclick.prevent.native="onDblClick(item)" class="list-banners__item js-voa")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -22,14 +21,16 @@ import { Vue, Component, Watch, Ref } from 'vue-property-decorator'
 import { Banner } from '../models'
 import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
-import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list', 'activeAmount']),
+    ...bannersMapper.mapState(['activeAmount']),
     ...bannersMapper.mapGetters(['listActive', 'listInactive'])
   },
+  methods: {
+    ...bannersMapper.mapActions(['updateField'])
+  }
 })
 
 @Component({
@@ -43,35 +44,46 @@ export default class ListBanners extends Mappers {
   observer = null
 
   get activeList() {
-    if (this.activeIndex === '1') return this.listActive
-    else if (this.activeIndex === '2') return this.listInactive
-    // else return this.list
+    if (this.activeIndex === '1') return this.listActiveComposed
+    else if (this.activeIndex === '2') return this.listInactiveComposed
   }
   get sortItems() { return [ `Активные (${this.listActive.length})`, `Архивные (${this.listInactive.length})` ] }
-  get emptyPositions() { 
+  get listActiveComposed() {
     const count = this.activeAmount.value
-    const positions = this.activeList.map(b => b.position)
-    const empty = []
-    for (let i = 0; i < count; i++) {
-      if (positions.every(p => p !== i)) empty.push(i)
+    const composed: { data: Banner }[] = []
+
+    for (let i = 1; i <= count; i++) {
+      const data = this.listActive.find(b => b.position === i)
+      if (data) composed.push({ data })
+      else composed.push({ data: null })
     }
 
-    return empty
+    return composed
   }
+  get listInactiveComposed() {
+    const composed: { data: Banner }[] = []
+    for (const item of this.listInactive) composed.push({data: item})
 
-  async mounted() {
-    await this.$nextTick()
-    animateIfVisible()
+    return composed
   }
-
   handleSelect(index) {
     this.activeIndex = index
   }
   onDeleteItem(id) {
     this.$emit('deleteItem', id)
   }
-  animateOneMoreTime() {
-    animateIfVisible()
+  onDblClick(banner, index) {
+    if (banner) this.goToPageEdit(banner.id)
+    else {
+      this.updateField({name: 'sort', value: index })
+      console.log(index)
+      this.goToPageCreate()
+    }
+  }
+  createClicked(index) {
+    this.updateField({name: 'sort', value: index })
+      console.log(index)
+    this.goToPageCreate()
   }
   goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
   goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/banners/edit/${id}` }).catch(err => {}) }
@@ -120,4 +132,6 @@ export default class ListBanners extends Mappers {
       opacity 0
       font-size 0
       pointer-events none
+    .v-enter &
+      jsVoaStart()
 </style>

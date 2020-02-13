@@ -10,7 +10,7 @@
       +e.row._toggle
         +e.icon-wrapper._minus(@click="amount--" :class="{ 'is-disabled': amount === 1 }")
           +e.I.icon._minus.el-icon-minus
-        +e.EL-INPUT.input(v-model="amount" :placeholder="activeAmount.value" maxlength="1" ref="amountInput")
+        +e.EL-INPUT.input(v-model="amount" type="number" min="1" max="9" maxlength="1" :placeholder="activeAmount.value")
         +e.icon-wrapper._plus(@click="amount++" :class="{ 'is-disabled': amount === 10 }")
           +e.I.icon._plus.el-icon-plus
       +e.btns
@@ -19,12 +19,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Mixins, Ref } from 'vue-property-decorator'
+import { Vue, Component, Watch, Prop, Mixins, Ref } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import { bannersMapper, banners } from '../module/store'
-import Inputmask from 'inputmask'
 import { ElInput } from 'element-ui/types/input'
+import vClickOutside from 'v-click-outside'
 
 const Mappers = Vue.extend({
   computed: {
@@ -33,6 +33,9 @@ const Mappers = Vue.extend({
 })
 
 @Component({
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: {
     ButtonApp
   }
@@ -40,36 +43,34 @@ const Mappers = Vue.extend({
 
 export default class PopupAmount extends Mixins(Mappers) {
   amount: number = null
-  @Ref() readonly amountInput!: ElInput
+
+  get activeAmountValue() { return this.activeAmount.value }
+
+  @Watch('activeAmountValue')
+  onActiveAmountValueChange(val) {
+    this.amount = val
+  }
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)
   }
   async mounted() {
-    await this.$nextTick()
-    this.setAmountMask()
     this.amount = this.activeAmount.value
   }
   beforeDestroy() {
     // document.body.classList.remove('modal-open')
     document.removeEventListener('keydown', this.keyDownHandler)
+    this.amount = this.activeAmount.value
   }
 
   keyDownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') this.cancelClicked()
   }
-  setAmountMask() {
-    const inp = this.amountInput.$el.firstElementChild
-
-    const options = {
-      regex: '[1-9]*',
-      placeholder: '1',
-    }
-
-    const inputmask = Inputmask(options).mask(inp)
-  }
   confirmClicked() { this.$emit('confirm', this.amount) }
-  cancelClicked() { this.$emit('cancel') }
+  cancelClicked() {
+    this.$emit('cancel')
+  }
+  onClickOutside(evt) { console.log(evt) }
 }
 </script>
 

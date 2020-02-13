@@ -20,6 +20,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['isLoading'])
   },
   methods: {
+    ...bannersMapper.mapMutations(['clearForm']),
     ...bannersMapper.mapActions(['getList', 'getActiveAmount'])
   }
 })
@@ -33,6 +34,7 @@ const Mappers = Vue.extend({
 export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
   created() {
     this.loadData()
+    this.clearForm()
   }
 
   loadData() {

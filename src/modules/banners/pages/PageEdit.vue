@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-edit.page
-    +e.container(v-click-outside="onClickOutside")
+    +e.container
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-edit__icon-back")
         +e.text-back Вернуться к списку
@@ -123,7 +123,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   }
 
   created() {
-    this.clearForm()
     this.setFormType('edit')
     // this.updateBannerData()
     const id = Number(this.$route.params.id)

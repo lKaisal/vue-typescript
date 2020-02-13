@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-create.page
-    +e.container(v-click-outside="onClickOutside")
+    +e.container
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-create__icon-back")
         +e.text-back Вернуться к списку
@@ -76,11 +76,11 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
   created() {
     this.setFormType('create')
-    this.clearForm()
     document.addEventListener('keydown', this.keydownHandler)
   }
   beforeDestroy() {
     document.removeEventListener('keydown', this.keydownHandler)
+    this.clearForm()
   }
 
   openPopupConflict() {

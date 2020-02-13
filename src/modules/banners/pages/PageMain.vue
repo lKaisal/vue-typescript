@@ -6,10 +6,10 @@
       +e.title.H1.page-title Список баннеров
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn")
       ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount")
-      ListBanners(:key="list.isLoading" @deleteItem="onDeleteClick" class="page-main__list")
+      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @deleteItem="onDeleteClick" class="page-main__list")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn" class="page-main__msg-box modal modal-msg")
-      PopupAmount(v-show="popupAmountIsShown" key="popupAmount" @confirm="updateAmount" @cancel="closePopupAmount" class="page-main__popup-amount modal")
+      MessageBox(v-if="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn" class="page-main__msg-box modal modal-msg")
+      PopupAmount(v-if="popupAmountIsShown" key="popupAmount" @confirm="updateAmount" @cancel="closePopupAmount" class="page-main__popup-amount modal")
 </template>
 
 <script lang="ts">
@@ -121,7 +121,8 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
     this.$emit('updateList')
   }
   updateAmount(amount) {
-    this.amountForUpdate = amount // HACK: stored here in case of repeated request
+    // stored amount here in case of repeated request
+    this.amountForUpdate = amount
     this.updateActiveAmount(amount)
       .then(() => {
           this.closePopupAmount()

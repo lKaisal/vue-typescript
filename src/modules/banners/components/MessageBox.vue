@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.msg-box
-    +e.container(v-click-outside="onClickOutside")
+    +e.container
       +e.header
         +e.title(v-if="content && content.title") {{ content.title }}
         +e.btn-close(@click="onCloseClick")

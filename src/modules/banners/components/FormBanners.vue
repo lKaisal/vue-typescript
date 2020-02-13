@@ -9,7 +9,7 @@
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
         //- isActive
-        +e.field._is-active(@click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
+        +e.field._is-active(v-if="isFormEdit" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
           +e.checkbox
             +e.I.checkbox-icon.el-icon-check
           +e.LABEL.label(for="isActive") Активировать
@@ -66,7 +66,6 @@ import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
 import trim from 'validator/lib/trim'
 import flatpickr from 'flatpickr'
 import { Russian } from 'flatpickr/dist/l10n/ru.js'
-import Inputmask from 'inputmask'
 import { ElInput } from 'element-ui/types/input'
 import { Banner, BannerForm, MsgBoxContent, FormField } from '../models'
 import { bannersMapper } from '../module/store'
@@ -130,16 +129,16 @@ export default class FormBanners extends Mappers {
   get isNewsType() { return this.pageType === 0 }
   get isWrongImgExt() { return this.fileField.errorType === 'img-extension' }
   get activeAmountValue() { return this.activeAmount.value }
+  get isFormCreate() { return this.form.type === 'create' }
+  get isFormEdit() { return this.form.type === 'edit' }
 
   @Watch('activeAmountValue', { immediate: true })
   async onActiveAmount(val) {
-    if (val) this.updateField({name: 'sort', value: val})
+    if (val && !this.sortBy) this.updateField({name: 'sort', value: val})
   }
 
-  async mounted() {
-    await this.$nextTick()
-    // this.initPickers()
-    // this.setInputmasks()
+  created() {
+    if (this.isFormCreate) this.updateField({ name: 'isActive', value: true })
   }
   beforeDestroy() {
     this.setValidationIsShown(false)
@@ -160,17 +159,6 @@ export default class FormBanners extends Mappers {
     const configTo = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true }
     this.pickrTo = flatpickr(this.toRef, configTo)
     if (this.activeToField.value) this.pickrTo.setDate(this.activeToField.value)
-  }
-  setInputmasks() {
-    // pageType
-    const inp = this.newsIdRef.$el.firstElementChild
-    const options = {
-      regex: '[0-9]*',
-      placeholder: '111',
-    }
-
-    const inputmask = Inputmask(options).mask(inp)
-    console.log(inputmask)
   }
 }
 </script>
