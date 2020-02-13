@@ -14,7 +14,7 @@
           ButtonApp(btnType="warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
           ButtonApp(btnType="danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
+      MessageBox(v-show="msgBoxIsShown && !isLoading" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn" class="page-create__msg-box modal")
       PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-create__popup modal")
 </template>
 
@@ -32,7 +32,7 @@ import ButtonApp from '@/components/ButtonApp.vue'
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'activeAmount']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid'])
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid', 'isLoading'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm']),

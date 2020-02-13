@@ -8,15 +8,8 @@ import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-mo
 const namespaced = true
 
 class BannersState {
-  isLoading: boolean = false
-  list: { data: Banner[], isLoading: boolean } = { data: null, isLoading: false }
+  activeAmount: {value: number, isLoading: boolean} = { value: null, isLoading: false }
   form: Form = {
-    type: null,
-    validationIsShown: false,
-    errors: [
-      { type: 'empty', msg: 'Поле не должно быть пустым' },
-      { type: 'default', msg: 'Недопустимое значение' }
-    ],
     data: [
       { name: 'activeFrom', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
       { name: 'activeTo', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
@@ -28,12 +21,23 @@ class BannersState {
       { name: 'sort', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
       { name: 'title', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null }
     ],
+    errors: [
+      { type: 'empty', msg: 'Поле не должно быть пустым' },
+      { type: 'img-extension', msg: 'Загрузите изображение в формате .jpg или .png' },
+      { type: 'default', msg: 'Недопустимое значение' }
+    ],
+    isLoading: false,
+    type: null,
+    validationIsShown: false,
   }
-  activeAmount: number = 4
+  imgExtensions: string[] = [ 'jpg', 'jpeg', 'png' ]
+  isLoading: boolean = false // deleteBanner, inactivateBanner
+  list: { data: Banner[], isLoading: boolean } = { data: null, isLoading: false }
   pageTypes: {displayed: string[], sent: string[]} = { displayed: ['Новость', 'Раздел'], sent: ['news', 'notnews'] }
 }
 
 class BannersGetters extends Getters<BannersState> {
+  get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.form.isLoading || this.state.list.isLoading }
   get listActive() {
     return this.state.list.data.filter(item => item.isActive).sort((a, b) => {
       const sortA = a.position
@@ -114,19 +118,17 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.list.data = payload
     this.state.list.isLoading = false
   }
-  startListLoading() {
-    this.state.list.isLoading = true
-  }
+  setListIsLoading(payload: boolean) { this.state.list.isLoading = payload }
+  setActiveAmountIsLoading(payload: boolean) { this.state.activeAmount.isLoading = payload }
   // FORM MUTATIONS
+  setFormIsLoading(payload: boolean) { this.state.form.isLoading = payload }
   setFormType(payload: FormType) { this.state.form.type = payload }
-  setValidationIsShown(payload) {
-    this.state.form.validationIsShown = payload
-  }
+  setValidationIsShown(payload: boolean) { this.state.form.validationIsShown = payload }
   clearForm() {
     const fields = this.state.form.data
 
     fields.forEach(field => {
-      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount : (field.name === 'pageType' ? 0 : null))
+      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount.value : (field.name === 'pageType' ? 0 : null))
       field.isValid = field.name === 'sort' || field.name === 'pageType'
       field.validationRequired = field.name === 'file' || field.name === 'newsId' || field.name === 'title'
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
@@ -146,15 +148,14 @@ class BannersMutations extends Mutations<BannersState> {
     }
   }
   setActiveAmount(payload: number) {
-    this.state.activeAmount = payload
+    this.state.activeAmount.value = payload
   }
 }
 
 class BannersActions extends Actions<BannersState, BannersGetters, BannersMutations, BannersActions> {
   async getList() {
     return new Promise((resolve, reject) => {
-      // this.commit('setIsLoading', true)
-      this.commit('startListLoading')
+      this.commit('setListIsLoading', true)
 
       service.get('/api/v1/banners-list')
         .then((res: AxiosResponse<any>) => {
@@ -169,7 +170,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           reject()
         })
         .finally(() => {
-          // this.commit('setIsLoading', false)
+          this.commit('setListIsLoading', false)
         })
     })
   }
@@ -183,7 +184,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         return
       }
 
-      this.commit('setIsLoading', true)
+      this.commit('setFormIsLoading', true)
       const data = this.getters.preparedFormData
 
       service.post('/api/v1/banner', data)
@@ -204,7 +205,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           }
         })
         .finally(() => {
-          this.commit('setIsLoading', false)
+          this.commit('setFormIsLoading', false)
         })
     })
   }
@@ -219,7 +220,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         return
       }
 
-      this.commit('setIsLoading', true)
+      // this.commit('setIsLoading', true)
+      this.commit('setFormIsLoading', true)
       const data = this.getters.preparedFormData
 
       service.put(`/api/v1/banner/${id}`, data)
@@ -240,7 +242,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           }
         })
         .finally(() => {
-          this.commit('setIsLoading', false)
+          // this.commit('setIsLoading', false)
+          this.commit('setFormIsLoading', false)
         })
     })
   }
@@ -287,10 +290,28 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     const newsId = this.state.form.data.find(f => f.name === 'newsId')
 
     field.value = value
-    field.errorType = !field.value && field.validationRequired && 'empty'
-    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
+    field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
+    field.isValid = field.value && !!field.value.toString()
 
     switch (name) {
+      case 'file':
+        // @ts-ignore
+        if (!value || !value.type) return
+
+        // @ts-ignore
+        const type = value.type
+        for (const ext of this.state.imgExtensions) {
+          const extChecked = type.includes(ext)
+          field.isValid = extChecked
+          if (extChecked) return
+        }
+
+        if (!field.isValid && value) {
+          field.value = null
+          field.errorType = 'img-extension'
+        }
+        break
+
       case 'isActive':
         const sort = this.state.form.data.find(f => f.name === 'sort')
         const sortValue = field.value ? sort.value : null
@@ -300,7 +321,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       case 'newsId':
         field.isValid = !!Number(field.value)
         if (value && value.toString() && !field.isValid) field.errorType = 'default'
-        field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg || ''
         break
 
       case 'pageType':
@@ -317,12 +337,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'sort':
-        field.value = field.value > this.state.activeAmount || !field.value ? this.state.activeAmount : field.value
+        field.value = field.value > this.state.activeAmount.value || !field.value ? this.state.activeAmount.value : field.value
         break
-
-      default:
-        field.isValid = field.value && !!field.value.toString()
     }
+
+    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
   }
   /** Update form by existing banner data */
   updateFormByBannerData(data: Banner) {
@@ -364,7 +383,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Get active banners amount */
   async getActiveAmount() {
     return new Promise((resolve, reject) => {
-      this.commit('setIsLoading', true)
+      this.commit('setActiveAmountIsLoading', true)
 
       service.get('/api/v1/active-count')
         .then((res: AxiosResponse<any>) => {
@@ -375,13 +394,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           console.log(error.response)
           reject()
         })
-        .finally(() => this.commit('setIsLoading', false))
+        .finally(() => this.commit('setActiveAmountIsLoading', false))
     })
   }
   /** Change active banners amount */
   updateActiveAmount(payload: number) {
     return new Promise(async (resolve, reject) => {
-      this.commit('setIsLoading', true)
+      this.commit('setActiveAmountIsLoading', true)
 
       service.post(`/api/v1/active-count/${payload}`)
       .then((res: AxiosResponse<any>) => {
@@ -392,7 +411,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         console.log(error.response)
         reject()
       })
-      .finally(() => this.commit('setIsLoading', false))
+      .finally(() => this.commit('setActiveAmountIsLoading', false))
     })
   }
 }

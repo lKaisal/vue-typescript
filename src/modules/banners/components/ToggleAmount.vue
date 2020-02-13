@@ -5,7 +5,7 @@
     +e.row
       +e.label Количество активных баннеров:
       +e.data
-        +e.amount(v-html="activeAmount")
+        +e.amount(v-html="activeAmount.value")
         +e.icon-wrapper._edit(@click="clicked")
           +e.I.icon._edit.el-icon-edit
 </template>

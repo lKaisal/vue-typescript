@@ -56,21 +56,21 @@
         //- sort
         +e.field._sort(:class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
-          +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.toString()")
-            +e.EL-OPTION(v-for="n in activeAmount" :key="n" :label="n" :value="n")
+          +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
+            +e.EL-OPTION(v-for="n in activeAmount.value" :key="n" :label="n" :value="n")
           +e.error(v-html="sortField.errorMsg")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
 import trim from 'validator/lib/trim'
-import { Banner, BannerForm, MsgBoxContent } from '../models'
-import DragDrop from './DragDrop.vue'
 import flatpickr from 'flatpickr'
 import { Russian } from 'flatpickr/dist/l10n/ru.js'
-import { bannersMapper } from '../module/store'
 import Inputmask from 'inputmask'
 import { ElInput } from 'element-ui/types/input'
+import { Banner, BannerForm, MsgBoxContent, FormField } from '../models'
+import { bannersMapper } from '../module/store'
+import DragDrop from './DragDrop.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -122,12 +122,13 @@ export default class FormBanners extends Mappers {
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
   get sortBy() { return this.isActive ? this.sortField.value : null }
-  set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount}) : null }
+  set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount.value}) : null }
   get title() { return this.titleField.value }
   set title(value) { this.updateField({name: 'title', value: trim(value)}) }
 
   // other computed
   get isNewsType() { return this.pageType === 0 }
+  get isWrongImgExt() { return this.fileField.errorType === 'img-extension' }
 
   @Watch('isNewsType')
   async onIsNewsTypeChange(val) {
@@ -144,7 +145,7 @@ export default class FormBanners extends Mappers {
     this.setValidationIsShown(false)
   }
 
-  isInvalid(field) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
+  isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'img-extension')) && field.validationRequired && !field.isValid }
   initPickers() {
     // activeFrom
     const configFrom = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true, onChange: (dateStr) => {
@@ -278,6 +279,8 @@ export default class FormBanners extends Mappers {
 
   &__input
     display block
+    .is-invalid &
+      animation pulsate ease-in-out .5s both
 
   &__checkbox
     margin-right 15px

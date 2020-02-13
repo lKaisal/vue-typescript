@@ -1,11 +1,11 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-banners(v-loading.fullscreen.lock="isLoading || list.isLoading")
+  +b.module-banners(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
       router-view(@updateList="updateList" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal")
+      MessageBox(v-show="msgBoxIsShown && !isLoading" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal")
 </template>
 
 <script lang="ts">
@@ -16,7 +16,8 @@ import MsgBoxTools from '@/modules/banners/mixins/msgBoxTools'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['isLoading', 'list'])
+    ...bannersMapper.mapState(['list']),
+    ...bannersMapper.mapGetters(['isLoading'])
   },
   methods: {
     ...bannersMapper.mapActions(['getList', 'getActiveAmount'])

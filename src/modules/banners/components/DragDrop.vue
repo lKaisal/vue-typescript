@@ -4,14 +4,15 @@
   +b.drag-drop
     +e.TRANSITION-GROUP.container(tag="div" :class="{ 'is-filled': !!file }")
       +e.loaders(v-show="!file" key="loaders")
-        i(class="el-icon-plus drag-drop__drop-plus")
+        +e.I.drop-plus.el-icon-plus
+        +e.size(v-html="'1122x670'")
         +e.drop(@drop.prevent="onDropImg")
         +e.INPUT.input-img(ref="fileinput" type="file" @input="onInputImg")
       +e.img-preview._loading(v-if="!imgLoaded && imgUrl" key="loading")
       +e.img(v-show="file" @mouseenter.self="dropDeleteIsShown=true" @mouseleave="dropDeleteIsShown=false" @click="removeImg" key="img")
         transition(mode="in-out")
           IMG(v-if="imgLoaded" :src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="drag-drop__img-preview")
-        i(v-show="dropDeleteIsShown" class="el-icon-delete-solid drag-drop__drop-delete")
+        +e.I.drop-delete.el-icon-delete-solid(v-show="dropDeleteIsShown")
 </template>
 
 <script lang="ts">
@@ -116,6 +117,7 @@ export default class DragDrop extends Mappers {
       border 1px solid $cBrand
     .is-invalid &
       border-color $cDanger
+      animation pulsate ease-in-out .5s both
 
   &__loaders
   &__img
@@ -129,8 +131,18 @@ export default class DragDrop extends Mappers {
     width 100%
     height 100%
     display flex
+    // flex-direction column
     justify-content center
     align-items center
+
+  &__size
+    position absolute
+    transform translateY(25px)
+    color $cSecondaryText
+    fontLight()
+    transition(color)
+    .is-invalid &
+      color $cDanger
 
   &__input-img
     opacity 0

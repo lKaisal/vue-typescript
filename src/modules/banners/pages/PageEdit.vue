@@ -16,7 +16,7 @@
           ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Отмена")
       //- OtherBanners(:list="listOther" class="page-edit__other")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
+      MessageBox(v-show="msgBoxIsShown && !isLoading" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
       PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
@@ -40,8 +40,8 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list', 'isLoading', 'form']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent'])
+    ...bannersMapper.mapState(['list', 'form']),
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading']),
@@ -126,7 +126,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     this.banner = this.bannerById(id)
 
     if (this.banner) this.updateFormByBannerData(this.banner)
-    else this.setIsLoading(true)
+    // else this.setIsLoading(true)
 
     document.addEventListener('keydown', this.keydownHandler)
   }

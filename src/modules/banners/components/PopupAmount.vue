@@ -10,7 +10,7 @@
       +e.row._toggle
         +e.icon-wrapper._minus(@click="amount--" :class="{ 'is-disabled': amount === 1 }")
           +e.I.icon._minus.el-icon-minus
-        +e.EL-INPUT.input(v-model="amount" :placeholder="activeAmount" maxlength="1" ref="amountInput")
+        +e.EL-INPUT.input(v-model="amount" :placeholder="activeAmount.value" maxlength="1" ref="amountInput")
         +e.icon-wrapper._plus(@click="amount++" :class="{ 'is-disabled': amount === 10 }")
           +e.I.icon._plus.el-icon-plus
       +e.btns
@@ -48,7 +48,7 @@ export default class PopupAmount extends Mixins(Mappers) {
   async mounted() {
     await this.$nextTick()
     this.setAmountMask()
-    this.amount = this.activeAmount
+    this.amount = this.activeAmount.value
   }
   beforeDestroy() {
     // document.body.classList.remove('modal-open')

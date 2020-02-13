@@ -24,6 +24,7 @@ type Banner = {
 type Form = {
   data: FormField[],
   errors: FormError[],
+  isLoading: boolean,
   type: FormType,
   validationIsShown: boolean,
 }
@@ -35,7 +36,7 @@ type FormField = {
   value: BannerForm[FormField["name"]],
   validationRequired: boolean,
   isValid: boolean,
-  errorType: string,
+  errorType: FormError['type'],
   errorMsg: string
 }
 
@@ -52,7 +53,7 @@ type BannerForm = {
 }
 
 type FormError = {
-  type: string,
+  type: 'empty' | 'img-extension' | 'default',
   msg: string
 }
 
