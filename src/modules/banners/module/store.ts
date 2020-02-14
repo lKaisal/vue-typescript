@@ -1,6 +1,6 @@
 // import { Module, GetterTree } from 'vuex'
 import { AxiosResponse, AxiosError } from 'axios'
-import { Banner, FormField, BannerForm, Form, FormType, FormError } from '../models'
+import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent } from '../models'
 import service from '../client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 // import isAlpha from 'validator/lib/isAlpha'
@@ -9,6 +9,10 @@ const namespaced = true
 
 class BannersState {
   activeAmount: {value: number, isLoading: boolean} = { value: null, isLoading: false }
+  bannerCurrent: BannerCurrent = {
+    data: null,
+    isLoading: false
+  }
   form: Form = {
     data: [
       { name: 'activeFrom', value: null, validationRequired: false, isValid: false, errorType: null, errorMsg: null },
@@ -37,7 +41,7 @@ class BannersState {
 }
 
 class BannersGetters extends Getters<BannersState> {
-  get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.form.isLoading || this.state.list.isLoading }
+  get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.bannerCurrent.isLoading || this.state.form.isLoading || this.state.list.isLoading }
   get listActive() {
     return this.state.list.data.filter(item => item.isActive).sort((a, b) => {
       const sortA = a.position
@@ -85,7 +89,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
-    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value
+    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && this.state.activeAmount.value.toString()
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
@@ -119,6 +123,11 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.list.isLoading = false
   }
   setListIsLoading(payload: boolean) { this.state.list.isLoading = payload }
+  setBannerCurrent(payload: Banner) {
+    this.state.bannerCurrent.data = payload
+    this.state.bannerCurrent.isLoading = false
+  }
+  setBannerCurrentIsLoading(payload: boolean) { this.state.bannerCurrent.isLoading = payload }
   setActiveAmountIsLoading(payload: boolean) { this.state.activeAmount.isLoading = payload }
   // FORM MUTATIONS
   setFormIsLoading(payload: boolean) { this.state.form.isLoading = payload }
@@ -162,6 +171,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           while (!Array.isArray(res)) res = res.data
 
           this.commit('saveList', res)
+          console.log('Success: load list')
           resolve()
         })
         .catch(error => {
@@ -190,7 +200,10 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       service.post('/api/v1/banner', data)
         .then((res: AxiosResponse<Banner>) => {
           this.commit('setValidationIsShown', false)
-          resolve(res.data.id)
+          this.commit('setBannerCurrent', res.data)
+          this.dispatch('updateFormByBannerData', (res.data))
+          console.log('Success: create banner id=' + res.data.id)
+          resolve()
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
@@ -220,14 +233,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         return
       }
 
-      // this.commit('setIsLoading', true)
       this.commit('setFormIsLoading', true)
       const data = this.getters.preparedFormData
 
       service.put(`/api/v1/banner/${id}`, data)
         .then((res: AxiosResponse<Banner>) => {
           this.commit('setValidationIsShown', false)
-          resolve(res.data.id)
+          this.commit('setBannerCurrent', res.data)
+          this.dispatch('updateFormByBannerData', (res.data))
+          console.log('Success: edit banner id=' + res.data.id)
+          resolve()
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
@@ -242,7 +257,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           }
         })
         .finally(() => {
-          // this.commit('setIsLoading', false)
           this.commit('setFormIsLoading', false)
         })
     })
@@ -252,7 +266,10 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     return new Promise((resolve, reject) => {
       this.commit('setIsLoading', true)
       service.delete(`/api/v1/banner/${id}`)
-        .then(() => resolve())
+        .then(() => {
+          console.log('Success: delete banner id=' + id)
+          resolve()
+        })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
           reject()
@@ -262,15 +279,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Get single banner data by bannerId - currently NOT USED */
+  /** Get single banner data by bannerId */
   getBannerById(id: Banner['id']) {
     return new Promise((resolve, reject) => {
       this.commit('setIsLoading', true)
       service.get(`/api/v1/banner/${id}`)
         .then((res: AxiosResponse<any>) => {
-          const banner: Banner = res.data
-          banner.newsId = banner.pageType !== 'news' ? null : Number(getNewsIdFromAppLink(banner.appLink))
-          resolve(banner)
+          this.commit('setBannerCurrent', res.data)
+          this.dispatch('updateFormByBannerData', res.data)
+          console.log('Success: get single banner id=' + id)
+          resolve()
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
@@ -349,11 +367,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         case 'pageType':
           const valueSent = data.pageType
           const index = this.getters.pageTypesSent.indexOf(valueSent)
-          const value = index >= 0 ? index : 1
+          const value = index >= 0 ? index : 0
           this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
-          this.dispatch('updateField', { name: field.name, value: data.position })
+          this.dispatch('updateField', { name: field.name, value: data.position.toString() })
           break
         default:
           this.dispatch('updateField', { name: field.name, value: data[field.name] })
@@ -366,12 +384,15 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     return new Promise((resolve, reject) => {
       this.commit('setIsLoading', true)
       service.post(`/api/v1/inactivate/${id}`)
-        .then(() => resolve())
-        .catch(() => {
-          this.commit('setIsLoading', false)
+        .then(() => {
+          console.log('Success: deactivate banner id=' + id)
+          resolve()
+        })
+        .catch((err: AxiosError) => {
+          console.log(err.response)
           reject()
         })
-        .finally()
+        .finally(() => this.commit('setIsLoading', false))
     })
   }
   /** Get active banners amount */
@@ -382,6 +403,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       service.get('/api/v1/active-count')
         .then((res: AxiosResponse<any>) => {
           this.commit('setActiveAmount', res.data.count)
+          console.log('Success: get activeAmount: '+ res.data.count)
           resolve()
         })
         .catch((error: AxiosError) => {
@@ -399,6 +421,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       service.post(`/api/v1/active-count/${payload}`)
       .then((res: AxiosResponse<any>) => {
         this.commit('setActiveAmount', res.data.count)
+        console.log('Success: set activeAmount: ' + res.data.count)
         resolve()
       })
       .catch((error: AxiosError) => {

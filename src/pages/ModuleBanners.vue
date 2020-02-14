@@ -5,7 +5,7 @@
     transition(mode="out-in")
       router-view(@updateList="updateList" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown && !isLoading" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal")
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -45,7 +45,6 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
     const promisesArr = [this.getList(), this.getActiveAmount()]
     Promise.all(promisesArr)
       .then(() => {
-        console.log('Data loaded!')
         if (this.msgBoxIsShown) this.closeMsgBox()
       })
       .catch(() => {
@@ -60,7 +59,6 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
 
     this.getList()
       .then(() => {
-        console.log('List loaded!')
         if (this.msgBoxIsShown) this.closeMsgBox()
       })
       .catch(() => {

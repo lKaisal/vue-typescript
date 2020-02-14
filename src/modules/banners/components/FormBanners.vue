@@ -73,7 +73,7 @@ import DragDrop from './DragDrop.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount']),
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
     ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId', 'formPageType', 'formTitle', 'pageTypesDisplayed'])
   },
   methods: {
@@ -123,7 +123,7 @@ export default class FormBanners extends Mappers {
   get sortBy() { return this.isActive ? this.sortField.value : null }
   set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount.value}) : null }
   get title() { return this.titleField.value }
-  set title(value) { this.updateField({name: 'title', value: trim(value)}) }
+  set title(value) { this.updateField({name: 'title', value: trim(value) }) }
 
   // other computed
   get isNewsType() { return this.pageType === 0 }
@@ -134,7 +134,7 @@ export default class FormBanners extends Mappers {
 
   @Watch('activeAmountValue', { immediate: true })
   async onActiveAmount(val) {
-    if (val && !this.sortBy) this.updateField({name: 'sort', value: val})
+    if (val && !this.sortBy && !this.bannerCurrent.data) this.updateField({name: 'sort', value: val})
   }
 
   created() {

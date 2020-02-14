@@ -61,11 +61,13 @@ export default class DragDrop extends Mappers {
 
   @Watch('imgUrl')
   onImgUrlChange(val) {
-    if (val) {
-      this.imgLoaded = false
-      preloadImages(this.imgUrl)
-        .then(() => this.imgLoaded = true)
-    }
+    try {
+      if (val) {
+        this.imgLoaded = false
+        preloadImages(this.imgUrl)
+          .then(() => this.imgLoaded = true)
+      }
+    } catch {}
   }
 
   // METHODS

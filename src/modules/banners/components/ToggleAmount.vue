@@ -64,14 +64,14 @@ export default class ToggleAmount extends Mixins(Mappers) {
     text-align center
     fontMedium()
     color $cBrand
-    &:after
-      content ''
-      position absolute
-      top -12px
-      right 0
-      bottom -10px
-      width 1px
-      border-right 1px solid $cBrand
+    // &:after
+    //   content ''
+    //   position absolute
+    //   top -12px
+    //   right 0
+    //   bottom -10px
+    //   width 1px
+    //   border-right 1px solid $cBrand
 
   &__icon-wrapper
     width 100%
@@ -80,12 +80,14 @@ export default class ToggleAmount extends Mixins(Mappers) {
     justify-content center
     align-items center
     background-color $cBrand
+    border-left 1px solid transparent
     color white
     cursor pointer
-    transition(color\, background-color )
+    transition(color\, background-color\, border-color)
     &:hover
       color $cBrand
       background-color white
+      border-color $cBaseBorder
     &_edit
       position relative
       width 30px

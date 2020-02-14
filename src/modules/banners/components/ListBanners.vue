@@ -5,14 +5,11 @@
     +e.container
       +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
-      transition(mode="out-in")
+      transition(mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeIndex")
           ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item.data"
             @editClicked="goToPageEdit(item.data.id)" @deleteClicked="onDeleteItem(item.data.id)" @createClicked="createClicked(index + 1)" @dblclick.prevent.native="onDblClick(item.data, index + 1)"
-            :class="[{ 'list-banners__item_free': !item.data }, 'list-banners__item js-voa' ]")
-          +e.item._fake(v-for="n in 3")
-        //- +e.items._inactive(v-else key="inactiveList")
-          ItemBanner(v-for="(item, index) in listInactive" :key="item.id" :banner="item" @dblclick.prevent.native="onDblClick(item)" class="list-banners__item js-voa")
+            :class="[{ 'list-banners__item_free': !item.data }, 'list-banners__item js-voa js-voa-start' ]")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -29,6 +26,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
+    ...bannersMapper.mapMutations(['setBannerCurrent']),
     ...bannersMapper.mapActions(['updateField'])
   }
 })
@@ -66,6 +64,12 @@ export default class ListBanners extends Mappers {
 
     return composed
   }
+
+  async mounted() {
+    await this.$nextTick()
+    this.animateOneMoreTime()
+  }
+
   handleSelect(index) {
     this.activeIndex = index
   }
@@ -76,17 +80,18 @@ export default class ListBanners extends Mappers {
     if (banner) this.goToPageEdit(banner.id)
     else {
       this.updateField({name: 'sort', value: index })
-      console.log(index)
       this.goToPageCreate()
     }
   }
-  createClicked(index) {
-    this.updateField({name: 'sort', value: index })
-      console.log(index)
+  createClicked(index: Number) {
+    this.setBannerCurrent(Object.assign({}, { 'position': index }, null))
     this.goToPageCreate()
   }
   goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
   goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/banners/edit/${id}` }).catch(err => {}) }
+  animateOneMoreTime() {
+    this.$emit('animateOneMore')
+  }
 }
 </script>
 
@@ -132,6 +137,4 @@ export default class ListBanners extends Mappers {
       opacity 0
       font-size 0
       pointer-events none
-    .v-enter &
-      jsVoaStart()
 </style>

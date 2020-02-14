@@ -18,7 +18,13 @@ type Banner = {
   position: number,
   sort: number,
   sortCalculated: number,
+  title: string,
   updatedAt: string
+}
+
+type BannerCurrent = {
+  data: Banner,
+  isLoading: boolean
 }
 
 type Form = {
@@ -73,4 +79,4 @@ type Button = {
   icon?: string
 }
 
-export { Banner, BannersState, BannerForm, Form, FormType, FormField, FormError, MsgBoxContent, RequestStatus, Button }
+export { Banner, BannersState, BannerForm, BannerCurrent, Form, FormType, FormField, FormError, MsgBoxContent, RequestStatus, Button }

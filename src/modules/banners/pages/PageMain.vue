@@ -6,9 +6,10 @@
       +e.title.H1.page-title Список баннеров
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn")
       ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount")
-      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @deleteItem="onDeleteClick" class="page-main__list")
+      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @animateOneMore="animateOneMoreTime" @deleteItem="onDeleteClick" class="page-main__list")
     transition-group(tag="div")
-      MessageBox(v-if="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn" class="page-main__msg-box modal modal-msg")
+      MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn"
+        class="page-main__msg-box modal modal-msg")
       PopupAmount(v-if="popupAmountIsShown" key="popupAmount" @confirm="updateAmount" @cancel="closePopupAmount" class="page-main__popup-amount modal")
 </template>
 
@@ -23,6 +24,7 @@ import ListBanners from '../components/ListBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import ToggleAmount from '../components/ToggleAmount.vue'
 import PopupAmount from '../components/PopupAmount.vue'
+import animateIfVisible from '@/mixins/animateIfVisible'
 
 const Mappers = Vue.extend({
   computed: {
@@ -53,8 +55,16 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
   popupAmountIsShown: boolean = false
   amountForUpdate: number = null
 
-  created() {
-    this.updateList()
+  @Watch('list', { immediate: true })
+  async onListChange() {
+    await this.$nextTick()
+    await sleep(500)
+    animateIfVisible()
+  }
+
+  async mounted() {
+    await this.$nextTick()
+    animateIfVisible()
   }
 
   // CLICK HANDLERS
@@ -134,6 +144,10 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
         this.secondBtn = { type: 'danger', isPlain: true }
         this.openMsgBox()
       })
+  }
+  async animateOneMoreTime() {
+    await this.$nextTick()
+    animateIfVisible()
   }
 }
 </script>
