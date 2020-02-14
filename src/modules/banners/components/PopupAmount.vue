@@ -10,11 +10,11 @@
       +e.row._toggle
         +e.icon-wrapper._minus(@click="amount--" :class="{ 'is-disabled': amount === 1 }")
           +e.I.icon._minus.el-icon-minus
-        +e.EL-INPUT.input(v-model="amount" type="number" min="1" max="9" maxlength="1" :placeholder="activeAmount.value")
-        +e.icon-wrapper._plus(@click="amount++" :class="{ 'is-disabled': amount === 10 }")
+        +e.EL-INPUT.input(v-model="amount" @input="onInputUpdate" :placeholder="activeAmount.value")
+        +e.icon-wrapper._plus(@click="amount++" :class="{ 'is-disabled': amount === 9 }")
           +e.I.icon._plus.el-icon-plus
       +e.btns
-        ButtonApp(text="Подтвердить" @clicked="confirmClicked" class="popup-amount__btn")
+        ButtonApp(:disabled="!amount" text="Подтвердить" @clicked="confirmClicked" class="popup-amount__btn")
         ButtonApp(btnType="danger" text="Отмена" @clicked="cancelClicked" class="popup-amount__btn")
 </template>
 
@@ -58,7 +58,6 @@ export default class PopupAmount extends Mixins(Mappers) {
     this.amount = this.activeAmount.value
   }
   beforeDestroy() {
-    // document.body.classList.remove('modal-open')
     document.removeEventListener('keydown', this.keyDownHandler)
     this.amount = this.activeAmount.value
   }
@@ -71,6 +70,10 @@ export default class PopupAmount extends Mixins(Mappers) {
     this.$emit('cancel')
   }
   onClickOutside(evt) { console.log(evt) }
+  onInputUpdate(val) {
+    if (!Number(val)) this.amount = null
+    else if (val.length > 1) this.amount = val.slice(0, 1)
+  }
 }
 </script>
 

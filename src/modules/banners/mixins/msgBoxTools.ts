@@ -70,7 +70,7 @@ export default class msgBoxTools extends Vue {
     },
     failDeactivate: {
       title: 'Ошибка!',
-      msg: 'Не удалось заменить баннер',
+      msg: 'Не удалось заменить баннер. Возможно такого баннера не существует',
       firstBtn: 'Повторить попытку',
       secondBtn: 'Отмена'
     },

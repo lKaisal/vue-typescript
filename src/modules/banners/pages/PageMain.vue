@@ -131,6 +131,12 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
     this.$emit('updateList')
   }
   updateAmount(amount) {
+    if (amount === this.activeAmount.value) {
+      this.closePopupAmount()
+      this.closeMsgBox()
+      return
+    }
+
     // stored amount here in case of repeated request
     this.amountForUpdate = amount
     this.updateActiveAmount(amount)

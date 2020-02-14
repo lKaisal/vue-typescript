@@ -11,8 +11,6 @@
       +e.btns
         ButtonApp(v-if="content && content.firstBtn" :btnType="firstBtn.type" :isPlain="firstBtn.isPlain" @clicked="onFirstBtnClick" :text="content.firstBtn" class="msg-box__btn")
         ButtonApp(v-if="content && content.secondBtn" :btnType="secondBtn.type" :isPlain="secondBtn.isPlain" @clicked="onSecondBtnClick" :text="content.secondBtn" class="msg-box__btn")
-        //- +e.EL-BUTTON(v-if="content && content.firstBtn" :type="firstBtn.type" :plain="firstBtn.isPlain" @click="onFirstBtnClick") {{ content.firstBtn }}
-        //- +e.EL-BUTTON(v-if="content && content.secondBtn" :type="secondBtn.type" :plain="secondBtn.isPlain" @click="onSecondBtnClick") {{ content.secondBtn }}
 </template>
 
 <script lang="ts">
