@@ -304,6 +304,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
    */
   updateField({name, value}: {name: keyof BannerForm, value: FormField["value"]}) {
     const field = this.state.form.data.find(field => field.name === name)
+    const activeFrom = this.state.form.data.find(f => f.name === 'activeFrom')
+    const activeTo = this.state.form.data.find(f => f.name === 'activeTo')
     const appLink = this.state.form.data.find(f => f.name === 'appLink')
     const newsId = this.state.form.data.find(f => f.name === 'newsId')
 
@@ -312,6 +314,14 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     field.isValid = field.value && !!field.value.toString()
 
     switch (name) {
+      case 'activeFrom':
+        activeTo.validationRequired = !!value
+        break
+
+      case 'activeTo':
+        activeFrom.validationRequired = !!value
+        break
+
       case 'file':
         // @ts-ignore
         if (!value || !value.type) return
@@ -361,6 +371,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
     fields.forEach(field => {
       switch (field.name) {
+        case 'activeFrom':
+        case 'activeTo':
+          console.log(data, data.activeFrom, data.activeTo)
         case 'file':
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break

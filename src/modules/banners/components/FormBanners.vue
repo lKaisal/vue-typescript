@@ -42,17 +42,21 @@
             +e.EL-INPUT.input(placeholder="/link" v-model="appLink")
             +e.error(v-html="appLinkField.errorMsg")
         //- activeFrom / activeTo
-          //- +e.row
-            +e.field._active-from(:class="{ 'is-filled': !!activeFrom }")
-              +e.label
-                +e.LABEL.label(for="activeFrom") Дата начала
-              +e.INPUT.pickr.el-input__inner(ref="fromRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeFrom")
-              +e.error(v-html="activeFromField.errorMsg")
-            +e.field._active-to(:class="{ 'is-filled': !!activeTo }")
-              +e.label
-                +e.LABEL.label(for="activeTo") Дата окончания
-              +e.INPUT.pickr.el-input__inner(ref="toRef" placeholder="DD-MM-YYYY HH:MM" v-model="activeTo")
-              +e.error(v-html="activeToField.errorMsg")
+        +e.row
+          +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom }")
+            +e.label
+              +e.LABEL.label(for="activeFrom") Дата начала
+            +e.input-wrapper
+              +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="2020-12-31 12:00")
+              +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrFrom)")
+            +e.error(v-html="activeFromField.errorMsg")
+          +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo }")
+            +e.label
+              +e.LABEL.label(for="activeTo") Дата окончания
+            +e.input-wrapper
+              +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="2020-12-31 12:00")
+              +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrTo)")
+            +e.error(v-html="activeToField.errorMsg")
         //- sort
         +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
@@ -91,7 +95,7 @@ const Mappers = Vue.extend({
 export default class FormBanners extends Mappers {
   pickrFrom = null
   pickrTo = null
-  dateFormat: string = 'd-m-Y H:i'
+  dateFormat: string = 'Y-m-d H:i'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
   @Ref() newsIdRef: ElInput
@@ -108,9 +112,9 @@ export default class FormBanners extends Mappers {
   get titleField() { return this.formTitle }
 
   // FORM SET/GET FIELDS VALUES
-  get activeFrom() { return this.pickrFrom && this.pickrFrom.selectedDates.length && this.pickrFrom.formatDate(this.pickrFrom.selectedDates[0], this.dateFormat) }
+  get activeFrom() { return this.activeFromField.value }
   set activeFrom(value) { this.updateField({name: 'activeFrom', value}) }
-  get activeTo() { return this.pickrTo && this.pickrTo.selectedDates.length && this.pickrTo.formatDate(this.pickrTo.selectedDates[0], this.dateFormat) }
+  get activeTo() { return this.activeToField.value }
   set activeTo(value) { this.updateField({name: 'activeTo', value}) }
   get appLink() { return this.appLinkField.value }
   set appLink(value) { this.updateField({name: 'appLink', value: trim(value)}) }
@@ -140,25 +144,43 @@ export default class FormBanners extends Mappers {
   created() {
     if (this.isFormCreate) this.updateField({ name: 'isActive', value: true })
   }
+  async mounted() {
+    await this.$nextTick()
+    this.initPickers()
+  }
   beforeDestroy() {
     this.setValidationIsShown(false)
   }
 
   isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'img-extension')) && field.validationRequired && !field.isValid }
   initPickers() {
+    const configOpts = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true }
+
     // activeFrom
-    const configFrom = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true, onChange: (dateStr) => {
+    const configFrom = Object.assign(configOpts, { onChange: async (dateStr) => {
+      if (!dateStr || !dateStr[0]) return
+
       const dateStrFormatted = this.pickrFrom.formatDate(dateStr[0], this.dateFormat)
-      if (this.pickrTo.selectedDates[0] && this.pickrTo.selectedDates[0].getTime() < new Date(dateStr).getTime()) this.pickrTo.setDate(dateStrFormatted)
+
+      await this.$nextTick()
+      // check activeTo: if it is smaller -> set it to activeFrom date
+      const pickrToTime = this.pickrTo.selectedDates[0] && this.pickrTo.selectedDates[0].getTime()
+      const dateStrTime = new Date(dateStr).getTime()
+      if (pickrToTime && pickrToTime < dateStrTime) this.pickrTo.setDate(dateStrFormatted)
+
+      // upd activeTo minDate (equal to activeFrom date)
       this.pickrTo.set('minDate', dateStrFormatted)
-    } }
+    } })
     this.pickrFrom = flatpickr(this.fromRef, configFrom)
     if (this.activeFromField.value) this.pickrFrom.setDate(this.activeFromField.value)
 
     // activeTo
-    const configTo = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true }
+    const configTo = Object.assign(configOpts)
     this.pickrTo = flatpickr(this.toRef, configTo)
     if (this.activeToField.value) this.pickrTo.setDate(this.activeToField.value)
+  }
+  clearPicker(picker) {
+    picker.clear()
   }
 }
 </script>
@@ -180,7 +202,7 @@ export default class FormBanners extends Mappers {
   &__row
     display flex
     justify-content space-between
-    flex-wrap wrap
+    flex-wrap nowrap
     .form-banners__field
       &:not(:last-child)
         margin-right 10px
@@ -190,7 +212,6 @@ export default class FormBanners extends Mappers {
     width 100%
     font-size 18px
     fontReg()
-    color $cInfo
     .is-filled &
       border-color $cBrand
     .is-invalid &
@@ -248,7 +269,7 @@ export default class FormBanners extends Mappers {
   &__input
   &__select
   &__pickr
-    color $cInfo
+    // color $cInfo
     font-size 18px
     >>> input
       font-size 18px
@@ -266,6 +287,7 @@ export default class FormBanners extends Mappers {
       margin-top 10px
 
   &__input
+  &__pickr
     display block
     .is-invalid &
       animation pulsate ease-in-out .5s both
@@ -300,4 +322,22 @@ export default class FormBanners extends Mappers {
       >>> i
         color white
         transform scale(.75)
+
+  &__input-wrapper
+    position relative
+
+  &__icon-clear
+    position absolute
+    top 50%
+    transform translateY(-50%)
+    right 5px
+    padding 5px
+    color $cPlaceholderText
+    cursor pointer
+    pointer-events none
+    opacity 0
+    transition(opacity)
+    .is-filled &
+      pointer-events auto
+      opacity 1
 </style>
