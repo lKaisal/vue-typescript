@@ -42,21 +42,23 @@
             +e.EL-INPUT.input(placeholder="/link" v-model="appLink")
             +e.error(v-html="appLinkField.errorMsg")
         //- activeFrom / activeTo
-        +e.row
-          +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom }")
-            +e.label
-              +e.LABEL.label(for="activeFrom") Дата начала
-            +e.input-wrapper
-              +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="2020-12-31 12:00")
-              +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrFrom)")
-            +e.error(v-html="activeFromField.errorMsg")
-          +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo }")
-            +e.label
-              +e.LABEL.label(for="activeTo") Дата окончания
-            +e.input-wrapper
-              +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="2020-12-31 12:00")
-              +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrTo)")
-            +e.error(v-html="activeToField.errorMsg")
+        +e.block
+          +e.row
+            +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom }")
+              +e.label
+                +e.LABEL.label(for="activeFrom") Дата начала
+              +e.input-wrapper
+                +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="2020-12-31")
+                +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrFrom)")
+              +e.error(v-html="activeFromField.errorMsg")
+            +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo }")
+              +e.label
+                +e.LABEL.label(for="activeTo") Дата окончания
+              +e.input-wrapper
+                +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="2020-12-31")
+                +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrTo)")
+              +e.error(v-html="activeToField.errorMsg")
+          +e.comment(:class="{ 'is-transparent': isInvalid(activeFromField) || isInvalid(activeToField) }") Заполнить для баннеров с отложенным стартом
         //- sort
         +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
           +e.LABEL.label(for="sortBy") Положение баннера
@@ -95,7 +97,7 @@ const Mappers = Vue.extend({
 export default class FormBanners extends Mappers {
   pickrFrom = null
   pickrTo = null
-  dateFormat: string = 'Y-m-d H:i'
+  dateFormat: string = 'Y-m-d'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
   @Ref() newsIdRef: ElInput
@@ -154,7 +156,7 @@ export default class FormBanners extends Mappers {
 
   isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'img-extension')) && field.validationRequired && !field.isValid }
   initPickers() {
-    const configOpts = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), enableTime: true }
+    const configOpts = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date() }
 
     // activeFrom
     const configFrom = Object.assign(configOpts, { onChange: async (dateStr) => {
@@ -166,7 +168,7 @@ export default class FormBanners extends Mappers {
       // check activeTo: if it is smaller -> set it to activeFrom date
       const pickrToTime = this.pickrTo.selectedDates[0] && this.pickrTo.selectedDates[0].getTime()
       const dateStrTime = new Date(dateStr).getTime()
-      if (pickrToTime && pickrToTime < dateStrTime) this.pickrTo.setDate(dateStrFormatted)
+      if ((pickrToTime && pickrToTime < dateStrTime) || !pickrToTime) this.activeTo = dateStrFormatted
 
       // upd activeTo minDate (equal to activeFrom date)
       this.pickrTo.set('minDate', dateStrFormatted)
@@ -198,6 +200,17 @@ export default class FormBanners extends Mappers {
 
   &__column
     width calc(50% - 30px)
+
+  &__block
+    margin-bottom 35px
+
+  &__comment
+    fontLight()
+    font-style italic
+    font-size 12px
+    transition(opacity)
+    &.is-transparent
+      opacity 0
 
   &__row
     display flex
@@ -234,8 +247,11 @@ export default class FormBanners extends Mappers {
       display inline-flex
       padding 5px
       margin -5px
-      margin-bottom 30px
+      // margin-bottom 30px
       cursor pointer
+    &_active-from
+    &_active-to
+      margin-bottom 7px
 
   &__error
     position absolute
@@ -258,13 +274,13 @@ export default class FormBanners extends Mappers {
     white-space nowrap
     transition(opacity)
     .form-banners__field_is-active &
-      // margin-right 25px
+      margin-bottom 0
       fontMedium()
       font-size 18px
       pointer-events none
       opacity .75
     .form-banners__field_is-active.is-active &
-        opacity 1
+      opacity 1
 
   &__input
   &__select

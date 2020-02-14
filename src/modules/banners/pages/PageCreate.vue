@@ -10,13 +10,14 @@
         +e.H1.title.page-title Создание баннера
         FormBanners(class="page-create__form")
         +e.btns
-          ButtonApp(btnType="primary" :disabled="!isSmthToCommit" @clicked="submitForm" text="Сохранить баннер" class="page-create__btn")
+          ButtonApp(btnType="primary" :disabled="!isSmthToCommit" @clicked="onSubmit" text="Сохранить баннер" class="page-create__btn")
           ButtonApp(btnType="warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
           ButtonApp(btnType="danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-create__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-create__popup modal")
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="!isActivatedToday && formActiveFrom.value"
+        @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-create__popup modal")
 </template>
 
 <script lang="ts">
@@ -34,10 +35,10 @@ import vClickOuside from 'v-click-outside'
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid', 'isLoading'])
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid', 'isLoading', 'formActiveFrom'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrent']),
+    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrent', 'setValidationIsShown']),
     ...bannersMapper.mapActions(['getList', 'deleteBanner', 'createBanner', 'deactivateBanner', 'updateFormByBannerData'])
   }
 })
@@ -57,9 +58,10 @@ const Mappers = Vue.extend({
 export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   bannerId: number = null
   secondBtn: Button = null
-  bannerConflictId: number = null
+  // bannerConflictId: number = null
   popupFormIsShown: boolean = false
 
+  get bannerConflictId() { return this.listActive.find(b => b.position === this.formSort.value).id }
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
   get isPageCreate() { return this.$route.path.includes('/banners/create') }
   get isSmthToCommit() {
@@ -72,8 +74,14 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType').map(f => f.value).some(f => !!f)
 
       return smthElseToCommit
-    } catch{}
+    } catch {}
   }
+  // @ts-ignore
+  get activeFrom() { return new Date(new Date(this.formActiveFrom.value).getFullYear(), new Date(this.formActiveFrom.value).getMonth() , new Date(this.formActiveFrom.value).getDate()) }
+  get activeFromTime() { return this.activeFrom && new Date(this.activeFrom).getTime() }
+  get today() { return new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate()) }
+  get todayTime() { return this.today.getTime() }
+  get isActivatedToday() { return this.activeFromTime === this.todayTime }
 
   created() {
     this.setFormType('create')
@@ -93,7 +101,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   closePopupConflict() {
     document.body.classList.remove('modal-open')
     this.popupFormIsShown = false
-    this.bannerConflictId = null
+    // this.bannerConflictId = null
   }
   keydownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
@@ -106,6 +114,12 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     this.goToPageMain()
   }
   // CLICK HANDLERS
+  onSubmit() {
+    if (this.formActiveFrom.value && this.bannerConflictId && !this.isActivatedToday) {
+      if (!this.formIsValid) this.setValidationIsShown(true)
+      else this.openPopupConflict()
+    } else this.submitForm()
+  }
   onFirstBtnClick() {
     switch (this.requestStatus) {
       case 'successCreate':
@@ -133,6 +147,11 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
         break
     }
   }
+  onConflictConfirm() {
+    this.closePopupConflict()
+    if (this.formActiveFrom.value) this.submitForm()
+    else this.deactivateBannerConflict()
+  }
   goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
   goToPageEdit() {
     if (!this.bannerCurrent.data) return
@@ -156,8 +175,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       .catch(error => {
         if (this.formIsValid) {
           if (error.bannerId) {
-            this.bannerConflictId = error.bannerId
-            // this.bannerConflictId = this.listActive.find(b => b.sort === this.formSort.value) && this.listActive.find(b => b.sort === this.formSort.value).id
             this.openPopupConflict()
           } else {
             this.secondBtn = { type: 'danger', isPlain: true }
@@ -171,7 +188,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     this.deactivateBanner(this.bannerConflictId)
       .then(() => {
         this.closeMsgBox()
-        this.closePopupConflict()
         this.submitForm()
       })
       .catch(() => {

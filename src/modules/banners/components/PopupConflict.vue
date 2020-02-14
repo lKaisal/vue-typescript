@@ -3,10 +3,11 @@
 
   +b.popup-conflict
     +e.container.modal-popup-container
-      +e.text Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
+      +e.text(v-if="dateStart" v-html="`Выбранное поле сортировки занято другим баннером.<br>Если продолжить сохранение, этот баннер будет перезаписан <b>${dateStart}</b>.<br>Хотите продолжить?`")
+      +e.text(v-else) Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
       ItemBanner(:banner="banner" :editIconsShown="false" class="popup-conflict__item")
       +e.btns
-        ButtonApp(btnType="primary" @clicked="confirm" text="Заменить" class="popup-conflict__btn")
+        ButtonApp(btnType="primary" @clicked="confirm" :text="confirmText" class="popup-conflict__btn")
         ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-conflict__btn")
         //- +e.EL-BUTTON(type="primary" @click="confirm") Заменить
         //- +e.EL-BUTTON(type="danger" @click="discard") Отмена
@@ -34,6 +35,8 @@ const Mappers = Vue.extend({
 
 export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
   @Prop() banner: Banner
+  @Prop() dateStart: string
+  get confirmText() { return this.dateStart ? 'Подтвердить' : 'Заменить' }
 
   confirm() {
     this.$emit('confirm')
@@ -51,11 +54,14 @@ export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
 .popup-conflict
 
   &__container
-    //
+    +gt-md()
+      max-width 40vw
+    +sm()
+      max-width 90vw
 
   &__text
     margin-bottom 50px
-    fontMedium()
+    // fontMedium()
     line-height 1.25
 
   &__item

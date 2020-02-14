@@ -308,6 +308,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     const activeTo = this.state.form.data.find(f => f.name === 'activeTo')
     const appLink = this.state.form.data.find(f => f.name === 'appLink')
     const newsId = this.state.form.data.find(f => f.name === 'newsId')
+    const sort = this.state.form.data.find(f => f.name === 'sort')
 
     field.value = value
     field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
@@ -359,7 +360,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'sort':
-        field.value = (field.value > this.state.activeAmount.value && this.state.activeAmount.value) || !field.value ? this.state.activeAmount.value : field.value
+        field.value = (Number(field.value) > Number(this.state.activeAmount.value) && this.state.activeAmount.value) || !Number(field.value) ? Number(this.state.activeAmount.value) : Number(field.value)
         break
     }
 
@@ -371,9 +372,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
     fields.forEach(field => {
       switch (field.name) {
-        case 'activeFrom':
-        case 'activeTo':
-          console.log(data, data.activeFrom, data.activeTo)
         case 'file':
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break

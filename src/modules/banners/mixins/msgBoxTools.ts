@@ -53,12 +53,12 @@ export default class msgBoxTools extends Vue {
     },
     successDelete: {
       title: 'Готово!',
-      msg: 'Данные успешно удалены',
+      msg: 'Баннер перенесен в архив',
       firstBtn: 'Вернуться к списку',
     },
     failDelete: {
-      title: 'Ошибка при удалении',
-      msg: 'Возможно информация уже была удалена',
+      title: 'Ошибка!',
+      msg: 'Возможно баннер уже находится в архиве',
       firstBtn: 'Повторить попытку',
       secondBtn: 'Отменить'
     },

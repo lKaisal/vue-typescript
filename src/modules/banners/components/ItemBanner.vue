@@ -16,6 +16,8 @@
           IMG.item-banner__img(v-if="banner && imgLoaded" :src="banner.bannerImageUrl")
           +e.img.bg-empty(v-else :class="{ 'item-banner__img_loading': imgIsLoading }")
       +e.info(v-if="banner")
+        +e.info-item(v-if="banner.title")
+          +e.title Имя баннера:&nbsp;<span class="item-banner__text">{{ banner.title }}</span>
         +e.info-item(v-if="banner.position && banner.isActive")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.position }}</span>
         +e.info-item(v-if="banner.updatedAt")
@@ -24,7 +26,7 @@
           +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        //- +e.info-item(v-if="banner.activeFrom || banner.activeTo")
+        +e.info-item(v-if="banner.activeFrom || banner.activeTo")
           +e.title Срок действия: 
           +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
       +e.info(v-else)

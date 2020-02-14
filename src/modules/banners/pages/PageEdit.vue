@@ -10,14 +10,15 @@
         +e.H1.title.page-title Редактирование баннера
         FormBanners(class="page-edit__form")
         +e.btns
-          ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="submitForm" text="Сохранить баннер")
+          ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="onSubmit" text="Сохранить баннер")
           ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
           ButtonApp(class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив")
           ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Отмена")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" @confirm="deactivateBannerConflict" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="!isActivatedToday && formActiveFrom.value"
+        @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -40,7 +41,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'form', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading', 'setBannerCurrent']),
@@ -63,10 +64,11 @@ const Mappers = Vue.extend({
 
 export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   secondBtn: Button = null
-  bannerConflictId: number = null
+  // bannerConflictId: number = null
   popupFormIsShown: boolean = false
 
   get banner() { return this.bannerCurrent.data }
+  get bannerConflictId() { return this.listActive.find(b => b.position === this.formSort.value).id }
   get bannerConflict() { return this.bannerById(this.bannerConflictId) }
   get isSmthToUpdate() {
     if (!this.banner) return
@@ -93,6 +95,12 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       }
     }
   }
+  // @ts-ignore
+  get activeFrom() { return new Date(new Date(this.formActiveFrom.value).getFullYear(), new Date(this.formActiveFrom.value).getMonth() , new Date(this.formActiveFrom.value).getDate()) }
+  get activeFromTime() { return this.activeFrom && new Date(this.activeFrom).getTime() }
+  get today() { return new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate()) }
+  get todayTime() { return this.today.getTime() }
+  get isActivatedToday() { return this.activeFromTime === this.todayTime }
 
   created() {
     this.setFormType('edit')
@@ -126,6 +134,28 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
     }
   }
+  onSubmit() {
+    if (this.formActiveFrom.value && this.bannerConflictId && !this.isActivatedToday) {
+      if (!this.formIsValid) this.setValidationIsShown(true)
+      else this.openPopupConflict()
+    } else this.submitForm()
+  }
+  onClickDelete() {
+    this.deleteBanner(this.banner.id)
+      .then(async () => {
+        this.requestStatus = 'successDelete'
+        this.secondBtn = { type: 'success', isPlain: true }
+        this.openMsgBox()
+        await sleep(1500)
+        this.goToPageMain()
+        this.closeMsgBox()
+      })
+      .catch(() => {
+        this.requestStatus = 'failDelete'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
+  }
   onFirstBtnClick() {
     switch (this.requestStatus) {
       case 'successEdit':
@@ -156,7 +186,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
       case 'failDeactivate':
         this.closeMsgBox()
-        this.closePopupConflict()
         break
       case 'successEdit':
       default:
@@ -164,21 +193,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
     }
   }
-  onClickDelete() {
-    this.deleteBanner(this.banner.id)
-      .then(async () => {
-        this.requestStatus = 'successDelete'
-        this.secondBtn = { type: 'success', isPlain: true }
-        this.openMsgBox()
-        await sleep(1500)
-        this.goToPageMain()
-        this.closeMsgBox()
-      })
-      .catch(() => {
-        this.requestStatus = 'failDelete'
-        this.secondBtn = { type: 'danger', isPlain: true }
-        this.openMsgBox()
-      })
+  onConflictConfirm() {
+    this.closePopupConflict()
+    if (this.formActiveFrom.value) this.submitForm()
+    else this.deactivateBannerConflict()
   }
   goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
   // STORE ACTIONS CALL
@@ -215,7 +233,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       .catch(error => {
         if (this.formIsValid) {
           if (error.bannerId) {
-            this.bannerConflictId = error.bannerId
+            // this.bannerConflictId = error.bannerId
             this.openPopupConflict()
           } else {
             this.requestStatus = 'failEdit'
@@ -234,7 +252,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     this.deactivateBanner(this.bannerConflictId)
       .then(() => {
         this.closeMsgBox()
-        this.closePopupConflict()
         this.submitForm()
       })
       .catch(() => {
