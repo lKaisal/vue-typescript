@@ -23,7 +23,7 @@ import sleep from '@/mixins/sleep'
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['activeAmount']),
-    ...bannersMapper.mapGetters(['listActive', 'listInactive'])
+    ...bannersMapper.mapGetters(['listActive', 'listInactive', 'listDelayed'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setBannerCurrentSuccess']),
@@ -43,9 +43,10 @@ export default class ListBanners extends Mappers {
 
   get activeList() {
     if (this.activeIndex === '1') return this.listActiveComposed
-    else if (this.activeIndex === '2') return this.listInactiveComposed
+    else if (this.activeIndex === '2') return this.listDelayedComposed
+    else if (this.activeIndex === '3') return this.listInactiveComposed
   }
-  get sortItems() { return [ `Активные (${this.listActive.length})`, `Архивные (${this.listInactive.length})` ] }
+  get sortItems() { return [ `Активные (${this.listActive.length})`, `С отложенным стартом (${this.listDelayed.length})`, `Архивные (${this.listInactive.length})` ] }
   get listActiveComposed() {
     const count = this.activeAmount.value
     const composed: { data: Banner }[] = []
@@ -55,6 +56,12 @@ export default class ListBanners extends Mappers {
       if (data) composed.push({ data })
       else composed.push({ data: null })
     }
+
+    return composed
+  }
+  get listDelayedComposed() {
+    const composed: { data: Banner }[] = []
+    for (const item of this.listDelayed) composed.push({data: item})
 
     return composed
   }

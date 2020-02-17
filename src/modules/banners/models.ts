@@ -6,7 +6,9 @@ type BannersState = {
 
 type Banner = {
   activeFrom: string,
+  activeFromTime?: number,
   activeTo: string,
+  activeToTime: number,
   appLink: string,
   bannerDate: string,
   bannerImageUrl: string,
@@ -19,6 +21,7 @@ type Banner = {
   sort: number,
   sortCalculated: number,
   title: string,
+  type: 'active' | 'delayed' | 'inactive',
   updatedAt: string
 }
 
@@ -64,7 +67,7 @@ type Modify<T, R> = Omit<T, keyof R> & R
 type BannerFormData = Modify<BannerForm, { isActive: string, file: string, newsId: string, sort: string }>
 
 type FormError = {
-  type: 'empty' | 'img-extension' | 'default' | 'emptyActiveFrom' | 'emptyActiveTo',
+  type: 'empty' | 'imgExtension' | 'default' | 'emptyActiveFrom' | 'emptyActiveTo',
   msg: string
 }
 

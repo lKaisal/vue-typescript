@@ -4,8 +4,13 @@ import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFor
 import service from '../client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 // import isAlpha from 'validator/lib/isAlpha'
+import getDateTime from '../mixins/getDateTime'
 
 const namespaced = true
+
+const today = new Date()
+today.setHours(0,0,0,0)
+const todayTime = today.getTime()
 
 class BannersState {
   activeAmount: { value: number, error: string, isLoading: boolean } = { value: null, error: null, isLoading: false }
@@ -28,18 +33,18 @@ class BannersState {
     ],
     error: null,
     errors: [
+      { type: 'default', msg: 'Недопустимое значение' },
       { type: 'empty', msg: 'Поле не должно быть пустым' },
       { type: 'emptyActiveFrom', msg: 'Укажите дату начала или удалите дату окончания' },
       { type: 'emptyActiveTo', msg: 'Укажите дату окончания или удалите дату начала' },
-      { type: 'img-extension', msg: 'Загрузите изображение в формате .jpg или .png' },
-      { type: 'default', msg: 'Недопустимое значение' }
+      { type: 'imgExtension', msg: 'Загрузите изображение в формате .jpg или .png' }
     ],
     isLoading: false,
     type: null,
     validationIsShown: false,
   }
   imgExtensions: string[] = [ 'jpg', 'jpeg', 'png' ]
-  isLoading: boolean = false // deleteBanner, inactivateBanner
+  isLoading: boolean = false // deleteBanner, deactivateBanner
   loadingError: string = null
   list: { data: Banner[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
   pageTypes: { displayed: string[], sent: string[] } = { displayed: ['Новость', 'Раздел'], sent: ['news', 'notnews'] }
@@ -48,8 +53,21 @@ class BannersState {
 class BannersGetters extends Getters<BannersState> {
   get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.bannerCurrent.isLoading || this.state.form.isLoading || this.state.list.isLoading }
   get loadingError() { return this.state.loadingError || this.state.activeAmount.error || this.state.bannerCurrent.error || this.state.form.error || this.state.list.error }
+  get listMastered() {
+    if (!this.state.list.data) return
+
+    const arr = [...this.state.list.data]
+    arr.forEach(item => {
+      item.activeFromTime = getDateTime(item.activeFrom) || null
+      item.activeToTime = getDateTime(item.activeTo) || null
+    })
+
+    return arr
+  }
   get listActive() {
-    return this.state.list.data.filter(item => item.isActive).sort((a, b) => {
+    if (!this.getters.listMastered) return
+
+    const arr = this.getters.listMastered.filter(item => item.isActive).sort((a, b) => {
       const sortA = a.position
       const sortB = b.position
 
@@ -57,19 +75,59 @@ class BannersGetters extends Getters<BannersState> {
       else if (sortA < sortB) return -1
       else return 0
     })
+    arr.forEach(item => item.type = 'active')
+
+    return arr
+  }
+  get listDelayed() {
+    if (!this.getters.listMastered) return
+
+    const arr = this.getters.listMastered.filter(item => {
+        if (!item.isActive && item.activeFrom && item.activeTo) return item.activeFromTime >= todayTime
+      }).sort((a, b) => {
+        const sortA = a.activeFromTime
+        const sortB = b.activeFromTime
+
+        if (sortA > sortB) return 1
+        else if (sortA < sortB) return -1
+        else return 0
+      })
+    arr.forEach(item => item.type = 'delayed')
+
+    return arr
   }
   get listInactive() {
-    return this.state.list.data.filter(item => !item.isActive).sort((a, b) => {
-      const updatedAtA = dateParser(a.updatedAt)
-      const updatedAtB = dateParser(b.updatedAt)
+    if (!this.getters.listMastered) return
 
-      if (updatedAtA < updatedAtB) return 1
-      else if (updatedAtA > updatedAtB) return -1
-      else return 0
-    })
+    const arr = this.getters.listMastered.filter(item => {
+        return !item.isActive && (!item.activeFrom || item.activeFromTime < todayTime)
+      }).sort((a, b) => {
+        const updatedAtA = dateParser(a.updatedAt)
+        const updatedAtB = dateParser(b.updatedAt)
+
+        if (updatedAtA < updatedAtB) return 1
+        else if (updatedAtA > updatedAtB) return -1
+        else return 0
+      })
+    arr.forEach(item => item.type = 'inactive')
+
+    return arr
   }
   get bannerById() {
     return (id: Banner['id']) => { return this.state.list.data && this.state.list.data.find(b => b.id.toString() === id.toString()) }
+  }
+  get bannerCurrentMastered() {
+    if (!this.state.bannerCurrent) return
+
+    const banner = this.state.bannerCurrent.data
+
+    banner.activeFromTime = getDateTime(banner.activeFrom) || null
+    banner.activeToTime = getDateTime(banner.activeTo) || null
+    if (banner.isActive) banner.type = 'active'
+    else if (banner.activeFrom && banner.activeTo && banner.activeFromTime >= todayTime) banner.type = 'delayed'
+    else banner.type = 'inactive'
+
+    return banner
   }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
@@ -88,14 +146,16 @@ class BannersGetters extends Getters<BannersState> {
   }
   get formData() {
     const formData: BannerFormData = Object.assign({})
+    const isCreateForm = this.state.form.type === 'create'
+    const formIsActiveValue = this.getters.formIsActive.value
 
-    formData.activeFrom = this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
-    formData.activeTo = this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
+    formData.activeFrom = (!formIsActiveValue || isCreateForm) && this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
+    formData.activeTo = (!formIsActiveValue || isCreateForm) && this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
     formData.appLink = this.getters.formAppLink.value && this.getters.formAppLink.value.toString() || ''
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
-    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && this.state.activeAmount.value.toString()
+    formData.sort = formIsActiveValue && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && this.state.activeAmount.value.toString()
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
@@ -359,13 +419,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
     switch (name) {
       case 'activeFrom':
-        // console.log(field.value)
         field.errorType = !!activeTo.value && 'emptyActiveFrom' || field.errorType
         activeTo.validationRequired = !!value
         break
 
       case 'activeTo':
-        // console.log(field.value)
         field.errorType = !!activeFrom.value && 'emptyActiveTo' || field.errorType
         activeFrom.validationRequired = !!value
         break
@@ -384,7 +442,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
         if (!field.isValid && value) {
           field.value = null
-          field.errorType = 'img-extension'
+          field.errorType = 'imgExtension'
         }
         break
 

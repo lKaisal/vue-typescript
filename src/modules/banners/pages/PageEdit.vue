@@ -18,7 +18,7 @@
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="formActiveFrom.value"
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="!formIsActive.value && formActiveFrom.value"
         @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
@@ -43,7 +43,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'form', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom'])
+    ...bannersMapper.mapGetters(['listActive', 'bannerById', 'formIsValid', 'formActiveFrom', 'formIsActive', 'formSort', 'pageTypesSent', 'isLoading'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess']),
@@ -70,8 +70,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   popupFormIsShown: boolean = false
 
   get banner() { return this.bannerCurrent.data }
-  get bannerConflictId() { return this.listActive.find(b => b.position === this.formSort.value).id }
-  get bannerConflict() { return this.bannerById(this.bannerConflictId) }
+  get bannerConflict() { return this.listActive.find(b => b.position === this.formSort.value) }
+  get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
   get isSmthToUpdate() {
     if (!this.banner) return
 
@@ -90,7 +90,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           if (bannerPageTypeIndex !== field.value) return true
           break
         case 'sort':
-          if (form.find(f => f.name === 'isActive').value && banner.position !== field.value) return true
+          // if (form.find(f => f.name === 'isActive').value && banner.position !== field.value) return true
+          return banner.position !== field.value
           break
         default:
           if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
@@ -218,7 +219,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   }
   onConflictConfirm() {
     this.closePopupConflict()
-    if (this.formActiveFrom.value) this.submitForm()
+    if (this.formActiveFrom.value && !this.formActiveFrom.value) this.submitForm()
     else this.deactivateBannerConflict()
   }
   goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }

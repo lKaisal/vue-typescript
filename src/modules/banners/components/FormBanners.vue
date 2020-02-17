@@ -12,7 +12,7 @@
         +e.field._is-active(v-if="isFormEdit" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
           +e.checkbox
             +e.I.checkbox-icon.el-icon-check
-          +e.LABEL.label(for="isActive") Активировать сейчас
+          +e.LABEL.label(for="isActive" v-html="isActiveLabel")
           +e.error(v-html="isActiveField.errorMsg")
       +e.column
         //- title
@@ -44,25 +44,25 @@
         //- activeFrom / activeTo
         +e.block
           +e.row
-            +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom }")
+            +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom, 'is-disabled': activeFromToDisabled }")
               +e.label
                 +e.LABEL.label(for="activeFrom") Дата начала
               +e.input-wrapper
-                +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="22-11-1963")
+                +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="31-12-2020")
                 +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrFrom)")
               +e.error(v-html="activeFromField.errorMsg")
-            +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo }")
+            +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo, 'is-disabled': activeFromToDisabled }")
               +e.label
                 +e.LABEL.label(for="activeTo") Дата окончания
               +e.input-wrapper
-                +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="22-11-1963")
+                +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="31-12-2020")
                 +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrTo)")
               +e.error(v-html="activeToField.errorMsg")
           +e.comment(:class="{ 'is-transparent': isInvalid(activeFromField) || isInvalid(activeToField) }") Заполнить для баннеров с отложенным стартом
         //- sort
-        +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && isActive }")
+        +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled }")
           +e.LABEL.label(for="sortBy") Положение баннера
-          +e.EL-SELECT.select(:disabled="!isActive" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
+          +e.EL-SELECT.select(:disabled="sortIsDisabled" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
             +e.EL-OPTION(v-for="n in activeAmount.value" :key="n" :label="n" :value="n")
           +e.error(v-html="sortField.errorMsg")
 </template>
@@ -79,8 +79,9 @@ import DragDrop from './DragDrop.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId', 'formPageType', 'formTitle', 'pageTypesDisplayed'])
+    ...bannersMapper.mapState(['form', 'activeAmount']),
+    ...bannersMapper.mapGetters(['listActive', 'listDelayed', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId',
+                                 'formPageType', 'formTitle', 'pageTypesDisplayed' ,'bannerCurrentMastered'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown']),
@@ -126,26 +127,29 @@ export default class FormBanners extends Mappers {
   set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
-  get sortBy() { return this.isActive ? this.sortField.value : null }
-  set sortBy(value) { this.isActive ? this.updateField({name: 'sort', value: value || this.activeAmount.value}) : null }
+  get sortBy() { return this.sortField.value }
+  set sortBy(value) { this.updateField({name: 'sort', value: value || this.activeAmount.value}) }
   get title() { return this.titleField.value }
   set title(value) { this.updateField({name: 'title', value: trim(value) }) }
 
   // other computed
-  get isNewsType() { return this.pageType === 0 }
-  get isWrongImgExt() { return this.fileField.errorType === 'img-extension' }
-  get activeAmountValue() { return this.activeAmount.value }
   get isFormCreate() { return this.form.type === 'create' }
   get isFormEdit() { return this.form.type === 'edit' }
 
+  get isActiveBanner() { return this.isFormEdit && this.bannerCurrentMastered.type === 'active' }
+  get isDelayedBanner() { return this.isFormEdit && this.bannerCurrentMastered.type === 'delayed' }
+  get isInactiveBanner() { return this.isFormEdit && this.bannerCurrentMastered.type === 'inactive' }
+
+  get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
+  get isNewsType() { return this.pageType === 0 }
+  get isWrongImgExt() { return this.fileField.errorType === 'imgExtension' }
+  get activeAmountValue() { return this.activeAmount.value }
+  get sortIsDisabled() { return !this.isActive && (this.isInactiveBanner || !this.activeFrom || !this.activeTo) }
+  get activeFromToDisabled() { return this.isDelayedBanner && this.isActive }
+
   @Watch('activeAmountValue', { immediate: true })
   async onActiveAmountChange(val) {
-    if (val && !this.sortBy && !this.bannerCurrent.data) this.updateField({name: 'sort', value: val})
-  }
-  @Watch('activeFrom', { immediate: true })
-  onActiveFromChange(val) {
-    // if (this.pickrFrom) this.pickrFrom.setDate(val, this.dateFormat)
-    // console.log(val)
+    if (val && !this.sortBy && !this.bannerCurrentMastered) this.updateField({name: 'sort', value: val})
   }
 
   created() {
@@ -159,7 +163,7 @@ export default class FormBanners extends Mappers {
     this.setValidationIsShown(false)
   }
 
-  isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'img-extension')) && field.validationRequired && !field.isValid }
+  isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'imgExtension')) && field.validationRequired && !field.isValid }
   initPickers() {
     const configOpts = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date() }
 
@@ -256,18 +260,6 @@ export default class FormBanners extends Mappers {
     &_active-to
       margin-bottom 7px
 
-  &__error
-    position absolute
-    top calc(100% + 7px)
-    left 0
-    fontLight()
-    font-size 12px
-    color $cDanger
-    opacity 0
-    transition()
-    .is-invalid &
-      opacity 1
-
   &__label
     display block
     margin-bottom 10px
@@ -344,6 +336,13 @@ export default class FormBanners extends Mappers {
 
   &__input-wrapper
     position relative
+    .is-disabled &
+      pointer-events none
+      >>> input
+        background-color $cDisabled
+        border-color $cLightBorder
+        color $cPlaceholderText
+        transition(background-color\, border-color\, color)
 
   &__icon-clear
     position absolute
@@ -358,5 +357,19 @@ export default class FormBanners extends Mappers {
     transition(opacity)
     .is-filled &
       pointer-events auto
+      opacity 1
+    .is-disabled &
+      pointer-events none
+
+  &__error
+    position absolute
+    top calc(100% + 7px)
+    left 0
+    fontLight()
+    font-size 12px
+    color $cDanger
+    opacity 0
+    transition()
+    .is-invalid &
       opacity 1
 </style>
