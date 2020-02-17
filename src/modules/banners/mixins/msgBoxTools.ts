@@ -1,91 +1,59 @@
 import Vue from 'vue'
 import { Mixin } from 'vue-mixin-decorator'
-import { RequestStatus, MsgBoxContent, Button } from '../models'
+import { RequestStatuses, RequestStatus, RequestType, MsgBoxContent, MsgBoxBtns } from '../models'
+import { bannersMapper } from '../module/store'
 
+const Mappers = Vue.extend({
+  computed: {
+    ...bannersMapper.mapGetters(['loadingError'])
+  }
+})
 @Mixin
-export default class msgBoxTools extends Vue {
+export default class msgBoxTools extends Mappers {
   msgBoxIsShown: boolean = false
   requestStatus: RequestStatus = 'failFetchList'
-  msgBoxContents: { [key in RequestStatus]: MsgBoxContent } = {
-    successFetchList: {
-      title: 'Готово!',
-      msg: 'Данные успешно загружены',
-      firstBtn: 'Закрыть'
-    },
-    failFetchList: {
-      title: 'Ошибка!',
-      msg: 'Не удалось получить ответ от сервера',
-      firstBtn: 'Повторить попытку',
-    },
-    successFetchBanner: {
-      title: 'Готово!',
-      msg: 'Данные успешно загружены',
-      firstBtn: 'Закрыть'
-    },
-    failFetchBanner: {
-      title: 'Данные не найдены',
-      msg: 'Вероятно баннер был удален ранее',
-      firstBtn: 'Вернуться к списку',
-    },
-    successCreate: {
-      title: 'Готово!',
-      msg: 'Данные успешно сохранены',
-      firstBtn: 'Отредактировать баннер',
-      secondBtn: 'Вернуться к списку'
-    },
-    failCreate: {
-      title: 'Ошибка при отправке',
-      msg: 'Не удалось отправить данные',
-      firstBtn: 'Отправить повторно',
-      secondBtn: 'Отменить'
-    },
-    successEdit: {
-      title: 'Готово!',
-      msg: 'Данные успешно сохранены',
-      firstBtn: 'Продолжить редактирование',
-      secondBtn: 'Вернуться к списку'
-    },
-    failEdit: {
-      title: 'Ошибка при отправке',
-      msg: 'Не удалось отправить данные',
-      firstBtn: 'Отправить повторно',
-      secondBtn: 'Отменить'
-    },
-    successDelete: {
-      title: 'Готово!',
-      msg: 'Баннер перенесен в архив',
-      firstBtn: 'Вернуться к списку',
-    },
-    failDelete: {
-      title: 'Ошибка!',
-      msg: 'Возможно баннер уже находится в архиве',
-      firstBtn: 'Повторить попытку',
-      secondBtn: 'Отменить'
-    },
-    beforeDelete: {
-      title: 'Отправить в архив?',
-      msg: 'После перевода в архив баннер перестанет отображаться в приложении',
-      firstBtn: 'Подтвердить',
-      secondBtn: 'Отмена'
-    },
-    failDeactivate: {
-      title: 'Ошибка!',
-      msg: 'Не удалось заменить баннер. Возможно такого баннера не существует',
-      firstBtn: 'Повторить попытку',
-      secondBtn: 'Отмена'
-    },
-    failSetAmount: {
-      title: 'Ошибка!',
-      msg: 'Не удалось обновить количество',
-      firstBtn: 'Повторить попытку',
-      secondBtn: 'Отмена'
+  titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': null }
+  statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
+    success: [ 'successCreate', 'successEdit', 'successDelete' ],
+    fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount' ],
+    other: [ 'beforeDelete' ]
+  }
+  btns: { [key in RequestStatus]: MsgBoxBtns } = {
+    successCreate: { firstBtn: 'Отредактировать баннер', secondBtn: 'Вернуться к списку' },
+    successEdit: { firstBtn: 'Продолжить редактирование', secondBtn: 'Вернуться к списку' },
+    successDelete: { firstBtn: 'Вернуться к списку' },
+    failFetchList: { firstBtn: 'Повторить попытку' },
+    failFetchBanner: { firstBtn: 'Вернуться к списку' },
+    failCreate: { firstBtn: 'Отправить повторно', secondBtn: 'Отменить' },
+    failEdit: { firstBtn: 'Отправить повторно', secondBtn: 'Отменить' },
+    failDelete: { firstBtn: 'Повторить попытку', secondBtn: 'Отменить' },
+    failDeactivate: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    failSetAmount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    beforeDelete: { firstBtn: 'Подтвердить', secondBtn: 'Отмена' }
+  }
+  msgBoxOtherTitles: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'Отправить в архив?' }
+  msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { 'successCreate': 'Баннер успешно сохранен', 'successDelete': 'Баннер перемещен в архив', 'successEdit': 'Данные успешно изменены' }
+  msgBoxOtherMsgs: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'После перевода в архив баннер перестанет отображаться в приложении' }
+
+  get statusType() {
+    for (const type in this.statuses) {
+      if (this.statuses[type].indexOf(this.requestStatus) >= 0) return type
     }
   }
+  get msgBoxTitle() { return this.statusType === 'other' ? this.msgBoxOtherTitles[this.requestStatus] : this.titles[this.statusType]}
+  get msgBoxMsg() {
+    if (this.statusType === 'other') return this.msgBoxOtherMsgs[this.requestStatus]
+    else if (this.statusType === 'success') return this.msgBoxSuccessMsgs[this.requestStatus]
+    else return this.loadingError
+  }
+  get msgBoxBtns() { return this.btns[this.requestStatus] }
 
-  get msgBoxContent() { return this.msgBoxContents[this.requestStatus] }
+  get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg, ...this.msgBoxBtns } }
 
   created() {
     document.addEventListener('keydown', this.keydownHandler)
+
+    console.log()
   }
 
   beforeDestroy() {

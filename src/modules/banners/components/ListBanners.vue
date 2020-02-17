@@ -26,7 +26,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setBannerCurrent']),
+    ...bannersMapper.mapMutations(['setBannerCurrentSuccess']),
     ...bannersMapper.mapActions(['updateField'])
   }
 })
@@ -84,7 +84,7 @@ export default class ListBanners extends Mappers {
     }
   }
   createClicked(index: Number) {
-    this.setBannerCurrent(Object.assign({}, { 'position': index }, null))
+    this.setBannerCurrentSuccess(Object.assign({}, { 'position': index }, null))
     this.goToPageCreate()
   }
   goToPageCreate() { this.$router.push({ path: '/banners/create' }) }

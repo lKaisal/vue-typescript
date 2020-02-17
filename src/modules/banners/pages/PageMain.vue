@@ -78,9 +78,9 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
     this.openMsgBox()
   }
   onFirstBtnClick() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
       case 'beforeDelete':
-        this.closeMsgBox()
         this.deleteItem()
         break
       case 'failFetchList':
@@ -88,16 +88,17 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
         break
       case 'failSetAmount':
         this.updateAmount(this.amountForUpdate)
-      default:
-        this.closeMsgBox()
+      // default:
+      //   this.closeMsgBox()
     }
   }
   onSecondBtnClicked() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
       case 'failSetAmount':
         this.closePopupAmount()
-      default:
-        this.closeMsgBox()
+      // default:
+      //   this.closeMsgBox()
     }
   }
   async openPopupAmount() {
@@ -139,10 +140,11 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
 
     // stored amount here in case of repeated request
     this.amountForUpdate = amount
+    this.closePopupAmount()
     this.updateActiveAmount(amount)
       .then(() => {
-          this.closePopupAmount()
-          this.closeMsgBox()
+          // this.closePopupAmount()
+          // this.closeMsgBox()
           this.updateList()
         })
         .catch(() => {

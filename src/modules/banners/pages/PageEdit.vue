@@ -2,22 +2,23 @@
   include ../../../tools/bemto.pug
 
   +b.page-edit.page
-    +e.container
-      +e.row-back(@click="goToPageMain")
-        i(class="el-icon-back page-edit__icon-back")
-        +e.text-back Вернуться к списку
-      +e.form-wrapper
-        +e.H1.title.page-title Редактирование баннера
-        FormBanners(class="page-edit__form")
-        +e.btns
-          ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="onSubmit" text="Сохранить баннер")
-          ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
-          ButtonApp(class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив")
-          ButtonApp(class="page-edit__btn" btnType="success" :isPlain="true" @clicked="goToPageMain" text="Отмена")
+    transition
+      +e.container.js-voa.js-voa-start(v-if="banner")
+        +e.row-back(key="rowBack" @click="goToPageMain")
+          i(class="el-icon-back page-edit__icon-back")
+          +e.text-back Вернуться к списку
+        +e.form-wrapper(key="form")
+          +e.H1.title.page-title Редактирование баннера
+          FormBanners(class="page-edit__form")
+          +e.btns
+            ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="onSubmit" text="Сохранить баннер")
+            ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
+            ButtonApp(v-if="banner.isActive" class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив")
+            ButtonApp(class="page-edit__btn" :btnType="banner.isActive ? 'success' : 'danger'" :isPlain="true" @clicked="goToPageMain" text="Отмена")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="!isActivatedToday && formActiveFrom.value"
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="formActiveFrom.value"
         @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
@@ -32,6 +33,7 @@ import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import PopupConflict from '../components/PopupConflict.vue'
 import vClickOutside from 'v-click-outside'
+import animateIfVisible from '@/mixins/animateIfVisible'
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -44,7 +46,7 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setIsLoading', 'setBannerCurrent']),
+    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess']),
     ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList', 'deactivateBanner'])
   }
 })
@@ -102,17 +104,29 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   get todayTime() { return this.today.getTime() }
   get isActivatedToday() { return this.activeFromTime === this.todayTime }
 
+  @Watch('banner', {immediate: true})
+  async onBannerChange(val) {
+    if (val) {
+      await this.$nextTick()
+      animateIfVisible()
+    }
+  }
+
   created() {
     this.setFormType('edit')
     this.updateBannerData()
 
     document.addEventListener('keydown', this.keydownHandler)
   }
+  async mounted() {
+    await this.$nextTick()
+    animateIfVisible()
+  }
   beforeDestroy() {
     this.clearForm()
     document.removeEventListener('keydown', this.keydownHandler)
     this.$emit('updateList')
-    this.setBannerCurrent(null)
+    this.setBannerCurrentSuccess(null)
   }
 
   keydownHandler(evt: KeyboardEvent) {
@@ -135,12 +149,17 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     }
   }
   onSubmit() {
-    if (this.formActiveFrom.value && this.bannerConflictId && !this.isActivatedToday) {
+    if (this.formActiveFrom.value && this.bannerConflictId) {
       if (!this.formIsValid) this.setValidationIsShown(true)
       else this.openPopupConflict()
     } else this.submitForm()
   }
   onClickDelete() {
+    this.secondBtn = { type: 'danger', isPlain: true }
+    this.requestStatus = 'beforeDelete'
+    this.openMsgBox()
+  }
+  deleteItem() {
     this.deleteBanner(this.banner.id)
       .then(async () => {
         this.requestStatus = 'successDelete'
@@ -157,9 +176,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       })
   }
   onFirstBtnClick() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
       case 'successEdit':
-        this.closeMsgBox()
+        // this.closeMsgBox()
         break
       case 'failEdit':
         this.submitForm()
@@ -169,6 +189,9 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         break
       case 'failDeactivate':
         this.deactivateBannerConflict()
+        break
+      case 'beforeDelete':
+        this.deleteItem()
         break
       case 'failFetchBanner':
       case 'successDelete':
@@ -182,13 +205,13 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       case 'failCreate':
       case 'failEdit':
       case 'failDelete':
-        this.closeMsgBox()
-        break
       case 'failDeactivate':
+      case 'beforeDelete':
         this.closeMsgBox()
         break
       case 'successEdit':
       default:
+        this.closeMsgBox()
         this.goToPageMain()
         break
     }
@@ -207,7 +230,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     if (!banner) {
       this.getBannerById(id)
         .then(() => {
-          this.closeMsgBox()
+          // this.closeMsgBox()
         })
         .catch(() => {
           this.requestStatus = 'failFetchBanner'
@@ -216,9 +239,9 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           return
         })
     } else {
-      this.setBannerCurrent(banner)
+      this.setBannerCurrentSuccess(banner)
       this.updateFormByBannerData(banner)
-      this.closeMsgBox()
+      // this.closeMsgBox()
     }
   }
   submitForm() {
@@ -251,7 +274,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   deactivateBannerConflict() {
     this.deactivateBanner(this.bannerConflictId)
       .then(() => {
-        this.closeMsgBox()
+        // this.closeMsgBox()
         this.submitForm()
       })
       .catch(() => {
@@ -278,16 +301,18 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 .page-edit
 
   &__container
+    grid-size(4, 4, 5.5, 6, 8)
     position relative
     display flex
     flex-direction column
     width 100%
-    grid-size(4, 4, 5.5, 6, 8)
     margin-right auto
     margin-left auto
     align-self center
     +lt-md()
       flex-direction column
+    &.v-enter
+      jsVoaStart()
 
   &__row-back
     display flex
@@ -296,7 +321,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     margin -10px
     cursor pointer
     fontMedium()
-    transition()
     &:hover
       opacity .75
     +gt-md()
@@ -305,6 +329,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       left 0
     +lt-md()
       margin-bottom 25px
+    &.v-enter
+      jsVoaStart()
 
   &__icon-back
     transition(transform)
@@ -328,6 +354,17 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       transform translateX(-50%)
       width 100vw
       padding 25px
+    &.v-enter
+      jsVoaStart()
+
+  &__title
+  &__form
+  &__btns
+    // transition(opacity\, transform)
+    // transition-delay $tSlow
+    // transition-duration 1s
+    // .v-enter &
+    //   jsVoaStart()
 
   &__btns
     position relative

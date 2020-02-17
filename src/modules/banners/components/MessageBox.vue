@@ -55,6 +55,7 @@ export default class MessageBox extends Vue{
 .msg-box
 
   &__container
+    max-width 30vw
     min-width 420px
     padding 15px
     background-color white
@@ -85,6 +86,7 @@ export default class MessageBox extends Vue{
     margin-bottom 25px
     color $cRegularText
     font-size 14px
+    line-height 1.25
 
   &__btns
     display flex

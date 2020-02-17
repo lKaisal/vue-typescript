@@ -24,11 +24,13 @@ type Banner = {
 
 type BannerCurrent = {
   data: Banner,
+  error: string,
   isLoading: boolean
 }
 
 type Form = {
   data: FormField[],
+  error: string,
   errors: FormError[],
   isLoading: boolean,
   type: FormType,
@@ -58,8 +60,11 @@ type BannerForm = {
   title: string
 }
 
+type Modify<T, R> = Omit<T, keyof R> & R
+type BannerFormData = Modify<BannerForm, { isActive: string, file: string, newsId: string, sort: string }>
+
 type FormError = {
-  type: 'empty' | 'img-extension' | 'default',
+  type: 'empty' | 'img-extension' | 'default' | 'emptyActiveFrom' | 'emptyActiveTo',
   msg: string
 }
 
@@ -70,8 +75,20 @@ type MsgBoxContent = {
   secondBtn?: string
 }
 
-type RequestStatus = 'successFetchList' | 'failFetchList' | 'successFetchBanner' | 'failFetchBanner' | 'successCreate' | 'failCreate' | 'successEdit' | 'failEdit' | 'successDelete' | 
-                     'failDelete' | 'beforeDelete' | 'failDeactivate' | 'failSetAmount'
+type RequestStatus = RequestStatuses[RequestType]
+
+type RequestType = 'success' | 'fail' | 'other'
+
+type RequestStatuses = {
+  success: 'successCreate' | 'successEdit' | 'successDelete'
+  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount'
+  other: 'beforeDelete'
+}
+
+type MsgBoxBtns = {
+  firstBtn: string,
+  secondBtn?: string
+}
 
 type Button = {
   type: 'primary' | 'danger' | 'success' | 'warning' | 'info'
@@ -79,4 +96,4 @@ type Button = {
   icon?: string
 }
 
-export { Banner, BannersState, BannerForm, BannerCurrent, Form, FormType, FormField, FormError, MsgBoxContent, RequestStatus, Button }
+export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, Form, FormType, FormField, FormError, MsgBoxContent, RequestStatus, MsgBoxBtns, RequestStatuses, RequestType, Button }

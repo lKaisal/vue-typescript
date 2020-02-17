@@ -12,7 +12,7 @@
         +e.field._is-active(v-if="isFormEdit" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
           +e.checkbox
             +e.I.checkbox-icon.el-icon-check
-          +e.LABEL.label(for="isActive") Активировать
+          +e.LABEL.label(for="isActive") Активировать сейчас
           +e.error(v-html="isActiveField.errorMsg")
       +e.column
         //- title
@@ -48,14 +48,14 @@
               +e.label
                 +e.LABEL.label(for="activeFrom") Дата начала
               +e.input-wrapper
-                +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="2020-12-31")
+                +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="22-11-1963")
                 +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrFrom)")
               +e.error(v-html="activeFromField.errorMsg")
             +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo }")
               +e.label
                 +e.LABEL.label(for="activeTo") Дата окончания
               +e.input-wrapper
-                +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="2020-12-31")
+                +e.INPUT.pickr.el-input__inner(ref="toRef" v-model="activeTo" placeholder="22-11-1963")
                 +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrTo)")
               +e.error(v-html="activeToField.errorMsg")
           +e.comment(:class="{ 'is-transparent': isInvalid(activeFromField) || isInvalid(activeToField) }") Заполнить для баннеров с отложенным стартом
@@ -97,7 +97,7 @@ const Mappers = Vue.extend({
 export default class FormBanners extends Mappers {
   pickrFrom = null
   pickrTo = null
-  dateFormat: string = 'Y-m-d'
+  dateFormat: string = 'd-m-Y'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
   @Ref() newsIdRef: ElInput
@@ -139,8 +139,13 @@ export default class FormBanners extends Mappers {
   get isFormEdit() { return this.form.type === 'edit' }
 
   @Watch('activeAmountValue', { immediate: true })
-  async onActiveAmount(val) {
+  async onActiveAmountChange(val) {
     if (val && !this.sortBy && !this.bannerCurrent.data) this.updateField({name: 'sort', value: val})
+  }
+  @Watch('activeFrom', { immediate: true })
+  onActiveFromChange(val) {
+    // if (this.pickrFrom) this.pickrFrom.setDate(val, this.dateFormat)
+    // console.log(val)
   }
 
   created() {
@@ -168,18 +173,16 @@ export default class FormBanners extends Mappers {
       // check activeTo: if it is smaller -> set it to activeFrom date
       const pickrToTime = this.pickrTo.selectedDates[0] && this.pickrTo.selectedDates[0].getTime()
       const dateStrTime = new Date(dateStr).getTime()
-      if ((pickrToTime && pickrToTime < dateStrTime) || !pickrToTime) this.activeTo = dateStrFormatted
+      if (this.pickrTo && ((pickrToTime && pickrToTime < dateStrTime) || !pickrToTime)) this.activeTo = dateStrFormatted
 
       // upd activeTo minDate (equal to activeFrom date)
-      this.pickrTo.set('minDate', dateStrFormatted)
+      if (this.pickrTo) this.pickrTo.set('minDate', dateStrFormatted)
     } })
     this.pickrFrom = flatpickr(this.fromRef, configFrom)
-    if (this.activeFromField.value) this.pickrFrom.setDate(this.activeFromField.value)
 
     // activeTo
     const configTo = Object.assign(configOpts)
     this.pickrTo = flatpickr(this.toRef, configTo)
-    if (this.activeToField.value) this.pickrTo.setDate(this.activeToField.value)
   }
   clearPicker(picker) {
     picker.clear()
