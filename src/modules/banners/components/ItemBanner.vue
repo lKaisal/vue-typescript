@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.item-banner
-    +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false")
+    +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false" :class="{ 'is-hovered': cardIsHovered && editIconsShown }")
       transition
         +e.icons(v-show="editIconsShown && cardIsHovered")
           +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
@@ -20,15 +20,15 @@
           +e.title Имя баннера:&nbsp;<span class="item-banner__text">{{ banner.title }}</span>
         +e.info-item(v-if="banner.position && banner.isActive")
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.position }}</span>
-        +e.info-item(v-if="banner.updatedAt")
-          +e.title Обновлен:&nbsp;<span class="item-banner__text">{{ banner.updatedAt }}</span>
-        +e.info-item(v-if="banner.createdAt")
-          +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
         +e.info-item(v-if="banner.activeFrom || banner.activeTo")
           +e.title Срок действия: 
           +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
+        +e.info-item(v-if="banner.updatedAt")
+          +e.title Обновлен:&nbsp;<span class="item-banner__text">{{ banner.updatedAt }}</span>
+        +e.info-item(v-if="banner.createdAt")
+          +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
       +e.info(v-else)
         +e.info-item._empty.bg-empty(v-for="n in 4")
 </template>
@@ -104,7 +104,7 @@ export default class ItemBanners extends Vue {
     background-color white
     transition(border-color)
     overflow hidden
-    &:hover
+    &.is-hovered
       border-color $cBrand
 
   &__icons
@@ -133,9 +133,6 @@ export default class ItemBanners extends Vue {
     &.v-leave-active
       pointer-events none
       transition-duration $tFast
-    // .item-banner__container:hover &
-    //   opacity 1
-    //   transform none
     &:before
       ghost()
       background white

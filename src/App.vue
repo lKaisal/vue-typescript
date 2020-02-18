@@ -46,10 +46,10 @@ $arrowSize = $offsetXl / 2
     min-height 100vh
     display flex
     flex-direction column
-    width-between-property 'padding-top' 600 10 1000 20 true true
-    width-between-property 'padding-top' 1441 20 1920 30 false true
-    width-between-property 'padding-bottom' 600 10 1000 20 true true
-    width-between-property 'padding-bottom' 1441 20 1920 30 false true
+    width-between-property 'padding-top' 600 40 1000 60 true true
+    // width-between-property 'padding-top' 1441 60 1920 60 false true
+    width-between-property 'padding-bottom' 600 40 1000 60 true true
+    // width-between-property 'padding-bottom' 1441 60 1920 60 false true
 
   &__page
     width 100%

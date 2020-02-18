@@ -359,13 +359,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
     switch (name) {
       case 'activeFrom':
-        // console.log(field.value)
         field.errorType = !!activeTo.value && 'emptyActiveFrom' || field.errorType
         activeTo.validationRequired = !!value
         break
 
       case 'activeTo':
-        // console.log(field.value)
         field.errorType = !!activeFrom.value && 'emptyActiveTo' || field.errorType
         activeFrom.validationRequired = !!value
         break
@@ -407,6 +405,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'sort':
+        console.log(field.value)
         const currValue = Number(field.value)
         const activeAmount = Number(this.state.activeAmount.value)
         field.value = ((currValue > activeAmount || currValue <= 0) && this.state.activeAmount.value) || !currValue ? activeAmount : Number(field.value)
@@ -418,7 +417,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Update form by existing banner data */
   updateFormByBannerData(data: Banner) {
     const fields = this.state.form.data
-    console.log(data)
 
     fields.forEach(field => {
       switch (field.name) {
@@ -432,10 +430,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
-          this.dispatch('updateField', { name: field.name, value: data.position.toString() })
+          this.dispatch('updateField', { name: field.name, value: Math.abs(data.position).toString() })
           break
         default:
-          if (field.name === 'activeFrom' || field.name === 'activeTo') console.log(data[field.name])
           this.dispatch('updateField', { name: field.name, value: data[field.name] })
           break
       }

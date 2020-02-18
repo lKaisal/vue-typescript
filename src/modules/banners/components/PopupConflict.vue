@@ -54,8 +54,11 @@ export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
 .popup-conflict
 
   &__container
-    +gt-md()
+    margin 50px auto
+    +gt-lg()
       max-width 40vw
+    +md()
+      max-width 60vw
     +sm()
       max-width 90vw
 

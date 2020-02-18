@@ -55,8 +55,6 @@ export default class MessageBox extends Vue{
 .msg-box
 
   &__container
-    max-width 30vw
-    min-width 420px
     padding 15px
     background-color white
     border 1px solid $cLighterBorder
@@ -65,6 +63,16 @@ export default class MessageBox extends Vue{
     box-shadow 0 2px 12px 0 rgba(0,0,0,.1)
     overflow hidden
     transition(transform)
+    +gt-sm()
+      max-width 40vw
+      min-width 420px
+    +xs()
+      width 100%
+      height 100%
+      display flex
+      flex-direction column
+      justify-content center
+      align-items center
     .v-enter &
     .v-leave-to &
       transform translateY(-30px)
@@ -77,6 +85,10 @@ export default class MessageBox extends Vue{
 
   &__btn-close
     cursor pointer
+    +xs()
+      position absolute
+      top 10px
+      right 10px
 
   &__title
     color $cPrimaryText
