@@ -13,13 +13,13 @@ type Banner = {
   bannerDate: string,
   bannerImageUrl: string,
   createdAt: string,
+  delayStart: boolean,
   id: number,
   isActive: boolean,
   newsId: number,
   pageType: string,
   position: number,
   sort: number,
-  sortCalculated: number,
   title: string,
   updatedAt: string
 }

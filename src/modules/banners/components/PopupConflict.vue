@@ -2,15 +2,13 @@
   include ../../../tools/bemto.pug
 
   +b.popup-conflict
-    +e.container.modal-popup-container
+    +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.text(v-if="dateStart" v-html="`Выбранное поле сортировки занято другим баннером.<br>Если продолжить сохранение, этот баннер будет перезаписан <b>${dateStart}</b>.<br>Хотите продолжить?`")
       +e.text(v-else) Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
       ItemBanner(:banner="banner" :editIconsShown="false" class="popup-conflict__item")
       +e.btns
         ButtonApp(btnType="primary" @clicked="confirm" :text="confirmText" class="popup-conflict__btn")
         ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-conflict__btn")
-        //- +e.EL-BUTTON(type="primary" @click="confirm") Заменить
-        //- +e.EL-BUTTON(type="danger" @click="discard") Отмена
 </template>
 
 <script lang="ts">
@@ -20,6 +18,7 @@ import MsgBoxTools from '../mixins/msgBoxTools'
 import ItemBanner from '../components/ItemBanner.vue'
 import { Banner } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
+import vClickOutside from 'v-click-outside'
 
 const Mappers = Vue.extend({
   methods: {
@@ -27,6 +26,9 @@ const Mappers = Vue.extend({
 })
 
 @Component({
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: {
     ItemBanner,
     ButtonApp
@@ -41,9 +43,12 @@ export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
   confirm() {
     this.$emit('confirm')
   }
-
   discard() {
     this.$emit('discard')
+  }
+  onClickOutside(evt) {
+    const targetIsModal = evt.srcElement.classList.contains('modal-conflict')
+    if (targetIsModal) this.discard()
   }
 }
 </script>

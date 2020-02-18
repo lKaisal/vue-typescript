@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.popup-amount
-    +e.container.modal-popup-container
+    +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.btn-close(@click="cancelClicked")
         +e.I.icon-close.el-icon-close.modal-icon-close
       +e.row._label
@@ -66,10 +66,11 @@ export default class PopupAmount extends Mixins(Mappers) {
     if (evt.key === 'Escape') this.cancelClicked()
   }
   confirmClicked() { this.$emit('confirm', this.amount) }
-  cancelClicked() {
-    this.$emit('cancel')
+  cancelClicked() { this.$emit('cancel') }
+  onClickOutside(evt) {
+    const targetIsModal = evt.srcElement.classList.contains('page-main__popup-amount')
+    if (targetIsModal) this.cancelClicked()
   }
-  onClickOutside(evt) { console.log(evt) }
   onInputUpdate(val) {
     if (!Number(val)) this.amount = null
     else if (val.length > 1) this.amount = val.slice(0, 1)

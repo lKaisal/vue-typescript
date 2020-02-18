@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.msg-box
-    +e.container
+    +e.container(v-click-outside="onClickOutside")
       +e.header
         +e.title(v-if="content && content.title") {{ content.title }}
         +e.btn-close(@click="onCloseClick")
@@ -29,7 +29,7 @@ import vCLickOutside from 'v-click-outside'
   }
 })
 
-export default class MessageBox extends Vue{
+export default class MessageBox extends msgBoxTools{
   @Prop() content: MsgBoxContent
   @Prop( { default: function() { return { type: 'primary', isPlain: false }} }) firstBtn: Button
   @Prop( { default: function() { return { type: 'success', isPlain: true }} }) secondBtn: Button
@@ -44,7 +44,8 @@ export default class MessageBox extends Vue{
     this.$emit('secondBtnClicked')
   }
   onClickOutside(evt) {
-    this.onCloseClick()
+    const targetIsModal = evt.srcElement.classList.contains('modal-msg')
+    if (targetIsModal) this.onCloseClick()
   }
 }
 </script>

@@ -7,7 +7,7 @@
         +e.icons(v-show="editIconsShown && cardIsHovered")
           +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
             i(class="el-icon-edit")
-          +e.icon._delete(v-if="banner && banner.isActive" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
+          +e.icon._delete(v-if="banner && (banner.isActive || banner.delayStart)" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
             i(class="el-icon-delete")
           +e.icon._add(v-if="!banner" @click="onCreateClick")
             i(class="el-icon-plus")

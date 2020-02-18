@@ -9,11 +9,12 @@
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
         //- isActive
-        +e.field._is-active(v-show="isFormEdit && !isActiveBanner" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
-          +e.checkbox
-            +e.I.checkbox-icon.el-icon-check
-          +e.LABEL.label(for="isActive" v-html="isActiveLabel")
-          +e.error(v-html="isActiveField.errorMsg")
+        transition
+          +e.field._is-active(v-show="isFormEdit && !isActiveBanner" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
+            +e.checkbox
+              +e.I.checkbox-icon.el-icon-check
+            +e.LABEL.label(for="isActive" v-html="isActiveLabel")
+            +e.error(v-html="isActiveField.errorMsg")
       +e.column
         //- title
         +e.field._title(:class="{ 'is-invalid': isInvalid(titleField), 'is-filled': title }")
@@ -60,10 +61,10 @@
               +e.error(v-html="activeToField.errorMsg")
           +e.comment(:class="{ 'is-transparent': isInvalid(activeFromField) || isInvalid(activeToField) }") Заполнить для баннеров с отложенным стартом
         //- sort
-        +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled }")
+        +e.field._sort(v-if="activeAmountValue" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled }")
           +e.LABEL.label(for="sortBy") Положение баннера
-          +e.EL-SELECT.select(:disabled="sortIsDisabled" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
-            +e.EL-OPTION(v-for="n in activeAmount.value" :key="n" :label="n" :value="n")
+          +e.EL-SELECT.select(:disabled="sortIsDisabled" ref="select" v-model="sortBy" :placeholder="activeAmountValue.toString()")
+            +e.EL-OPTION(v-for="n in activeAmountValue" :key="n" :label="n" :value="n")
           +e.error(v-html="sortField.errorMsg")
 </template>
 
@@ -127,8 +128,8 @@ export default class FormBanners extends Mappers {
   set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
-  get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value : null }
-  set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value || this.activeAmount.value}) : null }
+  get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value || this.activeAmountValue : null }
+  set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value || this.activeAmountValue}) : null }
   get title() { return this.titleField.value }
   set title(value) { this.updateField({name: 'title', value: trim(value) }) }
 
@@ -140,7 +141,7 @@ export default class FormBanners extends Mappers {
   get isInactiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'archive' }
   get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
   get sortIsDisabled() { return !this.formIsActive.value && (!this.isDelayedBanner || (!this.formActiveFrom.value && !this.formActiveTo.value)) }
-  get activeFromToDisabled() { return this.isDelayedBanner && this.formIsActive.value }
+  get activeFromToDisabled() { return (this.isDelayedBanner && this.formIsActive.value) || this.sortIsDisabled }
   get isNewsType() { return this.pageType === 0 }
   get activeAmountValue() { return this.activeAmount.value }
 
@@ -243,6 +244,7 @@ export default class FormBanners extends Mappers {
   &__field
     position relative
     width-between-property 'margin-bottom' 1441 30 1920 35 true true
+    transition()
     &_img
       flex-direction column
       align-items flex-start
@@ -256,6 +258,9 @@ export default class FormBanners extends Mappers {
     &_active-from
     &_active-to
       margin-bottom 7px
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__error
     position absolute

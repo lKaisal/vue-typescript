@@ -3,7 +3,7 @@
 
   +b.page-edit.page
     transition
-      +e.container.js-voa.js-voa-start(v-if="banner")
+      +e.container.js-voa.js-voa-start(v-if="banner" v-click-outside="onClickOutside")
         +e.row-back(key="rowBack" @click="goToPageMain")
           i(class="el-icon-back page-edit__icon-back")
           +e.text-back Вернуться к списку
@@ -13,8 +13,8 @@
           +e.btns
             ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="onSubmit" text="Сохранить баннер")
             ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
-            ButtonApp(v-if="banner.isActive" class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив")
-            ButtonApp(class="page-edit__btn" :btnType="banner.isActive ? 'success' : 'danger'" :isPlain="true" @clicked="goToPageMain" text="Отмена")
+            ButtonApp(v-if="banner.isActive || banner.delayStart" class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив")
+            ButtonApp(class="page-edit__btn" :btnType="banner.isActive || banner.delayStart ? 'success' : 'danger'" :isPlain="true" @clicked="goToPageMain" text="Отмена")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
@@ -60,13 +60,11 @@ const Mappers = Vue.extend({
     MessageBox,
     PopupConflict,
     ButtonApp,
-    // OtherBanners
   }
 })
 
 export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   secondBtn: Button = null
-  // bannerConflictId: number = null
   popupFormIsShown: boolean = false
 
   get banner() { return this.bannerCurrent.data }
@@ -90,8 +88,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           if (bannerPageTypeIndex !== field.value) return true
           break
         case 'sort':
-          // if (form.find(f => f.name === 'isActive').value && banner.position !== field.value) return true
-          return banner.position !== field.value
+          if (this.formIsActive.value && Math.abs(banner.position) !== field.value) return true
           break
         default:
           if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
@@ -131,7 +128,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       else if (this.msgBoxIsShown) this.closeMsgBox()
     }
   }
-  onClickOutside(evt) { this.goToPageMain() }
+  onClickOutside(evt) {
+    const targetIsPage = evt.srcElement.classList.contains('page-edit')
+    if (targetIsPage) this.goToPageMain()
+  }
   // CLICK HANDLERS
   onCloseClick() {
     switch (this.requestStatus) {
@@ -370,5 +370,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       margin-right 10px
 
   &__popup
-    display block
+    +lt-lg()
+      display block
 </style>

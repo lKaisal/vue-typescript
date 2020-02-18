@@ -82,7 +82,7 @@ class BannersGetters extends Getters<BannersState> {
   get listDelayed() {
     if (!this.getters.listMastered) return
 
-    const arr = this.getters.listMastered.filter(item => !item.isActive && item.activeFrom && item.activeTo && item.position < 0).sort((a, b) => {
+    const arr = this.getters.listMastered.filter(item => !item.isActive && item.delayStart).sort((a, b) => {
       const sortA = a.activeFromTime
       const sortB = b.activeFromTime
 
@@ -96,7 +96,7 @@ class BannersGetters extends Getters<BannersState> {
   get listInactive() {
     if (!this.getters.listMastered) return
 
-    const arr = this.getters.listMastered.filter(item => !item.isActive && item.position === 0).sort((a, b) => {
+    const arr = this.getters.listMastered.filter(item => !item.isActive && !item.delayStart).sort((a, b) => {
       const updatedAtA = dateParser(a.updatedAt)
       const updatedAtB = dateParser(b.updatedAt)
 
@@ -116,8 +116,8 @@ class BannersGetters extends Getters<BannersState> {
     if (!banner) return
 
     if (banner.isActive) return this.state.hashes[0]
-    else if (banner.position < 0) return this.state.hashes[1]
-    else if (banner.position === 0) return this.state.hashes[2]
+    else if (banner.delayStart) return this.state.hashes[1]
+    else return this.state.hashes[2]
   }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
@@ -143,7 +143,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || (this.getters.bannerCurrentStatus === 'delayed').toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
-    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && this.state.activeAmount.value.toString()
+    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || '0'
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
@@ -437,7 +437,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       case 'isActive':
         if (field.value && isFormEdit) {
           // if delayedBanner was activated on pageEdit, runs immediate activation
-          const isDealyedBanner = this.state.bannerCurrent.data.position < 0
+          const isDealyedBanner = this.state.bannerCurrent.data.delayStart
           if (isDealyedBanner) {
             this.dispatch('updateField', { name: 'activeFrom', value: null })
             this.dispatch('updateField', { name: 'activeTo', value: null })
@@ -466,7 +466,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       case 'sort':
         const currValue = Number(field.value)
         const activeAmount = Number(this.state.activeAmount.value)
-        field.value = ((currValue > activeAmount || currValue <= 0) && this.state.activeAmount.value) || !currValue ? activeAmount : Number(field.value)
+        field.value = Math.abs(currValue) > activeAmount && activeAmount ? activeAmount : Number(field.value) || activeAmount
         break
     }
 

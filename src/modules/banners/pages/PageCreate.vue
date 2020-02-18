@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-create.page
-    +e.container.js-voa.js-voa-start
+    +e.container.js-voa.js-voa-start(v-click-outside="onClickOutside")
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-create__icon-back")
         +e.text-back Вернуться к списку
@@ -70,11 +70,12 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       // check if any field was changed
       const form = this.form.data
       const isActiveToCommit = !form.find(f => f.name === 'isActive').value
+      const fileToCommit = !!form.find(f => f.name === 'file').value
       const pageTypeToCommit = form.find(f => f.name === 'pageType').value > 0
       const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
-      const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType').map(f => f.value).some(f => !!f)
+      const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType' && f.name !== 'file').map(f => f.value).some(f => !!f)
 
-      return smthElseToCommit
+      return smthElseToCommit || fileToCommit
     } catch {}
   }
   // @ts-ignore
@@ -131,8 +132,9 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       else if (this.msgBoxIsShown) this.closeMsgBox()
     }
   }
-  onClickOutside() {
-    this.goToPageMain()
+  onClickOutside(evt) {
+    const targetIsPage = evt.srcElement.classList.contains('page-create')
+    if (targetIsPage) this.goToPageMain()
   }
   // CLICK HANDLERS
   onSubmit() {
