@@ -2,11 +2,11 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container
-      +e.title.H1.page-title Список баннеров
-      ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn")
-      ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount")
-      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @animateOneMore="animateOneMoreTime" @deleteItem="onDeleteClick" class="page-main__list")
+    +e.container(v-if="!isLoading")
+      +e.title.H1.page-title.js-voa.js-voa-start Список баннеров
+      ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn js-voa js-voa-start")
+      ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount js-voa js-voa-start")
+      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @animateOneMore="animateOneMoreTime" @deleteItem="onDeleteClick" class="page-main__list js-voa js-voa-start")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn"
         class="page-main__msg-box modal modal-msg")
@@ -55,10 +55,22 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
   popupAmountIsShown: boolean = false
   amountForUpdate: number = null
 
+  get activeAmountValue() { return this.activeAmount.value }
+
   @Watch('list', { immediate: true })
   async onListChange() {
     await this.$nextTick()
     await sleep(500)
+    animateIfVisible()
+  }
+  @Watch('activeAmountValue', { immediate: true })
+  async onActiveAmountChange() {
+    await this.$nextTick()
+    animateIfVisible()
+  }
+  @Watch('isLoading', { immediate: true })
+  async onIsLoadingChange() {
+    await this.$nextTick()
     animateIfVisible()
   }
 

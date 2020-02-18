@@ -107,7 +107,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   created() {
     this.setFormType('edit')
     this.updateBannerData()
-
     document.addEventListener('keydown', this.keydownHandler)
   }
   async mounted() {

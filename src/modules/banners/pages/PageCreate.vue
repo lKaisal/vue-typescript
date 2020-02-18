@@ -265,7 +265,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
   &__icon-back
     transition(transform)
-    .page-edit__row-back:hover &
+    .page-create__row-back:hover &
       transform translateX(-5px)
 
   &__text-back

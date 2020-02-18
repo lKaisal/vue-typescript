@@ -113,7 +113,7 @@ class BannersGetters extends Getters<BannersState> {
   get bannerCurrentStatus() {
     const banner = this.state.bannerCurrent.data
 
-    if (!banner) return
+    if (!banner) return this.state.hashes[0]
 
     if (banner.isActive) return this.state.hashes[0]
     else if (banner.delayStart) return this.state.hashes[1]
