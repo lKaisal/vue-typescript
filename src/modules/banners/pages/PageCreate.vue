@@ -17,7 +17,7 @@
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-create__msg-box modal modal-msg")
       PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="formActiveFrom.value"
-        @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-create__popup modal")
+        @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-create__popup modal modal-conflict")
 </template>
 
 <script lang="ts">
@@ -227,36 +227,43 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 .page-create
 
   &__container
+    grid-size(4, 4, 5.5, 6, 8)
     position relative
     display flex
+    flex-direction column
     width 100%
-    grid-size(4, 4, 5.5, 6, 8)
     margin-right auto
     margin-left auto
     align-self center
     +lt-md()
       flex-direction column
+    &.v-enter
+      jsVoaStart()
 
   &__row-back
     display flex
     flex-wrap nowrap
     padding 10px
     margin -10px
+    width-between-property 'top' 600 -30 1000 -20 true false
+    width-between-property 'top' 1000 -20 1440 -40 false false
+    width-between-property 'top' 1441 -40 1920 -50 false true
     cursor pointer
     fontMedium()
-    transition()
     &:hover
       opacity .75
     +gt-md()
       position absolute
-      top -50px
+      // top -50px
       left 0
     +lt-md()
       margin-bottom 25px
+    &.v-enter
+      jsVoaStart()
 
   &__icon-back
     transition(transform)
-    .page-create__row-back:hover &
+    .page-edit__row-back:hover &
       transform translateX(-5px)
 
   &__text-back
@@ -276,10 +283,12 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       transform translateX(-50%)
       width 100vw
       padding 25px
+    &.v-enter
+      jsVoaStart()
 
   &__btns
     position relative
-    margin-top 60px
+    margin-top 40px
     display flex
     align-items flex-end
     flex-wrap wrap
@@ -290,4 +299,8 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     margin-bottom 10px
     &:not(:last-child)
       margin-right 10px
+
+  &__popup
+    +lt-lg()
+      display block
 </style>

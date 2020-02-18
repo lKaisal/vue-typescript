@@ -43,10 +43,10 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'form', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['listActive', 'bannerById', 'formIsValid', 'formActiveFrom', 'formIsActive', 'formSort', 'pageTypesSent', 'isLoading'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom', 'formIsActive'])
   },
   methods: {
-    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess']),
+    ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
     ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList', 'deactivateBanner'])
   }
 })
@@ -70,7 +70,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   popupFormIsShown: boolean = false
 
   get banner() { return this.bannerCurrent.data }
-  get bannerConflict() { return this.listActive.find(b => b.position === this.formSort.value) }
+  get bannerConflict() { return this.formIsActive.value && this.listActive.find(b => b.position === this.formSort.value && b.id !== this.banner.id) }
   get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
   get isSmthToUpdate() {
     if (!this.banner) return
@@ -320,13 +320,16 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     flex-wrap nowrap
     padding 10px
     margin -10px
+    width-between-property 'top' 600 -30 1000 -20 true false
+    width-between-property 'top' 1000 -20 1440 -40 false false
+    width-between-property 'top' 1441 -40 1920 -50 false true
     cursor pointer
     fontMedium()
     &:hover
       opacity .75
     +gt-md()
       position absolute
-      top -50px
+      // top -50px
       left 0
     +lt-md()
       margin-bottom 25px
@@ -358,18 +361,9 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     &.v-enter
       jsVoaStart()
 
-  &__title
-  &__form
-  &__btns
-    // transition(opacity\, transform)
-    // transition-delay $tSlow
-    // transition-duration 1s
-    // .v-enter &
-    //   jsVoaStart()
-
   &__btns
     position relative
-    margin-top 60px
+    margin-top 40px
     display flex
     align-items flex-end
     flex-wrap wrap
@@ -381,9 +375,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     &:not(:last-child)
       margin-right 10px
 
-  &__other
-    position absolute
-    top calc(100% + 100px)
-    right 0
-    left 0
+  &__popup
+    display block
 </style>
