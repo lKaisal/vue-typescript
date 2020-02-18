@@ -3,13 +3,13 @@
 
   +b.list-banners
     +e.container
-      +e.EL-MENU.sort(:default-active="activeIndex" mode="horizontal" @select="handleSelect")
+      +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
       transition(mode="out-in" @enter="animateOneMoreTime")
-        +e.items(:key="activeIndex")
-          ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item.data"
-            @editClicked="goToPageEdit(item.data.id)" @deleteClicked="onDeleteItem(item.data.id)" @createClicked="createClicked(index + 1)" @dblclick.prevent.native="onDblClick(item.data, index + 1)"
-            :class="[{ 'list-banners__item_free': !item.data }, 'list-banners__item js-voa js-voa-start' ]")
+        +e.items(:key="activeHashIndex")
+          ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item"
+            @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteItem(item.id)" @createClicked="createClicked(index + 1)" @dblclick.prevent.native="onDblClick(item, index + 1)"
+            :class="[{ 'list-banners__item_free': !item }, 'list-banners__item js-voa js-voa-start' ]")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -22,7 +22,7 @@ import sleep from '@/mixins/sleep'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['activeAmount']),
+    ...bannersMapper.mapState(['activeAmount', 'hashes']),
     ...bannersMapper.mapGetters(['listActive', 'listInactive', 'listDelayed'])
   },
   methods: {
@@ -38,36 +38,29 @@ const Mappers = Vue.extend({
 })
 
 export default class ListBanners extends Mappers {
-  activeIndex: string = '1'
   observer = null
 
-  get activeList() {
-    if (this.activeIndex === '1') return this.listActiveComposed
-    else if (this.activeIndex === '2') return this.listDelayedComposed
-    else if (this.activeIndex === '3') return this.listInactiveComposed
+  get tabs() {
+    return [
+      { hash: this.hashes[0], list: this.listActiveComposed, sort: `Активные (${this.listActive.length})` },
+      { hash: this.hashes[1], list: this.listDelayed, sort: `С отложенным стартом (${this.listDelayed.length})` },
+      { hash: this.hashes[2], list: this.listInactive, sort: `Архивные (${this.listInactive.length})` },
+    ]
   }
-  get sortItems() { return [ `Активные (${this.listActive.length})`, `С отложенным стартом (${this.listDelayed.length})`, `Архивные (${this.listInactive.length})` ] }
+  get activeHash() { return this.$route.hash }
+  // @ts-ignore
+  get activeHashIndex() { return this.activeHash && this.hashes.indexOf(this.activeHash.slice(1)) || 0 }
+  get activeList() { return this.tabs[this.activeHashIndex].list}
+  get sortItems() { return this.tabs.map(item => item.sort) }
   get listActiveComposed() {
     const count = this.activeAmount.value
-    const composed: { data: Banner }[] = []
+    const composed: Banner[] = []
 
     for (let i = 1; i <= count; i++) {
       const data = this.listActive.find(b => b.position === i)
-      if (data) composed.push({ data })
-      else composed.push({ data: null })
+      if (data) composed.push(data)
+      else composed.push(null)
     }
-
-    return composed
-  }
-  get listDelayedComposed() {
-    const composed: { data: Banner }[] = []
-    for (const item of this.listDelayed) composed.push({data: item})
-
-    return composed
-  }
-  get listInactiveComposed() {
-    const composed: { data: Banner }[] = []
-    for (const item of this.listInactive) composed.push({data: item})
 
     return composed
   }
@@ -78,7 +71,7 @@ export default class ListBanners extends Mappers {
   }
 
   handleSelect(index) {
-    this.activeIndex = index
+    this.$router.push({path: this.$route.path, hash: `#${this.hashes[index - 1]}` }).catch(err => {})
   }
   onDeleteItem(id) {
     this.$emit('deleteItem', id)

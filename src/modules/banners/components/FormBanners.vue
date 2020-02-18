@@ -9,7 +9,7 @@
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
         //- isActive
-        +e.field._is-active(v-if="isFormEdit && !this.isDelayedBanner && !this.isActiveBanner" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
+        +e.field._is-active(v-show="isFormEdit && !isActiveBanner" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
           +e.checkbox
             +e.I.checkbox-icon.el-icon-check
           +e.LABEL.label(for="isActive" v-html="isActiveLabel")
@@ -44,14 +44,14 @@
         //- activeFrom / activeTo
         +e.block
           +e.row
-            +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom }")
+            +e.field._active-from(:class="{ 'is-invalid': isInvalid(activeFromField), 'is-filled': !!activeFrom, 'is-disabled': activeFromToDisabled }")
               +e.label
                 +e.LABEL.label(for="activeFrom") Дата начала
               +e.input-wrapper
                 +e.INPUT.pickr.el-input__inner(ref="fromRef" v-model="activeFrom" placeholder="31-12-2020")
                 +e.I.icon-clear.el-icon-close(@click="clearPicker(pickrFrom)")
               +e.error(v-html="activeFromField.errorMsg")
-            +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo }")
+            +e.field._active-to(:class="{ 'is-invalid': isInvalid(activeToField), 'is-filled': !!activeTo, 'is-disabled': activeFromToDisabled }")
               +e.label
                 +e.LABEL.label(for="activeTo") Дата окончания
               +e.input-wrapper
@@ -60,9 +60,9 @@
               +e.error(v-html="activeToField.errorMsg")
           +e.comment(:class="{ 'is-transparent': isInvalid(activeFromField) || isInvalid(activeToField) }") Заполнить для баннеров с отложенным стартом
         //- sort
-        +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && (isActive || isDelayedBanner) }")
+        +e.field._sort(v-if="activeAmount.value" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled }")
           +e.LABEL.label(for="sortBy") Положение баннера
-          +e.EL-SELECT.select(:disabled="!isActive && !isDelayedBanner" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
+          +e.EL-SELECT.select(:disabled="sortIsDisabled" ref="select" v-model="sortBy" :placeholder="activeAmount.value.toString()")
             +e.EL-OPTION(v-for="n in activeAmount.value" :key="n" :label="n" :value="n")
           +e.error(v-html="sortField.errorMsg")
 </template>
@@ -81,7 +81,7 @@ const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
     ...bannersMapper.mapGetters(['listActive', 'listDelayed', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId',
-                                 'formPageType', 'formTitle', 'pageTypesDisplayed'])
+                                 'formPageType', 'formTitle', 'pageTypesDisplayed', 'bannerCurrentStatus'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown']),
@@ -135,13 +135,13 @@ export default class FormBanners extends Mappers {
   // other computed
   get isFormCreate() { return this.form.type === 'create' }
   get isFormEdit() { return this.form.type === 'edit' }
-  get isDelayedBanner() { return this.bannerCurrent.data.position < 0 || ((this.formActiveFrom.value || this.formActiveTo.value) && this.formIsActive.value) }
-  get isActiveBanner() { return this.bannerCurrent.data.isActive }
-  // get isInactiveBanner() { return this.isFormEdit && this.bannerCurrentMastered.type === 'inactive' }
-
+  get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }
+  get isActiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'active' }
+  get isInactiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'archive' }
   get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
+  get sortIsDisabled() { return !this.formIsActive.value && (!this.isDelayedBanner || (!this.formActiveFrom.value && !this.formActiveTo.value)) }
+  get activeFromToDisabled() { return this.isDelayedBanner && this.formIsActive.value }
   get isNewsType() { return this.pageType === 0 }
-  get isWrongImgExt() { return this.fileField.errorType === 'imgExtension' }
   get activeAmountValue() { return this.activeAmount.value }
 
   @Watch('activeAmountValue', { immediate: true })

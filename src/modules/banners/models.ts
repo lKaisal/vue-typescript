@@ -21,7 +21,6 @@ type Banner = {
   sort: number,
   sortCalculated: number,
   title: string,
-  type: 'active' | 'delayed' | 'inactive',
   updatedAt: string
 }
 

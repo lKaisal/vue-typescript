@@ -18,7 +18,7 @@
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="!formIsActive.value && formActiveFrom.value"
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="formIsActive.value && formActiveFrom.value"
         @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
@@ -43,7 +43,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'form', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom', 'formIsActive'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
@@ -98,12 +98,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
       }
     }
   }
-  // @ts-ignore
-  get activeFrom() { return new Date(new Date(this.formActiveFrom.value).getFullYear(), new Date(this.formActiveFrom.value).getMonth() , new Date(this.formActiveFrom.value).getDate()) }
-  get activeFromTime() { return this.activeFrom && new Date(this.activeFrom).getTime() }
-  get today() { return new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate()) }
-  get todayTime() { return this.today.getTime() }
-  get isActivatedToday() { return this.activeFromTime === this.todayTime }
 
   @Watch('banner', {immediate: true})
   async onBannerChange(val) {
@@ -222,7 +216,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     if (this.formActiveFrom.value && !this.formActiveFrom.value) this.submitForm()
     else this.deactivateBannerConflict()
   }
-  goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
+  goToPageMain() { this.$router.push({ path: '/banners/list', hash: `#${this.bannerCurrentStatus}` }).catch(err => {}) }
   // STORE ACTIONS CALL
   updateBannerData() {
     const id = Number(this.$route.params.id)

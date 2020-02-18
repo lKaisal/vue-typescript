@@ -43,6 +43,7 @@ class BannersState {
     type: null,
     validationIsShown: false,
   }
+  hashes: ['active', 'delayed', 'archive'] = ['active', 'delayed', 'archive']
   imgExtensions: string[] = [ 'jpg', 'jpeg', 'png' ]
   isLoading: boolean = false // deleteBanner, deactivateBanner
   loadingError: string = null
@@ -75,59 +76,48 @@ class BannersGetters extends Getters<BannersState> {
       else if (sortA < sortB) return -1
       else return 0
     })
-    arr.forEach(item => item.type = 'active')
 
     return arr
   }
   get listDelayed() {
     if (!this.getters.listMastered) return
 
-    const arr = this.getters.listMastered.filter(item => {
-        if (!item.isActive && item.activeFrom && item.activeTo) return item.activeFromTime >= todayTime
-      }).sort((a, b) => {
-        const sortA = a.activeFromTime
-        const sortB = b.activeFromTime
+    const arr = this.getters.listMastered.filter(item => !item.isActive && item.activeFrom && item.activeTo && item.position < 0).sort((a, b) => {
+      const sortA = a.activeFromTime
+      const sortB = b.activeFromTime
 
-        if (sortA > sortB) return 1
-        else if (sortA < sortB) return -1
-        else return 0
-      })
-    arr.forEach(item => item.type = 'delayed')
+      if (sortA > sortB) return 1
+      else if (sortA < sortB) return -1
+      else return 0
+    })
 
     return arr
   }
   get listInactive() {
     if (!this.getters.listMastered) return
 
-    const arr = this.getters.listMastered.filter(item => {
-        return !item.isActive && (!item.activeFrom || item.activeFromTime < todayTime)
-      }).sort((a, b) => {
-        const updatedAtA = dateParser(a.updatedAt)
-        const updatedAtB = dateParser(b.updatedAt)
+    const arr = this.getters.listMastered.filter(item => !item.isActive && item.position === 0).sort((a, b) => {
+      const updatedAtA = dateParser(a.updatedAt)
+      const updatedAtB = dateParser(b.updatedAt)
 
-        if (updatedAtA < updatedAtB) return 1
-        else if (updatedAtA > updatedAtB) return -1
-        else return 0
-      })
-    arr.forEach(item => item.type = 'inactive')
+      if (updatedAtA < updatedAtB) return 1
+      else if (updatedAtA > updatedAtB) return -1
+      else return 0
+    })
 
     return arr
   }
   get bannerById() {
     return (id: Banner['id']) => { return this.state.list.data && this.state.list.data.find(b => b.id.toString() === id.toString()) }
   }
-  get bannerCurrentMastered() {
-    if (!this.state.bannerCurrent) return
-
+  get bannerCurrentStatus() {
     const banner = this.state.bannerCurrent.data
 
-    banner.activeFromTime = getDateTime(banner.activeFrom) || null
-    banner.activeToTime = getDateTime(banner.activeTo) || null
-    if (banner.isActive) banner.type = 'active'
-    else if (banner.activeFrom && banner.activeTo && banner.activeFromTime >= todayTime) banner.type = 'delayed'
-    else banner.type = 'inactive'
+    if (!banner) return
 
-    return banner
+    if (banner.isActive) return this.state.hashes[0]
+    else if (banner.position < 0) return this.state.hashes[1]
+    else if (banner.position === 0) return this.state.hashes[2]
   }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
@@ -146,16 +136,14 @@ class BannersGetters extends Getters<BannersState> {
   }
   get formData() {
     const formData: BannerFormData = Object.assign({})
-    const isCreateForm = this.state.form.type === 'create'
-    const formIsActiveValue = this.getters.formIsActive.value
 
-    formData.activeFrom = (!formIsActiveValue || isCreateForm) && this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
-    formData.activeTo = (!formIsActiveValue || isCreateForm) && this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
+    formData.activeFrom = this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
+    formData.activeTo = this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
     formData.appLink = this.getters.formAppLink.value && this.getters.formAppLink.value.toString() || ''
-    formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString()
+    formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || (this.getters.bannerCurrentStatus === 'delayed').toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
-    formData.sort = formIsActiveValue && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && this.state.activeAmount.value.toString()
+    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && this.state.activeAmount.value.toString()
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
@@ -411,8 +399,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     const activeTo = this.state.form.data.find(f => f.name === 'activeTo')
     const appLink = this.state.form.data.find(f => f.name === 'appLink')
     const newsId = this.state.form.data.find(f => f.name === 'newsId')
+    const isFormEdit = this.state.form.type === 'edit'
 
-    // if (name === 'activeFrom' || name === 'activeTo') debugger
     field.value = value
     field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
     field.isValid = field.value && !!field.value.toString()
@@ -446,6 +434,17 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         }
         break
 
+      case 'isActive':
+        if (field.value && isFormEdit) {
+          // if delayedBanner was activated on pageEdit, runs immediate activation
+          const isDealyedBanner = this.state.bannerCurrent.data.position < 0
+          if (isDealyedBanner) {
+            this.dispatch('updateField', { name: 'activeFrom', value: null })
+            this.dispatch('updateField', { name: 'activeTo', value: null })
+          }
+        }
+        break
+
       case 'newsId':
         field.isValid = !!Number(field.value)
         if (value && value.toString() && !field.isValid) field.errorType = 'default'
@@ -465,7 +464,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'sort':
-        console.log(field.value)
         const currValue = Number(field.value)
         const activeAmount = Number(this.state.activeAmount.value)
         field.value = ((currValue > activeAmount || currValue <= 0) && this.state.activeAmount.value) || !currValue ? activeAmount : Number(field.value)
