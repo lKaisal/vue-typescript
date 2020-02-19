@@ -34,7 +34,7 @@
           +e.field._news-id(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
             +e.label
               +e.LABEL(for="newsId") Id новости
-            +e.EL-INPUT.input(placeholder="111" type="number" v-model="newsId" ref="newsIdRef")
+            +e.EL-INPUT.input(placeholder="111" type="number" v-model="newsId")
             +e.error(v-html="newsIdField.errorMsg")
           //- appLink
           +e.field._app-link(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
@@ -102,7 +102,6 @@ export default class FormBanners extends Mappers {
   dateFormat: string = 'd-m-Y'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
-  @Ref() newsIdRef: ElInput
 
   // FORM FIELDS
   get activeFromField() { return this.formActiveFrom }
@@ -133,17 +132,21 @@ export default class FormBanners extends Mappers {
   get title() { return this.titleField.value }
   set title(value) { this.updateField({name: 'title', value: trim(value) }) }
 
-  // other computed
-  get isFormCreate() { return this.form.type === 'create' }
-  get isFormEdit() { return this.form.type === 'edit' }
+  // BANNER STATUS
   get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }
   get isActiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'active' }
   get isInactiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'archive' }
-  get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
+  // FORM TYPE
+  get isFormCreate() { return this.form.type === 'create' }
+  get isFormEdit() { return this.form.type === 'edit' }
+  // FORM DISABLED
   get allFieldsDisabled() { return !this.formIsActive.value && !this.isDelayedBanner }
   get sortIsDisabled() { return (!this.formIsActive.value && !this.isDelayedBanner && (!this.formActiveFrom.value && !this.formActiveTo.value)) || this.allFieldsDisabled }
   get activeFromToDisabled() { return (this.isDelayedBanner && this.formIsActive.value) || this.sortIsDisabled || this.allFieldsDisabled }
+  // FORD ADDITIONAL DATA
+  get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
   get isNewsType() { return this.pageType === 0 }
+  // ACTIVE AMOUNT
   get activeAmountValue() { return this.activeAmount.value }
 
   @Watch('activeAmountValue', { immediate: true })
@@ -151,6 +154,7 @@ export default class FormBanners extends Mappers {
     if (val && !this.sortBy && !this.bannerCurrent.data) this.updateField({name: 'sort', value: val})
   }
 
+  // HOOKS
   created() {
     if (this.isFormCreate) this.updateField({ name: 'isActive', value: true })
   }
@@ -162,7 +166,9 @@ export default class FormBanners extends Mappers {
     this.setValidationIsShown(false)
   }
 
+  // METHODS
   isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'imgExtension')) && field.validationRequired && !field.isValid }
+  /** Date-pickers for activeFrom/activeTo */
   initPickers() {
     const configOpts = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), disableMobile: true }
 

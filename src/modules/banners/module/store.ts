@@ -4,7 +4,6 @@ import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFor
 import service from '../client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 // import isAlpha from 'validator/lib/isAlpha'
-import getDateTime from '../mixins/getDateTime'
 
 const namespaced = true
 
@@ -14,6 +13,7 @@ const todayTime = today.getTime()
 
 class BannersState {
   activeAmount: { value: number, error: string, isLoading: boolean } = { value: null, error: null, isLoading: false }
+  /** Currently edited banner (for pageEdit) */
   bannerCurrent: BannerCurrent = {
     data: null,
     error: null,
@@ -54,6 +54,7 @@ class BannersState {
 class BannersGetters extends Getters<BannersState> {
   get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.bannerCurrent.isLoading || this.state.form.isLoading || this.state.list.isLoading }
   get loadingError() { return this.state.loadingError || this.state.activeAmount.error || this.state.bannerCurrent.error || this.state.form.error || this.state.list.error }
+  // LIST GETTERS
   get listMastered() {
     if (!this.state.list.data) return
 
@@ -107,6 +108,7 @@ class BannersGetters extends Getters<BannersState> {
 
     return arr
   }
+  // SINGLE BANNER GETTERS
   get bannerById() {
     return (id: Banner['id']) => { return this.state.list.data && this.state.list.data.find(b => b.id.toString() === id.toString()) }
   }
@@ -390,8 +392,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Action for form v-model. Updates proposed field and all related fields if they exist.
-   * For example: isActive / sort, pageType / newsId / appLink
+  /** Action for form v-model fields. Updates proposed field and all related fields if they exist.
+   * For example: activeFrom/activeTo, pageType / newsId / appLink
    */
   updateField({name, value}: {name: keyof BannerForm, value: FormField["value"]}) {
     const field = this.state.form.data.find(field => field.name === name)
@@ -437,7 +439,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       case 'isActive':
         if (field.value && isFormEdit) {
           // if delayedBanner was activated on pageEdit, runs immediate activation
-          const isDelayedBanner = this.state.bannerCurrent.data.delayStart && !this.state.bannerCurrent.data.isActive
+          const isDelayedBanner = this.getters.bannerCurrentStatus === 'delayed'
           if (isDelayedBanner) {
             this.dispatch('updateField', { name: 'activeFrom', value: null })
             this.dispatch('updateField', { name: 'activeTo', value: null })
@@ -563,6 +565,20 @@ const dateParser = (date) => {
   );
 
   return Date.parse(newDate.toString())
+}
+
+const getDateTime = (date: string) => {
+  const dateSplit = date.split('-')
+
+  const dateDate = new Date()
+  dateDate.setDate(Number(dateSplit[0]))
+  dateDate.setMonth(Number(dateSplit[1]))
+  dateDate.setFullYear(Number(dateSplit[2]))
+  dateDate.setHours(0,0,0,0)
+
+  const dateTime = dateDate.getTime()
+
+  return dateTime
 }
 
 export const banners = new Module({

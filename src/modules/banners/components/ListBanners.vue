@@ -8,7 +8,7 @@
       transition(mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeHashIndex")
           ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item"
-            @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteItem(item.id)" @createClicked="createClicked(index + 1)" @dblclick.prevent.native="onDblClick(item, index + 1)"
+            @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)" @dblclick.prevent.native="onDblClick(item, index + 1)"
             :class="[{ 'list-banners__item_free': !item }, 'list-banners__item js-voa js-voa-start' ]")
           +e.item._fake(v-for="n in 3")
 </template>
@@ -73,7 +73,11 @@ export default class ListBanners extends Mappers {
   handleSelect(index) {
     this.$router.push({path: this.$route.path, hash: `#${this.hashes[index - 1]}` }).catch(err => {})
   }
-  onDeleteItem(id) {
+  onCreateClick(index: Number) {
+    this.setBannerCurrentSuccess(Object.assign({}, { 'position': index }, null))
+    this.goToPageCreate()
+  }
+  onDeleteClick(id) {
     this.$emit('deleteItem', id)
   }
   onDblClick(banner, index) {
@@ -82,10 +86,6 @@ export default class ListBanners extends Mappers {
       this.updateField({name: 'sort', value: index })
       this.goToPageCreate()
     }
-  }
-  createClicked(index: Number) {
-    this.setBannerCurrentSuccess(Object.assign({}, { 'position': index }, null))
-    this.goToPageCreate()
   }
   goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
   goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/banners/edit/${id}` }).catch(err => {}) }

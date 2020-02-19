@@ -18,7 +18,7 @@
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="(formIsActive.value || isDelayedBanner) && formActiveFrom.value"
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="isDelayedBanner && formActiveFrom.value"
         @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
@@ -42,12 +42,12 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list', 'form', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'isLoading', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
+    ...bannersMapper.mapState(['form', 'bannerCurrent']),
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'getList', 'deactivateBanner'])
+    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'deactivateBanner'])
   }
 })
 
@@ -68,13 +68,11 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   popupFormIsShown: boolean = false
 
   get banner() { return this.bannerCurrent.data }
-  get bannerConflict() { return (this.formIsActive.value || this.isDelayedBanner) && this.listActive.find(b => b.position === this.formSort.value && b.id !== this.banner.id) }
+  get bannerConflict() { return (this.formIsActive.value || this.formActiveFrom.value) && this.listActive.find(b => b.position === this.formSort.value && b.id !== this.banner.id) }
   get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
-  get isDelayedBanner() { return this.bannerCurrent.data.delayStart || this.formActiveFrom.value }
   get isSmthToUpdate() {
     if (!this.banner) return
 
-    // check all fields equality except img
     const form = this.form.data
     const banner = this.banner
 
@@ -89,13 +87,15 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           if (bannerPageTypeIndex !== field.value) return true
           break
         case 'sort':
-          if ((this.formIsActive.value || this.isDelayedBanner) && Math.abs(banner.position) !== field.value) return true
+          if ((this.formIsActive.value || this.formActiveFrom.value) && Math.abs(banner.position) !== field.value) return true
           break
         default:
           if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
       }
     }
   }
+  get isActiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'active' }
+  get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }
 
   @Watch('banner', {immediate: true})
   async onBannerChange(val) {
@@ -105,6 +105,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     }
   }
 
+  // HOOKS
   created() {
     this.setFormType('edit')
     this.updateBannerData()
@@ -213,7 +214,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   }
   onConflictConfirm() {
     this.closePopupConflict()
-    if (this.formActiveFrom.value && !this.isDelayedBanner) this.submitForm()
+    if (this.formActiveFrom.value && !this.isActiveBanner) this.submitForm()
     else this.deactivateBannerConflict()
   }
   goToPageMain() { this.$router.push({ path: '/banners/list', hash: `#${this.bannerCurrentStatus}` }).catch(err => {}) }

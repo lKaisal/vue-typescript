@@ -36,11 +36,11 @@ import animateIfVisible from '../../../mixins/animateIfVisible'
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'bannerById', 'formIsValid', 'isLoading', 'formActiveFrom'])
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['getList', 'deleteBanner', 'createBanner', 'deactivateBanner', 'updateFormByBannerData'])
+    ...bannersMapper.mapActions(['createBanner', 'deactivateBanner', 'updateFormByBannerData'])
   }
 })
 
@@ -90,10 +90,11 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     } catch {}
   }
 
+  // HOOKS
   created() {
     this.setFormType('create')
     document.addEventListener('keydown', this.keydownHandler)
-    if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data)
+    if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data) // if free banner-cell was clicked on list, its position was stored
   }
   async mounted() {
     await this.$nextTick()
@@ -105,6 +106,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     this.setBannerCurrentSuccess(null)
   }
 
+  // METHODS POPUP CONFLICT
   openPopupConflict() {
     document.body.classList.add('modal-open')
     this.popupFormIsShown = true
@@ -113,17 +115,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     document.body.classList.remove('modal-open')
     this.popupFormIsShown = false
     // this.bannerConflictId = null
-  }
-  keydownHandler(evt: KeyboardEvent) {
-    if (evt.key === 'Escape') {
-      if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
-      else if (this.popupFormIsShown) this.closePopupConflict()
-      else if (this.msgBoxIsShown) this.closeMsgBox()
-    }
-  }
-  onClickOutside(evt) {
-    const targetIsPage = evt.srcElement.classList.contains('page-create')
-    if (targetIsPage) this.goToPageMain()
   }
   // CLICK HANDLERS
   onSubmit() {
@@ -171,6 +162,18 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
 
     this.$router.push({ path: `/banners/edit/${this.bannerCurrent.data.id}` }).catch(err => {})
   }
+  // OTHER HANDLERS
+  keydownHandler(evt: KeyboardEvent) {
+    if (evt.key === 'Escape') {
+      if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
+      else if (this.popupFormIsShown) this.closePopupConflict()
+      else if (this.msgBoxIsShown) this.closeMsgBox()
+    }
+  }
+  onClickOutside(evt) {
+    const targetIsPage = evt.srcElement.classList.contains('page-create')
+    if (targetIsPage) this.goToPageMain()
+  }
   // STORE ACTIONS CALL
   submitForm() {
     this.createBanner()
@@ -200,7 +203,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   deactivateBannerConflict() {
     this.deactivateBanner(this.bannerConflictId)
       .then(() => {
-        // this.closeMsgBox()
         this.submitForm()
       })
       .catch(() => {

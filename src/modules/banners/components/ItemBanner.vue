@@ -58,16 +58,6 @@ export default class ItemBanners extends Vue {
     this.initObserver()
   }
 
-  initObserver() {
-    const targets = this.$el
-    const options = {
-      targets,
-      offset: 50,
-      ifIntoView: () => this.preloadImage()
-    }
-
-    this.observer = new VisibilityObserver(options)
-  }
   goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
   onEditClick() { this.$emit('editClicked') }
   onDeleteClick() { this.$emit('deleteClicked') }
@@ -82,6 +72,16 @@ export default class ItemBanners extends Vue {
       })
       .catch(() => this.preloadImage())
       .finally(() => this.count++)
+  }
+  initObserver() {
+    const targets = this.$el
+    const options = {
+      targets,
+      offset: 50,
+      ifIntoView: () => this.preloadImage()
+    }
+
+    this.observer = new VisibilityObserver(options)
   }
 }
 </script>

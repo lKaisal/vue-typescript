@@ -51,6 +51,7 @@ export default class PopupAmount extends Mixins(Mappers) {
     this.amount = val
   }
 
+  // HOOKS
   created() {
     document.addEventListener('keydown', this.keyDownHandler)
   }
@@ -62,6 +63,7 @@ export default class PopupAmount extends Mixins(Mappers) {
     this.amount = this.activeAmount.value
   }
 
+  // METHODS
   keyDownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') this.cancelClicked()
   }

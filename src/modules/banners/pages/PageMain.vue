@@ -100,8 +100,6 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
         break
       case 'failSetAmount':
         this.updateAmount(this.amountForUpdate)
-      // default:
-      //   this.closeMsgBox()
     }
   }
   onSecondBtnClicked() {
@@ -109,8 +107,6 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
     switch (this.requestStatus) {
       case 'failSetAmount':
         this.closePopupAmount()
-      // default:
-      //   this.closeMsgBox()
     }
   }
   async openPopupAmount() {
@@ -155,8 +151,6 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
     this.closePopupAmount()
     this.updateActiveAmount(amount)
       .then(() => {
-          // this.closePopupAmount()
-          // this.closeMsgBox()
           this.updateList()
         })
         .catch(() => {
