@@ -22,13 +22,13 @@
           +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ Math.abs(banner.position) }}</span>
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        +e.info-item(v-if="banner.activeFrom || banner.activeTo")
-          +e.title Срок действия: 
-          +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
         +e.info-item(v-if="banner.updatedAt")
           +e.title Обновлен:&nbsp;<span class="item-banner__text">{{ banner.updatedAt }}</span>
         +e.info-item(v-if="banner.createdAt")
           +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
+        +e.info-item(v-if="banner.activeFrom || banner.activeTo")
+          +e.title Срок действия: 
+          +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
       +e.info(v-else)
         +e.info-item._empty.bg-empty(v-for="n in 4")
 </template>
@@ -93,9 +93,9 @@ export default class ItemBanners extends Vue {
 
   &__container
     position relative
-    display flex
-    justify-content center
-    flex-wrap wrap
+    // display flex
+    // justify-content center
+    // flex-wrap wrap
     width 100%
     height 100%
     padding 50px 50px 50px
@@ -246,6 +246,7 @@ export default class ItemBanners extends Vue {
     margin 0 auto
     text-align center
     white-space nowrap
+    overflow hidden
     +xs()
       justify-content flex-start
     &:not(:last-child)

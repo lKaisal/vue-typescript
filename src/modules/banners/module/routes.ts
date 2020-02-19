@@ -8,6 +8,7 @@ const children = [
   { path: 'create', component: PageCreate, name: 'PageCreate' },
   { path: 'edit', redirect: { name: 'PageBanners' } },
   { path: 'edit/:id', component: PageEdit, name: 'PageEdit' },
+  { path: '*', redirect: { name: 'PageBanners' } },
 ]
 export default [
   { path: '/banners', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children },
