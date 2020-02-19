@@ -164,6 +164,8 @@ export default class FormBanners extends Mappers {
   }
   beforeDestroy() {
     this.setValidationIsShown(false)
+    if (this.pickrFrom) this.pickrFrom.destroy()
+    if (this.pickrTo) this.pickrTo.destroy()
   }
 
   // METHODS
