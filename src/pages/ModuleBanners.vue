@@ -58,10 +58,8 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
     if (this.msgBoxIsShown) this.closeMsgBox()
 
     this.getList()
-      .then(() => {
-        // if (this.msgBoxIsShown) this.closeMsgBox()
-      })
       .catch(() => {
+        this.requestStatus = 'failFetchList'
         this.openMsgBox()
       })
   }

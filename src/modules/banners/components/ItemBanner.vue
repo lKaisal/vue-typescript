@@ -26,9 +26,10 @@
           +e.title Обновлен:&nbsp;<span class="item-banner__text">{{ banner.updatedAt }}</span>
         +e.info-item(v-if="banner.createdAt")
           +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
-        +e.info-item(v-if="banner.activeFrom || banner.activeTo")
-          +e.title Срок действия: 
-          +e.text {{ banner.activeFrom + '&emsp;&mdash;&emsp;' + banner.activeTo }}
+        +e.info-item
+          +e.title(v-html="activeFromToText")
+          //- +e.title Действует до:
+          //- +e.text {{ banner.activeFrom  }}
       +e.info(v-else)
         +e.info-item._empty.bg-empty(v-for="n in 4")
 </template>
@@ -53,6 +54,16 @@ export default class ItemBanners extends Vue {
   cardIsHovered: boolean = false
   observer = null
   count: number = 0
+
+  get isActive() { return this.banner.isActive }
+  get activeFromToText() {
+    if (this.isActive) {
+      if (!this.banner.activeTo) return `Действует:&nbsp;<span class="item-banner__text">неограниченно</span>`
+      else return `Действует до:&nbsp;<span class="item-banner__text">${this.banner.activeTo}</span>`
+    } else {
+      if (this.banner.activeFrom && this.banner.activeTo) return `Действует: <span class="item-banner__text">${this.banner.activeFrom}&nbsp;&ndash;&nbsp;${this.banner.activeTo}</span>`
+    }
+  }
 
   mounted() {
     this.initObserver()
@@ -160,21 +171,15 @@ export default class ItemBanners extends Vue {
     &:not(:last-child)
       margin-right 15px
     &_edit
-      // border 1px solid $cBrand
       &.is-active
-        // border-color $cBrand
         >>> i
           color $cBrand
           opacity 1
       &:hover
-        // background-color $cBrand
         >>> i
-          // color white
           transform scale(1.25) translate3d(0,0,0)
           opacity 1
-          // color $cBrand
     &_delete
-      // border 1px solid $cDanger
       border-color $cDanger
       >>> i
         color $cDanger
@@ -186,7 +191,6 @@ export default class ItemBanners extends Vue {
         >>> i
           transform scale(1.25) translate3d(0,0,0)
           opacity 1
-        // background-color $cDanger
     &_add
       opacity 1
       &:hover
@@ -198,13 +202,10 @@ export default class ItemBanners extends Vue {
     position relative
     width 100%
     padding-top 59.7%
-    // height 50%
     overflow hidden
     margin-bottom 50px
     align-self flex-start
     transition(transform)
-    .item-banner__container:hover &
-      // transform scale(.9)
 
   &__img
     position absolute
@@ -227,22 +228,14 @@ export default class ItemBanners extends Vue {
       transform none
     &_loading
       animation placeholderShimmer 1.8s forwards linear infinite
-      // background #f6f7f8
-      // background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
       background-size 200% 100%
 
   &__info
     width 100%
     line-height 1.25
     font-size 16px
-    // +gt-md()
-    //   font-size 16px
-    // +lt-md()
-    //   font-size 14px
 
   &__info-item
-    // display flex
-    // justify-content center
     margin 0 auto
     text-align center
     white-space nowrap
@@ -263,6 +256,8 @@ export default class ItemBanners extends Vue {
 
   &__title
     fontMedium()
+    >>> span
+      fontLight()
 
   &__text
     fontLight()

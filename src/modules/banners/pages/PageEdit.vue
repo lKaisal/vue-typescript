@@ -169,6 +169,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
         this.requestStatus = 'failDelete'
         this.secondBtn = { type: 'danger', isPlain: true }
         this.openMsgBox()
+        this.$emit('updateList')
       })
   }
   onFirstBtnClick() {
@@ -225,13 +226,11 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
 
     if (!banner) {
       this.getBannerById(id)
-        .then(() => {
-          // this.closeMsgBox()
-        })
         .catch(() => {
           this.requestStatus = 'failFetchBanner'
           this.secondBtn = { type: 'danger', isPlain: true }
           this.openMsgBox()
+          this.$emit('updateList')
           return
         })
     } else {
@@ -270,13 +269,13 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   deactivateBannerConflict() {
     this.deactivateBanner(this.bannerConflictId)
       .then(() => {
-        // this.closeMsgBox()
         this.submitForm()
       })
       .catch(() => {
         this.requestStatus = 'failDeactivate'
         this.secondBtn = { type: 'danger', isPlain: true }
         this.openMsgBox()
+        this.$emit('updateList')
       })
   }
   // POPUP-BANNER TOGGLE METHODS

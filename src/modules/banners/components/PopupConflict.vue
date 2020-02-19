@@ -3,7 +3,7 @@
 
   +b.popup-conflict
     +e.container.modal-popup-container(v-click-outside="onClickOutside")
-      +e.text(v-if="dateStart" v-html="`Выбранное поле сортировки занято другим баннером.<br>Если продолжить сохранение, этот баннер будет перезаписан <b>${dateStart}</b>.<br>Хотите продолжить?`")
+      +e.text(v-if="dateStart" v-html="`Выбранное поле сортировки занято другим баннером.<br>Если продолжить сохранение, этот баннер будет перезаписан <span>${dateStart}</span>.<br>Хотите продолжить?`")
       +e.text(v-else) Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
       ItemBanner(:banner="banner" :editIconsShown="false" class="popup-conflict__item")
       +e.btns
@@ -69,8 +69,11 @@ export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
 
   &__text
     margin-bottom 50px
-    // fontMedium()
     line-height 1.25
+    >>> span
+      fontMedium()
+      white-space nowrap
+
 
   &__item
     margin-bottom 25px
