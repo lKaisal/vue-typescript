@@ -53,8 +53,6 @@ export default class msgBoxTools extends Mappers {
 
   created() {
     document.addEventListener('keydown', this.keydownHandler)
-
-    console.log()
   }
 
   beforeDestroy() {
