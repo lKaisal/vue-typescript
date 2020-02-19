@@ -153,8 +153,8 @@ export default class ItemBanners extends Vue {
     z-index 5
     // padding 7px
     // margin -7px
-    margin-top 20%
-    margin-bottom 45%
+    margin-top 30%
+    margin-bottom 65%
     width 30%
     display flex
     justify-content center
