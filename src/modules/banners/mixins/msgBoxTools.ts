@@ -33,7 +33,7 @@ export default class msgBoxTools extends Mappers {
     beforeDelete: { firstBtn: 'Подтвердить', secondBtn: 'Отмена' }
   }
   msgBoxOtherTitles: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'Отправить в архив?' }
-  msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { 'successCreate': 'Баннер успешно сохранен', 'successDelete': 'Баннер перемещен в архив', 'successEdit': 'Данные успешно изменены' }
+  msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { successCreate: 'Баннер успешно сохранен', successDelete: 'Баннер перемещен в архив', successEdit: 'Данные успешно изменены' }
   msgBoxOtherMsgs: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'После перевода в архив баннер перестанет отображаться в приложении' }
 
   get statusType() {
