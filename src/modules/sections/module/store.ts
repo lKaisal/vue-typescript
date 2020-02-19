@@ -6,7 +6,11 @@ import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-mo
 const namespaced = true
 
 class SectionsState {
-  // 
+  list = [
+    { name: 'Section 1', isActive: true },
+    { name: 'Section 2', isActive: true },
+    { name: 'Section 3', isActive: false },
+  ]
 }
 
 class SectionsGetters extends Getters<SectionsState> {

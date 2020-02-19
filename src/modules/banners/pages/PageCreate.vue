@@ -22,16 +22,16 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { MsgBoxContent, Banner, Button } from '../models'
-import MsgBoxTools from '../mixins/msgBoxTools'
-import FormBanners from '../components/FormBanners.vue'
-import MessageBox from '../components/MessageBox.vue'
-import PopupConflict from '../components/PopupConflict.vue'
-import sleep from '@/mixins/sleep'
-import { bannersMapper } from '../module/store'
-import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOuside from 'v-click-outside'
+import sleep from '@/mixins/sleep'
+import ButtonApp from '@/components/ButtonApp.vue'
+import { bannersMapper } from '../module/store'
+import { MsgBoxContent, Banner, Button } from '../models'
+import MessageBox from '../components/MessageBox.vue'
+import FormBanners from '../components/FormBanners.vue'
+import PopupConflict from '../components/PopupConflict.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
+import MsgBoxTools from '../mixins/msgBoxTools'
 
 const Mappers = Vue.extend({
   computed: {

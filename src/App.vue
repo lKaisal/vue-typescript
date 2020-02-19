@@ -4,12 +4,10 @@
   +b.app
     +e.container.container
       transition(mode="out-in")
-        +e.btn-wrapper(v-if="isPageHome")
-          //- el-button(type="primary" @click="onClick") Enter BannersModule
-          ButtonApp(text="Enter BannersModule" @clicked="onClick" class="app__btn")
+        +e.btns(v-if="isRootPage")
+          ButtonApp(text="Enter BannersModule" @clicked="onBannersClick" class="app__btn")
+          ButtonApp(text="Enter SectionsModule" @clicked="onSectionsClick" class="app__btn")
         router-view(v-else class="app__page page")
-      //- +e.up-arrow
-        IconSvg(icon="back" class="app__icon-up")
 </template>
 
 <script lang="ts">
@@ -25,9 +23,10 @@ import IconSvg from '@/components/IconSvg.vue'
 })
 
 export default class App extends Vue {
-  get isPageHome() { return this.$route && this.$route.fullPath === '/' }
+  get isRootPage() { return this.$route && this.$route.fullPath === '/' }
 
-  onClick() { this.$router.push({path: '/banners'}) }
+  onBannersClick() { this.$router.push({path: '/banners'}) }
+  onSectionsClick() { this.$router.push({path: '/sections'}) }
 }
 </script>
 
@@ -57,6 +56,13 @@ $arrowSize = $offsetXl / 2
     display flex
     flex-direction column
     flex-grow 1
+
+  &__btns
+    display flex
+
+  &__btn
+    &:not(:last-child)
+      margin-right 10px
 
   &__up-arrow
     position fixed

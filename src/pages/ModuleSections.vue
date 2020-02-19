@@ -1,33 +1,32 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-sections
+  +b.module-sections.page
+    +e.H1 Sections Module
+    ListBanners
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import MessageBox from '@/modules/banners/components/MessageBox.vue'
-import MsgBoxTools from '@/modules/banners/mixins/msgBoxTools'
-// import { bannersMapper } from '@/modules/banners/module/store'
+import { sectionsMapper } from '@/modules/sections/module/store'
+import ListBanners from '@/modules/sections/components/ListSections.vue'
 
 const Mappers = Vue.extend({
   // computed: {
-  //   ...bannersMapper.mapState(['list']),
-  //   ...bannersMapper.mapGetters(['isLoading'])
+  //   ...sectionsMapper.mapState([]),
   // },
   // methods: {
-  //   ...bannersMapper.mapMutations(['clearForm']),
-  //   ...bannersMapper.mapActions(['getList', 'getActiveAmount'])
+  //   ...sectionsMapper.mapMutations([]),
   // }
 })
 
 @Component({
   components: {
-    MessageBox,
+    ListBanners,
   }
 })
 
-export default class ModuleSections extends Mixins(Mappers, MsgBoxTools) {
+export default class ModuleSections extends Mixins(Mappers) {
 }
 </script>
 
