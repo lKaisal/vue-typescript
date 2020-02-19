@@ -1,15 +1,9 @@
-// import { Module, GetterTree } from 'vuex'
 import { AxiosResponse, AxiosError } from 'axios'
 import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData } from '../models'
 import service from '../client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-// import isAlpha from 'validator/lib/isAlpha'
 
 const namespaced = true
-
-const today = new Date()
-today.setHours(0,0,0,0)
-const todayTime = today.getTime()
 
 class BannersState {
   activeAmount: { value: number, error: string, isLoading: boolean } = { value: null, error: null, isLoading: false }

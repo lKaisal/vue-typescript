@@ -14,7 +14,7 @@
         +e.icon-wrapper._plus(@click="amount++" :class="{ 'is-disabled': amount === 9 }")
           +e.I.icon._plus.el-icon-plus
       +e.btns
-        ButtonApp(:disabled="!amount" text="Подтвердить" @clicked="confirmClicked" class="popup-amount__btn")
+        ButtonApp(:isDisabled="!amount" text="Подтвердить" @clicked="confirmClicked" class="popup-amount__btn")
         ButtonApp(btnType="danger" text="Отмена" @clicked="cancelClicked" class="popup-amount__btn")
 </template>
 

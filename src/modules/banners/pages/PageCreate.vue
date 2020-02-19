@@ -10,8 +10,8 @@
         +e.H1.title.page-title Создание баннера
         FormBanners(class="page-create__form")
         +e.btns
-          ButtonApp(btnType="primary" :disabled="!isSmthToCommit" @clicked="onSubmit" text="Сохранить баннер" class="page-create__btn")
-          ButtonApp(btnType="warning" :disabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
+          ButtonApp(btnType="primary" :isDisabled="!isSmthToCommit" @clicked="onSubmit" text="Сохранить баннер" class="page-create__btn")
+          ButtonApp(btnType="warning" :isDisabled="!isSmthToCommit" :isPlain="true" @clicked="clearForm" text="Очистить форму" class="page-create__btn")
           ButtonApp(btnType="danger" :isPlain="true" @clicked="goToPageMain" text="Отменить" class="page-create__btn")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"

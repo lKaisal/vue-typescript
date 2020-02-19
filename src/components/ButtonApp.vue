@@ -2,11 +2,11 @@
   include ../tools/bemto.pug
 
   +b.button-app
-    +e.container(:class="[btnType, { 'is-plain': isPlain, 'is-disabled': disabled }]" @click="onClick")
+    +e.container(:class="[btnType, { 'is-plain': isPlain, 'is-disabled': isDisabled }]" @click="onClick")
       +e.text(v-html="text")
       +e.icon-wrapper(v-if="icon")
         +e.I.icon(:class="icon")
-      //- IconSvg(icon="clean" class="button-app__icon")
+        //- IconSvg(:icon="icon" class="button-app__icon")
 </template>
 
 <script lang="ts">
@@ -23,11 +23,11 @@ export default class ButtonApp extends Vue {
   @Prop({default: 'primary'}) btnType: string
   @Prop() isPlain: boolean
   @Prop() text: string
-  @Prop() disabled: boolean
+  @Prop() isDisabled: boolean
   @Prop() icon: string
 
   onClick() {
-    if (this.disabled) return
+    if (this.isDisabled) return
 
     this.$emit('clicked')
   }
@@ -124,14 +124,34 @@ export default class ButtonApp extends Vue {
     display flex
     justify-content center
     align-items center
-    margin-left 10px
+    margin-left 15px
     fill white
-    width 20px
-    height 20px
+    width 15px
+    height 15px
 
   &__icon
     position absolute
     width 100%
     height 100%
     text-align center
+    fill white
+    transition(fill)
+    .is-plain.primary &
+      fill $cBrand
+    .is-plain.warning &
+      fill $cWarning
+    .is-plain.danger &
+      fill $cDanger
+    .is-plain.success &
+      fill $cSuccess
+    .button-app__container.is-plain:not(.is-disabled):hover &
+      fill white
+    .button-app__container:not(.is-plain).primary:hover &
+      fill $cBrand
+    .button-app__container:not(.is-plain).warning:hover &
+      fill $cWarning
+    .button-app__container:not(.is-plain).danger:hover &
+      fill $cDanger
+    .button-app__container:not(.is-plain).success:hover &
+      fill $cSuccess
 </style>

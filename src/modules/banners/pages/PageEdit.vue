@@ -11,14 +11,14 @@
           +e.H1.title.page-title Редактирование баннера
           FormBanners(class="page-edit__form")
           +e.btns
-            ButtonApp(class="page-edit__btn" btnType="primary" :disabled="!isSmthToUpdate" @clicked="onSubmit" text="Сохранить баннер")
-            ButtonApp(class="page-edit__btn" btnType="warning" :disabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения")
-            ButtonApp(v-if="banner.isActive || banner.delayStart" class="page-edit__btn" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив")
-            ButtonApp(class="page-edit__btn" :btnType="banner.isActive || banner.delayStart ? 'success' : 'danger'" :isPlain="true" @clicked="goToPageMain" text="Отмена")
+            ButtonApp(btnType="primary" :isDisabled="!isSmthToUpdate" @clicked="onSubmit" text="Сохранить баннер" class="page-edit__btn")
+            ButtonApp(btnType="warning" :isDisabled="!isSmthToUpdate" :isPlain="true" @clicked="resetForm" text="Сбросить изменения" class="page-edit__btn")
+            ButtonApp(v-if="banner.isActive || banner.delayStart" btnType="danger" :isPlain="true" @clicked="onClickDelete" text="Отправить в архив" class="page-edit__btn")
+            ButtonApp(:btnType="banner.isActive || banner.delayStart ? 'success' : 'danger'" :isPlain="true" @clicked="goToPageMain" text="Отмена" class="page-edit__btn")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="isDelayedBanner && formActiveFrom.value"
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="!isActiveBanner && formActiveFrom.value"
         @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
@@ -145,7 +145,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
     }
   }
   onSubmit() {
-    if (this.formActiveFrom.value && this.bannerConflictId) {
+    if (this.bannerConflictId && !this.isActiveBanner) {
       if (!this.formIsValid) this.setValidationIsShown(true)
       else this.openPopupConflict()
     } else this.submitForm()

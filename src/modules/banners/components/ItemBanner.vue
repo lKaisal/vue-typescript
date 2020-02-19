@@ -18,8 +18,8 @@
       +e.info(v-if="banner")
         +e.info-item(v-if="banner.title")
           +e.title Имя баннера:&nbsp;<span class="item-banner__text">{{ banner.title }}</span>
-        +e.info-item(v-if="banner.position && banner.isActive")
-          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ banner.position }}</span>
+        +e.info-item(v-if="banner.position && (banner.isActive || banner.delayStart)")
+          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ Math.abs(banner.position) }}</span>
         +e.info-item(v-if="banner.appLink")
           +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
         +e.info-item(v-if="banner.activeFrom || banner.activeTo")
