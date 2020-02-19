@@ -13,6 +13,7 @@ export default class msgBoxTools extends Mappers {
   msgBoxIsShown: boolean = false
   requestStatus: RequestStatus = 'failFetchList'
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': null }
+  contentDefault: string = 'Похоже, сервер не отвечает'
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ 'successCreate', 'successEdit', 'successDelete' ],
     fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount' ],
@@ -48,12 +49,10 @@ export default class msgBoxTools extends Mappers {
   }
   get msgBoxBtns() { return this.btns[this.requestStatus] }
 
-  get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg, ...this.msgBoxBtns } }
+  get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg || this.contentDefault, ...this.msgBoxBtns } }
 
   created() {
     document.addEventListener('keydown', this.keydownHandler)
-
-    console.log()
   }
 
   beforeDestroy() {

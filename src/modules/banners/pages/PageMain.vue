@@ -154,9 +154,9 @@ export default class PageMain extends Mixins(msgBoxTools, Mappers) {
           this.updateList()
         })
         .catch(() => {
-        this.requestStatus = 'failSetAmount'
-        this.secondBtn = { type: 'danger', isPlain: true }
-        this.openMsgBox()
+          this.requestStatus = 'failSetAmount'
+          this.secondBtn = { type: 'danger', isPlain: true }
+          this.openMsgBox()
       })
   }
   async animateOneMoreTime() {
