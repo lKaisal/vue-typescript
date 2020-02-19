@@ -5,39 +5,39 @@
     +e.container
       +e.column
         //- file (image)
-        +e.field._img(:class="{ 'is-invalid': isInvalid(fileField) }")
+        +e.field._img(:class="{ 'is-invalid': isInvalid(fileField), 'is-disabled': allFieldsDisabled }")
           DragDrop(class="form-banners__drag-drop")
           +e.error(v-html="fileField.errorMsg")
         //- isActive
         transition
-          +e.field._is-active(v-show="isFormEdit && !isActiveBanner" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
+          +e.field._is-active(v-show="isFormEdit && (isInactiveBanner || isDelayedBanner)" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
             +e.checkbox
               +e.I.checkbox-icon.el-icon-check
             +e.LABEL.label(for="isActive" v-html="isActiveLabel")
             +e.error(v-html="isActiveField.errorMsg")
       +e.column
         //- title
-        +e.field._title(:class="{ 'is-invalid': isInvalid(titleField), 'is-filled': title }")
+        +e.field._title(:class="{ 'is-invalid': isInvalid(titleField), 'is-filled': title && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
           +e.label
             +e.LABEL(for="title") Имя баннера
           +e.EL-INPUT.input(placeholder="Title" v-model="title")
           +e.error(v-html="titleField.errorMsg")
         //- pageType
-        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': true }")
+        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
           +e.label
             +e.LABEL(for="pageType") Тип страницы
-          +e.EL-SELECT.select(ref="select" v-model="pageType" :placeholder="pageTypesDisplayed[0]")
+          +e.EL-SELECT.select(ref="select" v-model="pageType" :disabled="allFieldsDisabled" :placeholder="pageTypesDisplayed[0]")
             +e.EL-OPTION(v-for="(type, index) in pageTypesDisplayed.length" :key="index" :label="pageTypesDisplayed[index]" :value="index")
           +e.error(v-html="pageTypeField.errorMsg")
         +e.fields
           //- newsId
-          +e.field._news-id(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId }")
+          +e.field._news-id(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
             +e.label
               +e.LABEL(for="newsId") Id новости
             +e.EL-INPUT.input(placeholder="111" type="number" v-model="newsId" ref="newsIdRef")
             +e.error(v-html="newsIdField.errorMsg")
           //- appLink
-          +e.field._app-link(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink }")
+          +e.field._app-link(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
             +e.label
               +e.LABEL(for="appLink") Ссылка на раздел
             +e.EL-INPUT.input(placeholder="/link" v-model="appLink")
@@ -61,7 +61,7 @@
               +e.error(v-html="activeToField.errorMsg")
           +e.comment(:class="{ 'is-transparent': isInvalid(activeFromField) || isInvalid(activeToField) }") Заполнить для баннеров с отложенным стартом
         //- sort
-        +e.field._sort(v-if="activeAmountValue" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled }")
+        +e.field._sort(v-if="activeAmountValue" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled, 'is-disabled': sortIsDisabled }")
           +e.LABEL.label(for="sortBy") Положение баннера
           +e.EL-SELECT.select(:disabled="sortIsDisabled" ref="select" v-model="sortBy" :placeholder="activeAmountValue.toString()")
             +e.EL-OPTION(v-for="n in activeAmountValue" :key="n" :label="n" :value="n")
@@ -128,8 +128,8 @@ export default class FormBanners extends Mappers {
   set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
-  get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value || this.activeAmountValue : null }
-  set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value || this.activeAmountValue}) : null }
+  get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value : null }
+  set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value}) : null }
   get title() { return this.titleField.value }
   set title(value) { this.updateField({name: 'title', value: trim(value) }) }
 
@@ -140,8 +140,9 @@ export default class FormBanners extends Mappers {
   get isActiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'active' }
   get isInactiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'archive' }
   get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
-  get sortIsDisabled() { return !this.formIsActive.value && (!this.isDelayedBanner || (!this.formActiveFrom.value && !this.formActiveTo.value)) }
-  get activeFromToDisabled() { return (this.isDelayedBanner && this.formIsActive.value) || this.sortIsDisabled }
+  get allFieldsDisabled() { return !this.formIsActive.value && !this.isDelayedBanner }
+  get sortIsDisabled() { return (!this.formIsActive.value && !this.isDelayedBanner && (!this.formActiveFrom.value && !this.formActiveTo.value)) || this.allFieldsDisabled }
+  get activeFromToDisabled() { return (this.isDelayedBanner && this.formIsActive.value) || this.sortIsDisabled || this.allFieldsDisabled }
   get isNewsType() { return this.pageType === 0 }
   get activeAmountValue() { return this.activeAmount.value }
 
@@ -249,6 +250,16 @@ export default class FormBanners extends Mappers {
       flex-direction column
       align-items flex-start
       width-between-property 'margin-bottom' 1441 40 1920 50 true true
+      &:before
+        z-index 1
+        ghost()
+        background-color $cBaseBorder
+        opacity 0
+        transition(opacity)
+        pointer-events none
+      &.is-disabled
+        &:before
+          opacity .5
     &_is-active
       display inline-flex
       padding 5px
@@ -258,6 +269,13 @@ export default class FormBanners extends Mappers {
     &_active-from
     &_active-to
       margin-bottom 7px
+    &.is-disabled
+      pointer-events none
+      >>> input
+        background-color $cDisabled
+        border-color $cLightBorder
+        color $cPlaceholderText
+        transition(background-color\, border-color\, color)
     &.v-enter
     &.v-leave-to
       opacity 0
@@ -289,9 +307,9 @@ export default class FormBanners extends Mappers {
       fontMedium()
       font-size 18px
       pointer-events none
-      opacity .75
-    .form-banners__field_is-active.is-active &
-      opacity 1
+      // opacity .75
+    // .form-banners__field_is-active.is-active &
+    //   opacity 1
 
   &__input
   &__select
@@ -352,13 +370,6 @@ export default class FormBanners extends Mappers {
 
   &__input-wrapper
     position relative
-    .is-disabled &
-      pointer-events none
-      >>> input
-        background-color $cDisabled
-        border-color $cLightBorder
-        color $cPlaceholderText
-        transition(background-color\, border-color\, color)
 
   &__icon-clear
     position absolute

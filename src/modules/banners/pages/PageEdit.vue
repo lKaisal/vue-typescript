@@ -18,7 +18,7 @@
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="onCloseClick" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-edit__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="formIsActive.value && formActiveFrom.value"
+      PopupConflict(v-if="popupFormIsShown && bannerConflict" key="popup" :banner="bannerConflict" :dateStart="(formIsActive.value || isDelayedBanner) && formActiveFrom.value"
         @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-edit__popup modal modal-popup")
 </template>
 
@@ -68,8 +68,9 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   popupFormIsShown: boolean = false
 
   get banner() { return this.bannerCurrent.data }
-  get bannerConflict() { return this.formIsActive.value && this.listActive.find(b => b.position === this.formSort.value && b.id !== this.banner.id) }
+  get bannerConflict() { return (this.formIsActive.value || this.isDelayedBanner) && this.listActive.find(b => b.position === this.formSort.value && b.id !== this.banner.id) }
   get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
+  get isDelayedBanner() { return this.bannerCurrent.data.delayStart || this.formActiveFrom.value }
   get isSmthToUpdate() {
     if (!this.banner) return
 
@@ -88,7 +89,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
           if (bannerPageTypeIndex !== field.value) return true
           break
         case 'sort':
-          if (this.formIsActive.value && Math.abs(banner.position) !== field.value) return true
+          if ((this.formIsActive.value || this.isDelayedBanner) && Math.abs(banner.position) !== field.value) return true
           break
         default:
           if ((banner[field.name] && banner[field.name].toString()) !== (field.value && field.value.toString())) return true
@@ -212,7 +213,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
   }
   onConflictConfirm() {
     this.closePopupConflict()
-    if (this.formActiveFrom.value && !this.formActiveFrom.value) this.submitForm()
+    if (this.formActiveFrom.value && !this.isDelayedBanner) this.submitForm()
     else this.deactivateBannerConflict()
   }
   goToPageMain() { this.$router.push({ path: '/banners/list', hash: `#${this.bannerCurrentStatus}` }).catch(err => {}) }

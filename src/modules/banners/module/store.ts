@@ -143,7 +143,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || (this.getters.bannerCurrentStatus === 'delayed').toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
-    formData.sort = this.getters.formIsActive.value && this.getters.formSort.value && this.getters.formSort.value.toString() || '0'
+    formData.sort = (this.getters.formIsActive.value || this.state.bannerCurrent.data.delayStart) && this.getters.formSort.value && this.getters.formSort.value.toString() || (this.state.activeAmount.value).toString()
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
     // @ts-ignore
@@ -437,8 +437,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       case 'isActive':
         if (field.value && isFormEdit) {
           // if delayedBanner was activated on pageEdit, runs immediate activation
-          const isDealyedBanner = this.state.bannerCurrent.data.delayStart
-          if (isDealyedBanner) {
+          const isDelayedBanner = this.state.bannerCurrent.data.delayStart && !this.state.bannerCurrent.data.isActive
+          if (isDelayedBanner) {
             this.dispatch('updateField', { name: 'activeFrom', value: null })
             this.dispatch('updateField', { name: 'activeTo', value: null })
           }

@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Banner, Button } from '../models'
 import MsgBoxTools from '../mixins/msgBoxTools'
 import FormBanners from '../components/FormBanners.vue'
@@ -59,7 +59,6 @@ const Mappers = Vue.extend({
 export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
   bannerId: number = null
   secondBtn: Button = null
-  // bannerConflictId: number = null
   popupFormIsShown: boolean = false
 
   get bannerConflict() { return this.listActive.find(b => b.position === this.formSort.value) }
@@ -69,37 +68,27 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
     try {
       // check if any field was changed
       const form = this.form.data
-      const isActiveToCommit = !form.find(f => f.name === 'isActive').value
-      const fileToCommit = !!form.find(f => f.name === 'file').value
-      const pageTypeToCommit = form.find(f => f.name === 'pageType').value > 0
-      const sortToCommit = form.find(f => f.name === 'sort').value.toString() !== this.activeAmount.toString()
-      const smthElseToCommit = form.filter(f => f.name !== 'isActive' && f.name !== 'sort' && f.name !== 'pageType' && f.name !== 'file').map(f => f.value).some(f => !!f)
 
-      return smthElseToCommit || fileToCommit
+      for (const field of form) {
+        switch (field.name) {
+          case 'isActive':
+            break
+          case 'file':
+            if (field.value) return true
+            break
+          case 'pageType':
+            if (field.value > 0) return true
+            break
+          case 'sort':
+            if (field.value.toString() !== this.activeAmount.value.toString()) return true
+            break
+          default:
+            if (!!field.value) return true
+            break
+        }
+      }
     } catch {}
   }
-  // @ts-ignore
-  get activeFromSplit() { return this.formActiveFrom.value && this.formActiveFrom.value.toString().split('-') }
-  get activeFrom() {
-    if (!this.activeFromSplit) return
-
-    const date = new Date()
-    date.setDate(Number(this.activeFromSplit[0]))
-    date.setMonth(Number(this.activeFromSplit[1]) - 1)
-    date.setFullYear(Number(this.activeFromSplit[2]))
-    date.setHours(0, 0, 0, 0)
-
-    return date
-  }
-  get activeFromTime() { return this.activeFrom && new Date(this.activeFrom).getTime() }
-  get today() {
-    const date = new Date()
-    date.setHours(0, 0, 0, 0)
-
-    return date
-  }
-  get todayTime() { return this.today.getTime() }
-  get isActivatedToday() { return this.activeFromTime === this.todayTime }
 
   created() {
     this.setFormType('create')
@@ -256,7 +245,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
       opacity .75
     +gt-md()
       position absolute
-      // top -50px
       left 0
     +lt-md()
       margin-bottom 25px
