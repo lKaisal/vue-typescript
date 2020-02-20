@@ -1,6 +1,6 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import { Form, AuthForm, FormField } from '../models'
-import service from '@/client/index'
+import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 import LocalStorageService from '@/services/LocalStorageService'
 
@@ -99,7 +99,7 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
       this.commit('startFormLoading')
       const data = this.getters.formData
 
-      service.post('/login', data)
+      axios.post('/login', data)
         .then((res: AxiosResponse<any>) => {
           LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh})
           this.commit('setFormLoadingSuccess')

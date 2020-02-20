@@ -25,6 +25,7 @@ service.interceptors.response.use((response) => {
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       const res = await axios.post('/refresh', { 'refresh': LocalStorageService.getRefreshToken() });
+      // return Promise.reject(error)
       if (res.status === 200) {
         // 1) put token to LocalStorage
         LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh});

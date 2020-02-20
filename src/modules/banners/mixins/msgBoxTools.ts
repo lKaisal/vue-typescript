@@ -48,27 +48,5 @@ export default class msgBoxTools extends Mappers {
     else return this.loadingError
   }
   get msgBoxBtns() { return this.btns[this.requestStatus] }
-
   get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg || this.contentDefault, ...this.msgBoxBtns } }
-
-  created() {
-    document.addEventListener('keydown', this.keydownHandler)
-  }
-
-  beforeDestroy() {
-    document.body.classList.remove('modal-open')
-    document.removeEventListener('keydown', this.keydownHandler)
-  }
-
-  keydownHandler(evt: KeyboardEvent) {
-    if (evt.key === 'Escape' && this.msgBoxIsShown) this.closeMsgBox()
-  }
-  openMsgBox() {
-    document.body.classList.add('modal-open')
-    this.msgBoxIsShown = true
-  }
-  closeMsgBox() {
-    document.body.classList.remove('modal-open')
-    this.msgBoxIsShown = false
-  }
 }

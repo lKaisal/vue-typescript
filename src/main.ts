@@ -3,15 +3,11 @@ import Router from './services/router'
 import Store from './services/store'
 import App from './App.vue'
 import system from './modules/system/module'
-// import BootstrapVue from 'bootstrap-vue'
-// import 'bootstrap/dist/css/bootstrap.css'
-// import 'bootstrap-vue/dist/bootstrap-vue.css'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import banners from './modules/banners/module'
 import auth from './modules/auth/module'
 
-// Vue.use(BootstrapVue)
 Vue.use(ElementUI)
 
 // const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './modules/banners/ModuleBanners.vue');
