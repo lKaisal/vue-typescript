@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import ModuleBanners from '../pages/ModuleBanners.vue'
 
 Vue.use(VueRouter)
 
