@@ -15,13 +15,13 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { MsgBoxContent, Button } from '../models'
+import { MsgBoxContent, Button } from '@/models'
 import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
+import MessageBox from '@/components/MessageBox.vue'
 import msgBoxTools from '../mixins/msgBoxTools'
 import ListBanners from '../components/ListBanners.vue'
-import MessageBox from '../components/MessageBox.vue'
 import ToggleAmount from '../components/ToggleAmount.vue'
 import PopupAmount from '../components/PopupAmount.vue'
 import animateIfVisible from '@/mixins/animateIfVisible'

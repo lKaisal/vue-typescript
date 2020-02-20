@@ -22,8 +22,13 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { MsgBoxContent, Banner, Button } from '../models'
-import MsgBoxTools from '../mixins/msgBoxTools'
+import vClickOuside from 'v-click-outside'
+import sleep from '@/mixins/sleep'
+import ButtonApp from '@/components/ButtonApp.vue'
+import MessageBox from '@/components/MessageBox.vue'
+import { bannersMapper } from '../module/store'
+import { Banner } from '../models'
+import { MsgBoxContent, Button } from '@/models'
 import FormBanners from '../components/FormBanners.vue'
 import MessageBox from '../components/MessageBox.vue'
 import PopupConflict from '../components/PopupConflict.vue'

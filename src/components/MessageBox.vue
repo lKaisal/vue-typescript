@@ -1,5 +1,5 @@
 <template lang="pug">
-  include ../../../tools/bemto.pug
+  include ../tools/bemto.pug
 
   +b.msg-box
     +e.container(v-click-outside="onClickOutside")
@@ -15,8 +15,8 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { MsgBoxContent, Button } from '@/models'
-import msgBoxTools from '../mixins/msgBoxTools'
+import { MsgBoxContent, Button } from '../models'
+// import msgBoxTools from '../mixins/msgBoxTools'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vCLickOutside from 'v-click-outside'
 
@@ -29,7 +29,7 @@ import vCLickOutside from 'v-click-outside'
   }
 })
 
-export default class MessageBox extends msgBoxTools{
+export default class MessageBox extends Vue{
   @Prop() content: MsgBoxContent
   @Prop( { default: function() { return { type: 'primary', isPlain: false }} }) firstBtn: Button
   @Prop( { default: function() { return { type: 'success', isPlain: true }} }) secondBtn: Button
@@ -51,7 +51,7 @@ export default class MessageBox extends msgBoxTools{
 </script>
 
 <style lang="stylus" scoped>
-@import '../../../styles/tools'
+@import '../styles/tools'
 
 .msg-box
 

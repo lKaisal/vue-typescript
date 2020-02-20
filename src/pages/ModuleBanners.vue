@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import MessageBox from '@/modules/banners/components/MessageBox.vue'
+import MessageBox from '@/components/MessageBox.vue'
 import { bannersMapper } from '@/modules/banners/module/store'
 import MsgBoxTools from '@/modules/banners/mixins/msgBoxTools'
 
