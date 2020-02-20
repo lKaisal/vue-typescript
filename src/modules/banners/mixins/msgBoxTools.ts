@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { Mixin } from 'vue-mixin-decorator'
-import { RequestStatuses, RequestStatus, RequestType, MsgBoxContent, MsgBoxBtns } from '../models'
+import { RequestStatuses, RequestStatus, RequestType } from '../models'
+import { MsgBoxBtns } from '@/models'
 import { bannersMapper } from '../module/store'
 
 const Mappers = Vue.extend({

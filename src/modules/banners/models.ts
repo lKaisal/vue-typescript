@@ -70,13 +70,6 @@ type FormError = {
   msg: string
 }
 
-type MsgBoxContent = {
-  title: string,
-  msg: string,
-  firstBtn: string,
-  secondBtn?: string
-}
-
 type RequestStatus = RequestStatuses[RequestType]
 
 type RequestType = 'success' | 'fail' | 'other'
@@ -87,15 +80,4 @@ type RequestStatuses = {
   other: 'beforeDelete'
 }
 
-type MsgBoxBtns = {
-  firstBtn: string,
-  secondBtn?: string
-}
-
-type Button = {
-  type: 'primary' | 'danger' | 'success' | 'warning' | 'info'
-  isPlain?: boolean
-  icon?: string
-}
-
-export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, Form, FormType, FormField, FormError, MsgBoxContent, RequestStatus, MsgBoxBtns, RequestStatuses, RequestType, Button }
+export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, Form, FormType, FormField, FormError, RequestStatus, RequestStatuses, RequestType }

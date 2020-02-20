@@ -102,6 +102,23 @@ h1.page-title
 .bg-empty
   background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
 
+.table-cell
+  padding 10px
+  display flex
+  align-items center
+
+.table-row
+  position relative
+  margin-top 35px
+  &:before
+    content ''
+    position absolute
+    right 0
+    bottom 0
+    left 0
+    height 1px
+    background-color $cLighterBorder
+
 .js-voa
   transition(opacity\, transform)
   transition-duration $tSlow

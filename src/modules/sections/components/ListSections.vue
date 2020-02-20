@@ -1,15 +1,17 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.list-banners
-    +e.container
-      +e.row
-        +e.item(v-for="(item, index) in list" v-html="item.name")
+  +b.list-sections
+    +e.container(v-if="list && list.length")
+      +e.row.table-row
+        +e.title.table-cell(v-for="(title, index) in titles" v-html="title" :class="index > 0 ? 'col-2' : 'col-1'")
+      ItemSections(v-for="item in list" :section="item" class="list-sections__item table-row")
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { sectionsMapper } from '../module/store'
+import ItemSections from '../components/ItemSections.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -17,15 +19,31 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ListBanners extends Vue {
+@Component({
+  components: {
+    ItemSections
+  }
+})
 
+export default class ListSections extends Mappers {
+  titles: string[] = [ 'id', 'name', 'title', 'Управление' ]
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
+@import '../common'
 
-.list-banners
-  //
+.list-sections
 
+  &__container
+    width 100%
+
+  &__row
+    display flex
+
+  &__title
+    text-transform capitalize
+    color $cSecondaryText
+    fontMedium()
 </style>

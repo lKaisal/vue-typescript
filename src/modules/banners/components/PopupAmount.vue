@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, Prop, Mixins, Ref } from 'vue-property-decorator'
-import { MsgBoxContent, Button } from '../models'
+import { MsgBoxContent, Button } from '@/models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import { bannersMapper, banners } from '../module/store'
 import { ElInput } from 'element-ui/types/input'
