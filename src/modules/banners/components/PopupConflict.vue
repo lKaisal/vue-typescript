@@ -14,7 +14,8 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 import { bannersMapper } from '../module/store'
-import MsgBoxTools from '../mixins/msgBoxTools'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MsgBoxTools from '../mixins/MsgBoxTools'
 import ItemBanner from '../components/ItemBanner.vue'
 import { Banner } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
@@ -35,7 +36,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PopupConflict extends Mixins(Mappers, MsgBoxTools) {
+export default class PopupConflict extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() banner: Banner
   @Prop() dateStart: string
   get confirmText() { return this.dateStart ? 'Подтвердить' : 'Заменить' }

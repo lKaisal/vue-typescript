@@ -30,7 +30,8 @@ import MessageBox from '@/components/MessageBox.vue'
 import { Banner, RequestStatus } from '../models'
 import { MsgBoxContent, Button } from '@/models'
 import { bannersMapper } from '../module/store'
-import MsgBoxTools from '../mixins/msgBoxTools'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MsgBoxTools from '../mixins/MsgBoxTools'
 import FormBanners from '../components/FormBanners.vue'
 import PopupConflict from '../components/PopupConflict.vue'
 import vClickOutside from 'v-click-outside'
@@ -64,7 +65,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PageEdit extends Mixins(MsgBoxTools, Mappers) {
+export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   secondBtn: Button = null
   popupFormIsShown: boolean = false
 

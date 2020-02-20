@@ -20,7 +20,8 @@ import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
 import MessageBox from '@/components/MessageBox.vue'
-import msgBoxTools from '../mixins/msgBoxTools'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MsgBoxTools from '../mixins/MsgBoxTools'
 import ListBanners from '../components/ListBanners.vue'
 import ToggleAmount from '../components/ToggleAmount.vue'
 import PopupAmount from '../components/PopupAmount.vue'
@@ -45,11 +46,11 @@ const Mappers = Vue.extend({
     PopupAmount
   },
   mixins: [
-    msgBoxTools
+    MsgBoxTools
   ]
 })
 
-export default class PageMain extends Mixins(msgBoxTools, Mappers) {
+export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   deleteId: number = null
   secondBtn: Button = null
   popupAmountIsShown: boolean = false
