@@ -16,7 +16,6 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '../models'
-// import msgBoxTools from '../mixins/msgBoxTools'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vCLickOutside from 'v-click-outside'
 

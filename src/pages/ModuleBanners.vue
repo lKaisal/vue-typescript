@@ -12,7 +12,8 @@
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import MessageBox from '@/components/MessageBox.vue'
 import { bannersMapper } from '@/modules/banners/module/store'
-import MsgBoxTools from '@/modules/banners/mixins/msgBoxTools'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MsgBoxTools from '@/modules/banners/mixins/MsgBoxTools'
 
 const Mappers = Vue.extend({
   computed: {
@@ -31,8 +32,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
-  count: number = 0
+export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxToolsApp) {
   created() {
     this.loadData()
     this.clearForm()
@@ -45,10 +45,8 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
 
     const promisesArr = [this.getList(), this.getActiveAmount()]
     Promise.all(promisesArr)
-      .then(() => {
-      })
       .catch((err) => {
-        if (err.status === 401) this.goToPageAuth()
+        if (err && err.status && err.status === 401) this.goToPageAuth()
         else this.openMsgBox()
       })
   }
@@ -58,9 +56,8 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
     if (this.msgBoxIsShown) this.closeMsgBox()
 
     this.getList()
-      .then(() => this.count = 0)
       .catch((err) => {
-        if (err.status === 401) this.goToPageAuth()
+        if (err && err.status && err.status === 401) this.goToPageAuth()
         else {
           this.requestStatus = 'failFetchList'
           this.openMsgBox()

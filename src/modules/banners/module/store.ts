@@ -268,7 +268,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch(error => {
           console.log(error.response)
-          if (error.response && error.response.data) this.commit('setListLoadingFail', error.response.data.message)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setListLoadingFail', errMsg)
           reject(error.response)
         })
     })
@@ -362,7 +363,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
-          if (error.response && error.response.data) this.commit('setLoadingFail', error.response.data.message)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setLoadingFail', errMsg)
           reject()
         })
     })
@@ -381,7 +383,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
-          if (error.response && error.response.data) this.commit('setBannerCurrentFail', error.response.data.message)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setBannerCurrentFail', errMsg)
           reject()
         })
     })
@@ -504,7 +507,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch((err: AxiosError) => {
           console.log(err.response)
-          this.commit('setLoadingFail', err.response.data.message)
+          const errMsg = err.response && err.response.data && err.response.data.message
+          this.commit('setLoadingFail', errMsg)
           reject()
         })
     })
@@ -522,7 +526,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch((error: AxiosError) => {
           console.log(error.response)
-          if (error.response && error.response.data) this.commit('setActiveAmountFail', error.response.data.message)
+          const errMsg = error.response && error.response.data && error.response.data.message
+          this.commit('setActiveAmountFail', errMsg)
           reject(error.response)
         })
     })
@@ -540,7 +545,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       })
       .catch((error: AxiosError) => {
         console.log(error.response)
-        if (error.response && error.response.data) this.commit('setActiveAmountFail', error.response.data.message)
+        const errMsg = error.response && error.response.data && error.response.data.message
+        this.commit('setActiveAmountFail', errMsg)
         reject()
       })
     })

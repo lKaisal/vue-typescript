@@ -23,20 +23,17 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import vClickOuside from 'v-click-outside'
-import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
 import MessageBox from '@/components/MessageBox.vue'
-import { bannersMapper } from '../module/store'
-import { Banner } from '../models'
 import { MsgBoxContent, Button } from '@/models'
-import FormBanners from '../components/FormBanners.vue'
-import MessageBox from '../components/MessageBox.vue'
-import PopupConflict from '../components/PopupConflict.vue'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import sleep from '@/mixins/sleep'
 import { bannersMapper } from '../module/store'
-import ButtonApp from '@/components/ButtonApp.vue'
-import vClickOuside from 'v-click-outside'
+import { Banner } from '../models'
+import FormBanners from '../components/FormBanners.vue'
+import PopupConflict from '../components/PopupConflict.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
+import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const Mappers = Vue.extend({
   computed: {
@@ -61,7 +58,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PageCreate extends Mixins(MsgBoxTools, Mappers) {
+export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   bannerId: number = null
   secondBtn: Button = null
   popupFormIsShown: boolean = false

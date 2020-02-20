@@ -1,20 +1,23 @@
 import Vue from 'vue'
-import { Mixin } from 'vue-mixin-decorator'
+import { Mixin, Mixins } from 'vue-mixin-decorator'
 import { RequestStatuses, RequestStatus, RequestType } from '../models'
 import { MsgBoxBtns } from '@/models'
 import { bannersMapper } from '../module/store'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapGetters(['loadingError'])
   }
 })
+
+interface IMixinInterface extends MsgBoxToolsApp {}
+
 @Mixin
-export default class msgBoxTools extends Mappers {
-  msgBoxIsShown: boolean = false
+export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBoxToolsApp) {
+  loadingError: string
   requestStatus: RequestStatus = 'failFetchList'
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': null }
-  contentDefault: string = 'Похоже, сервер не отвечает'
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ 'successCreate', 'successEdit', 'successDelete' ],
     fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount' ],
