@@ -1,30 +1,67 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import { Section } from '../models'
-// import service from '../client/index'
+import service from '@/client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
 
 class SectionsState {
-  list: Section[] = [
-    { id: 1, name: 'calendar', title: 'Каленадрь акций', isActive: true, description: 'Es irrt der Mensch, wenn er sie beim Kragen hätte. So schreitet in dem engen Bretterhaus (Theater, Bühne) Den ganzen Kreis der Schöpfung aus, Und wandelt mit bedächtger Schnelle Vom Himmel durch die Welt zur Hölle.' },
-    { id: 2, name: 'price', title: 'Цены и скидки', isActive: true, description: 'Goodwill und sämtliche anderen immateriellen Vermögenswerte sind bei der Ermittlung des harten Kernkapitals am gesamten Eigenkapital.' },
-    { id: 3, name: 'discount', title: 'Установка скидки', isActive: false, description: 'Imagine a combination of VOIP and Flash. Our end-to-end feature set is unparalleled, but our non-complex administration and newbie-proof use.' },
-    { id: 4, name: 'goods', title: 'Мои товары', isActive: false, description: 'Note: Changed by section 1 of the Seventeenth Day of September in the Year one thousand eight hundred and eight...' },
-    { id: 5, name: 'staff', title: 'Мои сотрудники', isActive: true, description: 'None of that prepared him for the arena, the crowd, the tense hush, the towering puppets of light from a half-open service hatch framed a heap of discarded fiber optics and the dripping chassis of a broken mirror bent and elongated as they fell.' },
-  ]
+  list: { data: Section[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
 }
 
 class SectionsGetters extends Getters<SectionsState> {
-  //
+  get isLoading() { return this.state.list.isLoading }
+  get loadingError() { return this.state.list.error }
+  get listActive() { return this.state.list.data && this.state.list.data.filter(b => b.active) }
+  get listInactive() { return this.state.list.data && this.state.list.data.filter(b => !b.active) }
+  get listToEdit() { return null }
 }
 
 class SectionsMutations extends Mutations<SectionsState> {
-  //
+  startListLoading() {
+    this.state.list.isLoading = true
+    this.state.list.error = null
+  }
+  setListLoadingSuccess(payload: Section[]) {
+    this.state.list.data = payload
+    this.state.list.isLoading = false
+    this.state.list.error = null
+  }
+  setListLoadingFail(err) {
+    this.state.list.data = null
+    this.state.list.isLoading = false
+    this.state.list.error = err
+  }
 }
 
 class SectionsActions extends Actions<SectionsState, SectionsGetters, SectionsMutations, SectionsActions> {
-  //
+  async getList() {
+    return new Promise((resolve, reject) => {
+      this.commit('startListLoading')
+
+      service.get('/api/v1/features-list')
+        .then((res: AxiosResponse<any>) => {
+          while (!Array.isArray(res)) res = res.data
+
+          this.commit('setListLoadingSuccess', res)
+          console.log('Success: load list')
+          resolve()
+        })
+        .catch(error => {
+          console.log(error.response)
+          this.commit('setListLoadingFail', error.response.data.message)
+          reject()
+        })
+    })
+  }
+  async editList() {
+    // return new Promise((resolve, reject) => {
+    //   this.commit('startListLoading')
+
+    //   const body = this.getters.listToEdit
+    //   service.post('/api/v1/featues', body)
+    // })
+  }
 }
 
 export const sections = new Module({
