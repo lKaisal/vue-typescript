@@ -5,7 +5,7 @@
     +e.container(v-if="list && list.length")
       +e.row.table-row
         +e.title.table-cell(v-for="(title, index) in titles" v-html="title" :class="index > 0 ? 'col-2' : 'col-1'")
-      ItemSections(v-for="item in list" :section="item" class="list-sections__item table-row")
+      ItemSections(v-for="(item, index) in list" :key="index" :section="item" class="list-sections__item table-row")
 </template>
 
 <script lang="ts">
