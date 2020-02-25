@@ -1,18 +1,18 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Section, ListSort } from '../models'
+import { Section, ListSort, EditPayload } from '../models'
 import service from '@/client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
 
-class SectionsState {
+class FeaturesState {
+  hashes: ['active', 'inactive'] = ['active', 'inactive']
   list: { data: Section[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listSort: ListSort = { by: 'id', direction: 'asc' }
-  listSorted: Section[] = null
   // list: { data: Section[], error: string, isLoading: boolean } =  { data: [{active: true, createdAt: '20-02-2020', description: 'description', feature: 'Feature', id: 1, name: 'Name', updatedAt: '20-02-2020', username: 'Username'}], error: null, isLoading: false }
 }
 
-class SectionsGetters extends Getters<SectionsState> {
+class FeaturesGetters extends Getters<FeaturesState> {
   get isLoading() { return this.state.list.isLoading }
   get loadingError() { return this.state.list.error }
   get listSorted() {
@@ -45,10 +45,9 @@ class SectionsGetters extends Getters<SectionsState> {
   }
   get listActive() { return this.getters.listSorted && this.getters.listSorted.filter(b => b.active) }
   get listInactive() { return this.getters.listSorted && this.getters.listSorted.filter(b => !b.active) }
-  get listToEdit() { return null }
 }
 
-class SectionsMutations extends Mutations<SectionsState> {
+class FeaturesMutations extends Mutations<FeaturesState> {
   updateListSort(payload: ListSort) {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
@@ -69,7 +68,7 @@ class SectionsMutations extends Mutations<SectionsState> {
   }
 }
 
-class SectionsActions extends Actions<SectionsState, SectionsGetters, SectionsMutations, SectionsActions> {
+class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMutations, FeaturesActions> {
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
@@ -89,13 +88,20 @@ class SectionsActions extends Actions<SectionsState, SectionsGetters, SectionsMu
         })
     })
   }
-  async editList() {
-    // return new Promise((resolve, reject) => {
-    //   this.commit('startListLoading')
+  async editList(payload: EditPayload) {
+    return new Promise((resolve, reject) => {
+      this.commit('startListLoading')
 
-    //   const body = this.getters.listToEdit
-    //   service.post('/api/v1/featues', body)
-    // })
+      console.log(payload)
+      service.post('/api/v1/features', payload)
+        .then(async () => {
+          console.log('Success: edit list')
+          await this.dispatch('getList', null)
+            .then(() => {
+              resolve()
+            })
+        })
+    })
   }
 }
 
@@ -113,12 +119,12 @@ const getDateTime = (date: string) => {
   return dateTime
 }
 
-export const sections = new Module({
+export const features = new Module({
   namespaced,
-  state: SectionsState,
-  getters: SectionsGetters,
-  mutations: SectionsMutations,
-  actions: SectionsActions
+  state: FeaturesState,
+  getters: FeaturesGetters,
+  mutations: FeaturesMutations,
+  actions: FeaturesActions
 })
 
-export const sectionsMapper = createMapper(sections)
+export const featuresMapper = createMapper(features)

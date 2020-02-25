@@ -1,10 +1,10 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.item-sections
+  +b.item-features
     +e.info
       +e.cell.table-cell.col-05
-        +e.checkbox.checkbox-sections(@click="onCheckboxClick" :class="{ 'is-active': isActive }")
+        +e.checkbox.checkbox-features(@click="onCheckboxClick" :class="{ 'is-active': isActive }")
           +e.I.checkbox-icon.el-icon-check
       +e.cell.table-cell.col-2(v-for="(item, index) in cells" v-html="item")
     +e.descr-wrapper(v-if="section.description" @click="descrIsShown = !descrIsShown" :class="{ 'is-active': descrIsShown }")
@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { sectionsMapper } from '../module/store'
+import { featuresMapper } from '../module/store'
 import { Section } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 
@@ -23,7 +23,7 @@ import ButtonApp from '@/components/ButtonApp.vue'
   }
 })
 
-export default class ItemSections extends Vue {
+export default class ItemFeatures extends Vue {
   @Prop() section: Section
   @Prop() isActive: boolean
 
@@ -43,7 +43,7 @@ export default class ItemSections extends Vue {
 @import '../../../styles/tools'
 @import '../common'
 
-.item-sections
+.item-features
 
   &__info
     display flex

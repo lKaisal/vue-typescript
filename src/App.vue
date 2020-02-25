@@ -6,7 +6,7 @@
       transition(mode="out-in")
         +e.btns(v-if="isRootPage")
           ButtonApp(text="Enter BannersModule" @clicked="onBannersClick" class="app__btn")
-          ButtonApp(text="Enter SectionsModule" @clicked="onSectionsClick" class="app__btn")
+          ButtonApp(text="Enter FeaturesModule" @clicked="onFeaturesClick" class="app__btn")
         router-view(v-else class="app__page page")
 </template>
 
@@ -26,7 +26,7 @@ export default class App extends Vue {
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
 
   onBannersClick() { this.$router.push({path: '/banners'}) }
-  onSectionsClick() { this.$router.push({path: '/sections'}) }
+  onFeaturesClick() { this.$router.push({path: '/features'}) }
 }
 </script>
 

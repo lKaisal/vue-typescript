@@ -7,7 +7,7 @@
 .col-4-1
   grid-size(4, 4, .5 + 5/4 * 2 - 1, .5 + 7/4 * 2 - 1, .5 + 9/4 * 2 - 1)
 
-.checkbox-sections
+.checkbox-features
   display flex
   justify-content center
   align-items center
@@ -35,3 +35,5 @@
   &.is-active:hover
     >>> i
       color white
+  &.is-disabled
+    pointer-events none

@@ -1,39 +1,39 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-sections.page(v-loading.fullscreen.lock="isLoading")
-    +e.H1.title.page-title Sections Module
-    ListSections(class="module-sections__list")
+  +b.module-features.page(v-loading.fullscreen.lock="isLoading")
+    +e.H1.title.page-title Features Module
+    ListFeatures(class="module-features__list")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="updateList" class="module-sections__msg-box modal modal-msg")
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="updateList" class="module-features__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { sectionsMapper } from '@/modules/sections/module/store'
-import ListSections from '@/modules/sections/components/ListSections.vue'
+import { featuresMapper } from '@/modules/features/module/store'
+import ListFeatures from '@/modules/features/components/ListFeatures.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
-import MsgBoxTools from '@/modules/sections/mixins/MsgBoxTools'
+import MsgBoxTools from '@/modules/features/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...sectionsMapper.mapState(['list']),
-    ...sectionsMapper.mapGetters(['isLoading'])
+    ...featuresMapper.mapState(['list']),
+    ...featuresMapper.mapGetters(['isLoading'])
   },
   methods: {
-    ...sectionsMapper.mapActions(['getList']),
+    ...featuresMapper.mapActions(['getList']),
   }
 })
 
 @Component({
   components: {
-    ListSections,
+    ListFeatures,
     MessageBox
   }
 })
 
-export default class ModuleSections extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ModuleFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   created() {
     this.updateList()
   }
@@ -55,7 +55,7 @@ export default class ModuleSections extends Mixins(Mappers, MsgBoxToolsApp, MsgB
 <style lang="stylus" scoped>
 @import '../styles/tools'
 
-.module-sections
+.module-features
 
   &__list
     grid-size(4, 4, 6, 8, 10)

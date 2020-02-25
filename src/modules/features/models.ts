@@ -14,6 +14,8 @@ type ListSort = {
   direction: 'asc' | 'desc'
 }
 
+type EditPayload = { id: number, active: boolean }[]
+
 type RequestStatus = RequestStatuses[RequestType]
 
 type RequestType = 'success' | 'fail'
@@ -23,4 +25,4 @@ type RequestStatuses = {
   fail: 'failFetchList'
 }
 
-export { Section, ListSort, RequestStatus, RequestType, RequestStatuses }
+export { Section, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }
