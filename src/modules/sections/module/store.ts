@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Section } from '../models'
+import { Section, ListSort } from '../models'
 import service from '@/client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
@@ -7,17 +7,52 @@ const namespaced = true
 
 class SectionsState {
   list: { data: Section[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
+  listSort: ListSort = { by: 'id', direction: 'asc' }
+  listSorted: Section[] = null
+  // list: { data: Section[], error: string, isLoading: boolean } =  { data: [{active: true, createdAt: '20-02-2020', description: 'description', feature: 'Feature', id: 1, name: 'Name', updatedAt: '20-02-2020', username: 'Username'}], error: null, isLoading: false }
 }
 
 class SectionsGetters extends Getters<SectionsState> {
   get isLoading() { return this.state.list.isLoading }
   get loadingError() { return this.state.list.error }
-  get listActive() { return this.state.list.data && this.state.list.data.filter(b => b.active) }
-  get listInactive() { return this.state.list.data && this.state.list.data.filter(b => !b.active) }
+  get listSorted() {
+    if (!this.state.list.data || !this.state.list.data.length) return
+
+    const list = [...this.state.list.data]
+    const sortBy = this.state.listSort.by
+    const sortDirection = this.state.listSort.direction
+
+    return list.sort((a,b) => {
+      let sortA = a[sortBy]
+      let sortB = b[sortBy]
+
+      switch (sortBy) {
+        case 'feature':
+          sortA = sortA.toString().charAt(0).toUpperCase() + sortA.toString().slice(1)
+          sortB = sortB.toString().charAt(0).toUpperCase() + sortB.toString().slice(1)
+          break
+
+        case 'updatedAt':
+        case 'createdAt':
+          sortA = getDateTime(sortA.toString())
+          sortB = getDateTime(sortB.toString())
+          break
+      }
+
+      if ((sortA > sortB && sortDirection === 'asc') || (sortA < sortB && sortDirection === 'desc')) return 1
+      else return -1
+    })
+  }
+  get listActive() { return this.getters.listSorted && this.getters.listSorted.filter(b => b.active) }
+  get listInactive() { return this.getters.listSorted && this.getters.listSorted.filter(b => !b.active) }
   get listToEdit() { return null }
 }
 
 class SectionsMutations extends Mutations<SectionsState> {
+  updateListSort(payload: ListSort) {
+    this.state.listSort.by = payload.by
+    this.state.listSort.direction = payload.direction
+  }
   startListLoading() {
     this.state.list.isLoading = true
     this.state.list.error = null
@@ -62,6 +97,20 @@ class SectionsActions extends Actions<SectionsState, SectionsGetters, SectionsMu
     //   service.post('/api/v1/featues', body)
     // })
   }
+}
+
+const getDateTime = (date: string) => {
+  let dateSplit = date.split(/-| |:/)
+  
+  const dateDate = new Date()
+  dateDate.setDate(Number(dateSplit[0]))
+  dateDate.setMonth(Number(dateSplit[1]) - 1)
+  dateDate.setFullYear(Number(dateSplit[2]))
+  dateDate.setHours(Number(dateSplit[3]), Number(dateSplit[4]), 0, 0)
+
+  const dateTime = dateDate.getTime()
+
+  return dateTime
 }
 
 export const sections = new Module({

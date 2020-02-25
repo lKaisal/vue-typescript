@@ -9,6 +9,11 @@ type Section = {
   username: string
 }
 
+type ListSort = {
+  by: keyof Section,
+  direction: 'asc' | 'desc'
+}
+
 type RequestStatus = RequestStatuses[RequestType]
 
 type RequestType = 'success' | 'fail'
@@ -18,4 +23,4 @@ type RequestStatuses = {
   fail: 'failFetchList'
 }
 
-export { Section, RequestStatus, RequestType, RequestStatuses }
+export { Section, ListSort, RequestStatus, RequestType, RequestStatuses }

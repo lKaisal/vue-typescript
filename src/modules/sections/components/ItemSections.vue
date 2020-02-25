@@ -3,16 +3,11 @@
 
   +b.item-sections
     +e.info
-      +e.cell.table-cell.col-1
+      +e.cell.table-cell.col-05
         +e.checkbox.checkbox-sections(@click="onCheckboxClick" :class="{ 'is-active': isActive }")
           +e.I.checkbox-icon.el-icon-check
       +e.cell.table-cell.col-2(v-for="(item, index) in cells" v-html="item")
-      //- +e.cell._button.table-cell.col-2
-        ButtonApp(:btnType="btnType" :text="btnText" :isPlain="true" :width="150" class="item-sections__btn")
     +e.descr-wrapper(v-if="section.description" @click="descrIsShown = !descrIsShown" :class="{ 'is-active': descrIsShown }")
-      //- +e.descr-row
-        //- +e.descr-title Описание
-        //- +e.I.descr-icon.el-icon-arrow-down
       +e.descr-content(v-html="section.description + ' ' + section.description + ' ' + section.description")
 </template>
 
@@ -21,12 +16,6 @@ import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { sectionsMapper } from '../module/store'
 import { Section } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
-
-// const Mappers = Vue.extend({
-//   // computed: {
-//   //   ...sectionsMapper.mapState(['list'])
-//   // }
-// })
 
 @Component({
   components: {
@@ -58,44 +47,28 @@ export default class ItemSections extends Vue {
 
   &__info
     display flex
-    margin-bottom 10px
 
   &__cell
     color $cPText
+    &:nth-of-type(2)
+      flex-grow 1
+      fontMedium()
 
   &__btn
     width 200px
 
   &__descr-wrapper
-    padding 10px
+    padding 10px 15px
+    margin-top 10px
     +xl()
-      margin-left grid-column(10, $gutterXl, 1)
+      margin-left grid-column(10, $gutterXl, .5)
     +lg()
-      margin-left grid-column(8, $gutterLg, 1)
+      margin-left grid-column(8, $gutterLg, .5)
     +md()
-      margin-left grid-column(6, $gutterMd, 1)
-
-  &__descr-row
-    display flex
-    padding 5px
-    margin -5px
-    cursor pointer
-    transition(opacity)
-    &:hover
-      opacity .75
-
-  &__descr-icon
-    transition(transform)
-    .is-active &
-      transform rotateZ(180deg)
-
-  &__descr-title
-    margin-right 10px
-    font-size 15px
-    fontMedium()
+      margin-left grid-column(6, $gutterMd, .5)
 
   &__descr-content
-    margin-top 15px
+    // margin-top 15px
     color $cPText
     font-size 14px
     line-height 1.25
