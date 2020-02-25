@@ -19,13 +19,16 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   requestStatus: RequestStatus = 'failFetchList'
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!' }
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
-    success: [],
-    fail: [ 'failFetchList' ],
+    success: [ 'successFetchList', 'successEdit' ],
+    fail: [ 'failFetchList', 'failEdit' ],
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
+    successFetchList: { firstBtn: 'Закрыть' },
+    successEdit: { firstBtn: 'Закрыть' },
     failFetchList: { firstBtn: 'Повторить попытку' },
+    failEdit: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
   }
-  msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { successCreate: 'Баннер успешно сохранен', successDelete: 'Баннер перемещен в архив', successEdit: 'Данные успешно изменены' }
+  // msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { successCreate: 'Баннер успешно сохранен', successDelete: 'Баннер перемещен в архив', successEdit: 'Данные успешно изменены' }
 
   get statusType() {
     for (const type in this.statuses) {
@@ -34,8 +37,9 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   }
   get msgBoxTitle() { return this.titles[this.statusType]}
   get msgBoxMsg() {
-    if (this.statusType === 'success') return this.msgBoxSuccessMsgs[this.requestStatus]
-    else return this.loadingError
+    // if (this.statusType === 'success') return this.msgBoxSuccessMsgs[this.requestStatus]
+    // else return this.loadingError
+    return this.loadingError
   }
   get msgBoxBtns() { return this.btns[this.requestStatus] }
   get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg || this.contentDefault, ...this.msgBoxBtns } }

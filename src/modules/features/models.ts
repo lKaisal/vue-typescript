@@ -21,8 +21,8 @@ type RequestStatus = RequestStatuses[RequestType]
 type RequestType = 'success' | 'fail'
 
 type RequestStatuses = {
-  success: string
-  fail: 'failFetchList'
+  success: 'successFetchList' | 'successEdit'
+  fail: 'failFetchList' | 'failEdit'
 }
 
 export { Section, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }

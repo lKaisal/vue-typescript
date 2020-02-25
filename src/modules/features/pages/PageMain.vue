@@ -1,0 +1,107 @@
+<template lang="pug">
+  include ../../../tools/bemto.pug
+
+  +b.page-main.page
+    +e.container(v-if="!isLoading")
+      //- title
+      +e.title.H1.page-title.js-voa.js-voa-start Управление разделами приложения
+      //- navigation (sort)
+      +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleMenuClick")
+        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
+      //- list
+      transition(mode="out-in")
+        ListFeatures(v-if="listCurrent && listCurrent.length" :key="activeHashIndex" :list="listCurrent" :isActive="activeHashIndex === 0" @editClicked="onEditClick" class="page-main__list")
+    transition
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
+        class="list-features__msg-box modal modal-msg")
+</template>
+
+<script lang="ts">
+import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
+import { MsgBoxContent, Button } from '@/models'
+import { featuresMapper } from '../module/store'
+import sleep from '@/mixins/sleep'
+import ButtonApp from '@/components/ButtonApp.vue'
+import MessageBox from '@/components/MessageBox.vue'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MsgBoxTools from '../mixins/MsgBoxTools'
+import ListFeatures from '../components/ListFeatures.vue'
+import animateIfVisible from '@/mixins/animateIfVisible'
+import { EditPayload } from '../models'
+
+const Mappers = Vue.extend({
+  computed: {
+    ...featuresMapper.mapState(['listSort', 'hashes']),
+    ...featuresMapper.mapGetters(['listActive', 'listInactive', 'isLoading'])
+  },
+  methods: {
+    ...featuresMapper.mapMutations(['updateListSort']),
+    ...featuresMapper.mapActions(['editList'])
+  }
+})
+
+@Component({
+  components: {
+    MessageBox,
+    ButtonApp,
+    ListFeatures
+  },
+  mixins: [
+    MsgBoxTools
+  ]
+})
+
+export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
+  editPayload: EditPayload = null // for repeated request
+  get tabs() {
+    return [
+      { hash: this.hashes[0], list: this.listActive, sort: `Активные (${this.listActive.length})` },
+      { hash: this.hashes[1], list: this.listInactive, sort: `Неактивные (${this.listInactive.length})` },
+    ]
+  }
+  get activeHash() { return this.$route.hash }
+  // @ts-ignore
+  get activeHashIndex() { return this.activeHash && this.hashes.indexOf(this.activeHash.slice(1)) || 0 }
+  get listCurrent() { return this.tabs[this.activeHashIndex].list }
+  get sortItems() { return this.tabs.map(item => item.sort) }
+
+  handleMenuClick(index) {
+    this.$router.push({path: this.$route.path, hash: `#${this.hashes[index - 1]}` }).catch(err => {})
+  }
+  onEditClick(payload?: EditPayload) {
+    if (payload) this.editPayload = payload // stored here in case of repeated request
+    this.editList(this.editPayload)
+      .then(() => {
+        if (!this.listCurrent.length) {
+          const hashIndex = this.activeHashIndex === 0 ? 2 : 1
+          this.handleMenuClick(hashIndex)
+        }
+        this.editPayload = null
+      })
+      .catch(() => {
+        this.requestStatus = 'failEdit'
+        this.openMsgBox()
+      })
+  }
+  onFirstBtnClick() {
+    this.closeMsgBox()
+
+    switch (this.requestStatus) {
+      case 'failEdit':
+        this.onEditClick()
+    }
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+@import '../../../styles/tools'
+
+.page-main
+
+  &__list
+    transition(opacity)
+    &.v-enter
+    &.v-leave-to
+      opacity 0
+</style>

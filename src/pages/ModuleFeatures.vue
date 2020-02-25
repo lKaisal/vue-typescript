@@ -3,9 +3,9 @@
 
   +b.module-features.page(v-loading.fullscreen.lock="isLoading")
     +e.H1.title.page-title Features Module
-    ListFeatures(class="module-features__list")
+    router-view
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="updateList" class="module-features__msg-box modal modal-msg")
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" class="module-features__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -38,10 +38,18 @@ export default class ModuleFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgB
     this.updateList()
   }
 
+  onFirstBtnClick() {
+    if (this.msgBoxIsShown) this.closeMsgBox()
+
+    switch (this.requestStatus) {
+      case 'failFetchList':
+        this.updateList()
+        break
+    }
+
+  }
   updateList() {
     if (this.list.isLoading) return
-
-    if (this.msgBoxIsShown) this.closeMsgBox()
 
     this.getList()
       .catch(() => {

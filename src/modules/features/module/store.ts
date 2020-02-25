@@ -6,6 +6,7 @@ import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-mo
 const namespaced = true
 
 class FeaturesState {
+  edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   hashes: ['active', 'inactive'] = ['active', 'inactive']
   list: { data: Section[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listSort: ListSort = { by: 'id', direction: 'asc' }
@@ -13,8 +14,8 @@ class FeaturesState {
 }
 
 class FeaturesGetters extends Getters<FeaturesState> {
-  get isLoading() { return this.state.list.isLoading }
-  get loadingError() { return this.state.list.error }
+  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading }
+  get loadingError() { return this.state.list.error || this.state.edit.error }
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
@@ -66,6 +67,18 @@ class FeaturesMutations extends Mutations<FeaturesState> {
     this.state.list.isLoading = false
     this.state.list.error = err
   }
+  startEdit() {
+    this.state.edit.error = null
+    this.state.edit.isLoading = true
+  }
+  setEditSuccess() {
+    this.state.edit.error = null
+    this.state.edit.isLoading = false
+  }
+  setEditFail(err) {
+    this.state.edit.error = err
+    this.state.edit.isLoading = false
+  }
 }
 
 class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMutations, FeaturesActions> {
@@ -82,24 +95,29 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
           resolve()
         })
         .catch(error => {
-          console.log(error.response)
-          this.commit('setListLoadingFail', error.response.data.message)
+          if (error && error.response) {
+            console.log(error.response)
+            this.commit('setListLoadingFail', error.response.data.message)
+          }
           reject()
         })
     })
   }
   async editList(payload: EditPayload) {
     return new Promise((resolve, reject) => {
-      this.commit('startListLoading')
+      this.commit('startEdit')
 
-      console.log(payload)
       service.post('/api/v1/features', payload)
         .then(async () => {
           console.log('Success: edit list')
           await this.dispatch('getList', null)
-            .then(() => {
-              resolve()
-            })
+          this.commit('setEditSuccess')
+          resolve()
+        })
+        .catch(error => {
+          console.log(error.response)
+          this.commit('setEditFail', error.response.data.message)
+          reject()
         })
     })
   }

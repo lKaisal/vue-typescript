@@ -2,41 +2,39 @@
   include ../../../tools/bemto.pug
 
   +b.list-features
-    +e.container(v-if="list.data && list.data.length")
-      +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleMenuClick")
-        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
+    +e.container
+      +e.table(:class="{ 'is-long-list': list.length > 2 }")
+        //- table head
+        +e.row.table-row
+          +e.title.table-cell.col-05
+            +e.checkbox.checkbox-features(@click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+              +e.I.checkbox-icon.el-icon-check
+          +e.title.table-cell.col-2(v-for="(title, index) in tableTitles")
+            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+              +e.title-text(v-html="title")
+              +e.title-sort(v-if="index < tableTitles.length - 1")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
+        //- table body
+        ItemFeatures(v-for="(item, index) in list" :key="index" :section="item" :isActive="idsSelected.indexOf(item.id) >= 0" @checkboxClicked="onItemCheckboxClick(item.id)"
+          class="list-features__item table-row")
 
-      transition(mode="out-in")
-        +e.container(:key="activeHashIndex")
-          +e.table(:class="{ 'is-long-list': currentList.length > 2 }")
-            //- table head
-            +e.row.table-row
-              +e.title.table-cell.col-05
-                +e.checkbox.checkbox-features(@click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !currentList.length }")
-                  +e.I.checkbox-icon.el-icon-check
-              +e.title.table-cell.col-2(v-for="(title, index) in titles")
-                +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !currentList.length }")
-                  +e.title-text(v-html="title")
-                  +e.title-sort(v-if="index < titles.length - 1")
-                    +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
-                    +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
-            //- table body
-            ItemFeatures(v-for="(item, index) in currentList" :key="index" :section="item" :isActive="idsSelected.indexOf(item.id) >= 0" @checkboxClicked="onItemCheckboxClick(item.id)"
-              class="list-features__item table-row")
-
-          ButtonApp(v-if="currentList.length" :key="currentList.length" :text="btnText" :btnType="btnType" :isDisabled="!idsSelected.length" @clicked="onBtnClick" class="list-features__btn")
+      ButtonApp(v-if="list.length" :text="btnText" :btnType="btnType" :isDisabled="!idsSelected.length" @clicked="onBtnClick" class="list-features__btn")
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { featuresMapper } from '../module/store'
 import ItemFeatures from '../components/ItemFeatures.vue'
 import ButtonApp from '@/components/ButtonApp.vue'
 import { Section, ListSort, EditPayload } from '../models'
+import MsgBoxTools from '../mixins/MsgBoxTools'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MessageBox from '@/components/MessageBox.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...featuresMapper.mapState(['list', 'listSort', 'hashes']),
+    ...featuresMapper.mapState(['listSort', 'hashes']),
     ...featuresMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
@@ -48,40 +46,33 @@ const Mappers = Vue.extend({
 @Component({
   components: {
     ItemFeatures,
-    ButtonApp
+    ButtonApp,
+    MessageBox
   }
 })
 
-export default class ListFeatures extends Mappers {
-  titles: string[] = [ 'Название', 'Дата обновления', 'Дата создания', 'Статус' ]
+export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+  @Prop() list: Section[]
+  @Prop() isActive: boolean
+  tableTitles: string[] = [ 'Название', 'Дата обновления', 'Дата создания', 'Статус' ]
   fields: (keyof Section)[] = [ 'feature', 'updatedAt', 'createdAt' ]
   checkboxIsActive: boolean = false
   idsSelected: number[] = []
 
-  get tabs() {
-    return [
-      { hash: this.hashes[0], list: this.listActive, sort: `Активные (${this.listActive.length})` },
-      { hash: this.hashes[1], list: this.listInactive, sort: `Неактивные (${this.listInactive.length})` },
-    ]
-  }
-  get activeHash() { return this.$route.hash }
-  // @ts-ignore
-  get activeHashIndex() { return this.activeHash && this.hashes.indexOf(this.activeHash.slice(1)) || 0 }
-  get currentList() { return this.tabs[this.activeHashIndex].list }
-  get sortItems() { return this.tabs.map(item => item.sort) }
-  get amountTotal() { return this.currentList && this.currentList.length }
+  get amountTotal() { return this.list && this.list.length }
   get allAreSelected() { return this.idsSelected.length > 0 && this.amountTotal === this.idsSelected.length }
-  get allIds() { return this.currentList && this.currentList.map(item => item.id) }
+  get allIds() { return this.list && this.list.map(item => item.id) }
   get listSortBy() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
-  get btnText() { return this.activeHashIndex === 0 ? 'Деактивировать' : 'Активировать' }
-  get btnType() { return this.activeHashIndex === 0 ? 'warning' : 'success' }
+  get btnText() { return this.isActive ? 'Деактивировать' : 'Активировать' }
+  get btnType() { return this.isActive ? 'warning' : 'success' }
 
-  handleMenuClick(index) {
-    this.$router.push({path: this.$route.path, hash: `#${this.hashes[index - 1]}` }).catch(err => {})
+  @Watch('isActive')
+  onIsActiveChange(val) {
     this.resetSelect()
     this.resetSort()
   }
+
   onSelectAllClick() {
     if (this.allAreSelected) this.idsSelected = []
     else this.idsSelected = [...this.allIds]
@@ -111,16 +102,9 @@ export default class ListFeatures extends Mappers {
   }
   onBtnClick() {
     const payload: EditPayload = []
-    for (const id of this.idsSelected) payload.push({id, active: this.activeHashIndex === 1})
+    for (const id of this.idsSelected) payload.push({ id, active: !this.isActive })
 
-    this.editList(payload)
-      .then(() => {
-        this.resetSelect()
-        if (!this.currentList.length) {
-          const hashIndex = this.activeHashIndex === 0 ? 2 : 1
-          this.handleMenuClick(hashIndex)
-        }
-      })
+    this.$emit('editClicked', payload)
   }
 }
 </script>
