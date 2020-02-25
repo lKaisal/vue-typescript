@@ -4,10 +4,10 @@
   +b.msg-box
     +e.container(v-click-outside="onClickOutside")
       +e.header
-        +e.title(v-if="content && content.title") {{ content.title }}
+        +e.title(v-if="content && content.title" v-html="content.title")
         +e.btn-close(@click="onCloseClick")
           +e.I.icon-close.el-icon-close.modal-icon-close
-      +e.content(v-if="content && content.msg") {{ content.msg }}
+      +e.content(v-if="content && content.msg" v-html="content.msg")
       +e.btns
         ButtonApp(v-if="content && content.firstBtn" :btnType="firstBtn.type" :isPlain="firstBtn.isPlain" @clicked="onFirstBtnClick" :text="content.firstBtn" class="msg-box__btn")
         ButtonApp(v-if="content && content.secondBtn" :btnType="secondBtn.type" :isPlain="secondBtn.isPlain" @clicked="onSecondBtnClick" :text="content.secondBtn" class="msg-box__btn")

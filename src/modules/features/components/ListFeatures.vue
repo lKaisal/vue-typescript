@@ -54,6 +54,7 @@ const Mappers = Vue.extend({
 export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Section[]
   @Prop() isActive: boolean
+
   tableTitles: string[] = [ 'Название', 'Дата обновления', 'Дата создания', 'Статус' ]
   fields: (keyof Section)[] = [ 'feature', 'updatedAt', 'createdAt' ]
   checkboxIsActive: boolean = false
@@ -67,12 +68,13 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
   get btnText() { return this.isActive ? 'Деактивировать' : 'Активировать' }
   get btnType() { return this.isActive ? 'warning' : 'success' }
 
-  @Watch('isActive')
+  @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
     this.resetSelect()
     this.resetSort()
   }
 
+  // SELECT METHODS (CHECKBOX)
   onSelectAllClick() {
     if (this.allAreSelected) this.idsSelected = []
     else this.idsSelected = [...this.allIds]
@@ -88,6 +90,7 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
     this.idsSelected = []
     this.checkboxIsActive = false
   }
+  // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
     const by: ListSort['by'] = this.fields[index]
     const byIsUpdated = by !== this.listSortBy
@@ -100,6 +103,7 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
     const listSort: ListSort = { by: 'id', direction: 'asc' }
     this.updateListSort(listSort)
   }
+  // SUBMIT METHOD
   onBtnClick() {
     const payload: EditPayload = []
     for (const id of this.idsSelected) payload.push({ id, active: !this.isActive })

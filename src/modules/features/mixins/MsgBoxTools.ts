@@ -17,18 +17,24 @@ interface IMixinInterface extends MsgBoxToolsApp {}
 export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBoxToolsApp) {
   loadingError: string
   requestStatus: RequestStatus = 'failFetchList'
-  titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!' }
+  titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': 'Вы уверены?' }
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ 'successFetchList', 'successEdit' ],
     fail: [ 'failFetchList', 'failEdit' ],
+    other: [ 'beforeEdit' ]
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
     successFetchList: { firstBtn: 'Закрыть' },
     successEdit: { firstBtn: 'Закрыть' },
     failFetchList: { firstBtn: 'Повторить попытку' },
     failEdit: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    beforeEdit: { firstBtn: 'Подтвердить', secondBtn: 'Отмена' }
   }
-  // msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { successCreate: 'Баннер успешно сохранен', successDelete: 'Баннер перемещен в архив', successEdit: 'Данные успешно изменены' }
+  msgBoxOtherMsgs: { [key in RequestStatuses['other']]: string } = { beforeEdit: '' }
+  beforeEditMsg: { 0: string, 1: string } = {
+    0: 'Указанные разделы перестанут отображаться в приложении.<br>Хотите продолжить?',
+    1: 'Указанные разделы станут доступны в приложении.<br>Хотите продолжить?'
+  }
 
   get statusType() {
     for (const type in this.statuses) {
@@ -37,8 +43,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   }
   get msgBoxTitle() { return this.titles[this.statusType]}
   get msgBoxMsg() {
-    // if (this.statusType === 'success') return this.msgBoxSuccessMsgs[this.requestStatus]
-    // else return this.loadingError
+    if (this.statusType === 'other') return this.msgBoxOtherMsgs[this.requestStatus]
     return this.loadingError
   }
   get msgBoxBtns() { return this.btns[this.requestStatus] }

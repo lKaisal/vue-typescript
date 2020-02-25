@@ -3,16 +3,14 @@
 
   +b.page-main.page
     +e.container(v-if="!isLoading")
-      //- title
-      +e.title.H1.page-title.js-voa.js-voa-start Управление разделами приложения
       //- navigation (sort)
       +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleMenuClick")
-        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
+        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item" :class="{ 'is-disabled': !tabs[index].list.length }")
       //- list
       transition(mode="out-in")
         ListFeatures(v-if="listCurrent && listCurrent.length" :key="activeHashIndex" :list="listCurrent" :isActive="activeHashIndex === 0" @editClicked="onEditClick" class="page-main__list")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
 </template>
 
@@ -53,6 +51,7 @@ const Mappers = Vue.extend({
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   editPayload: EditPayload = null // for repeated request
+  secondBtn: Button = null
   get tabs() {
     return [
       { hash: this.hashes[0], list: this.listActive, sort: `Активные (${this.listActive.length})` },
@@ -65,11 +64,20 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   get listCurrent() { return this.tabs[this.activeHashIndex].list }
   get sortItems() { return this.tabs.map(item => item.sort) }
 
+  // NAVMENU click handler
   handleMenuClick(index) {
     this.$router.push({path: this.$route.path, hash: `#${this.hashes[index - 1]}` }).catch(err => {})
   }
+  // LIST click handler
   onEditClick(payload?: EditPayload) {
     if (payload) this.editPayload = payload // stored here in case of repeated request
+
+    this.requestStatus = 'beforeEdit'
+    this.secondBtn = { type: 'danger', isPlain: true }
+    this.msgBoxOtherMsgs['beforeEdit'] = this.beforeEditMsg[this.activeHashIndex]
+    this.openMsgBox()
+  }
+  editConfirm() {
     this.editList(this.editPayload)
       .then(() => {
         if (!this.listCurrent.length) {
@@ -83,12 +91,15 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.openMsgBox()
       })
   }
+  // MSGBOX click handler
   onFirstBtnClick() {
     this.closeMsgBox()
 
     switch (this.requestStatus) {
+      case 'beforeEdit':
       case 'failEdit':
-        this.onEditClick()
+        this.editConfirm()
+        break
     }
   }
 }
@@ -98,6 +109,15 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 @import '../../../styles/tools'
 
 .page-main
+
+  &__sort
+    margin-bottom 30px
+
+  &__sort-item
+    user-select none
+    &.is-disabled
+      pointer-events none
+      opacity 1
 
   &__list
     transition(opacity)

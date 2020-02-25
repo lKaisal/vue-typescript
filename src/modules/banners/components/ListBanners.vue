@@ -4,7 +4,7 @@
   +b.list-banners
     +e.container
       +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleSelect")
-        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item")
+        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item" :class="{ 'is-disabled': !tabs[index].list.length }")
       transition(mode="out-in" @enter="animateOneMoreTime")
         +e.items(:key="activeHashIndex")
           ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item"
@@ -102,6 +102,11 @@ export default class ListBanners extends Mappers {
 
   &__sort
     margin-bottom 50px
+
+  &__sort-item
+    &.is-disabled
+      pointer-events none
+      opacity 1
 
   &__items
     display flex

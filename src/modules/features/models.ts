@@ -18,11 +18,12 @@ type EditPayload = { id: number, active: boolean }[]
 
 type RequestStatus = RequestStatuses[RequestType]
 
-type RequestType = 'success' | 'fail'
+type RequestType = 'success' | 'fail' | 'other'
 
 type RequestStatuses = {
   success: 'successFetchList' | 'successEdit'
   fail: 'failFetchList' | 'failEdit'
+  other: 'beforeEdit'
 }
 
 export { Section, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }

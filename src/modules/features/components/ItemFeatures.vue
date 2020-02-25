@@ -47,6 +47,8 @@ export default class ItemFeatures extends Vue {
 
   &__info
     display flex
+    +xs()
+      flex-wrap wrap
 
   &__cell
     color $cPText
@@ -62,6 +64,7 @@ export default class ItemFeatures extends Vue {
     margin-top 10px
     +xl()
       margin-left grid-column(10, $gutterXl, .5)
+      padding 10px 0
     +lg()
       margin-left grid-column(8, $gutterLg, .5)
     +md()

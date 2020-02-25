@@ -2,7 +2,7 @@
   include ../tools/bemto.pug
 
   +b.module-features.page(v-loading.fullscreen.lock="isLoading")
-    +e.H1.title.page-title Features Module
+    +e.title.H1.page-title Управление разделами приложения
     router-view
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" class="module-features__msg-box modal modal-msg")
