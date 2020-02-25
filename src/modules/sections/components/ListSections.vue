@@ -68,7 +68,7 @@ export default class ListSections extends Mappers {
     const indexInSelected = this.indexesSelected.indexOf(index)
     const isSelected = indexInSelected >= 0
 
-    if (isSelected) this.indexesSelected.splice(index, 1)
+    if (isSelected) this.indexesSelected.splice(indexInSelected, 1)
     else this.indexesSelected.push(index)
   }
   onTitleClick(index) {
