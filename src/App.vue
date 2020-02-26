@@ -16,7 +16,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
-import LocalStorageService from './services/localStorageService'
+import LocalStorageService from './services/LocalStorageService'
 
 @Component({
   components: {
@@ -32,9 +32,8 @@ export default class App extends Vue {
     this.initLocalStorageService()
   }
   initLocalStorageService() {
-    const localStorageService = LocalStorageService.getService();
-    const accessToken = localStorageService.getAccessToken()
-    const refreshToken = localStorageService.getRefreshToken()
+    const accessToken = LocalStorageService.getAccessToken()
+    const refreshToken = LocalStorageService.getRefreshToken()
     if (!accessToken || !refreshToken) this.$router.push({ name: 'PageAuth' }).catch(() => {})
   }
   onClick() { this.$router.push({path: '/banners'}) }

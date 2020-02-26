@@ -1,17 +1,13 @@
 import axios from 'axios'
-import LocalStorageService from '@/services/localStorageService'
+import LocalStorageService from '@/services/LocalStorageService'
 
 const service = axios.create({
 })
 
-// LocalstorageService
-const localStorageService = LocalStorageService.getService();
-
 // Request interceptor
 service.interceptors.request.use(
   config => {
-    const token = localStorageService.getAccessToken();
-    console.log(token, localStorageService.getRefreshToken(), localStorageService.getAccessToken())
+    const token = LocalStorageService.getAccessToken();
     if (token) config.headers['Authorization'] = 'Bearer ' + token;
 
     return config;
@@ -28,12 +24,12 @@ service.interceptors.response.use((response) => {
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const res = await axios.post('/refresh', { 'refresh': localStorageService.getRefreshToken() });
+      const res = await axios.post('/refresh', { 'refresh': LocalStorageService.getRefreshToken() });
       if (res.status === 200) {
         // 1) put token to LocalStorage
-        localStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh});
+        LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh});
         // 2) Change Authorization header
-        originalRequest.headers['Authorization'] = 'Bearer ' + localStorageService.getAccessToken();
+        originalRequest.headers['Authorization'] = 'Bearer ' + LocalStorageService.getAccessToken();
         // 3) return originalRequest object with Axios.
         return axios(originalRequest);
       }
