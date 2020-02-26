@@ -12,5 +12,5 @@ const children = [
 ]
 export default [
   { path: '/banners', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children },
-  { path: '/', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children },
+  // { path: '/', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children },
 ]
