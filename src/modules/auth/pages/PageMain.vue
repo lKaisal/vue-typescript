@@ -2,7 +2,6 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.H1.title Page Auth
     +e.container
       +e.form-wrapper
         +e.H3.form-title Вход в админку мобильного приложения
@@ -66,8 +65,12 @@ export default class PageMain extends Mixins(Mappers) {
   }
 
   isInvalid(field: FormField) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
+  goToPageBanners() {
+    this.$router.push({ name: 'PageBanners' })
+  }
   onSubmit() {
     this.sendForm()
+      .then(() => this.goToPageBanners())
   }
 }
 </script>

@@ -2,6 +2,7 @@ import { AxiosResponse, AxiosError } from 'axios'
 import { Form, AuthForm, FormField } from '../models'
 import service from '@/client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
+import localStorageService from '@/services/localStorageService'
 
 const namespaced = true
 
@@ -47,7 +48,7 @@ class AuthMutations extends Mutations<AuthState> {
   startFormLoading() {
     this.state.form.isLoading = true
   }
-  setFormLoadingSucess() {
+  setFormLoadingSuccess() {
     this.state.form.isLoading = false
     this.state.form.error = null
   }
@@ -103,6 +104,9 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
 
       service.post('/login', data)
         .then((res: AxiosResponse<any>) => {
+          // debugger
+          localStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh})
+          console.log(localStorageService.getAccessToken(), localStorageService.getRefreshToken())
           this.commit('setFormLoadingSuccess')
           console.log('Success: formLogin sent')
           resolve()
@@ -110,7 +114,7 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
           this.commit('setValidationIsShown', true)
-          if (!!error.response.data){
+          if (!!error.response && !!error.response.data){
             if (error.response.data.errors) {
               const errors = error.response.data.errors
               this.commit('handleFormErrors', errors)

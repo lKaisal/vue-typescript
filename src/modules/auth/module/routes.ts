@@ -1,8 +1,8 @@
 import ModuleAuth from '@/pages/ModuleAuth.vue'
-import PageMain from '../pages/PageMain.vue'
+import PageAuth from '../pages/PageMain.vue'
 
 const children = [
 ]
 export default [
-  { path: '/auth', component: PageMain, name: 'PageMain' },
+  { path: '/auth', component: PageAuth, name: 'PageAuth' },
 ]
