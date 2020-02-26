@@ -34,7 +34,8 @@ export default class App extends Vue {
   initLocalStorageService() {
     const localStorageService = LocalStorageService.getService();
     const accessToken = localStorageService.getAccessToken()
-    if (!accessToken) this.$router.push({ name: 'PageAuth' }).catch(() => {})
+    const refreshToken = localStorageService.getRefreshToken()
+    if (!accessToken || !refreshToken) this.$router.push({ name: 'PageAuth' }).catch(() => {})
   }
   onClick() { this.$router.push({path: '/banners'}) }
 }

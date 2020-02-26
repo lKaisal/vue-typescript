@@ -35,10 +35,7 @@ class AuthGetters extends Getters<AuthState> {
     const loginValue = this.getters.formLogin.value && this.getters.formLogin.value.toString() || ''
     const pswdValue = this.getters.formPswd.value && this.getters.formPswd.value.toString() || ''
 
-    const formData = new FormData()
-
-    formData.append('login', loginValue)
-    formData.append('pswd', pswdValue)
+    const formData = Object.assign({}, {'login': loginValue, 'password': pswdValue})
 
     return formData
   }
@@ -104,9 +101,7 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
 
       service.post('/login', data)
         .then((res: AxiosResponse<any>) => {
-          // debugger
           localStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh})
-          console.log(localStorageService.getAccessToken(), localStorageService.getRefreshToken())
           this.commit('setFormLoadingSuccess')
           console.log('Success: formLogin sent')
           resolve()

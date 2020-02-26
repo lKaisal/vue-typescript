@@ -13,6 +13,10 @@ module.exports = {
       '/login': {
         target: 'http://localhost:8080/',
         changeOrigin: true,
+      },
+      '/refresh': {
+        target: 'http://localhost:8080/',
+        changeOrigin: true,
       }
     }
   },

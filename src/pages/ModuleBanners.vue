@@ -32,6 +32,7 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
+  count: number = 0
   created() {
     this.loadData()
     this.clearForm()
@@ -45,23 +46,29 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools) {
     const promisesArr = [this.getList(), this.getActiveAmount()]
     Promise.all(promisesArr)
       .then(() => {
-        if (this.msgBoxIsShown) this.closeMsgBox()
       })
-      .catch(() => {
-        this.openMsgBox()
+      .catch((err) => {
+        if (err.status === 401) this.goToPageAuth()
+        else this.openMsgBox()
       })
   }
-
   updateList() {
     if (this.list.isLoading) return
 
     if (this.msgBoxIsShown) this.closeMsgBox()
 
     this.getList()
-      .catch(() => {
-        this.requestStatus = 'failFetchList'
-        this.openMsgBox()
+      .then(() => this.count = 0)
+      .catch((err) => {
+        if (err.status === 401) this.goToPageAuth()
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
       })
+  }
+  goToPageAuth() {
+    this.$router.push({ name: 'PageAuth' })
   }
 }
 </script>

@@ -1,6 +1,6 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData } from '../models'
-import service from '../client/index'
+import service from '@/client/index'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
@@ -268,8 +268,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch(error => {
           console.log(error.response)
-          this.commit('setListLoadingFail', error.response.data.message)
-          reject()
+          if (error.response && error.response.data) this.commit('setListLoadingFail', error.response.data.message)
+          reject(error.response)
         })
     })
   }
@@ -362,7 +362,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
-          this.commit('setLoadingFail', error.response.data.message)
+          if (error.response && error.response.data) this.commit('setLoadingFail', error.response.data.message)
           reject()
         })
     })
@@ -381,7 +381,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
-          this.commit('setBannerCurrentFail', error.response.data.message)
+          if (error.response && error.response.data) this.commit('setBannerCurrentFail', error.response.data.message)
           reject()
         })
     })
@@ -480,7 +480,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         case 'pageType':
           const valueSent = data.pageType
           const index = this.getters.pageTypesSent.indexOf(valueSent)
-          const value = index >= 0 ? index : 0
+          const value = index >= 0 ? index : 1
           this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
@@ -521,9 +521,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           resolve()
         })
         .catch((error: AxiosError) => {
-          this.commit('setActiveAmountFail', error.response.data.message)
           console.log(error.response)
-          reject()
+          if (error.response && error.response.data) this.commit('setActiveAmountFail', error.response.data.message)
+          reject(error.response)
         })
     })
   }
@@ -540,7 +540,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       })
       .catch((error: AxiosError) => {
         console.log(error.response)
-        this.commit('setActiveAmountFail', error.response.data.message)
+        if (error.response && error.response.data) this.commit('setActiveAmountFail', error.response.data.message)
         reject()
       })
     })
