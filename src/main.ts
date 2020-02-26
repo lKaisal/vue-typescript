@@ -10,8 +10,6 @@ import auth from './modules/auth/module'
 
 Vue.use(ElementUI)
 
-// const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './modules/banners/ModuleBanners.vue');
-
 /* Initialize System Module */
 Store.registerModule('system', system.store)
 Router.addRoutes(system.routes)

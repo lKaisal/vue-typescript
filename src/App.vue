@@ -13,6 +13,7 @@
 </template>
 
 <script lang="ts">
+
 import { Vue, Component } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'

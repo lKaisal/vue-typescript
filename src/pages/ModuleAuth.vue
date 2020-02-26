@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import MessageBox from '@/modules/banners/components/MessageBox.vue'
+import MessageBox from '@/components/MessageBox.vue'
 import { authMapper } from '@/modules/auth/module/store'
 
 const Mappers = Vue.extend({
