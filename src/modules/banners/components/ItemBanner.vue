@@ -4,7 +4,7 @@
   +b.item-banner
     +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false" :class="{ 'is-hovered': cardIsHovered && editIconsShown }")
       transition
-        +e.icons(v-show="editIconsShown && cardIsHovered")
+        +e.icons(v-show="editIconsShown && cardIsHovered || isTouchDevice" :class="{ 'is-small': isTouchDevice }")
           +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
             i(class="el-icon-edit")
           +e.icon._delete(v-if="banner && (banner.isActive || banner.delayStart)" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
@@ -55,6 +55,7 @@ export default class ItemBanners extends Vue {
   observer = null
   count: number = 0
 
+  get isTouchDevice() { return this.$store.getters['system/isTouchDevice'] }
   get isActive() { return this.banner.isActive }
   get activeFromToText() {
     if (this.isActive) {
@@ -148,19 +149,21 @@ export default class ItemBanners extends Vue {
       ghost()
       background white
       opacity .75
+    &.is-small
+      bottom auto
+      left auto
+      width auto
+      &:before
+        display none
 
   &__icon
     z-index 5
-    // padding 7px
-    // margin -7px
     margin-top 30%
     margin-bottom 65%
     width 30%
     display flex
     justify-content center
     align-items center
-    // border-radius 50%
-    // border 1px solid $cSecondaryText
     cursor pointer
     transition(background-color)
     >>> i
@@ -197,6 +200,20 @@ export default class ItemBanners extends Vue {
         >>> i
           transform scale(1.25) translate3d(0,0,0)
           opacity 1
+    .is-small &
+      margin 0
+      width 100%
+      padding 5px
+      border 1px solid $cBrand
+      border-radius 50%
+      &_delete
+        border-color $cDanger
+      &:not(:last-child)
+        margin-right 5px
+      >>> i
+        font-size 18px
+        opacity 1
+        transform scale(1)
 
   &__img-wrapper
     position relative

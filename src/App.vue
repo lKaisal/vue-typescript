@@ -17,6 +17,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
 import LocalStorageService from './services/LocalStorageService'
+import device from 'current-device'
 
 @Component({
   components: {
@@ -30,6 +31,7 @@ export default class App extends Vue {
 
   created() {
     this.initLocalStorageService()
+    this.$store.commit('system/setCurrentDevice', device)
   }
   initLocalStorageService() {
     const accessToken = LocalStorageService.getAccessToken()

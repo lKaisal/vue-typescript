@@ -17,6 +17,8 @@
     "@vue/cli-service": "~4.2.2",
     "axios": "^0.19.2",
     "bemto.pug": "^2.1.0",
+    "current-device": "^0.10.0",
+    "detect-browser": "^4.8.0",
     "element-ui": "^2.13.0",
     "flatpickr": "^4.6.3",
     "pug-plain-loader": "^1.0.0",

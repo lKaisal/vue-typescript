@@ -100,13 +100,16 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
 
   &__form
     padding 40px
-    width 450px
     border 1px solid $cBaseBorder
     border-radius 5px
+    +gt-sm()
+      width 450px
+    +xs()
+      width 100%
 
   &__field
-    max-width 450px
     position relative
+    max-width 100%
     width-between-property 'margin-bottom' 1441 30 1920 35 true true
     transition()
     &.is-disabled

@@ -2746,6 +2746,11 @@ cssom@^0.3.4:
   resolved "https://registry.yarnpkg.com/cssom/-/cssom-0.3.8.tgz#9f1276f5b2b463f2114d3f2c75250af8c1a36f4a"
   integrity sha512-b0tGHbfegbhPJpxpiBPU2sCkigAqtM9O121le6bbOlgyV+NyGyCmVfJ6QW9eRjz8CpNfWEOYBIMIGRYkLwsIYg==
 
+current-device@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/current-device/-/current-device-0.10.0.tgz#7a6bcf3e6715d751d68096479b3802e77fb42cfb"
+  integrity sha512-JnUzeo6pETQRLZtbB/DjoQCDBDiz5zg7DYJZi3CGGKBxvzK8Uz7Dnn4sZ23e+0sFSrSyeeKws7cotHfSJQpsBA==
+
 current-script-polyfill@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/current-script-polyfill/-/current-script-polyfill-1.0.0.tgz#f31cf7e4f3e218b0726e738ca92a02d3488ef615"
@@ -2927,6 +2932,11 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
+
+detect-browser@^4.8.0:
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-4.8.0.tgz#1d73bd88c17be866901950ce0aaae1ed060902c6"
+  integrity sha512-f4h2dFgzHUIpjpBLjhnDIteXv8VQiUm8XzAuzQtYUqECX/eKh67ykuiVoyb7Db7a0PUSmJa3OGXStG0CbQFUVw==
 
 detect-indent@^4.0.0:
   version "4.0.0"
