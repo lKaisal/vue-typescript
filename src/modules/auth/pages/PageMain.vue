@@ -17,22 +17,22 @@
             +e.EL-INPUT.input(placeholder="Пароль" v-model="pswd" show-password)
             +e.error(v-html="formPswd.errorMsg")
           ButtonApp(btnType="primary" @clicked="onSubmit" text="Войти" class="page-main__btn")
-    //- transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
+    transition
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="onSubmit" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
+import { Button } from '@/models'
 import { FormField } from '../models'
 import { authMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
-// import MessageBox from '@/components/MessageBox.vue'
-// import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
-// import MsgBoxTools from '../mixins/MsgBoxTools'
+import MessageBox from '@/components/MessageBox.vue'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
-// import { EditPayload } from '../models'
 
 const Mappers = Vue.extend({
   computed: {
@@ -48,13 +48,15 @@ const Mappers = Vue.extend({
 @Component({
   components: {
     ButtonApp,
+    MessageBox
   },
   mixins: [
-    // MsgBoxTools
+    MsgBoxTools
   ]
 })
 
-export default class PageMain extends Mixins(Mappers) {
+export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
+  secondBtn: Button = { type: 'danger', isPlain: true }
   get login() { return this.formLogin.value }
   set login(value) { this.updateField({name: 'login', value}) }
   get pswd() { return this.formPswd.value }
@@ -71,6 +73,9 @@ export default class PageMain extends Mixins(Mappers) {
   onSubmit() {
     this.sendForm()
       .then(() => this.goToPageBanners())
+      .catch(() => {
+        if (this.formIsValid) this.openMsgBox()
+      })
   }
 }
 </script>

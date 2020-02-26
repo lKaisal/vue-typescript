@@ -9,16 +9,12 @@
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import MessageBox from '@/modules/banners/components/MessageBox.vue'
 import { authMapper } from '@/modules/auth/module/store'
-// import MsgBoxTools from '@/modules/auth/mixins/msgBoxTools'
 
 const Mappers = Vue.extend({
   computed: {
     ...authMapper.mapState(['isLoading']),
-    // ...authMapper.mapGetters(['isLoading'])
   },
   methods: {
-    // ...authMapper.mapMutations(['clearForm']),
-    // ...authMapper.mapActions(['getList', 'getActiveAmount'])
   }
 })
 

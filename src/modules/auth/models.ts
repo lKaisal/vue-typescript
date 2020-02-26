@@ -25,4 +25,14 @@ type FormError = {
   msg: string
 }
 
-export { Form, AuthForm, FormField }
+type RequestStatus = RequestStatuses[RequestType]
+
+type RequestType = 'success' | 'fail'
+
+type RequestStatuses = {
+  success: 'successLogin'
+  fail: 'failLogin'
+}
+
+
+export { Form, AuthForm, FormField, RequestStatus, RequestStatuses, RequestType }
