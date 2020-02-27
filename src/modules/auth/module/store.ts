@@ -61,6 +61,10 @@ class AuthMutations extends Mutations<AuthState> {
     field.isValid = field.value && !!field.value.toString()
     field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
   }
+  setFieldIsValid({name, value}: {name: keyof AuthForm, value: boolean}) {
+    const field = this.state.form.data.find(field => field.name === name)
+    field.isValid = value
+  }
   clearForm() {
     const fields = this.state.form.data
 
@@ -109,13 +113,7 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
         .catch((error: AxiosError<any>) => {
           console.log(error.response)
           this.commit('setValidationIsShown', true)
-          if (!!error.response && !!error.response.data){
-            if (error.response.data.errors) {
-              const errors = error.response.data.errors
-              this.commit('handleFormErrors', errors)
-            }
-            if (error.response.data.message) this.commit('setEditFail', error.response.data.message)
-          }
+          if (!!error.response && !!error.response.data && error.response.data.message) this.commit('setFormLoadingFail', error.response.data.message)
           reject()
         })
     })

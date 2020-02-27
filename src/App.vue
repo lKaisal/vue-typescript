@@ -3,8 +3,7 @@
 
   +b.app
     +e.container.container
-      transition
-        LogOut(v-show="!isPageAuth" class="app__log-out")
+      LogOut(v-show="logOutIsShown" class="app__log-out")
       transition(mode="out-in")
         +e.btn-wrapper(v-if="isPageHome")
           //- el-button(type="primary" @click="onClick") Enter BannersModule
@@ -32,6 +31,7 @@ import device from 'current-device'
 export default class App extends Vue {
   get isPageHome() { return this.$route && this.$route.fullPath === '/' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
+  get logOutIsShown() { return !this.isPageAuth && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
 
   created() {
     this.initLocalStorageService()

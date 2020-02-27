@@ -99,6 +99,8 @@ export default class MessageBox extends Vue{
     color $cRegularText
     font-size 14px
     line-height 1.25
+    &:first-letter
+      text-transform capitalize
 
   &__btns
     display flex

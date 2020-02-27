@@ -18,7 +18,7 @@
             +e.error(v-html="formPswd.errorMsg")
           ButtonApp(btnType="primary" @clicked="onSubmit" text="Войти" class="page-main__btn")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="onSubmit" @secondBtnClicked="closeMsgBox"
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
 </template>
 
@@ -56,7 +56,6 @@ const Mappers = Vue.extend({
 })
 
 export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
-  secondBtn: Button = { type: 'danger', isPlain: true }
   get login() { return this.formLogin.value }
   set login(value) { this.updateField({name: 'login', value}) }
   get pswd() { return this.formPswd.value }
@@ -73,8 +72,13 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
   onSubmit() {
     this.sendForm()
       .then(() => this.goToPageBanners())
-      .catch(() => {
-        if (this.formIsValid) this.openMsgBox()
+      .catch(async () => {
+        if (this.formIsValid) {
+          this.requestStatus = 'failLogin'
+          this.openMsgBox()
+          await sleep(1500)
+          this.closeMsgBox()
+        }
       })
   }
 }
