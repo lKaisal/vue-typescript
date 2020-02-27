@@ -12,12 +12,11 @@ type EditPayload = { serviceName: string }[]
 
 type RequestStatus = RequestStatuses[RequestType]
 
-type RequestType = 'success' | 'fail' | 'other'
+type RequestType = 'success' | 'fail'
 
 type RequestStatuses = {
   success: 'successFetchList' | 'successEdit'
   fail: 'failFetchList' | 'failEdit'
-  other: 'beforeEdit'
 }
 
 export { Service, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }

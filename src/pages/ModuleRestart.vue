@@ -5,7 +5,8 @@
     +e.title.H1.page-title Перезапуск сервисов
     router-view
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" class="module-restart__msg-box modal modal-msg")
+      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
+        class="module-restart__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -15,6 +16,7 @@ import ListRestart from '@/modules/restart/components/ListRestart.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
+import { Button } from '@/models'
 
 const Mappers = Vue.extend({
   computed: {
@@ -34,6 +36,9 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+  secondBtn: Button = { type: 'danger', isPlain: true }
+  get fetchListFailed() { return this.requestStatus === 'failFetchList' }
+
   created() {
     this.updateList()
   }

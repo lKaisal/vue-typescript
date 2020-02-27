@@ -5,7 +5,7 @@
     +e.container(v-if="!isLoading && list.data && list.data.length")
       ListRestart(:list="listSorted" @editClicked="onEditClick" class="page-main__list")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
+      MessageBox(v-show="msgBoxIsShown && editFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
 </template>
 
@@ -45,21 +45,16 @@ const Mappers = Vue.extend({
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   editPayload: EditPayload = null // for repeated request
-  secondBtn: Button = null
+  get editFailed() { return this.requestStatus === 'failEdit' }
 
   // LIST click handler
   onEditClick(payload?: EditPayload) {
     if (payload) this.editPayload = payload // stored here in case of repeated request
 
-    this.requestStatus = 'beforeEdit'
-    this.secondBtn = { type: 'danger', isPlain: true }
-    // this.msgBoxOtherMsgs['beforeEdit'] = this.beforeEditMsg[this.activeHashIndex]
-    this.openMsgBox()
-  }
-  editConfirm() {
     this.editList(this.editPayload)
       .then(() => {
         this.editPayload = null
+        this.$emit('updateList')
       })
       .catch(() => {
         this.requestStatus = 'failEdit'
@@ -71,9 +66,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     this.closeMsgBox()
 
     switch (this.requestStatus) {
-      case 'beforeEdit':
       case 'failEdit':
-        this.editConfirm()
+        this.onEditClick()
         break
     }
   }
