@@ -4,8 +4,8 @@
   +b.module-banners.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
       router-view(@updateList="updateList" class="module-banners__page page")
-    transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal modal-msg")
+    //- transition
+      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -33,6 +33,8 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxToolsApp) {
+  // get fetchListFailed() { return this.requestStatus === 'failFetchList' }
+
   created() {
     this.loadData()
     this.clearForm()

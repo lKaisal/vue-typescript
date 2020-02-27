@@ -177,8 +177,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   onFirstBtnClick() {
     this.closeMsgBox()
     switch (this.requestStatus) {
+      case 'failFetchList':
+        this.$emit('updateList')
+        break
       case 'successEdit':
-        // this.closeMsgBox()
         break
       case 'failEdit':
         this.submitForm()
@@ -206,6 +208,9 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
       case 'failDelete':
       case 'failDeactivate':
       case 'beforeDelete':
+        this.closeMsgBox()
+        break
+      case 'failFetchList':
         this.closeMsgBox()
         break
       case 'successEdit':

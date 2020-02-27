@@ -128,6 +128,9 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
   onFirstBtnClick() {
     this.closeMsgBox()
     switch (this.requestStatus) {
+      case 'failFetchList':
+        this.$emit('updateList')
+        break
       case 'successCreate':
         this.goToPageEdit()
         break
