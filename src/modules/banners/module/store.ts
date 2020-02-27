@@ -1,6 +1,6 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData } from '../models'
-import service from '../client/index'
+import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
@@ -258,7 +258,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
 
-      service.get('/api/v1/banners-list')
+      axios.get('/api/v1/banners-list')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data
 
@@ -267,11 +267,10 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           resolve()
         })
         .catch(error => {
-          if (error && error.response) {
-            console.log(error.response)
-            this.commit('setListLoadingFail', error.response.data.message)
-          }
-          reject()
+          console.log(error.response)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setListLoadingFail', errMsg)
+          reject(error.response)
         })
     })
   }
@@ -288,7 +287,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('setFormIsLoading', true)
       const data = this.getters.preparedFormData
 
-      service.post('/api/v1/banner', data)
+      axios.post('/api/v1/banner', data)
         .then((res: AxiosResponse<Banner>) => {
           this.commit('setValidationIsShown', false)
           this.commit('setBannerCurrentSuccess', res.data)
@@ -329,7 +328,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('setFormIsLoading', true)
       const data = this.getters.preparedFormData
 
-      service.put(`/api/v1/banner/${id}`, data)
+      axios.put(`/api/v1/banner/${id}`, data)
         .then((res: AxiosResponse<Banner>) => {
           this.commit('setValidationIsShown', false)
           this.commit('setBannerCurrentSuccess', res.data)
@@ -360,17 +359,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   deleteBanner(id: Banner['id']) {
     return new Promise((resolve, reject) => {
       this.commit('startLoading')
-      service.delete(`/api/v1/banner/${id}`)
+      axios.delete(`/api/v1/banner/${id}`)
         .then(() => {
           console.log('Success: delete banner id=' + id)
           this.commit('setLoadingSuccess')
           resolve()
         })
         .catch((error: AxiosError<any>) => {
-          if (error && error.response) {
-            console.log(error.response)
-            this.commit('setLoadingFail', error.response.data.message)
-          }
+          console.log(error.response)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setLoadingFail', errMsg)
           reject()
         })
     })
@@ -380,7 +378,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     return new Promise((resolve, reject) => {
       this.commit('startBannerCurrentLoading')
 
-      service.get(`/api/v1/banner/${id}`)
+      axios.get(`/api/v1/banner/${id}`)
         .then((res: AxiosResponse<any>) => {
           this.commit('setBannerCurrentSuccess', res.data)
           this.dispatch('updateFormByBannerData', res.data)
@@ -388,10 +386,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           resolve()
         })
         .catch((error: AxiosError<any>) => {
-          if (error && error.response) {
-            console.log(error.response)
-            this.commit('setBannerCurrentFail', error.response.data.message)
-          }
+          console.log(error.response)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setBannerCurrentFail', errMsg)
           reject()
         })
     })
@@ -490,7 +487,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         case 'pageType':
           const valueSent = data.pageType
           const index = this.getters.pageTypesSent.indexOf(valueSent)
-          const value = index >= 0 ? index : 0
+          const value = index >= 0 ? index : 1
           this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
@@ -506,17 +503,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   deactivateBanner(id: Banner['id']) {
     return new Promise((resolve, reject) => {
       this.commit('startLoading')
-      service.post(`/api/v1/inactivate/${id}`)
+      axios.post(`/api/v1/inactivate/${id}`)
         .then(() => {
           console.log('Success: deactivate banner id=' + id)
           this.commit('setLoadingSuccess')
           resolve()
         })
         .catch((err: AxiosError) => {
-          if (err && err.response) {
-            console.log(err.response)
-            this.commit('setLoadingFail', err.response.data.message)
-          }
+          console.log(err.response)
+          const errMsg = err.response && err.response.data && err.response.data.message
+          this.commit('setLoadingFail', errMsg)
           reject()
         })
     })
@@ -526,18 +522,17 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     return new Promise((resolve, reject) => {
       this.commit('startActiveAmountLoading')
 
-      service.get('/api/v1/active-count')
+      axios.get('/api/v1/active-count')
         .then((res: AxiosResponse<any>) => {
           this.commit('setActiveAmountSuccess', res.data.count)
           console.log('Success: get activeAmount: '+ res.data.count)
           resolve()
         })
         .catch((error: AxiosError) => {
-          if (error && error.response) {
-            this.commit('setActiveAmountFail', error.response.data.message)
-            console.log(error.response)
-          }
-          reject()
+          console.log(error.response)
+          const errMsg = error.response && error.response.data && error.response.data.message
+          this.commit('setActiveAmountFail', errMsg)
+          reject(error.response)
         })
     })
   }
@@ -546,17 +541,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     return new Promise(async (resolve, reject) => {
       this.commit('startActiveAmountLoading')
 
-      service.post(`/api/v1/active-count/${payload}`)
+      axios.post(`/api/v1/active-count/${payload}`)
       .then((res: AxiosResponse<any>) => {
         this.commit('setActiveAmountSuccess', res.data.count)
         console.log('Success: set activeAmount: ' + res.data.count)
         resolve()
       })
       .catch((error: AxiosError) => {
-        if (error && error.response) {
-          console.log(error.response)
-          this.commit('setActiveAmountFail', error.response.data.message)
-        }
+        console.log(error.response)
+        const errMsg = error.response && error.response.data && error.response.data.message
+        this.commit('setActiveAmountFail', errMsg)
         reject()
       })
     })

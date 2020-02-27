@@ -53,5 +53,4 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   }
   get msgBoxBtns() { return this.btns[this.requestStatus] }
   get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg || this.contentDefault, ...this.msgBoxBtns } }
-
 }

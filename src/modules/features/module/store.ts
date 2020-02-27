@@ -1,6 +1,6 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import { Section, ListSort, EditPayload } from '../models'
-import service from '@/client/index'
+import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
@@ -86,7 +86,7 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
 
-      service.get('/api/v1/features-list')
+      axios.get('/api/v1/features-list')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data
 
@@ -107,7 +107,7 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
     return new Promise((resolve, reject) => {
       this.commit('startEdit')
 
-      service.post('/api/v1/features', payload)
+      axios.post('/api/v1/features', payload)
         .then(async () => {
           console.log('Success: edit list')
           await this.dispatch('getList', null)

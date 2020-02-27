@@ -45,24 +45,27 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
 
     const promisesArr = [this.getList(), this.getActiveAmount()]
     Promise.all(promisesArr)
-      .then(() => {
-        if (this.msgBoxIsShown) this.closeMsgBox()
-      })
-      .catch(() => {
-        this.openMsgBox()
+      .catch((err) => {
+        if (err && err.status && (err.status === 401 || err.status === 400)) this.goToPageAuth()
+        else this.openMsgBox()
       })
   }
-
   updateList() {
     if (this.list.isLoading) return
 
     if (this.msgBoxIsShown) this.closeMsgBox()
 
     this.getList()
-      .catch(() => {
-        this.requestStatus = 'failFetchList'
-        this.openMsgBox()
+      .catch((err) => {
+        if (err && err.status && (err.status === 401 || err.status === 400)) this.goToPageAuth()
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
       })
+  }
+  goToPageAuth() {
+    this.$router.push({ name: 'PageAuth' })
   }
 }
 </script>

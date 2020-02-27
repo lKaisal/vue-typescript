@@ -17,4 +17,10 @@ type Button = {
   icon?: string
 }
 
-export { MsgBoxContent, MsgBoxBtns, Button }
+type CurrentDevice = {
+  orientation: string,
+  type: string,
+  os: string
+}
+ 
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice }

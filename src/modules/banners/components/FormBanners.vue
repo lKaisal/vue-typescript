@@ -214,7 +214,12 @@ export default class FormBanners extends Mappers {
       justify-content space-between
 
   &__column
-    width calc(50% - 30px)
+    +gt-md()
+      width calc(50% - 30px)
+    +lt-md()
+      width 100%
+      &:not(:last-child)
+        margin-bottom 35px
 
   &__block
     margin-bottom 35px
@@ -228,12 +233,13 @@ export default class FormBanners extends Mappers {
       opacity 0
 
   &__row
-    display flex
-    justify-content space-between
-    flex-wrap nowrap
-    .form-banners__field
-      &:not(:last-child)
-        margin-right 10px
+    +gt-sm()
+      display flex
+      justify-content space-between
+      flex-wrap nowrap
+      .form-banners__field
+        &:not(:last-child)
+          margin-right 10px
 
   &__pickr
     z-index 5

@@ -9,6 +9,14 @@ module.exports = {
         // pathRewrite: {
         //   '^/api/v1': ''
         // }
+      },
+      '/login': {
+        target: 'http://localhost:8080/',
+        changeOrigin: true,
+      },
+      '/refresh': {
+        target: 'http://localhost:8080/',
+        changeOrigin: true,
       }
     }
   },

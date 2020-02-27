@@ -3,6 +3,7 @@
 
   +b.app
     +e.container.container
+      LogOut(v-show="logOutIsShown" class="app__log-out")
       transition(mode="out-in")
         +e.btns(v-if="isRootPage")
           ButtonApp(text="Enter BannersModule" @clicked="onBannersClick" class="app__btn")
@@ -11,22 +12,39 @@
 </template>
 
 <script lang="ts">
+
 import { Vue, Component } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
+import LogOut from '@/components/LogOut.vue'
+import LocalStorageService from './services/LocalStorageService'
+import device from 'current-device'
 
 @Component({
   components: {
     ButtonApp,
-    IconSvg
+    IconSvg,
+    LogOut
   }
 })
 
 export default class App extends Vue {
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
+  get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
+  get logOutIsShown() { return !this.isPageAuth && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
+
+  created() {
+    this.initLocalStorageService()
+    this.$store.commit('system/setCurrentDevice', device)
+  }
 
   onBannersClick() { this.$router.push({path: '/banners'}) }
   onFeaturesClick() { this.$router.push({path: '/features'}) }
+  initLocalStorageService() {
+    const accessToken = LocalStorageService.getAccessToken()
+    const refreshToken = LocalStorageService.getRefreshToken()
+    if (!accessToken || !refreshToken) this.$router.push({ name: 'PageAuth' }).catch(() => {})
+  }
 }
 </script>
 
@@ -49,6 +67,17 @@ $arrowSize = $offsetXl / 2
     // width-between-property 'padding-top' 1441 60 1920 60 false true
     width-between-property 'padding-bottom' 600 40 1000 60 true true
     // width-between-property 'padding-bottom' 1441 60 1920 60 false true
+
+  &__log-out
+    z-index 1
+    position absolute
+    top 0
+    right 0
+    padding inherit
+    transition(opacity)
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__page
     width 100%

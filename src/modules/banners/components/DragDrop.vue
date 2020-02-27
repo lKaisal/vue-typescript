@@ -6,13 +6,13 @@
       +e.loaders(v-show="!file" key="loaders")
         +e.I.drop-plus.el-icon-plus
         +e.size(v-html="'1122x670'")
-        +e.drop(@drop.prevent="onDropImg")
+        +e.drop(@drop.prevent="onDropImg()")
         +e.INPUT.input-img(ref="fileinput" type="file" @input="onInputImg")
       +e.img-preview._loading(v-if="!imgLoaded && imgUrl" key="loading")
-      +e.img(v-show="file" @mouseenter.self="dropDeleteIsShown=true" @mouseleave="dropDeleteIsShown=false" @click="removeImg" key="img")
+      +e.img(v-show="file" @mouseenter.self="dropDeleteIsShown=true" @mouseleave="dropDeleteIsShown=false" @click.stop="!isTouchDevice && removeImg()" key="img")
         transition(mode="in-out")
           IMG(v-if="imgLoaded" :src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="drag-drop__img-preview")
-        +e.I.drop-delete.el-icon-delete-solid(v-show="dropDeleteIsShown")
+        +e.I.drop-delete.el-icon-delete-solid(v-show="dropDeleteIsShown" @click="isTouchDevice && dropDeleteIsShown && removeImg()" )
 </template>
 
 <script lang="ts">
@@ -44,6 +44,7 @@ export default class DragDrop extends Mappers {
   set file(value) { this.updateFile(value) }
   get banner() { return this.bannerById(Number(this.$route.params.id)) }
   get bannerImgUrl() { return this.banner && this.banner.bannerImageUrl }
+  get isTouchDevice() { return this.$store.getters['system/isTouchDevice'] }
 
   @Ref() readonly fileinput!: HTMLInputElement
 
