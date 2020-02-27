@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import banners from './modules/banners/module'
 import features from './modules/features/module'
 import auth from './modules/auth/module'
+import restart from './modules/restart/module'
 
 Vue.use(ElementUI)
 
@@ -20,6 +21,7 @@ Router.addRoutes(system.routes)
 Store.dispatch('system/initializeModule', banners)
 Store.dispatch('system/initializeModule', features)
 Store.dispatch('system/initializeModule', auth)
+Store.dispatch('system/initializeModule', restart)
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);

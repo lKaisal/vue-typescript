@@ -1,0 +1,179 @@
+<template lang="pug">
+  include ../../../tools/bemto.pug
+
+  +b.list-restart
+    +e.container
+      +e.table(:class="{ 'is-long-list': list.length > 2 }")
+        //- table head
+        +e.row.table-row
+          +e.title.table-cell.col-05
+            +e.checkbox.checkbox-restart(@click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+              +e.I.checkbox-icon.el-icon-check
+          +e.title.table-cell(v-for="(title, index) in tableTitles" :class="{ 'col-1': index === 1 }")
+            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+              +e.title-text(v-html="title")
+              +e.title-sort
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
+        //- table body
+        ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
+          class="list-restart__item table-row")
+
+      ButtonApp(v-if="list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onBtnClick" class="list-restart__btn")
+</template>
+
+<script lang="ts">
+import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import { restartMapper } from '../module/store'
+import ItemRestart from '../components/ItemRestart.vue'
+import ButtonApp from '@/components/ButtonApp.vue'
+import { Service, ListSort, EditPayload } from '../models'
+import MsgBoxTools from '../mixins/MsgBoxTools'
+import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import MessageBox from '@/components/MessageBox.vue'
+
+const Mappers = Vue.extend({
+  computed: {
+    ...restartMapper.mapState(['listSort']),
+  },
+  methods: {
+    ...restartMapper.mapMutations(['updateListSort']),
+    ...restartMapper.mapActions(['editList'])
+  }
+})
+
+@Component({
+  components: {
+    ItemRestart,
+    ButtonApp,
+    MessageBox
+  }
+})
+
+export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+  @Prop() list: Service[]
+
+  tableTitles: string[] = [ 'Название', 'Количество реплик' ]
+  fields: (keyof Service)[] = [ 'serviceName', 'replicas' ]
+  checkboxIsActive: boolean = false
+  namesSelected: string[] = []
+
+  get amountTotal() { return this.list && this.list.length }
+  get allAreSelected() { return this.namesSelected.length > 0 && this.amountTotal === this.namesSelected.length }
+  get allNames() { return this.list && this.list.map(item => item.serviceName) }
+  get listSortBy() { return this.listSort.by }
+  get listSortDirection() { return this.listSort.direction }
+
+  @Watch('isActive', { immediate: true })
+  onIsActiveChange(val) {
+    this.resetSelect()
+    this.resetSort()
+  }
+
+  // SELECT METHODS (CHECKBOX)
+  onSelectAllClick() {
+    if (this.allAreSelected) this.namesSelected = []
+    else this.namesSelected = [...this.allNames]
+  }
+  onItemCheckboxClick(id) {
+    const indexInSelected = this.namesSelected.indexOf(id)
+    const isSelected = indexInSelected >= 0
+
+    if (isSelected) this.namesSelected.splice(indexInSelected, 1)
+    else this.namesSelected.push(id)
+  }
+  resetSelect() {
+    this.namesSelected = []
+    this.checkboxIsActive = false
+  }
+  // SORT METHODS (TABLE HEAD)
+  onTitleClick(index) {
+    const by: ListSort['by'] = this.fields[index]
+    const byIsUpdated = by !== this.listSortBy
+    const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
+
+    const listSort: ListSort = { by, direction }
+    this.updateListSort(listSort)
+  }
+  resetSort() {
+    const listSort: ListSort = { by: 'serviceName', direction: 'asc' }
+    this.updateListSort(listSort)
+  }
+  // SUBMIT METHOD
+  onBtnClick() {
+    const payload: EditPayload = []
+    for (const serviceName of this.namesSelected) payload.push({ serviceName })
+
+    this.$emit('editClicked', payload)
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+@import '../../../styles/tools'
+@import '../common'
+
+.list-restart
+
+  &__container
+    width 100%
+    transition(opacity)
+    &:not(:last-child)
+      margin-bottom 100px
+    &.v-enter
+    &.v-leave-to
+      opacity 0
+
+  &__row
+    display flex
+    padding 10px 0
+
+  &__table
+    margin-bottom 50px
+    width 100%
+
+  &__sort
+    margin-bottom 50px
+
+  &__title
+    fontMedium()
+    &:first-letter
+      text-transform uppercase
+    &:nth-of-type(2)
+      flex-grow 1
+
+  &__title-wrapper
+    display flex
+    align-items center
+    padding 10px
+    margin -10px
+    transition(opacity)
+    .list-restart__title:not(:first-child) &
+      cursor pointer
+      &:hover
+        opacity .75
+    &.is-disabled
+      pointer-events none
+
+  &__title-text
+    margin-right 3px
+
+  &__title-sort
+    display flex
+    flex-direction column
+    i
+      color $cSecondaryText
+      transition(color)
+      &:first-child
+        transform translateY(4px)
+      &:last-child
+        transform translateY(-4px)
+      &.is-active
+        color $cBrand
+
+  &__item
+    background-color white
+    .is-long-list &
+      &:nth-of-type(2n + 1)
+        background-color $cDisabled
+</style>
