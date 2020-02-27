@@ -3,13 +3,13 @@
 
   +b.app
     +e.container.container
+      transition
+        LogOut(v-show="!isPageAuth" class="app__log-out")
       transition(mode="out-in")
         +e.btn-wrapper(v-if="isPageHome")
           //- el-button(type="primary" @click="onClick") Enter BannersModule
           ButtonApp(text="Enter BannersModule" @clicked="onClick" class="app__btn")
         router-view(v-else class="app__page page")
-      //- +e.up-arrow
-        IconSvg(icon="back" class="app__icon-up")
 </template>
 
 <script lang="ts">
@@ -17,18 +17,21 @@
 import { Vue, Component } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
+import LogOut from '@/components/LogOut.vue'
 import LocalStorageService from './services/LocalStorageService'
 import device from 'current-device'
 
 @Component({
   components: {
     ButtonApp,
-    IconSvg
+    IconSvg,
+    LogOut
   }
 })
 
 export default class App extends Vue {
   get isPageHome() { return this.$route && this.$route.fullPath === '/' }
+  get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
 
   created() {
     this.initLocalStorageService()
@@ -62,6 +65,17 @@ $arrowSize = $offsetXl / 2
     // width-between-property 'padding-top' 1441 60 1920 60 false true
     width-between-property 'padding-bottom' 600 40 1000 60 true true
     // width-between-property 'padding-bottom' 1441 60 1920 60 false true
+
+  &__log-out
+    z-index 1
+    position absolute
+    top 0
+    right 0
+    padding inherit
+    transition(opacity)
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__page
     width 100%
