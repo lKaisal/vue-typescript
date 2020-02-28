@@ -96,9 +96,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
       case 'beforeDelete':
         this.deleteItem()
         break
-      case 'failFetchList':
-        this.updateList()
-        break
       case 'failSetAmount':
         this.updateAmount(this.amountForUpdate)
     }

@@ -4,8 +4,8 @@
   +b.module-banners.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
       router-view(@updateList="updateList" class="module-banners__page page")
-    //- transition
-      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal modal-msg")
+    transition
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -49,7 +49,10 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
     Promise.all(promisesArr)
       .catch((err) => {
         if (err && err.status && (err.status === 401 || err.status === 400)) this.goToPageAuth()
-        else this.openMsgBox()
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
       })
   }
   updateList() {

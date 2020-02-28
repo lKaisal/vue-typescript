@@ -6,7 +6,7 @@
     router-view
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
-        class="module-restart__msg-box modal modal-msg")
+        @secondBtnClicked="closeMsgBox()" class="module-restart__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -51,13 +51,13 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
         this.updateList()
         break
     }
-
   }
   updateList() {
     if (this.list.isLoading) return
 
     this.getList()
       .catch(() => {
+        this.secondBtn = { type: 'danger', isPlain: true }
         this.requestStatus = 'failFetchList'
         this.openMsgBox()
       })
