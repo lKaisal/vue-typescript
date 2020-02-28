@@ -184,7 +184,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
         this.requestStatus = 'successCreate'
         this.openMsgBox()
         this.$emit('updateList')
-        await sleep(1500)
+        await sleep(3000)
         if (this.isPageCreate) {
           this.closeMsgBox()
           this.goToPageEdit()

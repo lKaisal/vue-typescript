@@ -127,7 +127,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.openMsgBox()
         this.deleteId = null
         this.updateList()
-        await sleep(1500)
+        await sleep(3000)
         this.closeMsgBox()
       })
       .catch(() => {
