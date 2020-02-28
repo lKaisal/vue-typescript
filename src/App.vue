@@ -3,40 +3,46 @@
 
   +b.app
     +e.container.container
-      BreadcrumbsApp(v-show="logOutIsShown" class="app__breadcrumbs")
-      LogOut(v-show="logOutIsShown" class="app__log-out")
+      //- nav
+      +e.TRANSITION-GROUP.nav(appear tag="div")
+        BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
+        LogOut(v-show="navIsShown" key="logout" class="app__log-out")
+
+      //- content
       transition(mode="out-in")
-        +e.links(v-if="isRootPage")
-          +e.H1.title.page-title Список разделов
-          +e.link-wrapper(v-for="(route, index) in routes")
-            +e.ROUTER-LINK.link(tag="h2" v-html="route.meta && route.meta.title" :to="route.path")
+        LinksApp(v-if="isRootPage" class="app__links")
         router-view(v-else class="app__page page")
 </template>
 
 <script lang="ts">
 
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component, Watch } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
 import LogOut from '@/components/LogOut.vue'
 import BreadcrumbsApp from '@/components/BreadcrumbsApp.vue'
+import LinksApp from '@/components/LinksApp.vue'
 import LocalStorageService from './services/LocalStorageService'
 import device from 'current-device'
+import animateIfVisible from '@/mixins/animateIfVisible'
+import sleep from '@/mixins/sleep'
 
 @Component({
   components: {
     ButtonApp,
     IconSvg,
     LogOut,
-    BreadcrumbsApp
+    BreadcrumbsApp,
+    LinksApp
   }
 })
 
 export default class App extends Vue {
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
-  get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
-  get routes() { return this.$store.state.system.modules.filter(r => !!r.meta && r.meta.title) }
+  get navIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
+  get crumbsShown() { return this.navIsShown && this.routes && this.routes.length }
+  get routes() { return this.$store.getters['system/modules'] }
 
   created() {
     this.initLocalStorageService()
@@ -74,6 +80,15 @@ $arrowSize = $offsetXl / 2
     width-between-property 'padding-bottom' 600 40 1000 60 true true
     // width-between-property 'padding-bottom' 1441 60 1920 60 false true
 
+  &__nav
+    position absolute
+    top 0
+    right 0
+    left 0
+    padding-right inherit
+    padding-left inherit
+    transition()
+
   &__log-out
   &__breadcrumbs
     z-index 1
@@ -100,52 +115,8 @@ $arrowSize = $offsetXl / 2
     flex-grow 1
 
   &__links
-    // display flex
     transition()
     &.v-enter
     &.v-leave-to
       opacity 0
-
-  &__link-wrapper
-    margin-left 15px
-    &:not(:last-child)
-      margin-bottom 25px
-
-  &__link
-    position relative
-    display inline
-    padding 10px
-    margin -10px
-    padding-left 15px
-    fontReg()
-    transition(opacity)
-    cursor pointer
-    &:hover
-      opacity .75
-    &:before
-      content ''
-      position absolute
-      top 50%
-      left 0
-      transform translateY(-50%)
-      width 5px
-      height 5px
-      border-radius 50%
-      background-color $cBrand
-      transition(background-color)
-
-  &__up-arrow
-    position fixed
-    right $arrowOffset
-    bottom $arrowOffset
-    width $arrowSize
-    height $arrowSize
-
-  &__icon-up
-    position absolute
-    top 0
-    right 0
-    bottom 0
-    left 0
-    transform rotateZ(90deg)
 </style>

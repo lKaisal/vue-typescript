@@ -13,7 +13,8 @@ export default {
     isMobile: (state) => state.currentDevice.type === 'mobile',
     isTablet: (state) => state.currentDevice.type === 'tablet',
     isDesktop: (state) => state.currentDevice.type === 'desktop',
-    isTouchDevice: (state) => state.currentDevice.type !== 'desktop'
+    isTouchDevice: (state) => state.currentDevice.type !== 'desktop',
+    modules: (state) => state.modules && state.modules.filter(m => m.meta && m.meta.isDynamicModule)
   },
   mutations: {
     setCurrentDevice(state, payload: CurrentDevice) {

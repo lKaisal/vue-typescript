@@ -13,20 +13,23 @@ import restart from './modules/restart/module'
 Vue.use(ElementUI)
 
 const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleBanners.vue');
+const ModuleFeatures = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleFeatures.vue');
+const ModuleRestart = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleRestart.vue');
 
-/* Initialize System Module */
+/* Initialize System Module */ // initialized by default 
 // Store.registerModule('system', system.store)
-Router.addRoutes(system.routes)
+// Router.addRoutes(system.routes)
+
+/* Initialize Auth Module */
+Store.dispatch('system/initializeModule', auth)
 
 Store.dispatch('system/initializeModule', banners)
 Store.dispatch('system/initializeModule', features)
-Store.dispatch('system/initializeModule', auth)
 Store.dispatch('system/initializeModule', restart)
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);
 // }
-
 // Vue.config.warnHandler = function(msg, vm, trace) {
 //   console.log(`Warn: ${msg}\nTrace: ${trace}`);
 // }

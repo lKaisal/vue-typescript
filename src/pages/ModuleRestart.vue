@@ -2,11 +2,12 @@
   include ../tools/bemto.pug
 
   +b.module-restart.page(v-loading.fullscreen.lock="isLoading")
-    +e.title.H1.page-title Перезапуск сервисов
-    router-view
-    transition
-      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
-        @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")
+    +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
+      +e.title.H1.page-title.js-voa.js-voa-start Перезапуск сервисов
+      router-view
+      transition
+        MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
+          @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -17,6 +18,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 import { Button } from '@/models'
+import animateIfVisible from '@/mixins/animateIfVisible'
 
 const Mappers = Vue.extend({
   computed: {
@@ -38,6 +40,14 @@ const Mappers = Vue.extend({
 export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'danger', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
+
+  @Watch('list', { deep: true })
+  async onListChange(val) {
+    if (val.data && val.data.length) {
+      await this.$nextTick()
+      animateIfVisible()
+    }
+  }
 
   created() {
     this.updateList()

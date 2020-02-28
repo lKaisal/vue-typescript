@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container(v-if="!isLoading")
+    +e.container
       +e.title.H1.page-title.js-voa.js-voa-start Список баннеров
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn js-voa js-voa-start")
       ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount js-voa js-voa-start")
@@ -124,7 +124,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.openMsgBox()
         this.deleteId = null
         this.updateList()
-        await sleep(1500)
+        await sleep(3000)
         this.closeMsgBox()
       })
       .catch(() => {

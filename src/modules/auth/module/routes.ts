@@ -5,4 +5,5 @@ const children = [
 ]
 export default [
   { path: '/auth', component: PageAuth, name: 'PageAuth' },
+  { path: '/auth/*', redirect: { name: 'PageAuth' } },
 ]

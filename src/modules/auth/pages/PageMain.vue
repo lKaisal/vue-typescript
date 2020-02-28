@@ -76,7 +76,7 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
         if (this.formIsValid) {
           this.requestStatus = 'failLogin'
           this.openMsgBox()
-          await sleep(1500)
+          await sleep(3000)
           this.closeMsgBox()
         }
       })

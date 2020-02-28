@@ -2,13 +2,14 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container(v-if="!isLoading")
+    +e.container.js-voa.js-voa-start(v-if="!isLoading")
       //- navigation (sort)
       +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleMenuClick")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item" :class="{ 'is-disabled': !tabs[index].list.length }")
       //- list
       transition(mode="out-in")
-        ListFeatures(v-if="listCurrent && listCurrent.length" :key="activeHashIndex" :list="listCurrent" :isActive="activeHashIndex === 0" @editClicked="onEditClick" class="page-main__list")
+        ListFeatures(v-if="listCurrent && listCurrent.length" :key="activeHashIndex" :list="listCurrent" :isActive="activeHashIndex === 0" @editClicked="onEditClick"
+          class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")

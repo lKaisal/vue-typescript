@@ -163,7 +163,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.requestStatus = 'successDelete'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
-        await sleep(1500)
+        await sleep(3000)
         this.goToPageMain()
         this.closeMsgBox()
       })
@@ -249,7 +249,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
-        await sleep(1500)
+        await sleep(3000)
         this.closeMsgBox()
       })
       .catch(error => {

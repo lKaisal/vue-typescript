@@ -1,10 +1,10 @@
 import ModuleFeatures from '../../../pages/ModuleFeatures.vue'
-import PageMain from '../pages/PageMain.vue'
+import PageFeatures from '../pages/PageMain.vue'
 
 const children = [
-  { path: '/', component: PageMain, name: 'PageMain' },
-  { path: '*', redirect: { name: 'PageMain' } }
+  { path: '/', component: PageFeatures, name: 'PageFeatures' },
+  { path: '*', redirect: { name: 'PageFeatures' } }
 ]
 export default [
-  { path: '/features', component: ModuleFeatures, name: 'ModuleFeatures', redirect: { name: 'PageMain' }, children, meta: { title: 'Вкл/откл разделов' } },
+  { path: '/features', component: ModuleFeatures, name: 'ModuleFeatures', redirect: { name: 'PageFeatures' }, children, meta: { title: 'Вкл/откл разделов', isDynamicModule: true } },
 ]

@@ -3,9 +3,9 @@
 
   +b.module-banners.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
-      router-view(@updateList="updateList" class="module-banners__page page")
+      router-view(v-if="list.data && list.data.length" @updateList="updateList" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="loadData" @seconnBtnClicked="goToPageApp"
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
         class="module-banners__msg-box modal modal-msg")
 </template>
 
