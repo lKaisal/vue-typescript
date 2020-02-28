@@ -5,7 +5,7 @@
     +e.title.H1.page-title Управление разделами приложения
     router-view
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox()" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="closeMsgBox()"
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox()" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
         class="module-features__msg-box modal modal-msg")
 </template>
 
@@ -36,12 +36,13 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
-  secondBtn: Button = null
+  secondBtn: Button = { type: 'danger', isPlain: true }
 
   created() {
     this.updateList()
   }
 
+  goToPageApp() { this.$router.push({ path: '/' }) }
   onFirstBtnClick() {
     if (this.msgBoxIsShown) this.closeMsgBox()
 
@@ -57,7 +58,6 @@ export default class ModuleFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgB
 
     this.getList()
       .catch(() => {
-        this.secondBtn = { type: 'danger', isPlain: true }
         this.requestStatus = 'failFetchList'
         this.openMsgBox()
       })

@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import ModuleBanners from '../pages/ModuleBanners.vue'
+import App from '@/App.vue'
 
 Vue.use(VueRouter)
 
 export default new VueRouter({
   mode: 'history',
   routes: [
-    { path: "*", redirect: { name: 'ModuleBanners' } }
+    { path: '/', component: App, name: 'App' },
+    { path: '*', redirect: { name: 'App' } }
   ]
 })

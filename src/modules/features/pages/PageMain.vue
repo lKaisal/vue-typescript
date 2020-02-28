@@ -53,16 +53,18 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   editPayload: EditPayload = null // for repeated request
   secondBtn: Button = null
   get tabs() {
-    return [
-      { hash: this.hashes[0], list: this.listActive, sort: `Активные (${this.listActive.length})` },
-      { hash: this.hashes[1], list: this.listInactive, sort: `Неактивные (${this.listInactive.length})` },
-    ]
+    try {
+      return [
+        { hash: this.hashes[0], list: this.listActive, sort: `Активные (${this.listActive.length})` },
+        { hash: this.hashes[1], list: this.listInactive, sort: `Неактивные (${this.listInactive.length})` },
+      ]
+    } catch {}
   }
   get activeHash() { return this.$route.hash }
   // @ts-ignore
   get activeHashIndex() { return this.activeHash && this.hashes.indexOf(this.activeHash.slice(1)) || 0 }
-  get listCurrent() { return this.tabs[this.activeHashIndex].list }
-  get sortItems() { return this.tabs.map(item => item.sort) }
+  get listCurrent() { return this.tabs && this.tabs[this.activeHashIndex].list }
+  get sortItems() { return this.tabs && this.tabs.map(item => item.sort) }
 
   // NAVMENU click handler
   handleMenuClick(index) {

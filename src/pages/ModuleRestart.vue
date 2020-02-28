@@ -6,7 +6,7 @@
     router-view
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
-        @secondBtnClicked="closeMsgBox()" class="module-restart__msg-box modal modal-msg")
+        @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -43,6 +43,7 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     this.updateList()
   }
 
+  goToPageApp() { this.$router.push({ path: '/' }) }
   onFirstBtnClick() {
     if (this.msgBoxIsShown) this.closeMsgBox()
 

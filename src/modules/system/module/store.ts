@@ -6,7 +6,8 @@ import { CurrentDevice } from '@/models'
 export default {
   namespaced: true,
   state: {
-    currentDevice: { orientation: null, type: null, os: null } as CurrentDevice
+    currentDevice: { orientation: null, type: null, os: null } as CurrentDevice,
+    modules: []
   },
   getters: {
     isMobile: (state) => state.currentDevice.type === 'mobile',
@@ -18,12 +19,14 @@ export default {
     setCurrentDevice(state, payload: CurrentDevice) {
       const { orientation, type, os  } = payload
       state.currentDevice = Object.assign({}, { orientation, type, os } )
-    }
+    },
+    setRoutes(state, payload) { state.modules.push(payload) }
   },
   actions: {
-    initializeModule ({ dispatch }, module: any) {
+    initializeModule ({ state, commit }, module: any) {
       registerModule(Store, [module.name], `${module.name}/`, module.store)
       Router.addRoutes(module.routes)
+      commit('setRoutes', ...module.routes)
     },
     removeModule ({ dispatch }, module: any) {
       Store.unregisterModule(module.name)

@@ -27,7 +27,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     successCreate: { firstBtn: 'Отредактировать баннер', secondBtn: 'Вернуться к списку' },
     successEdit: { firstBtn: 'Продолжить редактирование', secondBtn: 'Вернуться к списку' },
     successDelete: { firstBtn: 'Вернуться к списку' },
-    failFetchList: { firstBtn: 'Повторить попытку' },
+    failFetchList: { firstBtn: 'Повторить попытку', secondBtn: 'К списку разделов' },
     failFetchBanner: { firstBtn: 'Вернуться к списку' },
     failCreate: { firstBtn: 'Отправить повторно', secondBtn: 'Отменить' },
     failEdit: { firstBtn: 'Отправить повторно', secondBtn: 'Отменить' },

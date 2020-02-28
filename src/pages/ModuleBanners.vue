@@ -5,7 +5,8 @@
     transition(mode="out-in")
       router-view(@updateList="updateList" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="loadData" class="module-banners__msg-box modal modal-msg")
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="loadData" @seconnBtnClicked="goToPageApp"
+        class="module-banners__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -14,6 +15,7 @@ import MessageBox from '@/components/MessageBox.vue'
 import { bannersMapper } from '@/modules/banners/module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/banners/mixins/MsgBoxTools'
+import { Button } from '../models'
 
 const Mappers = Vue.extend({
   computed: {
@@ -33,7 +35,7 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxToolsApp) {
-  // get fetchListFailed() { return this.requestStatus === 'failFetchList' }
+  secondBtn: Button = { type: 'danger', isPlain: true }
 
   created() {
     this.loadData()

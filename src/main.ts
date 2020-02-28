@@ -15,7 +15,7 @@ Vue.use(ElementUI)
 const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleBanners.vue');
 
 /* Initialize System Module */
-Store.registerModule('system', system.store)
+// Store.registerModule('system', system.store)
 Router.addRoutes(system.routes)
 
 Store.dispatch('system/initializeModule', banners)

@@ -10,7 +10,7 @@
       +e.content(v-if="content && content.msg" v-html="content.msg")
       +e.btns
         ButtonApp(v-if="content && content.firstBtn" :btnType="firstBtn.type" :isPlain="firstBtn.isPlain" @clicked="onFirstBtnClick" :text="content.firstBtn" class="msg-box__btn")
-        ButtonApp(v-if="content && content.secondBtn" :btnType="secondBtn.type" :isPlain="secondBtn.isPlain" @clicked="onSecondBtnClick" :text="content.secondBtn" class="msg-box__btn")
+        ButtonApp(v-if="content && content.secondBtn" :btnType="secondBtn && secondBtn.type" :isPlain="secondBtn && secondBtn.isPlain" @clicked="onSecondBtnClick" :text="content.secondBtn" class="msg-box__btn")
 </template>
 
 <script lang="ts">
