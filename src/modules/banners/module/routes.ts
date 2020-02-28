@@ -10,7 +10,7 @@ const children = [
   { path: 'edit/:id', component: PageEdit, name: 'PageEdit' },
   { path: '*', redirect: { name: 'PageBanners' } },
 ]
+
 export default [
-  { path: '/banners', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children },
-  // { path: '/', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children },
+  { path: '/banners', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children, meta: { title: 'Баннеры' } },
 ]

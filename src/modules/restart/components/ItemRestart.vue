@@ -6,7 +6,8 @@
       +e.cell.table-cell.col-05
         +e.checkbox.checkbox-restart(@click="onCheckboxClick" :class="{ 'is-active': isActive }")
           +e.I.checkbox-icon.el-icon-check
-      +e.cell.table-cell(v-for="(item, index) in cells" v-html="item" :class="{ 'col-1': index === 1 }")
+      +e.cell.table-cell(v-for="(item, index) in cells" :class="{ 'col-1': index === 1 }")
+        +e.cell-content(v-html="item" @click="index === 0 && onCheckboxClick()")
 </template>
 
 <script lang="ts">
@@ -50,4 +51,10 @@ export default class ItemFeatures extends Vue {
     &:nth-of-type(2)
       flex-grow 1
       fontMedium()
+
+  &__cell-content
+    display inline-block
+    padding 10px
+    margin -10px
+    cursor pointer
 </style>

@@ -6,5 +6,5 @@ const children = [
   { path: '*', redirect: { name: 'PageMain' } }
 ]
 export default [
-  { path: '/features', component: ModuleFeatures, name: 'ModuleFeatures', children },
+  { path: '/features', component: ModuleFeatures, name: 'ModuleFeatures', redirect: { name: 'PageMain' }, children, meta: { title: 'Вкл/откл разделов' } },
 ]

@@ -6,10 +6,10 @@
       BreadcrumbsApp(v-show="logOutIsShown" class="app__breadcrumbs")
       LogOut(v-show="logOutIsShown" class="app__log-out")
       transition(mode="out-in")
-        +e.btns(v-if="isRootPage")
-          ButtonApp(text="Enter BannersModule" @clicked="onBannersClick" class="app__btn")
-          ButtonApp(text="Enter FeaturesModule" @clicked="onFeaturesClick" class="app__btn")
-          ButtonApp(text="Enter RestartModule" @clicked="onRestartClick" class="app__btn")
+        +e.links(v-if="isRootPage")
+          +e.H1.title.page-title Список разделов
+          +e.link-wrapper(v-for="(route, index) in routes")
+            +e.ROUTER-LINK.link(tag="h2" v-html="route.meta && route.meta.title" :to="route.path")
         router-view(v-else class="app__page page")
 </template>
 
@@ -36,6 +36,7 @@ export default class App extends Vue {
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
   get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
+  get routes() { return this.$store.state.system.modules.filter(r => !!r.meta && r.meta.title) }
 
   created() {
     this.initLocalStorageService()
@@ -98,16 +99,40 @@ $arrowSize = $offsetXl / 2
     flex-direction column
     flex-grow 1
 
-  &__btns
-    display flex
+  &__links
+    // display flex
     transition()
     &.v-enter
     &.v-leave-to
       opacity 0
 
-  &__btn
+  &__link-wrapper
+    margin-left 15px
     &:not(:last-child)
-      margin-right 10px
+      margin-bottom 25px
+
+  &__link
+    position relative
+    display inline
+    padding 10px
+    margin -10px
+    padding-left 15px
+    fontReg()
+    transition(opacity)
+    cursor pointer
+    &:hover
+      opacity .75
+    &:before
+      content ''
+      position absolute
+      top 50%
+      left 0
+      transform translateY(-50%)
+      width 5px
+      height 5px
+      border-radius 50%
+      background-color $cBrand
+      transition(background-color)
 
   &__up-arrow
     position fixed

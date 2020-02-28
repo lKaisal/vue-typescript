@@ -42,6 +42,7 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
     this.clearForm()
   }
 
+  goToPageApp() { this.$router.push({ path: '/' }) }
   loadData() {
     if (this.list.isLoading) return
 
