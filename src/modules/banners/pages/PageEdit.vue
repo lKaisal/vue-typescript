@@ -85,9 +85,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
           // @ts-ignore
           if (!field.value || !!field.value.type) return true
           break
-        // FIXME: pageType
         case 'pageType':
-          // const bannerPageTypeIndex = this.pageTypes.indexOf(banner[field.name])
           if (banner[field.name] !== field.value) return true
           break
         case 'sort':

@@ -79,7 +79,6 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
           case 'file':
             if (field.value) return true
             break
-          // FIXME: pageType
           case 'pageType':
             if (field.value !== this.pageTypes[0]) return true
             break

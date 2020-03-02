@@ -22,7 +22,7 @@
             +e.LABEL(for="title") Имя баннера
           +e.EL-INPUT.input(placeholder="Title" v-model="title")
           +e.error(v-html="titleField.errorMsg")
-        //- pageType // FIXME:
+        //- pageType
         +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': pageType && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
           +e.label
             +e.LABEL(for="pageType") Тип страницы
