@@ -6,5 +6,5 @@ const children = [
   { path: '*', redirect: { name: 'PageRestart' } }
 ]
 export default [
-  { path: '/restart', component: ModuleRestart, name: 'ModuleRestart', redirect: { name: 'PageRestart' }, children, meta: { title: 'Рестарт сервисов', isDynamicModule: true }  },
+  { path: '/restart', component: () => import(/* webpackChunkName: 'restart' */ '@/pages/ModuleRestart.vue'), name: 'ModuleRestart', redirect: { name: 'PageRestart' }, children, meta: { title: 'Рестарт сервисов', isDynamicModule: true }  },
 ]

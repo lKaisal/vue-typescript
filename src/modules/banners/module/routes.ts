@@ -1,7 +1,7 @@
 import PageBanners from '../pages/PageMain.vue'
 import PageCreate from '../pages/PageCreate.vue'
 import PageEdit from '../pages/PageEdit.vue'
-import ModuleBanners from '../../../pages/ModuleBanners.vue'
+// import ModuleBanners from '../../../pages/ModuleBanners.vue'
 
 const children = [
   { path: 'list', component: PageBanners, name: 'PageBanners' },
@@ -12,5 +12,5 @@ const children = [
 ]
 
 export default [
-  { path: '/banners', component: ModuleBanners, name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children, meta: { title: 'Баннеры', isDynamicModule: true } },
+  { path: '/banners', component: () => import(/* webpackChunkName: 'banners' */ '@/pages/ModuleBanners.vue'), name: 'ModuleBanners', redirect: { name: 'PageBanners' }, children, meta: { title: 'Баннеры', isDynamicModule: true } },
 ]

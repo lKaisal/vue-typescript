@@ -1,9 +1,10 @@
-import ModuleAuth from '@/pages/ModuleAuth.vue'
+// import ModuleAuth from '@/pages/ModuleAuth.vue'
 import PageAuth from '../pages/PageMain.vue'
 
 const children = [
+  { path: '/', name: 'PageAuth', component: PageAuth },
+  { path: '*', redirect: { name: 'PageAuth' } }
 ]
 export default [
-  { path: '/auth', component: PageAuth, name: 'PageAuth' },
-  { path: '/auth/*', redirect: { name: 'PageAuth' } },
+  { path: '/auth', component: () => import(/* webpackChunkName: 'auth' */ '@/pages/ModuleAuth.vue'), redirect: { name: 'PageAuth' }, children },
 ]

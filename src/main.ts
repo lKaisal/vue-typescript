@@ -12,10 +12,6 @@ import restart from './modules/restart/module'
 
 Vue.use(ElementUI)
 
-const ModuleBanners = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleBanners.vue');
-const ModuleFeatures = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleFeatures.vue');
-const ModuleRestart = () => import(/* webpackChunkName: 'banners' */ './pages/ModuleRestart.vue');
-
 /* Initialize System Module */ // initialized by default 
 // Store.registerModule('system', system.store)
 // Router.addRoutes(system.routes)
