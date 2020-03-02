@@ -250,7 +250,10 @@ class BannersMutations extends Mutations<BannersState> {
     }
   }
   // PAGETYPES
-  addPageType(payload: Banner['pageType']) { this.state.pageTypes.push(payload) }
+  addPageType(payload: Banner['pageType']) {
+    this.state.pageTypes.push(payload)
+    this.state.pageTypes.sort()
+  }
   setPageTypesList(payload: {pageType: Banner['pageType']}[]) {
     const dataMastered = payload.map(el => el.pageType).sort()
     this.state.pageTypes = dataMastered
