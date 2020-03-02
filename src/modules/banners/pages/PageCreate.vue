@@ -37,7 +37,7 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'pageTypes']),
     ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom'])
   },
   methods: {
@@ -63,6 +63,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
   secondBtn: Button = null
   popupFormIsShown: boolean = false
 
+  get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get bannerConflict() { return this.listActive.find(b => b.position === this.formSort.value) }
   get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
   get isPageCreate() { return this.$route.path.includes('/banners/create') }
@@ -78,8 +79,9 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
           case 'file':
             if (field.value) return true
             break
+          // FIXME: pageType
           case 'pageType':
-            if (field.value > 0) return true
+            if (field.value !== this.pageTypes[0]) return true
             break
           case 'sort':
             if (field.value.toString() !== this.activeAmount.value.toString()) return true
@@ -167,8 +169,8 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
   // OTHER HANDLERS
   keydownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
-      if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
-      else if (this.popupFormIsShown) this.closePopupConflict()
+      // if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
+      if (this.popupFormIsShown) this.closePopupConflict()
       else if (this.msgBoxIsShown) this.closeMsgBox()
     }
   }

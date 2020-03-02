@@ -44,8 +44,8 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'bannerCurrent']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'pageTypesSent', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
+    ...bannersMapper.mapState(['form', 'bannerCurrent', 'pageTypes']),
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
@@ -69,6 +69,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   secondBtn: Button = null
   popupFormIsShown: boolean = false
 
+  get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get banner() { return this.bannerCurrent.data }
   get bannerConflict() { return (this.formIsActive.value || this.formActiveFrom.value) && this.listActive.find(b => b.position === this.formSort.value && b.id !== this.banner.id) }
   get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
@@ -84,9 +85,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
           // @ts-ignore
           if (!field.value || !!field.value.type) return true
           break
+        // FIXME: pageType
         case 'pageType':
-          const bannerPageTypeIndex = this.pageTypesSent.indexOf(banner[field.name])
-          if (bannerPageTypeIndex !== field.value) return true
+          // const bannerPageTypeIndex = this.pageTypes.indexOf(banner[field.name])
+          if (banner[field.name] !== field.value) return true
           break
         case 'sort':
           if ((this.formIsActive.value || this.formActiveFrom.value) && Math.abs(banner.position) !== field.value) return true
@@ -126,8 +128,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 
   keydownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
-      if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
-      else if (this.popupFormIsShown) this.closePopupConflict()
+      // if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
+      if (this.popupFormIsShown) this.closePopupConflict()
       else if (this.msgBoxIsShown) this.closeMsgBox()
     }
   }

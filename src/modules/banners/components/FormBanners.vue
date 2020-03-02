@@ -22,12 +22,15 @@
             +e.LABEL(for="title") Имя баннера
           +e.EL-INPUT.input(placeholder="Title" v-model="title")
           +e.error(v-html="titleField.errorMsg")
-        //- pageType
-        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
+        //- pageType // FIXME:
+        +e.field._page-type(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': pageType && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
           +e.label
             +e.LABEL(for="pageType") Тип страницы
-          +e.EL-SELECT.select(ref="select" v-model="pageType" :disabled="allFieldsDisabled" :placeholder="pageTypesDisplayed[0]")
-            +e.EL-OPTION(v-for="(type, index) in pageTypesDisplayed.length" :key="index" :label="pageTypesDisplayed[index]" :value="index")
+          +e.EL-SELECT.select(v-show="!isCustomType" ref="pageTypeSelect" v-model="pageType" :disabled="allFieldsDisabled" placeholder="Введите тип страницы" @change="onPageTypeSelectChange")
+            +e.EL-OPTION.option(v-for="(type, index) in pageTypesMastered" :key="index" :label="type" :value="type" :class="{ 'is-custom': index === pageTypesMastered.length - 1 }")
+          +e.input-wrapper.is-custom(v-show="isCustomType")
+            +e.EL-INPUT.input(ref="pageTypeInput" placeholder="Введите тип страницы" v-model="pageType" @blur="onPageTypeInputBlur")
+            +e.I.icon-clear.el-icon-close(@click="resetPageType")
           +e.error(v-html="pageTypeField.errorMsg")
         +e.fields
           //- newsId
@@ -63,7 +66,7 @@
         //- sort
         +e.field._sort(v-if="activeAmountValue" :class="{ 'is-invalid': isInvalid(sortField), 'is-filled': sortBy && !sortIsDisabled, 'is-disabled': sortIsDisabled }")
           +e.LABEL.label(for="sortBy") Положение баннера
-          +e.EL-SELECT.select(:disabled="sortIsDisabled" ref="select" v-model="sortBy" :placeholder="activeAmountValue.toString()")
+          +e.EL-SELECT.select(:disabled="sortIsDisabled" v-model="sortBy" :placeholder="activeAmountValue.toString()")
             +e.EL-OPTION(v-for="n in activeAmountValue" :key="n" :label="n" :value="n")
           +e.error(v-html="sortField.errorMsg")
 </template>
@@ -78,12 +81,13 @@ import { MsgBoxContent } from '@/models'
 import { Banner, BannerForm, FormField } from '../models'
 import { bannersMapper } from '../module/store'
 import DragDrop from './DragDrop.vue'
+import { ElSelect } from 'element-ui/types/select'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'pageTypes']),
     ...bannersMapper.mapGetters(['listActive', 'listDelayed', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId',
-                                 'formPageType', 'formTitle', 'pageTypesDisplayed', 'bannerCurrentStatus'])
+                                 'formPageType', 'formTitle', 'bannerCurrentStatus'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown']),
@@ -103,6 +107,8 @@ export default class FormBanners extends Mappers {
   dateFormat: string = 'd-m-Y'
   @Ref() fromRef: HTMLElement
   @Ref() toRef: HTMLElement
+  @Ref() pageTypeInput: ElInput
+  @Ref() pageTypeSelect: ElSelect
 
   // FORM FIELDS
   get activeFromField() { return this.formActiveFrom }
@@ -127,7 +133,7 @@ export default class FormBanners extends Mappers {
   get newsId() { return this.newsIdField.value }
   set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
-  set pageType(value) { this.updateField({name: 'pageType', value: value || 0 }) }
+  set pageType(value) { this.updateField({name: 'pageType', value: value || ('' && !this.isCustomType && this.pageTypes[0]) }) }
   get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value : null }
   set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value}) : null }
   get title() { return this.titleField.value }
@@ -146,7 +152,11 @@ export default class FormBanners extends Mappers {
   get activeFromToDisabled() { return (this.isDelayedBanner && this.formIsActive.value) || this.sortIsDisabled || this.allFieldsDisabled }
   // FORD ADDITIONAL DATA
   get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
-  get isNewsType() { return this.pageType === 0 }
+  // PAGE TYPE
+  get pageTypesMastered() { return [...this.pageTypes, 'Добавить тип страницы'] }
+  get pageTypeIndex() { return this.pageType && this.pageTypes.indexOf(this.pageType.toString()) }
+  get isNewsType() { return this.pageType === 'news' }
+  get isCustomType() { return typeof this.pageTypeIndex !== 'number' || this.pageTypeIndex === this.pageTypes.length || this.pageTypeIndex < 0 }
   // ACTIVE AMOUNT
   get activeAmountValue() { return this.activeAmount.value }
 
@@ -170,7 +180,26 @@ export default class FormBanners extends Mappers {
   }
 
   // METHODS
-  isInvalid(field: FormField) { return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'imgExtension')) && field.validationRequired && !field.isValid }
+  isInvalid(field: FormField) {
+    return (this.form.validationIsShown || (field.name === 'file' && field.errorType === 'imgExtension')) && field.validationRequired && !field.isValid
+  }
+  // PageType fields
+  updatePageType(value) {
+    this.updateField({name: 'pageType', value })
+  }
+  resetPageType() {
+    this.updatePageType(this.pageTypes[0])
+  }
+  async onPageTypeSelectChange() {
+    if (this.isCustomType) {
+      this.updatePageType('')
+      await this.$nextTick()
+      this.pageTypeInput.focus()
+    }
+  }
+  onPageTypeInputBlur() {
+    if (!this.pageType) this.resetPageType()
+  }
   /** Date-pickers for activeFrom/activeTo */
   initPickers() {
     const configOpts = { 'locale': Russian, dateFormat: this.dateFormat, minDate: new Date(), disableMobile: true }
@@ -346,6 +375,31 @@ export default class FormBanners extends Mappers {
     +lt-xl()
       margin-top 10px
 
+  &__option
+    &.is-custom
+      position relative
+      padding-left 40px
+      // color $cBrand
+      fontMedium()
+      // color $cSecondaryText
+      &:before
+      &:after
+        content ''
+        position absolute
+        background-color $cPrimaryText
+      &:before
+        top 50%
+        left 20px
+        transform translateY(-50%)
+        width 11px
+        height 1px
+      &:after
+        top 50%
+        left 25px
+        transform translateY(-50%)
+        width 1px
+        height 11px
+
   &__input
   &__pickr
     display block
@@ -387,6 +441,7 @@ export default class FormBanners extends Mappers {
     position relative
 
   &__icon-clear
+    z-index 1
     position absolute
     top 50%
     transform translateY(-50%)
@@ -398,6 +453,7 @@ export default class FormBanners extends Mappers {
     opacity 0
     transition(opacity)
     .is-filled &
+    .is-custom &
       pointer-events auto
       opacity 1
     .is-disabled &
