@@ -128,3 +128,114 @@ h1.page-title
 .js-voa-start
   opacity 0
   transform translateY(30px)
+
+// FORM
+
+.form-field
+.form-row
+  max-width 450px
+
+.form-field
+  position relative
+  width-between-property 'margin-bottom' 1441 30 1920 35 true true
+  transition()
+  &.is-disabled
+    pointer-events none
+    >>> input
+      background-color $cDisabled
+      border-color $cLightBorder
+      color $cPlaceholderText
+      transition(background-color\, border-color\, color)
+  &.v-enter
+  &.v-leave-to
+    opacity 0
+
+.form-label
+  display block
+  margin-bottom 10px
+  fontLight()
+  font-size 15px
+  color $cPrimaryText
+  white-space nowrap
+  transition(opacity)
+
+.form-error
+  position absolute
+  top calc(100% + 7px)
+  left 0
+  fontLight()
+  font-size 12px
+  color $cDanger
+  opacity 0
+  transition()
+  +lg()
+    top calc(100% + 5px)
+  .is-invalid &
+    opacity 1
+
+.form-input-wrapper
+  position relative
+
+.form-input
+.form-select
+.form-pickr
+.el-input
+.el-input__inner
+.el-select:hover .el-input__inner
+.el-input__inner:hover
+  font-size 18px !important
+  >>> input
+    font-size 18px
+  .is-filled &
+    border-color $cBrand
+    >>> input
+      border-color $cBrand
+  .is-invalid &
+    border-color $cDanger !important
+    >>> input
+      border-color $cDanger !important
+
+.form-input
+.form-pickr
+  display block
+  .is-invalid &
+    animation pulsate ease-in-out .5s both
+
+.form-pickr
+  .is-disabled &
+    background-color $cDisabled
+    border-color $cLightBorder
+    color $cPlaceholderText
+    transition(background-color\, border-color\, color)
+
+.form-select
+  display block
+  // +lt-xl()
+  //   margin-top 10px
+
+.form-icon-clear
+  z-index 1
+  position absolute
+  top 50%
+  transform translateY(-50%)
+  right 5px
+  padding 5px
+  color $cPlaceholderText
+  cursor pointer
+  pointer-events none
+  opacity 0
+  transition(opacity)
+  .is-filled &
+  .is-custom &
+    pointer-events auto
+    opacity 1
+  .is-disabled &
+    pointer-events none
+
+.form-comment
+  fontLight()
+  font-style italic
+  font-size 12px
+  transition(opacity)
+  &.is-transparent
+    opacity 0
