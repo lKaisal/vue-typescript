@@ -9,6 +9,7 @@ import banners from './modules/banners/module'
 import features from './modules/features/module'
 import auth from './modules/auth/module'
 import restart from './modules/restart/module'
+import phones from './modules/phones/module'
 
 Vue.use(ElementUI)
 
@@ -22,6 +23,7 @@ Store.dispatch('system/initializeModule', auth)
 Store.dispatch('system/initializeModule', banners)
 Store.dispatch('system/initializeModule', features)
 Store.dispatch('system/initializeModule', restart)
+Store.dispatch('system/initializeModule', phones)
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);

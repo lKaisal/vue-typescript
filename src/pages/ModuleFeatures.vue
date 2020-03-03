@@ -5,9 +5,9 @@
     +e.container(v-if="list.data && list.data.length")
       +e.title.H1.page-title.js-voa.js-voa-start Управление разделами приложения
       router-view
-      transition
-        MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox()" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
-          class="module-features__msg-box modal modal-msg")
+    transition
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox()" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
+        class="module-features__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">

@@ -50,7 +50,7 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   }
 
   created() {
-    this.updateList()
+    // this.updateList()
   }
 
   goToPageApp() { this.$router.push({ path: '/' }) }
