@@ -16,7 +16,7 @@
               +e.LABEL(for="pswd") Пароль
             +e.EL-INPUT.input(placeholder="Пароль" v-model="pswd" show-password)
             +e.error(v-html="formPswd.errorMsg")
-          ButtonApp(btnType="primary" @clicked="onSubmit" text="Войти" class="page-main__btn")
+          ButtonApp(btnType="primary" :isDisabled="!login || !pswd" @clicked="onSubmit" text="Войти" class="page-main__btn")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")

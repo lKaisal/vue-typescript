@@ -51,21 +51,7 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
 
     this.loadGlobalData()
       .catch((err) => {
-        if (err && err.status && (err.status === 401 || err.status === 400)) this.goToPageAuth()
-        else {
-          this.requestStatus = 'failFetchList'
-          this.openMsgBox()
-        }
-      })
-  }
-  updateList() {
-    if (this.list.isLoading) return
-
-    if (this.msgBoxIsShown) this.closeMsgBox()
-
-    this.getList()
-      .catch((err) => {
-        if (err && err.status && (err.status === 401 || err.status === 400)) this.goToPageAuth()
+        if (err && err.status && err.status.toString().slice(0, 2) == 40 || !err) this.goToPageAuth()
         else {
           this.requestStatus = 'failFetchList'
           this.openMsgBox()

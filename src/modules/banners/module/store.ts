@@ -266,7 +266,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       const promisesArr = [this.dispatch('getList', null), this.dispatch('getActiveAmount', null), this.dispatch('getPageTypesList', null)]
       Promise.all(promisesArr)
         .then(() => resolve())
-        .catch(() => reject())
+        .catch((err) => reject(err))
     })
   }
   async getList() {
@@ -282,7 +282,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           resolve()
         })
         .catch(error => {
-          console.log(error.response)
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setListLoadingFail', errMsg)
           reject(error.response)
