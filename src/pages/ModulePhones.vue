@@ -3,7 +3,7 @@
 
   +b.module-restart.page(v-loading.fullscreen.lock="isLoading")
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-      +e.title.H1.page-title.js-voa.js-voa-start Перезапуск сервисов
+      +e.title.H1.page-title.js-voa.js-voa-start Выбор поставщика
       router-view
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { restartMapper } from '@/modules/restart/module/store'
+import { phonesMapper } from '@/modules/phones/module/store'
 import ListRestart from '@/modules/restart/components/ListRestart.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
@@ -22,11 +22,11 @@ import animateIfVisible from '@/mixins/animateIfVisible'
 
 const Mappers = Vue.extend({
   computed: {
-    ...restartMapper.mapState(['list']),
-    ...restartMapper.mapGetters(['isLoading'])
+    ...phonesMapper.mapState(['list']),
+    ...phonesMapper.mapGetters(['isLoading'])
   },
   methods: {
-    ...restartMapper.mapActions(['getList']),
+    ...phonesMapper.mapActions(['getList']),
   }
 })
 
@@ -37,11 +37,11 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'danger', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
 
-  @Watch('list', { deep: true })
+  @Watch('list', { immediate: true, deep: true })
   async onListChange(val) {
     if (val.data && val.data.length) {
       await this.$nextTick()

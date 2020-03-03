@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Service, ListSort, EditPayload } from '../models'
+import { Supplier, ListSort, EditPayload } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
@@ -8,9 +8,18 @@ const namespaced = true
 class PhonesState {
   edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   hashes: ['active', 'inactive'] = ['active', 'inactive']
-  list: { data: Service[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
-  listSort: ListSort = { by: 'serviceName', direction: 'asc' }
-  // list: { data: Service[], error: string, isLoading: boolean } =  { data: [{active: true, createdAt: '20-02-2020', description: 'description', feature: 'Feature', id: 1, name: 'Name', updatedAt: '20-02-2020', username: 'Username'}], error: null, isLoading: false }
+  // list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
+  listSort: ListSort = { by: 'id', direction: 'asc' }
+  list: { data: Supplier[], error: string, isLoading: boolean } =  { 
+    data: [
+      { id: 0, email: 'email', inn: '12345567', name: 'Name', phone: '88888888' },
+      { id: 1, email: 'amail', inn: '09887565', name: 'Came', phone: '9393939' },
+      { id: 2, email: 'umail', inn: '848484848', name: 'Cate', phone: '91010101' },
+      { id: 3, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
+    ], 
+    error: null,
+    isLoading: false
+  }
 }
 
 class PhonesGetters extends Getters<PhonesState> {
@@ -23,25 +32,30 @@ class PhonesGetters extends Getters<PhonesState> {
     const sortBy = this.state.listSort.by
     const sortDirection = this.state.listSort.direction
 
-    return list.sort((a,b) => {
+    const sorted = list.sort((a,b) => {
       let sortA = a[sortBy]
       let sortB = b[sortBy]
 
       switch (sortBy) {
-        case 'serviceName':
-          sortA = sortA.toString().charAt(0).toUpperCase() + sortA.toString().slice(1)
-          sortB = sortB.toString().charAt(0).toUpperCase() + sortB.toString().slice(1)
-          break
-
-        case 'replicas':
+        case 'id':
           sortA = Number(sortA)
           sortB = Number(sortB)
+          break
+
+        // case 'name':
+        // case 'email':
+        // case 'phone':
+        default:
+          sortA = sortA.toString().charAt(0).toUpperCase() + sortA.toString().slice(1)
+          sortB = sortB.toString().charAt(0).toUpperCase() + sortB.toString().slice(1)
           break
       }
 
       if ((sortA > sortB && sortDirection === 'asc') || (sortA < sortB && sortDirection === 'desc')) return 1
       else return -1
     })
+
+    return [...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted, ...sorted]
   }
 }
 
@@ -54,7 +68,7 @@ class PhonesMutations extends Mutations<PhonesState> {
     this.state.list.isLoading = true
     this.state.list.error = null
   }
-  setListLoadingSuccess(payload: Service[]) {
+  setListLoadingSuccess(payload: Supplier[]) {
     this.state.list.data = payload
     this.state.list.isLoading = false
     this.state.list.error = null

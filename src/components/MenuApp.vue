@@ -7,7 +7,6 @@
         +e.I.toggle-icon(:key="menuIsOpen" @click="onToggleClick" :class="{ 'el-icon-s-fold': menuIsOpen, 'el-icon-s-unfold': !menuIsOpen }")
       transition(mode="out-in")
         +e.links-wrapper(v-if="menuIsOpen" v-click-outside="onClickOutside")
-          //- +e.H1.title.page-title Список разделов
           +e.links
             +e.link-wrapper(v-for="(route, index) in routes")
               +e.ROUTER-LINK.link(tag="div" :to="route.path")

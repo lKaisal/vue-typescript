@@ -3,6 +3,7 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="!isLoading && list.data && list.data.length")
+      ListSuppliers(:list="listSorted" class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown && editFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
@@ -19,6 +20,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import { EditPayload } from '../models'
+import ListSuppliers from '../components/ListSuppliers.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -34,6 +36,7 @@ const Mappers = Vue.extend({
   components: {
     MessageBox,
     ButtonApp,
+    ListSuppliers
   },
   mixins: [
     MsgBoxTools

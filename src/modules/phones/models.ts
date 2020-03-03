@@ -1,10 +1,13 @@
-type Service = {
-  serviceName: string,
-  replicas: number
+type Supplier = {
+  email: string,
+  id: number,
+  inn: string,
+  name: string,
+  phone: string,
 }
 
 type ListSort = {
-  by: keyof Service,
+  by: keyof Supplier,
   direction: 'asc' | 'desc'
 }
 
@@ -19,4 +22,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit'
 }
 
-export { Service, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }
