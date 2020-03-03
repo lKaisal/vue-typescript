@@ -4,7 +4,7 @@
   +b.app
     +e.container.container
       //- nav
-      +e.TRANSITION-GROUP.nav(appear tag="div")
+      +e.TRANSITION-GROUP.nav(tag="div")
         //- BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
         LogOut(v-show="logOutIsShown" key="logout" class="app__log-out")
         MenuApp(v-show="!isPageAuth" key="menu" class="app__menu")
@@ -48,7 +48,7 @@ export default class App extends Vue {
   openMenu!: () => void
   closeMenu!: () => void
 
-  get isRootPage() { return this.$route && this.$route.fullPath === '/' }
+  get isRootPage() { return this.$route && this.$route.fullPath === '/' && this.$route.name }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
   get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
   get crumbsShown() { return this.logOutIsShown && this.routes && this.routes.length }
@@ -59,6 +59,7 @@ export default class App extends Vue {
 
   @Watch('$route', { immediate: true, deep: true }) 
   onRouteChange(val) {
+    console.log(val, this.isRootPage, this.isPageAuth)
     if (this.isRootPage) this.openMenu()
     else this.closeMenu()
   }
@@ -111,6 +112,8 @@ $arrowSize = $offsetXl / 2
     &.v-enter
     &.v-leave-to
       opacity 0
+    &.v-enter-active
+      transition-delay $tFast
 
   &__breadcrumbs
     left 0
@@ -138,4 +141,6 @@ $arrowSize = $offsetXl / 2
     &.v-enter
     &.v-leave-to
       opacity 0
+    &.v-enter-active
+      transition-delay $tFast
 </style>
