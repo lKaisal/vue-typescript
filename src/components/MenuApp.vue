@@ -51,6 +51,13 @@ export default class MenuApp extends Vue {
   get routes() { return this.$store.getters['system/modules'] }
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
 
+  created() {
+    document.addEventListener('keydown', this.keyDownHandler)
+  }
+  beforeDestroy() {
+    document.addEventListener('keydown', this.keyDownHandler)
+  }
+
   onToggleClick() {
     if (!this.isRootPage) this.toggleMenu()
   }
@@ -58,6 +65,9 @@ export default class MenuApp extends Vue {
     if (this.isRootPage) return
 
     if (this.menuIsOpen) this.closeMenu()
+  }
+  keyDownHandler(evt: KeyboardEvent) {
+    if (evt.key === 'Escape') this.onClickOutside()
   }
 }
 </script>

@@ -59,7 +59,6 @@ export default class App extends Vue {
 
   @Watch('$route', { immediate: true, deep: true }) 
   onRouteChange(val) {
-    console.log(val, this.isRootPage, this.isPageAuth)
     if (this.isRootPage) this.openMenu()
     else this.closeMenu()
   }
