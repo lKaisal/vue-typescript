@@ -2,7 +2,7 @@ import axios from 'axios'
 import LocalStorageService from '@/services/LocalStorageService'
 
 const service = axios.create({
-  headers: {'Cache-Control': 'no-cache'},
+  headers: { 'Cache-Control': 'no-cache' },
 })
 
 // Request interceptor

@@ -56,6 +56,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   popupAmountIsShown: boolean = false
   amountForUpdate: number = null
 
+  get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get activeAmountValue() { return this.activeAmount.value }
 
   @Watch('list', { immediate: true })

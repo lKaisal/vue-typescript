@@ -3,9 +3,9 @@
 
   +b.module-banners.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
-      router-view(v-if="list.data && list.data.length" @updateList="updateList" class="module-banners__page page")
+      router-view(v-if="list.data && list.data.length" @updateList="loadData" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
+      MessageBox(v-show="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
         class="module-banners__msg-box modal modal-msg")
 </template>
 
@@ -24,7 +24,7 @@ const Mappers = Vue.extend({
   },
   methods: {
     ...bannersMapper.mapMutations(['clearForm']),
-    ...bannersMapper.mapActions(['getList', 'getActiveAmount'])
+    ...bannersMapper.mapActions(['loadGlobalData', 'getList'])
   }
 })
 
@@ -36,6 +36,7 @@ const Mappers = Vue.extend({
 
 export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxToolsApp) {
   secondBtn: Button = { type: 'danger', isPlain: true }
+  get failedFetchList() { return this.requestStatus === 'failFetchList' }
 
   created() {
     this.loadData()
@@ -48,8 +49,7 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
 
     if (this.msgBoxIsShown) this.closeMsgBox()
 
-    const promisesArr = [this.getList(), this.getActiveAmount()]
-    Promise.all(promisesArr)
+    this.loadGlobalData()
       .catch((err) => {
         if (err && err.status && (err.status === 401 || err.status === 400)) this.goToPageAuth()
         else {

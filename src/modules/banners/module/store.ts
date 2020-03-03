@@ -42,7 +42,7 @@ class BannersState {
   isLoading: boolean = false // deleteBanner, deactivateBanner
   loadingError: string = null
   list: { data: Banner[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
-  pageTypes: { displayed: string[], sent: string[] } = { displayed: ['Новость', 'Раздел'], sent: ['news', 'notnews'] }
+  pageTypes: string[] = ['news']
 }
 
 class BannersGetters extends Getters<BannersState> {
@@ -138,7 +138,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.appLink = this.getters.formAppLink.value && this.getters.formAppLink.value.toString() || ''
     formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || (this.getters.bannerCurrentStatus === 'delayed').toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
-    formData.pageType = this.getters.pageTypesSent[Number(this.getters.formPageType.value)].toString() || ''
+    formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
     formData.sort = (this.getters.formIsActive.value || this.state.bannerCurrent.data.delayStart) && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && (this.state.activeAmount.value).toString()
     formData.title = this.getters.formTitle.value && this.getters.formTitle.value.toString() || ''
 
@@ -162,8 +162,6 @@ class BannersGetters extends Getters<BannersState> {
       console.log(err)
     }
   }
-  get pageTypesDisplayed() { return this.state.pageTypes.displayed }
-  get pageTypesSent() { return this.state.pageTypes.sent }
 }
 
 class BannersMutations extends Mutations<BannersState> {
@@ -232,7 +230,7 @@ class BannersMutations extends Mutations<BannersState> {
     const fields = this.state.form.data
 
     fields.forEach(field => {
-      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount.value : (field.name === 'pageType' ? 0 : null))
+      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount.value : (field.name === 'pageType' ? this.state.pageTypes[0] : null))
       field.isValid = field.name === 'sort' || field.name === 'pageType'
       field.validationRequired = field.name === 'file' || field.name === 'newsId' || field.name === 'title'
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
@@ -251,9 +249,26 @@ class BannersMutations extends Mutations<BannersState> {
       }
     }
   }
+  // PAGETYPES
+  addPageType(payload: Banner['pageType']) {
+    this.state.pageTypes.push(payload)
+    this.state.pageTypes.sort()
+  }
+  setPageTypesList(payload: {pageType: Banner['pageType']}[]) {
+    const dataMastered = payload.map(el => el.pageType).sort()
+    this.state.pageTypes = dataMastered
+  }
 }
 
 class BannersActions extends Actions<BannersState, BannersGetters, BannersMutations, BannersActions> {
+  async loadGlobalData() {
+    return new Promise((resolve, reject) => {
+      const promisesArr = [this.dispatch('getList', null), this.dispatch('getActiveAmount', null), this.dispatch('getPageTypesList', null)]
+      Promise.all(promisesArr)
+        .then(() => resolve())
+        .catch(() => reject())
+    })
+  }
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
@@ -449,12 +464,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'newsId':
+        if (!field.value) field.value = ''
         field.isValid = !!Number(field.value)
         if (value && value.toString() && !field.isValid) field.errorType = 'default'
         break
 
       case 'pageType':
-        if (field.value === 0) {
+        if (field.value === 'news') {
           newsId.validationRequired = true
           this.dispatch('updateField', ({name: 'newsId', value: newsId.value}))
           appLink.validationRequired = false
@@ -485,9 +501,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break
         case 'pageType':
-          const valueSent = data.pageType
-          const index = this.getters.pageTypesSent.indexOf(valueSent)
-          const value = index >= 0 ? index : 1
+          const pageTypes = this.state.pageTypes
+          const value = data.pageType
+          const indexOfReceived = pageTypes.indexOf(value)
+          if (indexOfReceived < 0) this.commit('addPageType', value)
+
           this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
@@ -542,17 +560,39 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('startActiveAmountLoading')
 
       axios.post(`/api/v1/active-count/${payload}`)
-      .then((res: AxiosResponse<any>) => {
-        this.commit('setActiveAmountSuccess', res.data.count)
-        console.log('Success: set activeAmount: ' + res.data.count)
-        resolve()
-      })
-      .catch((error: AxiosError) => {
-        console.log(error.response)
-        const errMsg = error.response && error.response.data && error.response.data.message
-        this.commit('setActiveAmountFail', errMsg)
-        reject()
-      })
+        .then((res: AxiosResponse<any>) => {
+          this.commit('setActiveAmountSuccess', res.data.count)
+          console.log('Success: set activeAmount: ' + res.data.count)
+          resolve()
+        })
+        .catch((error: AxiosError) => {
+          console.log(error.response)
+          const errMsg = error.response && error.response.data && error.response.data.message
+          this.commit('setActiveAmountFail', errMsg)
+          reject()
+        })
+    })
+  }
+  /** Get bannes pageTypes list */
+  getPageTypesList() {
+    return new Promise(async (resolve, reject) => {
+      this.commit('startLoading')
+
+      axios.get('/api/v1/page-types')
+        .then((res: AxiosResponse<any>) => {
+          while (!Array.isArray(res)) res = res.data
+
+          this.commit('setPageTypesList', res)
+          this.commit('setLoadingSuccess')
+          console.log('Success: get pageTypes')
+          resolve()
+        })
+        .catch((error: AxiosError) => {
+          console.log(error.response)
+          const errMsg = error.response && error.response.data && error.response.data.message
+          this.commit('setLoadingFail', errMsg)
+          reject()
+        })
     })
   }
 }
