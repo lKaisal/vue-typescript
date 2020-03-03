@@ -23,7 +23,7 @@ Store.dispatch('system/initializeModule', auth)
 Store.dispatch('system/initializeModule', banners)
 Store.dispatch('system/initializeModule', features)
 Store.dispatch('system/initializeModule', restart)
-Store.dispatch('system/initializeModule', phones)
+// Store.dispatch('system/initializeModule', phones)
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);

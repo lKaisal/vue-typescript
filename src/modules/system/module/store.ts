@@ -7,6 +7,7 @@ export default {
   namespaced: true,
   state: {
     currentDevice: { orientation: null, type: null, os: null } as CurrentDevice,
+    menuIsOpen: false as boolean,
     modules: []
   },
   getters: {
@@ -21,7 +22,10 @@ export default {
       const { orientation, type, os  } = payload
       state.currentDevice = Object.assign({}, { orientation, type, os } )
     },
-    setRoutes(state, payload) { state.modules.push(payload) }
+    setRoutes(state, payload) { state.modules.push(payload) },
+    toggleMenu: (state) => state.menuIsOpen = !state.menuIsOpen,
+    openMenu: (state) => state.menuIsOpen = true,
+    closeMenu: (state) => state.menuIsOpen = false
   },
   actions: {
     initializeModule ({ state, commit }, module: any) {

@@ -19,7 +19,6 @@ import trim from 'validator/lib/trim'
 import { ElInput } from 'element-ui/types/input'
 import { Banner, BannerForm, FormField } from '../models'
 import { bannersMapper } from '../module/store'
-import DragDrop from './DragDrop.vue'
 import { ElSelect } from 'element-ui/types/select'
 
 const Mappers = Vue.extend({
@@ -33,9 +32,6 @@ const Mappers = Vue.extend({
 })
 
 @Component({
-  components: {
-    DragDrop,
-  }
 })
 
 export default class FormPagetype extends Mappers {

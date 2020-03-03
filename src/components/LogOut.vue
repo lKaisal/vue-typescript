@@ -2,13 +2,14 @@
   include ../tools/bemto.pug
 
   +b.log-out
-    +e.container(@click="logOut")
-      IconSvg(icon="logout" class="log-out__icon")
+    +e.container(@click="logOut" :class=" { 'is-in-menu': isInMenu } ")
+      IconSvg(v-if="!isInMenu" icon="logout" class="log-out__icon")
       +e.text Выйти
+      IconSvg(v-if="isInMenu" icon="logout" class="log-out__icon log-out__icon_right")
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Watch, Prop } from 'vue-property-decorator'
 import IconSvg from '@/components/IconSvg.vue'
 import LocalStorageService from '@/services/LocalStorageService'
 
@@ -19,6 +20,8 @@ import LocalStorageService from '@/services/LocalStorageService'
 })
 
 export default class LogOut extends Vue {
+  @Prop() isInMenu: boolean
+
   logOut() {
     LocalStorageService.clearToken()
     this.$router.push({ name: 'PageAuth' })
@@ -42,10 +45,16 @@ export default class LogOut extends Vue {
 
   &__text
     font-size 14px
+    .is-in-menu &
+      font-size 16px
+      fontMedium()
 
   &__icon
     margin-right 5px
     width 15px
     height 15px
     fill $cRegularText
+    &_right
+      margin-right 0
+      margin-left 10px
 </style>

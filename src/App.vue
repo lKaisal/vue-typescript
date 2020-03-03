@@ -5,13 +5,13 @@
     +e.container.container
       //- nav
       +e.TRANSITION-GROUP.nav(appear tag="div")
-        BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
-        LogOut(v-show="navIsShown" key="logout" class="app__log-out")
+        //- BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
+        LogOut(v-show="logOutIsShown" key="logout" class="app__log-out")
+        MenuApp(v-show="!isPageAuth" key="menu" class="app__menu")
 
       //- content
       transition(mode="out-in")
-        LinksApp(v-if="isRootPage" class="app__links")
-        router-view(v-else class="app__page page")
+        router-view(v-if="!isRootPage" key="router" class="app__page page")
 </template>
 
 <script lang="ts">
@@ -21,11 +21,12 @@ import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
 import LogOut from '@/components/LogOut.vue'
 import BreadcrumbsApp from '@/components/BreadcrumbsApp.vue'
-import LinksApp from '@/components/LinksApp.vue'
+import MenuApp from '@/components/MenuApp.vue'
 import LocalStorageService from './services/LocalStorageService'
 import device from 'current-device'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
+import { mapMutations } from 'vuex'
 
 @Component({
   components: {
@@ -33,30 +34,42 @@ import sleep from '@/mixins/sleep'
     IconSvg,
     LogOut,
     BreadcrumbsApp,
-    LinksApp
+    MenuApp
+  },
+  methods: {
+    ...mapMutations('system', [
+      'openMenu',
+      'closeMenu'
+    ])
   }
 })
 
 export default class App extends Vue {
+  openMenu!: () => void
+  closeMenu!: () => void
+
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
-  get navIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
-  get crumbsShown() { return this.navIsShown && this.routes && this.routes.length }
+  get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
+  get crumbsShown() { return this.logOutIsShown && this.routes && this.routes.length }
   get routes() { return this.$store.getters['system/modules'] }
+  get accessToken() { return LocalStorageService.getAccessToken() }
+  get refreshToken() { return LocalStorageService.getRefreshToken() }
+  get isAuthorized() { return this.accessToken || this.refreshToken }
 
+  @Watch('$route', { immediate: true, deep: true }) 
+  onRouteChange(val) {
+    if (this.isRootPage) this.openMenu()
+    else this.closeMenu()
+  }
   created() {
-    this.initLocalStorageService()
+    if (!this.isAuthorized) this.$router.push({ name: 'PageAuth' })
     this.$store.commit('system/setCurrentDevice', device)
   }
 
   onBannersClick() { this.$router.push({path: '/banners'}) }
   onFeaturesClick() { this.$router.push({path: '/features'}) }
   onRestartClick() { this.$router.push({path: '/restart'}) }
-  initLocalStorageService() {
-    const accessToken = LocalStorageService.getAccessToken()
-    const refreshToken = LocalStorageService.getRefreshToken()
-    if (!accessToken || !refreshToken) this.$router.push({ name: 'PageAuth' }).catch(() => {})
-  }
 }
 </script>
 
@@ -114,8 +127,14 @@ $arrowSize = $offsetXl / 2
     flex-direction column
     flex-grow 1
 
-  &__links
-    transition()
+  &__menu
+    z-index 5
+    position fixed
+    top 0
+    bottom 0
+    left 0
+    height 100%
+    transition(opacity)
     &.v-enter
     &.v-leave-to
       opacity 0
