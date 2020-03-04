@@ -6,14 +6,14 @@
       +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
         +e.row.table-row
-          +e.title.table-cell(v-for="(title, index) in tableTitles" :class="{ 'col-05': index === 0, 'col-2': index > 0 }")
+          +e.title.table-cell(v-for="(title, index) in tableTitles" :class="{ 'col-05': index === 0, 'col-2': index > 0 && index < tableTitles.length - 1, 'col-075': index === tableTitles.length - 1 }")
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="title")
-              +e.title-sort
+              +e.title-sort(v-if="index !== tableTitles.length - 1")
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index" :supplier="item"
+        ItemSuppliers(v-for="(item, index) in list" :key="index" :supplier="item" @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
 
       //- ButtonApp(v-if="list.length" :text="btnText" :btnType="btnType" class="list-suppliers__btn")
@@ -52,7 +52,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   @Prop() list: Supplier[]
   @Prop() isActive: boolean
 
-  tableTitles: string[] = [ 'id', 'Название', 'ИНН', 'Телефон', 'E-mail' ]
+  tableTitles: string[] = [ 'id', 'Название', 'ИНН', 'Телефон', 'E-mail', '' ]
   fields: (keyof Supplier)[] = [ 'id', 'name', 'inn', 'phone', 'email' ]
 
   get amountTotal() { return this.list && this.list.length }
@@ -78,6 +78,10 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   resetSort() {
     const listSort: ListSort = { by: 'id', direction: 'asc' }
     this.updateListSort(listSort)
+  }
+  // ITEMS METHODS
+  onItemClick(item: Supplier) {
+    this.$emit('itemClicked', item.id)
   }
 }
 </script>

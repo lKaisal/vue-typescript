@@ -3,11 +3,12 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="!isLoading && list.data && list.data.length")
-      ListSuppliers(:list="currentList" class="page-main__list")
+      ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
-    transition
-      MessageBox(v-show="msgBoxIsShown && editFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
+    transition-group
+      MessageBox(v-show="msgBoxIsShown && editFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
+      PopupSupplier(v-if="popupIsShown" :supplier="popupSupplier" key="popup" @confirm="onPopupConfirm" @discard="onPopupDiscard" class="page-main__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -17,12 +18,13 @@ import { phonesMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
 import MessageBox from '@/components/MessageBox.vue'
+import PaginationApp from '@/components/PaginationApp.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import { EditPayload } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
-import PaginationApp from '@/components/PaginationApp.vue'
+import PopupSupplier from '../components/PopupSupplier.vue'
 
 const Mappers = Vue.extend({
   computed: {
@@ -39,7 +41,8 @@ const Mappers = Vue.extend({
     MessageBox,
     ButtonApp,
     ListSuppliers,
-    PaginationApp
+    PaginationApp,
+    PopupSupplier
   },
   mixins: [
     MsgBoxTools
@@ -50,6 +53,9 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   editPayload: EditPayload = null // for repeated request
   pageSize: number = 25
   currentPage: number = 1
+  popupId: number = null
+
+  // list getters
   get editFailed() { return this.requestStatus === 'failEdit' }
   get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
   get listByPages() {
@@ -66,6 +72,9 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     return arr
   }
   get currentList() { return this.listByPages && this.listByPages[this.currentPage - 1] }
+  // popup getters
+  get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
+  get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.id === this.popupId) }
 
   // PAGINATION click handler
   onCurrentChange(n) {
@@ -87,6 +96,16 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.requestStatus = 'failEdit'
         this.openMsgBox()
       })
+  }
+  onItemClick(id) {
+    this.popupId = id
+  }
+  // POPUP click handler
+  onPopupConfirm() {
+    this.popupId = null
+  }
+  onPopupDiscard() {
+    this.popupId = null
   }
   // MSGBOX click handler
   onFirstBtnClick() {
