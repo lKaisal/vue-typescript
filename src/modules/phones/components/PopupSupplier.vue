@@ -5,12 +5,16 @@
     +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.btn-close(@click="discard")
         +e.I.icon-close.el-icon-close.modal-icon-close
-      +e.H3.title Информация о пользователе
-      +e.info
-        +e.row(v-for="(field, index) in infoFields")
-          +e.info-title(v-html="`${infoTitles[index]}:&nbsp;`")
-          +e.info-content(v-html="supplier[field]")
-      +e.btns
+      +e.info-block
+        +e.H3.title Информация о пользователе
+        +e.info
+          +e.row(v-for="(field, index) in infoFields")
+            +e.info-title(v-html="`${infoTitles[index]}:&nbsp;`")
+            +e.info-content(v-html="supplier[field]")
+      +e.phone-block
+        +e.H3.title Смена номера телефона
+        PhoneManage(:id="supplier.id" class="popup-supplier__phone-manage")
+      //- +e.btns
         ButtonApp(btnType="primary" @clicked="confirm" text="Подтвердить" class="popup-supplier__btn")
         ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-supplier__btn")
 </template>
@@ -23,6 +27,7 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import { Supplier } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
+import PhoneManage from '../components/PhoneManage.vue'
 
 const Mappers = Vue.extend({
   methods: {
@@ -34,7 +39,8 @@ const Mappers = Vue.extend({
     clickOutside: vClickOutside.directive
   },
   components: {
-    ButtonApp
+    ButtonApp,
+    PhoneManage
   }
 })
 

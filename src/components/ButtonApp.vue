@@ -2,7 +2,7 @@
   include ../tools/bemto.pug
 
   +b.button-app
-    +e.container(:style="setContainerStyle()" :class="[btnType, { 'is-plain': isPlain, 'is-disabled': isDisabled, 'is-low': isLow }]" @click="onClick")
+    +e.container(:style="setContainerStyle()" :class="[btnType, { 'is-plain': isPlain, 'is-disabled': isDisabled, 'is-low': isLow, 'is-height-auto': isHeightAuto }]" @click="onClick")
       +e.text(v-html="text")
       +e.icon-wrapper(v-if="icon")
         +e.I.icon(:class="icon")
@@ -27,6 +27,7 @@ export default class ButtonApp extends Vue {
   @Prop() icon: string
   @Prop() width: number
   @Prop() isLow: boolean
+  @Prop() isHeightAuto: boolean
 
   setContainerStyle() {
     if (!this.width) return
@@ -60,6 +61,9 @@ export default class ButtonApp extends Vue {
       cursor url('/static/images/block.png'), not-allowed
     &.is-low
       padding 10px 20px
+    &.is-height-auto
+      padding 0 20px
+      height 100%
     &.primary
       background-color $cBrand
       border 1px solid $cBrand

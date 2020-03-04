@@ -19,10 +19,11 @@ import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 import { Button } from '@/models'
 import animateIfVisible from '@/mixins/animateIfVisible'
+import LibPhoneNumber from 'google-libphonenumber'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapState(['list']),
+    ...phonesMapper.mapState(['list', 'countries']),
     ...phonesMapper.mapGetters(['isLoading'])
   },
   methods: {
@@ -38,6 +39,8 @@ const Mappers = Vue.extend({
 })
 
 export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+  pnf: any = null
+  phoneUtil: any = null
   secondBtn: Button = { type: 'danger', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
 

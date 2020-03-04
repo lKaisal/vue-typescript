@@ -1,13 +1,20 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Supplier, ListSort, EditPayload } from '../models'
+import { Supplier, ListSort, EditPayload, Country } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
 
 class PhonesState {
+  countries: Country[] = [
+    { name: 'Russia', code: 'RU', phoneCode: 7, mask: '999 999 99 99' },
+    { name: 'Belarus', code: 'BY', phoneCode: 375, mask: '99 999 99 99' },
+    { name: 'Kazakhstan', code: 'KZ', phoneCode: 7, mask: '999 999 99 99' },
+    { name: 'Kyrgyzstan', code: 'KG', phoneCode: 996, mask: '99 999 99 99' },
+    { name: 'Ukraine', code: 'UA', phoneCode: 380, mask: '99 999 99 99' },
+    { name: 'Armenia', code: 'AM', phoneCode: 374, mask: '99 99 99 99' },
+  ]
   edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
-  hashes: ['active', 'inactive'] = ['active', 'inactive']
   // list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listSort: ListSort = { by: 'id', direction: 'asc' }
   list: { data: Supplier[], error: string, isLoading: boolean } =  { 

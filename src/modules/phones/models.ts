@@ -13,6 +13,13 @@ type ListSort = {
 
 type EditPayload = { serviceName: string }[]
 
+type Country = {
+  name: string,
+  code: string,
+  phoneCode: number,
+  mask: string
+}
+
 type RequestStatus = RequestStatuses[RequestType]
 
 type RequestType = 'success' | 'fail'
@@ -22,4 +29,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit'
 }
 
-export { Supplier, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, ListSort, EditPayload, Country, RequestStatus, RequestType, RequestStatuses }
