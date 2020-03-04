@@ -175,9 +175,8 @@ class PhonesActions extends Actions<PhonesState, PhonesGetters, PhonesMutations,
         .catch(error => {
           if (error && error.response) {
             console.log(error.response)
-            this.commit('setListLoadingFail', error.response.data.message)
-          } else {
-            this.commit('setListLoadingFail', null)
+            const errMsg = error.response && error.response.data && error.response.data.message || null
+            this.commit('setListLoadingFail', errMsg)
           }
           reject()
         })
@@ -196,7 +195,8 @@ class PhonesActions extends Actions<PhonesState, PhonesGetters, PhonesMutations,
         })
         .catch(error => {
           console.log(error.response)
-          this.commit('setEditFail', error.response.data.message)
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setEditFail', errMsg)
           reject()
         })
     })
