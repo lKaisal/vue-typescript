@@ -1,22 +1,22 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.list-features
+  +b.list-suppliers
     +e.container
-      +e.table(:class="{ 'is-long-list': list.length > 2 }")
+      +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
         +e.row.table-row
           +e.title.table-cell(v-for="(title, index) in tableTitles" :class="{ 'col-05': index === 0, 'col-2': index > 0 }")
-            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="title")
               +e.title-sort
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
         //- table body
         ItemSuppliers(v-for="(item, index) in list" :key="index" :supplier="item"
-          class="list-features__item table-row")
+          class="list-suppliers__item table-row")
 
-      //- ButtonApp(v-if="list.length" :text="btnText" :btnType="btnType" class="list-features__btn")
+      //- ButtonApp(v-if="list.length" :text="btnText" :btnType="btnType" class="list-suppliers__btn")
 </template>
 
 <script lang="ts">
@@ -48,7 +48,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Supplier[]
   @Prop() isActive: boolean
 
@@ -86,7 +86,7 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
 @import '../../../styles/tools'
 @import '../common'
 
-.list-features
+.list-suppliers
 
   &__container
     width 100%

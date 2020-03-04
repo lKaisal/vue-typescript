@@ -9,6 +9,6 @@ export default [
   { 
     path: '/phones', component: () => import(/* webpackChunkName: 'phones' */ '@/pages/ModulePhones.vue'), name: 'ModulePhones', redirect: { name: 'PagePhones' },
     children, 
-    meta: { title: 'Управление номерами телефонов', isDynamicModule: true }
+    meta: { title: 'Визитки поставщиков', isDynamicModule: true }
   },
 ]
