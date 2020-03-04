@@ -163,7 +163,8 @@ class PhonesActions extends Actions<PhonesState, PhonesGetters, PhonesMutations,
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
 
-      axios.get('/api/v1/services-list')
+      console.log('get list')
+      axios.get('/api/v1/suppliers-list')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data
 
@@ -175,6 +176,8 @@ class PhonesActions extends Actions<PhonesState, PhonesGetters, PhonesMutations,
           if (error && error.response) {
             console.log(error.response)
             this.commit('setListLoadingFail', error.response.data.message)
+          } else {
+            this.commit('setListLoadingFail', null)
           }
           reject()
         })

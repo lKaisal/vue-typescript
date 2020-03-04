@@ -53,7 +53,7 @@ export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
   }
 
   created() {
-    // this.updateList()
+    this.updateList()
   }
 
   goToPageApp() { this.$router.push({ path: '/' }) }
@@ -67,6 +67,7 @@ export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
     }
   }
   updateList() {
+    console.log(this.list.isLoading)
     if (this.list.isLoading) return
 
     this.getList()
