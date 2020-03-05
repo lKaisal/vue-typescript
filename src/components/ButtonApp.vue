@@ -61,6 +61,8 @@ export default class ButtonApp extends Vue {
       cursor url('/static/images/block.png'), not-allowed
     &.is-low
       padding 10px 20px
+      +lt-lg()
+        padding 10px
     &.is-height-auto
       padding 0 20px
       height 100%

@@ -20,9 +20,6 @@
         transition(mode="out-in")
           +e.phone-title(v-if="!phoneManageShown" @click="phoneManageShown=true") Сменить номер телефона
           PhoneManage(v-else :id="supplier.id" @discard="phoneManageShown=false" class="popup-supplier__phone-manage")
-      //- +e.btns
-        ButtonApp(btnType="primary" @clicked="confirm" text="Подтвердить" class="popup-supplier__btn")
-        ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-supplier__btn")
 </template>
 
 <script lang="ts">
@@ -35,11 +32,6 @@ import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 import PhoneManage from '../components/PhoneManage.vue'
 
-const Mappers = Vue.extend({
-  methods: {
-  }
-})
-
 @Component({
   directives: {
     clickOutside: vClickOutside.directive
@@ -50,7 +42,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PopupSupplier extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   @Prop() supplier: Supplier
   phoneManageShown: boolean = false
   fields: TableField[] = [
@@ -103,9 +95,8 @@ export default class PopupSupplier extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     +sm()
       width 90vw
     +xs()
-      width 100vw
-      width 100vw
-      height 100vh
+      width 100%
+      height 100%
       display flex
       flex-direction column
       justify-content center

@@ -18,7 +18,8 @@ type ListSort = {
 type TableField = {
   field: keyof Supplier,
   title: string,
-  isSmall?: boolean
+  isSmall?: boolean,
+  isMedium?: boolean
 }
 
 type EditPayload = { serviceName: string }[]

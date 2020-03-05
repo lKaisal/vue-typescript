@@ -27,6 +27,7 @@ import device from 'current-device'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
 import { mapMutations } from 'vuex'
+const grid = require('@/styles/grid-config.json')
 
 @Component({
   components: {
@@ -39,7 +40,8 @@ import { mapMutations } from 'vuex'
   methods: {
     ...mapMutations('system', [
       'openMenu',
-      'closeMenu'
+      'closeMenu',
+      'setBreakpoint'
     ])
   }
 })
@@ -47,6 +49,7 @@ import { mapMutations } from 'vuex'
 export default class App extends Vue {
   openMenu!: () => void
   closeMenu!: () => void
+  setBreakpoint!: (string) => void
 
   get isRootPage() { return this.$route && this.$route.fullPath === '/' && this.$route.name }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
@@ -65,11 +68,22 @@ export default class App extends Vue {
   created() {
     if (!this.isAuthorized) this.$router.push({ name: 'PageAuth' })
     this.$store.commit('system/setCurrentDevice', device)
+    window.addEventListener('resize', () => this.windowResizeHandler(grid))
+    this.windowResizeHandler(grid)
   }
 
   onBannersClick() { this.$router.push({path: '/banners'}) }
   onFeaturesClick() { this.$router.push({path: '/features'}) }
   onRestartClick() { this.$router.push({path: '/restart'}) }
+  windowResizeHandler(grid) {
+    if (!grid) return
+
+    const queriesAll = Object.entries(grid.queries)
+    const queriesCurrent = queriesAll.filter((query: any) => window.matchMedia(query[1]).matches)
+    const breakpoint = queriesCurrent.find(rule => rule[0].length === 2)[0]
+
+    this.setBreakpoint(breakpoint)
+  }
 }
 </script>
 

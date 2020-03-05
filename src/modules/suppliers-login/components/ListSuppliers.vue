@@ -5,15 +5,15 @@
     +e.container
       +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
-        +e.row.table-row
-          +e.title.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-2': !field.isSmall }")
+        +e.row.table-row(v-if="!isLtMd")
+          +e.title.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index !== fields.length - 1")
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'asc' }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'desc' }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
+        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
 </template>
 
@@ -26,6 +26,7 @@ import { Supplier, ListSort, EditPayload, TableField } from '../models'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
+import { mapState } from 'vuex'
 
 const Mappers = Vue.extend({
   computed: {
@@ -43,25 +44,31 @@ const Mappers = Vue.extend({
     ItemSuppliers,
     ButtonApp,
     MessageBox
+  },
+  computed: {
+    ...mapState('system', [
+      'breakpoint'
+    ])
   }
 })
 
 export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Supplier[]
+  breakpoint!: string
 
-  fields: { field: keyof Supplier, title: string, isSmall: boolean }[] = [
-    { field: 'supplierId', title: 'SupplierID', isSmall: true },
-    { field: 'supplierName', title: 'Название поставщика', isSmall: false },
-    { field: 'inn', title: 'ИНН', isSmall: false },
-    { field: 'userId', title: 'UserID', isSmall: true },
-    { field: 'userName', title: 'Имя пользователя', isSmall: false },
-    // { field: 'email', title: 'E-mail', isSmall: false },
-    { field: null, title: '', isSmall: true },
-  ]
-
+  get fields(): TableField[] { return [
+    { field: 'supplierId', title: 'SupplierID', isSmall: false, isMedium: true },
+    { field: 'supplierName', title: 'Название поставщика', isSmall: false, isMedium: false },
+    { field: 'userId', title: 'UserID', isSmall: !this.isGtMd, isMedium: this.isGtMd },
+    { field: 'userName', title: 'Имя пользователя', isSmall: false, isMedium: false },
+    { field: 'inn', title: 'ИНН', isSmall: false, isMedium: false },
+    { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd }, // btn column
+  ]}
   get amountTotal() { return this.list && this.list.length }
   get listSortBy() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
+  get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
+  get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
@@ -97,6 +104,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   &__container
     width 100%
     transition(opacity)
+    width-between-property 'font-size' 1001 14 1440 16 true true
     &:not(:last-child)
       margin-bottom 100px
     &.v-enter

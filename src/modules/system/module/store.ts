@@ -8,7 +8,8 @@ export default {
   state: {
     currentDevice: { orientation: null, type: null, os: null } as CurrentDevice,
     menuIsOpen: false as boolean,
-    modules: []
+    modules: [],
+    breakpoint: null as string
   },
   getters: {
     isMobile: (state) => state.currentDevice.type === 'mobile',
@@ -25,7 +26,8 @@ export default {
     setRoutes(state, payload) { state.modules.push(payload) },
     toggleMenu: (state) => state.menuIsOpen = !state.menuIsOpen,
     openMenu: (state) => state.menuIsOpen = true,
-    closeMenu: (state) => state.menuIsOpen = false
+    closeMenu: (state) => state.menuIsOpen = false,
+    setBreakpoint: (state, payload: string) => state.breakpoint = payload
   },
   actions: {
     initializeModule ({ state, commit }, module: any) {

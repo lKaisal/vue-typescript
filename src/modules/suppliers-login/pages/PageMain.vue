@@ -8,7 +8,7 @@
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown && editFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
-      PopupSupplier(v-if="popupIsShown" :supplier="popupSupplier" key="popup" @confirm="onPopupConfirm" @discard="onPopupDiscard" class="page-main__popup modal modal-popup")
+      PopupSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" key="popup" @confirm="onPopupConfirm" @discard="onPopupDiscard" class="page-main__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -25,6 +25,7 @@ import animateIfVisible from '@/mixins/animateIfVisible'
 import { EditPayload } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
 import PopupSupplier from '../components/PopupSupplier.vue'
+import { mapState } from 'vuex'
 
 const Mappers = Vue.extend({
   computed: {
@@ -46,7 +47,12 @@ const Mappers = Vue.extend({
   },
   mixins: [
     MsgBoxTools
-  ]
+  ],
+  computed: {
+    ...mapState('system', [
+      'breakpoint'
+    ])
+  }
 })
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
