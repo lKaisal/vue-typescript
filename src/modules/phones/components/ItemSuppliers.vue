@@ -3,15 +3,15 @@
 
   +b.item-suppliers
     +e.info
-      +e.cell.table-cell(v-for="(item, index) in cells" v-html="item" :class="{ 'col-05': index === 0, 'col-2': index > 0 }")
-      +e.cell.col-075
-        ButtonApp(:isLow="true" :isPlain="true" text="Открыть" @clicked="onBtnClick" class="item-suppliers__btn")
+      +e.cell.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-2': !field.isSmall }")
+        +e.cell-text(v-if="index < fields.length - 1" v-html="supplier[field.field]")
+        ButtonApp(v-else :isLow="true" :isPlain="true" text="Открыть" @clicked="onBtnClick" class="item-suppliers__btn")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { phonesMapper } from '../module/store'
-import { Supplier } from '../models'
+import { Supplier, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 
 @Component({
@@ -22,9 +22,9 @@ import ButtonApp from '@/components/ButtonApp.vue'
 
 export default class ItemSuppliers extends Vue {
   @Prop() supplier: Supplier
+  @Prop() fields: TableField[]
 
   descrIsShown: boolean = false
-  get cells() { return this.supplier && [ this.supplier.id, this.supplier.name, this.supplier.inn, this.supplier.phone, this.supplier.email ] }
 
   onBtnClick() {
     this.$emit('clicked')

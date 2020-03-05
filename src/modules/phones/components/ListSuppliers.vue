@@ -6,17 +6,15 @@
       +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
         +e.row.table-row
-          +e.title.table-cell(v-for="(title, index) in tableTitles" :class="{ 'col-05': index === 0, 'col-2': index > 0 && index < tableTitles.length - 1, 'col-075': index === tableTitles.length - 1 }")
+          +e.title.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-2': !field.isSmall }")
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
-              +e.title-text(v-html="title")
-              +e.title-sort(v-if="index !== tableTitles.length - 1")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
+              +e.title-text(v-html="field.title")
+              +e.title-sort(v-if="index !== fields.length - 1")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'asc' }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'desc' }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index" :supplier="item" @clicked="onItemClick(item)"
+        ItemSuppliers(v-for="(item, index) in list" :key="index" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
-
-      //- ButtonApp(v-if="list.length" :text="btnText" :btnType="btnType" class="list-suppliers__btn")
 </template>
 
 <script lang="ts">
@@ -24,14 +22,14 @@ import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { phonesMapper } from '../module/store'
 import ItemSuppliers from '../components/ItemSuppliers.vue'
 import ButtonApp from '@/components/ButtonApp.vue'
-import { Supplier, ListSort, EditPayload } from '../models'
+import { Supplier, ListSort, EditPayload, TableField } from '../models'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapState(['listSort', 'hashes']),
+    ...phonesMapper.mapState(['listSort']),
     // ...phonesMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
@@ -50,16 +48,20 @@ const Mappers = Vue.extend({
 
 export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Supplier[]
-  @Prop() isActive: boolean
 
-  tableTitles: string[] = [ 'id', 'Название', 'ИНН', 'Телефон', 'E-mail', '' ]
-  fields: (keyof Supplier)[] = [ 'id', 'name', 'inn', 'phone', 'email' ]
+  fields: { field: keyof Supplier, title: string, isSmall: boolean }[] = [
+    { field: 'supplierId', title: 'SupplierID', isSmall: true },
+    { field: 'supplierName', title: 'Название поставщика', isSmall: false },
+    { field: 'inn', title: 'ИНН', isSmall: false },
+    { field: 'userId', title: 'UserID', isSmall: true },
+    { field: 'userName', title: 'Имя пользователя', isSmall: false },
+    // { field: 'email', title: 'E-mail', isSmall: false },
+    { field: null, title: '', isSmall: true },
+  ]
 
   get amountTotal() { return this.list && this.list.length }
   get listSortBy() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
-  get btnText() { return this.isActive ? 'Деактивировать' : 'Активировать' }
-  get btnType() { return this.isActive ? 'warning' : 'success' }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
@@ -68,7 +70,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
 
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
-    const by: ListSort['by'] = this.fields[index]
+    const by: ListSort['by'] = this.fields.map(f => f.field)[index]
     const byIsUpdated = by !== this.listSortBy
     const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
 
@@ -76,12 +78,12 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     this.updateListSort(listSort)
   }
   resetSort() {
-    const listSort: ListSort = { by: 'id', direction: 'asc' }
+    const listSort: ListSort = { by: 'createdAt', direction: 'desc' }
     this.updateListSort(listSort)
   }
   // ITEMS METHODS
   onItemClick(item: Supplier) {
-    this.$emit('itemClicked', item.id)
+    this.$emit('itemClicked', item.userId)
   }
 }
 </script>

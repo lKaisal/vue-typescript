@@ -19,7 +19,6 @@ import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 import { Button } from '@/models'
 import animateIfVisible from '@/mixins/animateIfVisible'
-import LibPhoneNumber from 'google-libphonenumber'
 
 const Mappers = Vue.extend({
   computed: {

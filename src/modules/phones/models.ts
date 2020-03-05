@@ -1,14 +1,24 @@
 type Supplier = {
+  createdAt: string,
   email: string,
-  id: number,
   inn: string,
-  name: string,
   phone: string,
+  phoneAuthId: number,
+  supplierId: number,
+  supplierName: string,
+  userId: number,
+  userName: string,
 }
 
 type ListSort = {
   by: keyof Supplier,
   direction: 'asc' | 'desc'
+}
+
+type TableField = {
+  field: keyof Supplier,
+  title: string,
+  isSmall?: boolean
 }
 
 type EditPayload = { serviceName: string }[]
@@ -29,4 +39,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit'
 }
 
-export { Supplier, ListSort, EditPayload, Country, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, ListSort, TableField, EditPayload, Country, RequestStatus, RequestType, RequestStatuses }

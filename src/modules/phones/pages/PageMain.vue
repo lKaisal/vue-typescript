@@ -5,7 +5,7 @@
     +e.container.js-voa.js-voa-start(v-if="!isLoading && list.data && list.data.length")
       ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
-    transition-group
+    transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown && editFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
       PopupSupplier(v-if="popupIsShown" :supplier="popupSupplier" key="popup" @confirm="onPopupConfirm" @discard="onPopupDiscard" class="page-main__popup modal modal-popup")
@@ -74,7 +74,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   get currentList() { return this.listByPages && this.listByPages[this.currentPage - 1] }
   // popup getters
   get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
-  get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.id === this.popupId) }
+  get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
 
   // PAGINATION click handler
   onCurrentChange(n) {

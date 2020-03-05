@@ -4,16 +4,22 @@
   +b.popup-supplier
     +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.btn-close(@click="discard")
-        +e.I.icon-close.el-icon-close.modal-icon-close
+        +e.I.icon-close.el-icon-close.modal-icon-close.large
       +e.info-block
         +e.H3.title Информация о пользователе
         +e.info
-          +e.row(v-for="(field, index) in infoFields")
-            +e.info-title(v-html="`${infoTitles[index]}:&nbsp;`")
-            +e.info-content(v-html="supplier[field]")
+          +e.field._title
+            +e.field-title(v-html="`${fields[0].title}:&nbsp;`")
+            +e.field-content(v-html="supplier[fields[0].field]")
+          +e.row
+            +e.column(v-for="(col, colIndex) in 2")
+              +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, (colIndex ) * itemsPerCol + itemsPerCol)")
+                +e.field-title(v-html="`${field.title}:&nbsp;`")
+                +e.field-content(v-html="getFieldContent(field)")
       +e.phone-block
-        +e.H3.title Смена номера телефона
-        PhoneManage(:id="supplier.id" class="popup-supplier__phone-manage")
+        transition(mode="out-in")
+          +e.phone-title(v-if="!phoneManageShown" @click="phoneManageShown=true") Сменить номер телефона
+          PhoneManage(v-else :id="supplier.id" @discard="phoneManageShown=false" class="popup-supplier__phone-manage")
       //- +e.btns
         ButtonApp(btnType="primary" @clicked="confirm" text="Подтвердить" class="popup-supplier__btn")
         ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-supplier__btn")
@@ -24,7 +30,7 @@ import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 // import { phonesMappers } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
-import { Supplier } from '../models'
+import { Supplier, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 import PhoneManage from '../components/PhoneManage.vue'
@@ -46,9 +52,25 @@ const Mappers = Vue.extend({
 
 export default class PopupSupplier extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() supplier: Supplier
-  infoTitles: string[] = [ 'id', 'Название', 'ИНН', 'Телефон', 'E-mail']
-  infoFields: (keyof Supplier)[] = [ 'id', 'name', 'inn', 'phone', 'email' ]
+  phoneManageShown: boolean = false
+  fields: TableField[] = [
+    { field: 'supplierName', title: 'Название поставщика' },
+    { field: 'supplierId', title: 'SupplierID' },
+    { field: 'userName', title: 'Имя пользователя' },
+    { field: 'userId', title: 'UserID' },
+    // { field: 'createdAt', title: 'Дата создания' },
+    { field: 'inn', title: 'ИНН' },
+    { field: 'phone', title: 'Телефон' },
+    { field: 'email', title: 'E-mail' },
+  ]
+  itemsPerCol: number = 3
+  get supplierName() { return this.fields[0] }
+  get otherFields() { return this.fields.slice(1) }
 
+  getFieldContent(field: TableField) {
+    const isPhone = field.field === 'phone'
+    return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
+  }
   confirm() {
     this.$emit('confirm')
   }
@@ -70,17 +92,18 @@ export default class PopupSupplier extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   &__container
     position relative
     margin 50px auto
-    +gt-lg()
-      max-width 70vw
-      width 70vw
+    +xl()
+      width 50vw
+    +lg()
+      width 45vw
     +md()
-      max-width 60vw
-      width 60vw
+      width 55vw
+    +lt-md()
+      font-size 14px
     +sm()
-      max-width 90vw
       width 90vw
     +xs()
-      max-width 100vw
+      width 100vw
       width 100vw
       height 100vh
       display flex
@@ -98,29 +121,49 @@ export default class PopupSupplier extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     margin-bottom 50px
     text-align center
 
-  &__text
+  &__info-block
+    width 100%
     margin-bottom 50px
-    line-height 1.25
-    >>> span
-      fontMedium()
-      white-space nowrap
-
-  &__info
-    margin-bottom 25px
 
   &__row
-    display flex
-    &:not(:last-child)
-      margin-bottom 10px
+    +gt-sm()
+      display flex
 
-  &__info-title
+  &__column
+    &:first-child
+      margin-right 25%
+
+  &__field
+    // display flex
+    &:not(:last-child)
+      margin-bottom 15px
+    &_title
+      margin-bottom 25px !important
+
+  &__field-title
+    margin-bottom 7px
     fontMedium()
 
-  &__btns
+  &__phone-block
+    height 40px
     display flex
-    justify-content center
+    align-items center
 
-  &__btn
-    &:not(:last-child)
-      margin-right 10px
+  &__phone-title
+  &__phone-manage
+    transition(opacity)
+    &.v-enter
+    &.v-elave-to
+      opacity 0
+
+  &__phone-title
+    display inline
+    padding 5px
+    margin -5px
+    color $cBrand
+    border-bottom 1px dashed $cBrand
+    cursor pointer
+    transition(opacity)
+    &:hover
+      opacity .75
 </style>

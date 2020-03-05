@@ -15,80 +15,8 @@ class PhonesState {
     { name: 'Armenia', code: 'AM', phoneCode: 374, mask: '99 99 99 99' },
   ]
   edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
-  // list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
-  listSort: ListSort = { by: 'id', direction: 'asc' }
-  list: { data: Supplier[], error: string, isLoading: boolean } =  { 
-    data: [
-      { id: 0, email: 'email', inn: '12345567', name: 'Name', phone: '88888888' },
-      { id: 1, email: 'amail', inn: '09887565', name: 'Came', phone: '9393939' },
-      { id: 2, email: 'umail', inn: '848484848', name: 'Cate', phone: '91010101' },
-      { id: 3, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 4, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 5, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 6, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 7, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 8, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 9, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 10, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 11, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 12, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 13, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 14, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 15, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 16, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 17, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 18, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 19, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 20, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 21, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 22, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 23, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 24, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 25, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 26, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 27, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 28, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 29, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 30, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 31, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 32, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 33, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 34, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 35, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 36, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 37, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 38, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 39, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 40, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 41, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 42, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 43, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 44, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 45, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 46, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 47, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 48, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 49, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 50, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 51, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 52, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 53, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 54, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 55, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 56, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 57, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 58, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 59, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 60, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 61, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 62, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 63, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 64, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-      { id: 65, email: 'imail', inn: '54958454', name: 'Date', phone: '10101010' },
-    ], 
-    error: null,
-    isLoading: false
-  }
+  list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
+  listSort: ListSort = { by: 'createdAt', direction: 'desc' }
 }
 
 class PhonesGetters extends Getters<PhonesState> {
@@ -106,7 +34,13 @@ class PhonesGetters extends Getters<PhonesState> {
       let sortB = b[sortBy]
 
       switch (sortBy) {
-        case 'id':
+        case 'createdAt':
+          sortA = dateParser(sortA)
+          sortB = dateParser(sortB)
+          break
+
+        case 'supplierId':
+        case 'userId':
           sortA = Number(sortA)
           sortB = Number(sortB)
           break
@@ -201,6 +135,20 @@ class PhonesActions extends Actions<PhonesState, PhonesGetters, PhonesMutations,
         })
     })
   }
+}
+
+const dateParser = (date) => {
+  const dateParser = /(\d{2})\-(\d{2})\-(\d{4}) (\d{2}):(\d{2})/;
+  const match = date.match(dateParser);
+  const newDate = new Date(
+      Number(match[3]),  // year
+      Number(match[2])-1,  // monthIndex
+      Number(match[1]),  // day
+      Number(match[4]),  // hours
+      Number(match[5]),  // minutes
+  );
+
+  return Date.parse(newDate.toString())
 }
 
 export const phones = new Module({

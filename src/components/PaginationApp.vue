@@ -5,7 +5,7 @@
     +e.container
       +e.EL-PAGINATION.pag(background layout="prev, pager, next" :total="total" :page-size="pageSize" :currentPage.sync="currentPage" @current-change="onCurrentChange")
       +e.EL-SELECT.select(:value="pageSize" :placeholder="pageSize.toString()" @change="onSelectChange")
-        +e.EL-OPTION.option(v-for="(option, index) in options" :value="option")
+        +e.EL-OPTION.option(v-for="(option, index) in options" :key="index" :value="option")
 </template>
 
 <script lang="ts">
