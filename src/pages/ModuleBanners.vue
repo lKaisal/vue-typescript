@@ -5,7 +5,7 @@
     transition(mode="out-in")
       router-view(v-if="list.data && list.data.length" @updateList="loadData" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox" @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
+      MessageBox(v-show="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp" @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
         class="module-banners__msg-box modal modal-msg")
 </template>
 
@@ -44,6 +44,7 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
   }
 
   goToPageApp() { this.$router.push({ path: '/' }) }
+  goToPageAuth() { this.$router.push({ name: 'PageAuth' }) }
   loadData() {
     if (this.list.isLoading) return
 
@@ -57,9 +58,6 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
           this.openMsgBox()
         }
       })
-  }
-  goToPageAuth() {
-    this.$router.push({ name: 'PageAuth' })
   }
 }
 </script>

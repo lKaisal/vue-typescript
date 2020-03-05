@@ -13,7 +13,7 @@
             +e.field-content(v-html="supplier[fields[0].field]")
           +e.row
             +e.column(v-for="(col, colIndex) in 2")
-              +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, (colIndex ) * itemsPerCol + itemsPerCol)")
+              +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, colIndex * itemsPerCol + itemsPerCol)")
                 +e.field-title(v-html="`${field.title}:&nbsp;`")
                 +e.field-content(v-html="getFieldContent(field)")
       +e.phone-block
@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
-// import { phonesMappers } from '../module/store'
+// import { suppliersMappers } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import { Supplier, TableField } from '../models'

@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { phonesMapper } from '../module/store'
+import { suppliersMapper } from '../module/store'
 import { Supplier, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 

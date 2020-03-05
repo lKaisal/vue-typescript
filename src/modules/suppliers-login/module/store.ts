@@ -5,7 +5,7 @@ import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-mo
 
 const namespaced = true
 
-class PhonesState {
+class SuppliersLoginState {
   countries: Country[] = [
     { name: 'Russia', code: 'RU', phoneCode: 7, mask: '999 999 99 99' },
     { name: 'Belarus', code: 'BY', phoneCode: 375, mask: '99 999 99 99' },
@@ -19,7 +19,7 @@ class PhonesState {
   listSort: ListSort = { by: 'createdAt', direction: 'desc' }
 }
 
-class PhonesGetters extends Getters<PhonesState> {
+class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
   get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading }
   get loadingError() { return this.state.list.error || this.state.edit.error }
   get listSorted() {
@@ -59,7 +59,7 @@ class PhonesGetters extends Getters<PhonesState> {
   }
 }
 
-class PhonesMutations extends Mutations<PhonesState> {
+class SuppliersLoginMutations extends Mutations<SuppliersLoginState> {
   updateListSort(payload: ListSort) {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
@@ -92,7 +92,7 @@ class PhonesMutations extends Mutations<PhonesState> {
   }
 }
 
-class PhonesActions extends Actions<PhonesState, PhonesGetters, PhonesMutations, PhonesActions> {
+class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginGetters, SuppliersLoginMutations, SuppliersLoginActions> {
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
@@ -151,12 +151,12 @@ const dateParser = (date) => {
   return Date.parse(newDate.toString())
 }
 
-export const phones = new Module({
+export const suppliers = new Module({
   namespaced,
-  state: PhonesState,
-  getters: PhonesGetters,
-  mutations: PhonesMutations,
-  actions: PhonesActions
+  state: SuppliersLoginState,
+  getters: SuppliersLoginGetters,
+  mutations: SuppliersLoginMutations,
+  actions: SuppliersLoginActions
 })
 
-export const phonesMapper = createMapper(phones)
+export const suppliersMapper = createMapper(suppliers)

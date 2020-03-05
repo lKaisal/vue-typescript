@@ -2,12 +2,12 @@ import Vue from 'vue'
 import { Mixin, Mixins } from 'vue-mixin-decorator'
 import { RequestStatuses, RequestStatus, RequestType } from '../models'
 import { MsgBoxBtns } from '@/models'
-import { phonesMapper } from '../module/store'
+import { suppliersMapper } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapGetters(['loadingError'])
+    ...suppliersMapper.mapGetters(['loadingError'])
   }
 })
 

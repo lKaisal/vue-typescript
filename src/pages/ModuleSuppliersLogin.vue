@@ -6,13 +6,13 @@
       +e.title.H1.page-title.js-voa.js-voa-start Выбор поставщика
       router-view
     transition
-      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
+      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { phonesMapper } from '@/modules/phones/module/store'
+import { suppliersMapper } from '@/modules/suppliers-login/module/store'
 import ListRestart from '@/modules/restart/components/ListRestart.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
@@ -22,11 +22,11 @@ import animateIfVisible from '@/mixins/animateIfVisible'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapState(['list', 'countries']),
-    ...phonesMapper.mapGetters(['isLoading'])
+    ...suppliersMapper.mapState(['list', 'countries']),
+    ...suppliersMapper.mapGetters(['isLoading'])
   },
   methods: {
-    ...phonesMapper.mapActions(['getList']),
+    ...suppliersMapper.mapActions(['getList']),
   }
 })
 
@@ -38,8 +38,6 @@ const Mappers = Vue.extend({
 })
 
 export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
-  pnf: any = null
-  phoneUtil: any = null
   secondBtn: Button = { type: 'danger', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
 
@@ -66,7 +64,6 @@ export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
     }
   }
   updateList() {
-    console.log(this.list.isLoading)
     if (this.list.isLoading) return
 
     this.getList()

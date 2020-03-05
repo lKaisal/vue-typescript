@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '@/models'
-import { phonesMapper } from '../module/store'
+import { suppliersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
 import MessageBox from '@/components/MessageBox.vue'
@@ -28,11 +28,11 @@ import PopupSupplier from '../components/PopupSupplier.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapState(['list']),
-    ...phonesMapper.mapGetters(['isLoading', 'listSorted'])
+    ...suppliersMapper.mapState(['list']),
+    ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
   },
   methods: {
-    ...phonesMapper.mapActions(['editList'])
+    ...suppliersMapper.mapActions(['editList'])
   }
 })
 

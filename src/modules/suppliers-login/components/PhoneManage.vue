@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Ref } from 'vue-property-decorator'
-import { phonesMapper } from '../module/store'
+import { suppliersMapper } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import { Supplier, Country } from '../models'
@@ -29,7 +29,7 @@ import { ElInput } from 'element-ui/types/input'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapState(['countries'])
+    ...suppliersMapper.mapState(['countries'])
   }
 })
 
@@ -76,6 +76,8 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     this.im = undefined
   }
   async onSelectChange() {
+    this.number = null
+    this.numberIsComplete = false
     this.destroyInputmask()
     this.setSelectFlag()
     await this.$nextTick()

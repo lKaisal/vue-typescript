@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
-import { phonesMapper } from '../module/store'
+import { suppliersMapper } from '../module/store'
 import ItemSuppliers from '../components/ItemSuppliers.vue'
 import ButtonApp from '@/components/ButtonApp.vue'
 import { Supplier, ListSort, EditPayload, TableField } from '../models'
@@ -29,12 +29,12 @@ import MessageBox from '@/components/MessageBox.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...phonesMapper.mapState(['listSort']),
-    // ...phonesMapper.mapGetters(['listActive', 'listInactive'])
+    ...suppliersMapper.mapState(['listSort']),
+    // ...suppliersMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
-    ...phonesMapper.mapMutations(['updateListSort']),
-    ...phonesMapper.mapActions(['editList'])
+    ...suppliersMapper.mapMutations(['updateListSort']),
+    ...suppliersMapper.mapActions(['editList'])
   }
 })
 

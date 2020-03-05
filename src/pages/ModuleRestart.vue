@@ -6,7 +6,7 @@
       +e.title.H1.page-title.js-voa.js-voa-start Перезапуск сервисов
       router-view
     transition
-      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="closeMsgBox()" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
+      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")
 </template>
 

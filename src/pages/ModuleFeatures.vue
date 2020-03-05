@@ -6,7 +6,7 @@
       +e.title.H1.page-title.js-voa.js-voa-start Управление разделами приложения
       router-view
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox()" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
+      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
         class="module-features__msg-box modal modal-msg")
 </template>
 
