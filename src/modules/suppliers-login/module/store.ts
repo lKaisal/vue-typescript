@@ -46,8 +46,8 @@ class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
           break
 
         default:
-          sortA = sortA.toString().charAt(0).toUpperCase() + sortA.toString().slice(1)
-          sortB = sortB.toString().charAt(0).toUpperCase() + sortB.toString().slice(1)
+          sortA = sortA.toString().toLowerCase()
+          sortB = sortB.toString().toLowerCase()
           break
       }
 
@@ -97,7 +97,6 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
 
-      console.log('get list')
       axios.get('/api/v1/suppliers-list')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data

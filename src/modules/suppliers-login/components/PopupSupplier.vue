@@ -5,8 +5,8 @@
     +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.btn-close(@click="discard")
         +e.I.icon-close.el-icon-close.modal-icon-close.large
+      +e.H3.title Информация о пользователе
       +e.info-block
-        +e.H3.title Информация о пользователе
         +e.info
           +e.field._title
             +e.field-title(v-html="`${fields[0].title}:&nbsp;`")
