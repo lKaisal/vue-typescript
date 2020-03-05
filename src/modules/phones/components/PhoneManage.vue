@@ -3,15 +3,15 @@
 
   +b.phone-manage
     +e.row
-      +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange")
-        +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode + ' ' + country.code).toString()" :value="index")
+      +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange" ref="selectRef")
+        +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
+          IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
+          +e.SPAN(v-html="`+${country.phoneCode}`")
       +e.EL-INPUT.input(v-model="number" ref="numberRef" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }" @focus="inputFocused=true" @blur="inputFocused=false")
-      //- ButtonApp(:isHeightAuto="true" :isDisabled="!this.number || numberIsInvalid" text="Подтвердить" class="phone-manage__btn")
       +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }")
         +e.I.btn-icon._confirm.el-icon-check
       +e.btn._discard(@click="discard")
         +e.I.btn-icon._discard.el-icon-close
-      //- ButtonApp(:isHeightAuto="true" :isPlain="true" btnType="danger" @clicked="discard" text="Отмена" class="phone-manage__btn")
 </template>
 
 <script lang="ts">
@@ -24,6 +24,8 @@ import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 import Inputmask from 'inputmask'
 import { ElSelect } from 'element-ui/types/select'
+import IconSvg from '@/components/IconSvg.vue'
+import { ElInput } from 'element-ui/types/input'
 
 const Mappers = Vue.extend({
   computed: {
@@ -33,13 +35,15 @@ const Mappers = Vue.extend({
 
 @Component({
   components: {
-    ButtonApp
+    ButtonApp,
+    IconSvg
   }
 })
 
 export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() userId: Supplier['userId']
-  @Ref() numberRef!: ElSelect
+  @Ref() selectRef!: ElSelect
+  @Ref() numberRef!: ElInput
   im = null
   activeIndex: number = 0
   number: string = null
@@ -47,11 +51,14 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   inputFocused: boolean = false
   get activeCountry() { return this.countries[this.activeIndex] }
   get countryCode() { return this.activeCountry.phoneCode }
+  get activeFlag() { return `/static/images/${this.activeCountry.name.toLowerCase()}.svg` }
   get activeMask() { return this.activeCountry.mask }
   get numberIsInvalid() { return this.number && !this.numberIsComplete }
 
   async mounted() {
+    await this.$nextTick()
     this.initInputmask()
+    this.setSelectFlag()
   }
 
   initInputmask() {
@@ -70,8 +77,17 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   }
   async onSelectChange() {
     this.destroyInputmask()
+    this.setSelectFlag()
     await this.$nextTick()
     this.initInputmask()
+  }
+  setSelectFlag() {
+    const container = this.selectRef && this.selectRef.$el.firstElementChild.firstElementChild
+    if (!container) return
+    container.setAttribute('style', `background-image: url(${this.activeFlag})`)
+  }
+  removeSelectIcon() {
+
   }
   discard() {
     this.$emit('discard')
@@ -106,6 +122,20 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     &.is-invalid
       >>> input
         border-color $cDanger
+
+  &__select
+    >>> input
+      position relative
+      // background url('/static/images/russia.svg') no-repeat
+      background-repeat no-repeat
+      background-position 15px center
+      background-size 20%
+      padding-left 45px
+
+  &__img
+    width 20px
+    margin-right 15px
+    transform translateY(4px)
 
   &__btn
     width 40px
