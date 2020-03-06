@@ -3,7 +3,7 @@
 
   +b.list-suppliers
     +e.container
-      +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
+      +e.table
         //- table head
         +e.row.table-row(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
@@ -161,7 +161,6 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
 
   &__item
     background-color white
-    .is-long-list &
-      &:nth-of-type(2n + 1)
-        background-color $cDisabled
+    &:nth-of-type(2n + 1)
+      background-color $cDisabled
 </style>

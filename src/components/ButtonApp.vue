@@ -3,7 +3,7 @@
 
   +b.button-app
     +e.container(:style="setContainerStyle()" :class="[btnType, { 'is-plain': isPlain, 'is-disabled': isDisabled, 'is-low': isLow, 'is-height-auto': isHeightAuto }]" @click="onClick")
-      +e.text(v-html="text")
+      +e.text(:style="setTextStyle()" v-html="text")
       +e.icon-wrapper(v-if="icon")
         +e.I.icon(:class="icon")
         //- IconSvg(:icon="icon" class="button-app__icon")
@@ -28,10 +28,13 @@ export default class ButtonApp extends Vue {
   @Prop() width: number
   @Prop() isLow: boolean
   @Prop() isHeightAuto: boolean
+  @Prop() fontSize: number
 
   setContainerStyle() {
-    if (!this.width) return
-    else return `width: ${this.width}px`
+    return `width: ${this.width || 'auto'}px;`
+  }
+  setTextStyle() {
+    return `font-size: ${this.fontSize || 'inherit'}px;`
   }
   onClick() {
     if (this.isDisabled) return

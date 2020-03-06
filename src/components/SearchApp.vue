@@ -3,15 +3,17 @@
 
   +b.search-app
     +e.row
-      +e.EL-SELECT.select(v-model="activeField" clearable placeholder="Поиск по полю" :class="{ 'is-filled': activeField }")
+      +e.EL-SELECT.select(v-model="activeField" :disabled="!searchText" clearable placeholder="Поиск по полю" :class="{ 'is-filled': activeField }" @change="onActiveFieldChange")
         +e.EL-OPTION(v-for="(field, index) in fields" :key="index" :label="field.title" :value="field.field")
-      +e.EL-INPUT.input(v-model="searchText" placeholder="Поиск" :class="{ 'is-filled': searchText }")
-        +e.I.icon.el-icon-search.el-input__icon(slot="suffix")
+      +e.EL-INPUT.input(v-model="searchText" clearable placeholder="Поиск" :class="{ 'is-filled': searchText }"  @input="onSearchTextChange" @change="onSearchTextChange")
+        +e.I.icon.el-icon-search.el-input__icon(v-if="!searchText" slot="suffix" @mouseenter="inputIconHovered=true" @mouseleave="inputIconHovered=false")
+        //- +e.I.icon.el-icon-circle-close.el-input__icon(v-else slot="suffix" @mouseenter="inputIconHovered=true" @mouseleave="inputIconHovered=false" @click="searchText=null")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import * as JsSearch from 'js-search'
+import { SearchField } from '@/models'
 
 @Component({
   components: {
@@ -20,57 +22,66 @@ import * as JsSearch from 'js-search'
 
 export default class SearchApp extends Vue {
   @Prop() list: any[]
-  @Prop() fields: {field: string, title: string}[]
+  @Prop() fields: SearchField[]
   activeField: string = null
   searchText: string = null
-  searchTextStored: string = null
   search = null
-
-  @Watch('searchText', { immediate: true })
-  onSearchTextChange(val) {
-    this.searchTextChangeHandler()
-  }
-  @Watch('activeField')
-  async onActiveFieldChange(val) {
-    // reset list (or it will filter only previously filtered list)
-    this.$emit('searchFinished')
-    await this.$nextTick()
-    this.search = null
-
-    // set this.search with (or without) activeField
-    if (val) this.initSingleFieldSearch(val)
-    else this.initSearch()
-  }
+  inputIconHovered: boolean = false
+  isLoading: boolean = false
 
   created() {
     this.initSearch()
   }
-  async initSearch() {
-    this.search = new JsSearch.Search(this.fields[0])
+  async initSearch(field?: SearchField['field']) {
+    this.startLoading()
+
+    this.search = new JsSearch.Search(field || this.fields[0].field)
     this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy()
 
-    for (const field of this.fields) {
-      this.search.addIndex(field.field)
+    if (field) this.search.addIndex(field)
+    else {
+      for (const field of this.fields) {
+        this.search.addIndex(field.field)
+      }
     }
 
     this.search.addDocuments([...this.list])
     this.searchTextChangeHandler()
-  }
-  async initSingleFieldSearch(field) {
-    this.search = new JsSearch.Search(field)
-    this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy()
 
-    this.search.addIndex(field)
-    this.search.addDocuments([...this.list])
+    this.finishLoading()
+  }
+  onSearchTextChange(val) {
+    console.log(val)
+    this.startLoading()
+
+    if (!val) this.activeField = null
+
     this.searchTextChangeHandler()
   }
-  searchTextChangeHandler() {
+  async searchTextChangeHandler() {
+    this.startLoading()
+
     if (!this.searchText) this.$emit('searchFinished')
     else {
       const searchRes = this.search.search(this.searchText.toString())
       this.$emit('searchProgress', searchRes)
     }
+
+    await this.$nextTick()
+    this.finishLoading()
   }
+  async onActiveFieldChange(val) {
+    this.startLoading()
+    // reset list (or it will filter only what is left after previous filter)
+    this.$emit('searchFinished')
+    await this.$nextTick()
+    this.search = null
+
+    // init JsSearch with (or without) activeField
+    this.initSearch(val)
+  }
+  startLoading() { this.isLoading = true }
+  finishLoading() { this.isLoading = false }
 }
 </script>
 
@@ -81,18 +92,29 @@ export default class SearchApp extends Vue {
 
   &__row
     display flex
+    +xs()
+      flex-wrap wrap
 
   &__select
-    margin-right 10px
+    grid-size(4, 1, 1.1, 1.1, 1.25)
+    min-width 175px
+    +gt-sm()
+      margin-right 10px
+    +xs()
+      margin-bottom 10px
 
   &__input
-    grid-size(4, 2, 2, 2, 2)
+    grid-size(4, 1.5, 2, 2, 2.4)
+    min-width 200px
 
   &__select
   &__input
     >>> input
+      fontMedium()
       transition(border-color)
     &.is-filled
       >>> input
         border-color $cBrand
+    >>> .el-icon-circle-close
+      cursor pointer
 </style>

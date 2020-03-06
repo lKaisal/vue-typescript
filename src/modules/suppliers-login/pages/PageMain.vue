@@ -62,7 +62,7 @@ const Mappers = Vue.extend({
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   editPayload: EditPayload = null // for repeated request
-  pageSize: number = 25
+  pageSize: number = 15
   currentPage: number = 1
   popupId: number = null
   searchFields: SearchField[] = [
@@ -150,14 +150,11 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 
 .page-main
 
-  &__sort
-    margin-bottom 30px
-
-  &__sort-item
-    user-select none
-    &.is-disabled
-      pointer-events none
-      opacity 1
+  &__search
+    +gt-md()
+      margin-bottom 20px
+    +lt-md()
+      margin-bottom 30px
 
   &__list
     transition(opacity)
