@@ -4,7 +4,8 @@
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="!isLoading && list.data && list.data.length")
       SearchApp(:list="listSorted" :fields="searchFields" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
-      ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
+      transition(mode="out-in")
+        ListSuppliers(:list="currentList" :key="listSorted.length + pageSize + currentPage" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown && editFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
@@ -14,7 +15,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { MsgBoxContent, Button } from '@/models'
+import { MsgBoxContent, Button, SearchField } from '@/models'
 import { suppliersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import ButtonApp from '@/components/ButtonApp.vue'
@@ -64,7 +65,13 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   pageSize: number = 25
   currentPage: number = 1
   popupId: number = null
-  searchFields: (keyof Supplier)[] = ['supplierId', 'supplierName', 'userId', 'userName', 'inn']
+  searchFields: SearchField[] = [
+    { field: 'supplierId', title: 'SupplierId' },
+    { field: 'supplierName', title: 'Имя поставщика' },
+    { field: 'userId', title: 'UserId' },
+    { field: 'userName', title: 'Имя пользователя' },
+    { field: 'inn', title: 'ИНН' }
+  ]
 
   // list getters
   get editFailed() { return this.requestStatus === 'failEdit' }

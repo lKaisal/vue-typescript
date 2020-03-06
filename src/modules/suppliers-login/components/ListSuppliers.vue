@@ -104,7 +104,8 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   &__container
     width 100%
     transition(opacity)
-    width-between-property 'font-size' 1001 14 1440 16 true true
+    // width-between-property 'font-size' 1001 14 1440 16 true true
+    font-size 14px
     &:not(:last-child)
       margin-bottom 100px
     &.v-enter

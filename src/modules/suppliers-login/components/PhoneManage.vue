@@ -104,6 +104,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 
   &__row
     display flex
+    align-items center
     // justify-content center
 
   &__select

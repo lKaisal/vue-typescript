@@ -1,4 +1,3 @@
-
 type MsgBoxContent = {
   title: string,
   msg: string,
@@ -22,5 +21,10 @@ type CurrentDevice = {
   type: string,
   os: string
 }
- 
-export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice }
+
+type SearchField = {
+  field: string,
+  title: string
+}
+
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField }

@@ -47,6 +47,7 @@ export default class ItemSuppliers extends Vue {
 
   &__cell
     color $cPText
+    line-height 1.25
     +gt-md()
       &:nth-of-type(2)
         flex-grow 1

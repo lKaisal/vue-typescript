@@ -56,6 +56,12 @@ class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
       else return -1
     })
 
+    for (const item of sorted) {
+      for (const field in item) {
+        field.toString()
+      }
+    }
+
     return sorted
   }
 }
