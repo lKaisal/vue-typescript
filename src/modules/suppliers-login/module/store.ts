@@ -16,6 +16,7 @@ class SuppliersLoginState {
   ]
   edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
+  listFiltered: Supplier[] = null
   listSort: ListSort = { by: 'createdAt', direction: 'desc' }
 }
 
@@ -25,7 +26,7 @@ class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
-    const list = [...this.state.list.data]
+    const list = this.state.listFiltered || [...this.state.list.data]
     const sortBy = this.state.listSort.by
     const sortDirection = this.state.listSort.direction
 
@@ -90,6 +91,9 @@ class SuppliersLoginMutations extends Mutations<SuppliersLoginState> {
     this.state.edit.error = err
     this.state.edit.isLoading = false
   }
+  setListFiltered(payload) {
+    this.state.listFiltered = payload
+  } 
 }
 
 class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginGetters, SuppliersLoginMutations, SuppliersLoginActions> {

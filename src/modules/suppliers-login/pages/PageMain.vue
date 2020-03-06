@@ -3,6 +3,7 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="!isLoading && list.data && list.data.length")
+      SearchApp(:list="listSorted" :fields="searchFields" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
     transition-group(tag="div")
@@ -22,17 +23,19 @@ import PaginationApp from '@/components/PaginationApp.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
-import { EditPayload } from '../models'
+import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
 import PopupSupplier from '../components/PopupSupplier.vue'
 import { mapState } from 'vuex'
+import SearchApp from '@/components/SearchApp.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...suppliersMapper.mapState(['list']),
+    ...suppliersMapper.mapState(['list', 'listFiltered']),
     ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
   },
   methods: {
+    ...suppliersMapper.mapMutations(['setListFiltered']),
     ...suppliersMapper.mapActions(['editList'])
   }
 })
@@ -43,7 +46,8 @@ const Mappers = Vue.extend({
     ButtonApp,
     ListSuppliers,
     PaginationApp,
-    PopupSupplier
+    PopupSupplier,
+    SearchApp
   },
   mixins: [
     MsgBoxTools
@@ -60,6 +64,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   pageSize: number = 25
   currentPage: number = 1
   popupId: number = null
+  searchFields: (keyof Supplier)[] = ['supplierId', 'supplierName', 'userId', 'userName', 'inn']
 
   // list getters
   get editFailed() { return this.requestStatus === 'failEdit' }
@@ -82,6 +87,13 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
   get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
 
+  // SEARCH handlers
+  handleSearchProgress(res) {
+    this.setListFiltered(res)
+  }
+  handleSearchFinished() {
+    this.setListFiltered(null)
+  }
   // PAGINATION click handler
   onCurrentChange(n) {
     this.currentPage = n
