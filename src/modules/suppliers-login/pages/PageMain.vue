@@ -70,7 +70,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     { field: 'supplierName', title: 'Имя поставщика' },
     { field: 'userId', title: 'UserId' },
     { field: 'userName', title: 'Имя пользователя' },
-    { field: 'inn', title: 'ИНН' }
+    { field: 'inn', title: 'ИНН' },
+    { field: 'phone', title: 'Номер телефона' }
   ]
 
   // list getters
@@ -101,14 +102,14 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   handleSearchFinished() {
     this.setListFiltered(null)
   }
-  // PAGINATION click handler
+  // PAGINATION click handlers
   onCurrentChange(n) {
     this.currentPage = n
   }
   onPageSizeChange(n) {
     this.pageSize = n
   }
-  // LIST click handler
+  // LIST click handlers
   onEditClick(payload?: EditPayload) {
     if (payload) this.editPayload = payload // stored here in case of repeated request
 
@@ -125,7 +126,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   onItemClick(id) {
     this.popupId = id
   }
-  // POPUP click handler
+  // POPUP click handlers
   onPopupConfirm() {
     this.popupId = null
   }

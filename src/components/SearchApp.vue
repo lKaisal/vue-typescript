@@ -6,8 +6,7 @@
       +e.EL-SELECT.select(v-model="activeField" :disabled="!searchText" clearable placeholder="Поиск по полю" :class="{ 'is-filled': activeField }" @change="onActiveFieldChange")
         +e.EL-OPTION(v-for="(field, index) in fields" :key="index" :label="field.title" :value="field.field")
       +e.EL-INPUT.input(v-model="searchText" clearable placeholder="Поиск" :class="{ 'is-filled': searchText }"  @input="onSearchTextChange" @change="onSearchTextChange")
-        +e.I.icon.el-icon-search.el-input__icon(v-if="!searchText" slot="suffix" @mouseenter="inputIconHovered=true" @mouseleave="inputIconHovered=false")
-        //- +e.I.icon.el-icon-circle-close.el-input__icon(v-else slot="suffix" @mouseenter="inputIconHovered=true" @mouseleave="inputIconHovered=false" @click="searchText=null")
+        +e.I.icon.el-icon-search.el-input__icon(v-if="!searchText" slot="suffix")
 </template>
 
 <script lang="ts">
@@ -21,20 +20,16 @@ import { SearchField } from '@/models'
 })
 
 export default class SearchApp extends Vue {
-  @Prop() list: any[]
+  @Prop() list: Object[]
   @Prop() fields: SearchField[]
-  activeField: string = null
-  searchText: string = null
-  search = null
-  inputIconHovered: boolean = false
-  isLoading: boolean = false
+  activeField: string = null // EL-SELECT
+  searchText: string = null // EL-INPUT
+  search = null // JsSearch instance
 
   created() {
     this.initSearch()
   }
   async initSearch(field?: SearchField['field']) {
-    this.startLoading()
-
     this.search = new JsSearch.Search(field || this.fields[0].field)
     this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy()
 
@@ -46,42 +41,26 @@ export default class SearchApp extends Vue {
     }
 
     this.search.addDocuments([...this.list])
-    this.searchTextChangeHandler()
-
-    this.finishLoading()
+    this.onSearchTextChange()
   }
-  onSearchTextChange(val) {
-    console.log(val)
-    this.startLoading()
-
-    if (!val) this.activeField = null
-
-    this.searchTextChangeHandler()
-  }
-  async searchTextChangeHandler() {
-    this.startLoading()
+  onSearchTextChange() {
+    if (!this.searchText) this.activeField = null
 
     if (!this.searchText) this.$emit('searchFinished')
     else {
       const searchRes = this.search.search(this.searchText.toString())
       this.$emit('searchProgress', searchRes)
     }
-
-    await this.$nextTick()
-    this.finishLoading()
   }
-  async onActiveFieldChange(val) {
-    this.startLoading()
-    // reset list (or it will filter only what is left after previous filter)
+  async onActiveFieldChange() {
+    // !!! reset list (or it will filter only list left after previous filter)
     this.$emit('searchFinished')
     await this.$nextTick()
     this.search = null
 
     // init JsSearch with (or without) activeField
-    this.initSearch(val)
+    this.initSearch(this.activeField)
   }
-  startLoading() { this.isLoading = true }
-  finishLoading() { this.isLoading = false }
 }
 </script>
 

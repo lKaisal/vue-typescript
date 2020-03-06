@@ -61,7 +61,8 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     { field: 'supplierName', title: 'Название поставщика', isSmall: false, isMedium: false },
     { field: 'userId', title: 'UserID', isSmall: !this.isGtMd, isMedium: this.isGtMd },
     { field: 'userName', title: 'Имя пользователя', isSmall: false, isMedium: false },
-    { field: 'inn', title: 'ИНН', isSmall: false, isMedium: false },
+    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: !this.isMd },
+    { field: 'phone', title: 'Телефон', isSmall: this.isMd, isMedium: !this.isMd },
     { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd }, // btn column
   ]}
   get amountTotal() { return this.list && this.list.length }
@@ -69,6 +70,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   get listSortDirection() { return this.listSort.direction }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
+  get isMd() { return this.breakpoint === 'md' }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
