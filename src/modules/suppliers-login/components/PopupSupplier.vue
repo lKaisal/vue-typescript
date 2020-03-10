@@ -89,13 +89,13 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
 
   &__container
     position relative
-    margin 50px auto
+    // margin 50px auto
     +xl()
       width 50vw
     +lg()
-      width 45vw
-    +md()
       width 55vw
+    +md()
+      width 65vw
     +lt-md()
       font-size 14px
     +sm()
@@ -117,6 +117,8 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   &__title
     margin-bottom 50px
     text-align center
+    +xs()
+      margin-bottom 25px
 
   &__info-block
     width 100%

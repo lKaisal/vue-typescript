@@ -3,15 +3,17 @@
 
   +b.phone-manage
     +e.row
-      +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange" ref="selectRef")
-        +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
-          IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
-          +e.SPAN(v-html="`+${country.phoneCode}`")
-      +e.EL-INPUT.input(v-model="number" ref="numberRef" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }" @focus="inputFocused=true" @blur="inputFocused=false")
-      +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
-        +e.I.btn-icon._confirm.el-icon-check
-      +e.btn._discard(@click="discard")
-        +e.I.btn-icon._discard.el-icon-close
+      +e.form
+        +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange" ref="selectRef")
+          +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
+            IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
+            +e.SPAN(v-html="`+${country.phoneCode}`")
+        +e.EL-INPUT.input(v-model="number" ref="numberRef" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }" @focus="inputFocused=true" @blur="inputFocused=false")
+      +e.btns
+        +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
+          +e.I.btn-icon._confirm.el-icon-check
+        +e.btn._discard(@click="discard")
+          +e.I.btn-icon._discard.el-icon-close
 </template>
 
 <script lang="ts">
@@ -106,9 +108,10 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 .phone-manage
 
   &__row
-    display flex
-    align-items center
-    // justify-content center
+    +gt-sm()
+      display flex
+      align-items center
+      // justify-content center
 
   &__select
     max-width 110px
@@ -140,8 +143,18 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 
   &__img
     width 20px
-    margin-right 15px
+    margin-right 5px
     transform translateY(4px)
+
+  &__form
+  &__btns
+    display flex
+
+  &__form
+    +gt-sm()
+      margin-right 15px
+    +xs()
+      margin-bottom 15px
 
   &__btn
     width 40px

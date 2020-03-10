@@ -3,7 +3,8 @@
 
   +b.item-suppliers
     +e.info
-      +e.cell.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+      +e.cell.table-cell(v-for="(field, index) in fields"
+        :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': !field.isSmall && !field.isMedium && !field.isXMedium }")
         +e.cell-title(v-if="titleIsShown && field.title" v-html="`${field.title}:&ensp;`")
         +e.cell-text(v-if="index < fields.length - 1" v-html="getFieldContent(field)")
         ButtonApp(v-else :isLow="true" :isPlain="true" :fontSize="12" text="Открыть" @clicked="onBtnClick" class="item-suppliers__btn")

@@ -7,9 +7,10 @@
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
-    transition-group(tag="div")
+    transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
+    transition
       PopupSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
         @showPhoneManage="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false" class="page-main__popup modal modal-popup")
 </template>
@@ -98,6 +99,12 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   // popup getters
   get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
   get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
+
+  @Watch('popupIsShown', { immediate: true })
+  onPopupIsShownChange(val) {
+    if (val) document.body.classList.add('modal-open')
+    else document.body.classList.remove('modal-open')
+  }
 
   // SEARCH handlers
   handleSearchProgress(res) {

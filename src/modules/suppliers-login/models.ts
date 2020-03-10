@@ -19,7 +19,8 @@ type TableField = {
   field: keyof Supplier,
   title: string,
   isSmall?: boolean,
-  isMedium?: boolean
+  isMedium?: boolean,
+  isXMedium?: boolean
 }
 
 type EditPayload = {

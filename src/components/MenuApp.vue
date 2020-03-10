@@ -106,6 +106,8 @@ export default class MenuApp extends Vue {
     font-size 36px
     color $cBrand
     cursor pointer
+    +xs()
+      font-size 28px
 
   &__links-wrapper
     height 100%

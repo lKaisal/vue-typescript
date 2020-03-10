@@ -27,6 +27,8 @@ a
 body
   &.modal-open
     overflow hidden
+    +xs()
+      position fixed
 
 #__nuxt
 #__layout
@@ -78,6 +80,8 @@ body
   border-radius .25rem
   background-color white
   transition(transform)
+  +xs()
+    padding 25px
   .v-enter &
   .v-leave-to &
     transform translateY(-30px)
@@ -103,6 +107,9 @@ h1.page-title
 
 .el-menu-item.is-active
   border-color $cBrand !important
+
+.el-input__inner
+  line-height 1 !important
 
 .bg-empty
   background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)

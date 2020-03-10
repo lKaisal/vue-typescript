@@ -6,7 +6,8 @@
       +e.table
         //- table head
         +e.row.table-row(v-if="!isLtMd")
-          +e.title.table-cell(v-for="(field, index) in fields" :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+          +e.title.table-cell(v-for="(field, index) in fields"
+            :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': !field.isSmall && !field.isMedium && !field.isXMedium }")
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index !== fields.length - 1")
@@ -56,19 +57,21 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   breakpoint!: string
 
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isSmall: false, isMedium: true },
-    { field: 'supplierName', title: 'Название поставщика', isSmall: false, isMedium: false },
-    { field: 'userId', title: 'UserID', isSmall: !this.isGtMd, isMedium: this.isGtMd },
-    { field: 'userName', title: 'Имя пользователя', isSmall: false, isMedium: false },
-    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: !this.isMd },
-    { field: 'phone', title: 'Телефон', isSmall: this.isMd, isMedium: !this.isMd },
-    { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd }, // btn column
+    { field: 'supplierId', title: 'SupplierID', isSmall: !this.isXl, isMedium: this.isXl, isXMedium: false },
+    { field: 'supplierName', title: 'Название поставщика', isSmall: false, isMedium: false, isXMedium: false },
+    { field: 'userId', title: 'UserID', isSmall: !this.isGtMd, isMedium: this.isGtMd, isXMedium: false },
+    { field: 'userName', title: 'Имя пользователя', isSmall: false, isMedium: false, isXMedium: false },
+    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: !this.isMd, isXMedium: false },
+    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: !this.isXl, isXMedium: this.isXl },
+    { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd, isXMedium: false }, // btn column
   ]}
   get amountTotal() { return this.list && this.list.length }
   get listSortBy() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
-  get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
+  get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
+  get isXl() { return this.breakpoint === 'xl' }
+  get isLg() { return this.breakpoint === 'lg' }
   get isMd() { return this.breakpoint === 'md' }
 
   @Watch('isActive', { immediate: true })
@@ -105,8 +108,12 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   &__container
     width 100%
     transition(opacity)
-    // width-between-property 'font-size' 1001 14 1440 16 true true
-    font-size 14px
+    // font-size 14px
+    +gt-md()
+      width-between-property 'font-size' 1001 12 1440 14 true false
+      width-between-property 'font-size' 1441 14 1920 16 false true
+    +lt-md()
+      font-size 14px
     &:not(:last-child)
       margin-bottom 100px
     &.v-enter

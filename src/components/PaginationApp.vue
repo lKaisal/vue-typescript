@@ -41,12 +41,14 @@ export default class PaginationApp extends Vue {
 .pagination-app
 
   &__container
-    display flex
-    justify-content space-between
-    align-items center
+    +gt-sm()
+      display flex
+      justify-content space-between
+      align-items center
 
   &__pag
-    // margin-right 25px
+    +xs()
+      margin-bottom 25px
 
   &__select
     width 75px
