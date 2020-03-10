@@ -22,7 +22,17 @@ type TableField = {
   isMedium?: boolean
 }
 
-type EditPayload = { serviceName: string }[]
+type EditPayload = {
+  phoneAuthId: Supplier['phoneAuthId'],
+  phone: Supplier['phone']
+}
+
+type EditResponse = {
+  phone: Supplier['phone'],
+  phoneAuthId: Supplier['phoneAuthId'],
+  supplierId: Supplier['supplierId'],
+  userId: Supplier['userId']
+}
 
 type Country = {
   name: string,
@@ -40,4 +50,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit'
 }
 
-export { Supplier, ListSort, TableField, EditPayload, Country, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, ListSort, TableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }

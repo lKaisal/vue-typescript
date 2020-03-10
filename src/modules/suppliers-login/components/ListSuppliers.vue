@@ -34,8 +34,7 @@ const Mappers = Vue.extend({
     // ...suppliersMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
-    ...suppliersMapper.mapMutations(['updateListSort']),
-    ...suppliersMapper.mapActions(['editList'])
+    ...suppliersMapper.mapMutations(['updateListSort'])
   }
 })
 

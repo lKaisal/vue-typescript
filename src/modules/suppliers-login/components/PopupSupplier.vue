@@ -18,8 +18,8 @@
                 +e.field-content(v-html="getFieldContent(field)")
       +e.phone-block
         transition(mode="out-in")
-          +e.phone-title(v-if="!phoneManageShown" @click="phoneManageShown=true") Сменить номер телефона
-          PhoneManage(v-else :id="supplier.id" @discard="phoneManageShown=false" class="popup-supplier__phone-manage")
+          +e.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
+          PhoneManage(v-else :id="supplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="popup-supplier__phone-manage")
 </template>
 
 <script lang="ts">
@@ -44,7 +44,7 @@ import PhoneManage from '../components/PhoneManage.vue'
 
 export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   @Prop() supplier: Supplier
-  phoneManageShown: boolean = false
+  @Prop() phoneManageIsShown: boolean
   fields: TableField[] = [
     { field: 'supplierName', title: 'Название поставщика' },
     { field: 'supplierId', title: 'SupplierID' },
@@ -63,8 +63,8 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     const isPhone = field.field === 'phone'
     return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
   }
-  confirm() {
-    this.$emit('confirm')
+  onPhoneConfirm(phone) {
+    this.$emit('editPhone', phone)
   }
   discard() {
     this.$emit('discard')
@@ -72,6 +72,12 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   onClickOutside(evt) {
     const targetIsModal = evt.srcElement.classList.contains('modal-popup')
     if (targetIsModal) this.discard()
+  }
+  showPhoneManage() {
+    this.$emit('showPhoneManage')
+  }
+  hidePhoneManage() {
+    this.$emit('hidePhoneManage')
   }
 }
 </script>

@@ -24,9 +24,13 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
     successFetchList: { firstBtn: 'Закрыть' },
-    successEdit: { firstBtn: 'Закрыть' },
+    successEdit: { firstBtn: 'Изменить еще раз', secondBtn: 'Закрыть карточку' },
     failFetchList: { firstBtn: 'Повторить попытку', secondBtn: 'К списку разделов' },
     failEdit: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+  }
+  msgBoxMsgSuccess: {[key in RequestStatuses['success']]: string} = {
+    successFetchList: 'Данные успешно загружены', 
+    successEdit: 'Телефон успешно изменен'
   }
 
   get statusType() {
@@ -35,7 +39,10 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     }
   }
   get msgBoxTitle() { return this.titles[this.statusType]}
-  get msgBoxMsg() { return this.loadingError }
+  get msgBoxMsg() {
+    if (this.statusType === 'success') return this.msgBoxMsgSuccess[this.requestStatus]
+    else return this.loadingError
+  }
   get msgBoxBtns() { return this.btns[this.requestStatus] }
   get msgBoxContent() { return { title: this.msgBoxTitle, msg: this.msgBoxMsg || this.contentDefault, ...this.msgBoxBtns } }
 }

@@ -8,7 +8,7 @@
           IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
           +e.SPAN(v-html="`+${country.phoneCode}`")
       +e.EL-INPUT.input(v-model="number" ref="numberRef" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }" @focus="inputFocused=true" @blur="inputFocused=false")
-      +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }")
+      +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
         +e.I.btn-icon._confirm.el-icon-check
       +e.btn._discard(@click="discard")
         +e.I.btn-icon._discard.el-icon-close
@@ -88,8 +88,10 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     if (!container) return
     container.setAttribute('style', `background-image: url(${this.activeFlag})`)
   }
-  removeSelectIcon() {
+  confirm() {
+    if (!this.number || this.numberIsInvalid) return
 
+    this.$emit('confirm', this.number)
   }
   discard() {
     this.$emit('discard')

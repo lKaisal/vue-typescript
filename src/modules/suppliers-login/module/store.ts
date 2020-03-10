@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Supplier, ListSort, EditPayload, Country } from '../models'
+import { Supplier, ListSort, EditPayload, Country, EditResponse } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
@@ -87,6 +87,11 @@ class SuppliersLoginMutations extends Mutations<SuppliersLoginState> {
     this.state.edit.error = null
     this.state.edit.isLoading = false
   }
+  updateSupplier(payload: EditResponse) {
+    const supplier = this.state.list.data.find(s => s.userId === payload.userId)
+    supplier.phone = payload.phone
+    supplier.phoneAuthId = payload.phoneAuthId
+  }
   setEditFail(err) {
     this.state.edit.error = err
     this.state.edit.isLoading = false
@@ -110,24 +115,25 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
           resolve()
         })
         .catch(error => {
-          if (error && error.response) {
-            console.log(error.response)
-            const errMsg = error.response && error.response.data && error.response.data.message || null
-            this.commit('setListLoadingFail', errMsg)
-          }
+          if (error && error.response) console.log(error.response)
+
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setListLoadingFail', errMsg)
           reject()
         })
     })
   }
-  async editList(payload: EditPayload) {
+  async editPhone(payload: EditPayload) {
     return new Promise((resolve, reject) => {
       this.commit('startEdit')
 
-      axios.post('/api/v1/services', payload)
-        .then(async () => {
-          console.log('Success: edit list')
-          await this.dispatch('getList', null)
+      axios.post('/api/v1/phone', payload)
+        .then(async (res) => {
+          const data = res.data as EditResponse
+          console.log('Success: edit phone, userId: ' + data.userId)
+          // await this.dispatch('getList', null)
           this.commit('setEditSuccess')
+          this.commit('updateSupplier', data)
           resolve()
         })
         .catch(error => {
@@ -141,6 +147,8 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
 }
 
 const dateParser = (date) => {
+  if (!date) return
+
   const dateParser = /(\d{2})\-(\d{2})\-(\d{4}) (\d{2}):(\d{2})/;
   const match = date.match(dateParser);
   const newDate = new Date(

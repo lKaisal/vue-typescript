@@ -2,15 +2,16 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container.js-voa.js-voa-start(v-if="!isLoading && list.data && list.data.length")
+    +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
       SearchApp(:list="listSorted" :fields="searchFields" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" :key="listSorted.length + pageSize + currentPage" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown && editFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
-        class="list-features__msg-box modal modal-msg")
-      PopupSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" key="popup" @confirm="onPopupConfirm" @discard="onPopupDiscard" class="page-main__popup modal modal-popup")
+      MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
+        @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
+      PopupSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
+        @showPhoneManage="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false" class="page-main__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -37,7 +38,7 @@ const Mappers = Vue.extend({
   },
   methods: {
     ...suppliersMapper.mapMutations(['setListFiltered']),
-    ...suppliersMapper.mapActions(['editList'])
+    ...suppliersMapper.mapActions(['editPhone'])
   }
 })
 
@@ -61,7 +62,7 @@ const Mappers = Vue.extend({
 })
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
-  editPayload: EditPayload = null // for repeated request
+  newPhone: Supplier['phone'] = null // for repeated request
   pageSize: number = 15
   currentPage: number = 1
   popupId: number = null
@@ -73,8 +74,11 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     { field: 'inn', title: 'ИНН' },
     { field: 'phone', title: 'Номер телефона' }
   ]
+  phoneManageIsShown: boolean = false
+  secondBtn: Button = null
 
   // list getters
+  get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get editFailed() { return this.requestStatus === 'failEdit' }
   get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
   get listByPages() {
@@ -110,28 +114,31 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     this.pageSize = n
   }
   // LIST click handlers
-  onEditClick(payload?: EditPayload) {
-    if (payload) this.editPayload = payload // stored here in case of repeated request
-
-    this.editList(this.editPayload)
-      .then(() => {
-        this.editPayload = null
-        this.$emit('updateList')
-      })
-      .catch(() => {
-        this.requestStatus = 'failEdit'
-        this.openMsgBox()
-      })
-  }
   onItemClick(id) {
     this.popupId = id
   }
   // POPUP click handlers
-  onPopupConfirm() {
-    this.popupId = null
+  onEditPhone(phone?: Supplier['phone']) {
+    if (phone) this.newPhone = phone // stored here in case of repeated request
+
+    const editPayload: EditPayload = {phoneAuthId: this.popupSupplier.phoneAuthId, phone: this.newPhone}
+    this.editPhone(editPayload)
+      .then(() => {
+        this.newPhone = null
+        this.requestStatus = 'successEdit'
+        this.secondBtn = { type: 'success', isPlain: true }
+        this.phoneManageIsShown = false
+        this.openMsgBox()
+      })
+      .catch(() => {
+        this.requestStatus = 'failEdit'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
   }
   onPopupDiscard() {
     this.popupId = null
+    this.phoneManageIsShown = false
   }
   // MSGBOX click handler
   onFirstBtnClick() {
@@ -139,7 +146,16 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 
     switch (this.requestStatus) {
       case 'failEdit':
-        this.onEditClick()
+        this.onEditPhone()
+        break
+    }
+  }
+  onSecondBtnClick() {
+    this.closeMsgBox()
+
+    switch (this.requestStatus) {
+      case 'successEdit':
+        this.onPopupDiscard()
         break
     }
   }
