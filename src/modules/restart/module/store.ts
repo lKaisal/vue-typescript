@@ -92,12 +92,9 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
           resolve()
         })
         .catch(error => {
-          if (error && error.response) {
-            console.log(error.response)
-            const errMsg = error.response && error.response.data && error.response.data.message || null
-            this.commit('setListLoadingFail', errMsg)
-          }
-          reject()
+          const errMsg = error.response && error.response.data && error.response.data.message || null
+          this.commit('setListLoadingFail', errMsg)
+          reject(error.response)
         })
     })
   }

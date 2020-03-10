@@ -2,7 +2,7 @@
   include ../tools/bemto.pug
 
   +b.module-auth(v-loading.fullscreen.lock="isLoading")
-    router-view
+    router-view(@loggedIn="onLoggedIn")
 </template>
 
 <script lang="ts">
@@ -25,7 +25,9 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleAuth extends Mixins(Mappers) {
-
+  onLoggedIn() {
+    this.$emit('loggedIn')
+  }
 }
 </script>
 

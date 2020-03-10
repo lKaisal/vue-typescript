@@ -67,9 +67,12 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     if (this.list.isLoading) return
 
     this.getList()
-      .catch(() => {
-        this.requestStatus = 'failFetchList'
-        this.openMsgBox()
+      .catch((err) => {
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
       })
   }
 }

@@ -22,15 +22,17 @@ import { SearchField } from '@/models'
 export default class SearchApp extends Vue {
   @Prop() list: Object[]
   @Prop() fields: SearchField[]
+  @Prop() uniqueFieldIndex: number
   activeField: string = null // EL-SELECT
   searchText: string = null // EL-INPUT
   search = null // JsSearch instance
+  get uniqueField() { return this.fields[this.uniqueFieldIndex].field }
 
   created() {
     this.initSearch()
   }
   async initSearch(field?: SearchField['field']) {
-    this.search = new JsSearch.Search(field || this.fields[0].field)
+    this.search = new JsSearch.Search(this.uniqueField)
     this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy()
 
     if (field) this.search.addIndex(field)
@@ -43,11 +45,16 @@ export default class SearchApp extends Vue {
     this.search.addDocuments([...this.list])
     this.onSearchTextChange()
   }
-  onSearchTextChange() {
-    if (!this.searchText) this.activeField = null
-
-    if (!this.searchText) this.$emit('searchFinished')
-    else {
+  async onSearchTextChange() {
+    if (!this.searchText) {
+      this.$emit('searchFinished')
+      if (this.activeField) {
+        this.activeField = null
+        this.search = null
+        await this.$nextTick()
+        this.initSearch()
+      }
+    } else {
       const searchRes = this.search.search(this.searchText.toString())
       this.$emit('searchProgress', searchRes)
     }

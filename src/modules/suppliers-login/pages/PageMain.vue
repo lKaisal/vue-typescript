@@ -3,9 +3,9 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-      SearchApp(:list="listSorted" :fields="searchFields" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
+      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
-        ListSuppliers(:list="currentList" :key="listSorted.length + pageSize + currentPage" @itemClicked="onItemClick" class="page-main__list")
+        ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"

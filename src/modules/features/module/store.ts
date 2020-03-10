@@ -97,7 +97,7 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
         .catch(error => {
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setListLoadingFail', errMsg)
-          reject()
+          reject(error.response)
         })
     })
   }

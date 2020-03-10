@@ -119,7 +119,7 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
 
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setListLoadingFail', errMsg)
-          reject()
+          reject(error.response)
         })
     })
   }

@@ -1,13 +1,13 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-restart.page(v-loading.fullscreen.lock="isLoading")
+  +b.module-suppliers-login.page(v-loading.fullscreen.lock="isLoading")
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
       +e.title.H1.page-title.js-voa.js-voa-start Выбор поставщика
       router-view
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
-        @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")
+        @secondBtnClicked="goToPageApp()" class="module-suppliers-login__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -37,7 +37,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ModuleSuppliersLogin extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'success', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
 
@@ -67,9 +67,12 @@ export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
     if (this.list.isLoading) return
 
     this.getList()
-      .catch(() => {
-        this.requestStatus = 'failFetchList'
-        this.openMsgBox()
+      .catch((err) => {
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
       })
   }
 }
@@ -78,7 +81,7 @@ export default class ModulePhones extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
 <style lang="stylus" scoped>
 @import '../styles/tools'
 
-.module-restart
+.module-suppliers-login
 
   &__list
     grid-size(4, 4, 6, 8, 10)

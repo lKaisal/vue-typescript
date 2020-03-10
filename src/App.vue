@@ -11,7 +11,7 @@
 
       //- content
       transition(mode="out-in")
-        router-view(v-if="!isRootPage" key="router" class="app__page page")
+        router-view(v-if="!isRootPage" key="router" @loggedIn="goToPageRoot" @goToPageAuth="goToPageAuth" class="app__page page")
 </template>
 
 <script lang="ts">
@@ -84,6 +84,8 @@ export default class App extends Vue {
 
     this.setBreakpoint(breakpoint)
   }
+  goToPageAuth() { this.$router.push({ path: '/auth' }) }
+  goToPageRoot() { this.$router.push({ path: '/' }) }
 }
 </script>
 

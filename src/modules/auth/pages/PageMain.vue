@@ -66,12 +66,9 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
   }
 
   isInvalid(field: FormField) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
-  goToPageBanners() {
-    this.$router.push({ name: 'PageBanners' })
-  }
   onSubmit() {
     this.sendForm()
-      .then(() => this.goToPageBanners())
+      .then(() => this.$emit('loggedIn'))
       .catch(async () => {
         if (this.formIsValid) {
           this.requestStatus = 'failLogin'

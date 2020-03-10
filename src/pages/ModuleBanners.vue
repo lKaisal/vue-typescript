@@ -44,7 +44,6 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
   }
 
   goToPageApp() { this.$router.push({ path: '/' }) }
-  goToPageAuth() { this.$router.push({ name: 'PageAuth' }) }
   loadData() {
     if (this.list.isLoading) return
 
@@ -52,7 +51,7 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
 
     this.loadGlobalData()
       .catch((err) => {
-        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.goToPageAuth()
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
         else {
           this.requestStatus = 'failFetchList'
           this.openMsgBox()

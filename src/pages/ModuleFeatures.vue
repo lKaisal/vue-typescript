@@ -67,9 +67,13 @@ export default class ModuleFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgB
     if (this.list.isLoading) return
 
     this.getList()
-      .catch(() => {
-        this.requestStatus = 'failFetchList'
-        this.openMsgBox()
+      .catch((err) => {
+        console.log(err && err.status)
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
       })
   }
 }
