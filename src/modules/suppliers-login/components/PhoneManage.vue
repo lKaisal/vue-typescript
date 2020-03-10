@@ -54,6 +54,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   get activeFlag() { return `/static/images/${this.activeCountry.name.toLowerCase()}.svg` }
   get activeMask() { return this.activeCountry.mask }
   get numberIsInvalid() { return this.number && !this.numberIsComplete }
+  get fullNumber() { return this.countryCode.toString() + this.number.toString() }
 
   async mounted() {
     await this.$nextTick()
@@ -91,7 +92,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   confirm() {
     if (!this.number || this.numberIsInvalid) return
 
-    this.$emit('confirm', this.number)
+    this.$emit('confirm', this.fullNumber)
   }
   discard() {
     this.$emit('discard')
