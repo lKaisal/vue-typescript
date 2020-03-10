@@ -38,7 +38,7 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
-  secondBtn: Button = { type: 'danger', isPlain: true }
+  secondBtn: Button = { type: 'success', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
 
   @Watch('list', { deep: true })
@@ -68,7 +68,6 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
 
     this.getList()
       .catch(() => {
-        this.secondBtn = { type: 'danger', isPlain: true }
         this.requestStatus = 'failFetchList'
         this.openMsgBox()
       })

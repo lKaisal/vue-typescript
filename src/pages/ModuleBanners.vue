@@ -35,7 +35,7 @@ const Mappers = Vue.extend({
 })
 
 export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxToolsApp) {
-  secondBtn: Button = { type: 'danger', isPlain: true }
+  secondBtn: Button = { type: 'success', isPlain: true }
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
 
   created() {
@@ -52,7 +52,7 @@ export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxTo
 
     this.loadGlobalData()
       .catch((err) => {
-        if (err && err.status && err.status.toString().slice(0, 2) == 40 || !err) this.goToPageAuth()
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.goToPageAuth()
         else {
           this.requestStatus = 'failFetchList'
           this.openMsgBox()
