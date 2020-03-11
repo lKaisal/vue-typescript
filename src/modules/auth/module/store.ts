@@ -7,7 +7,6 @@ import LocalStorageService from '@/services/LocalStorageService'
 const namespaced = true
 
 class AuthState {
-  isLoading: boolean = false
   form: Form = {
     data: [
       { name: 'login', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },

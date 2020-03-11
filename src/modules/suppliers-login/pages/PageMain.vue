@@ -79,9 +79,9 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
 
-  // list getters
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get editFailed() { return this.requestStatus === 'failEdit' }
+  // list getters
   get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
   get listByPages() {
     if (!this.listSorted) return
