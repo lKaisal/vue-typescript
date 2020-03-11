@@ -162,8 +162,12 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
       transition(color)
       &:first-child
         transform translateY(4px)
+        +lt-lg()
+          transform translateY(3px)
       &:last-child
         transform translateY(-4px)
+        +lt-lg()
+          transform translateY(-3px)
       &.is-active
         color $cBrand
 

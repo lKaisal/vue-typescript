@@ -98,6 +98,7 @@ export default class SearchApp extends Vue {
     >>> input
       fontMedium()
       transition(border-color)
+      width-between-property 'font-size' 1001 12 1440 14 true true
     &.is-filled
       >>> input
         border-color $cBrand
