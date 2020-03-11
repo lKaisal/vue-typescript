@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-auth(v-loading.fullscreen.lock="isLoading")
+  +b.module-auth(v-loading.fullscreen.lock="form.isLoading")
     router-view(@loggedIn="onLoggedIn")
 </template>
 
@@ -12,7 +12,7 @@ import { authMapper } from '@/modules/auth/module/store'
 
 const Mappers = Vue.extend({
   computed: {
-    ...authMapper.mapState(['isLoading']),
+    ...authMapper.mapState(['form']),
   },
   methods: {
   }
