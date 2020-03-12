@@ -11,8 +11,8 @@
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index !== fields.length - 1")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'desc' }")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
         ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
@@ -65,14 +65,16 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     { field: 'phone', title: 'Телефон', isSmall: false, isMedium: !this.isXl, isXMedium: this.isXl },
     { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd, isXMedium: false }, // btn column
   ]}
-  get amountTotal() { return this.list && this.list.length }
-  get listSortField() { return this.listSort.by }
-  get listSortDirection() { return this.listSort.direction }
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
   get isXl() { return this.breakpoint === 'xl' }
   get isLg() { return this.breakpoint === 'lg' }
   get isMd() { return this.breakpoint === 'md' }
+  get amountTotal() { return this.list && this.list.length }
+  get listSortField() { return this.listSort.by }
+  get listSortDirection() { return this.listSort.direction }
+  get isAscSorted() { return this.listSortDirection === 'asc' }
+  get isDescSorted() { return this.listSortDirection === 'desc' }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {

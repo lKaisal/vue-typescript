@@ -5,21 +5,21 @@
     +e.container
       +e.table(:class="{ 'is-long-list': list.length > 2 }")
         //- table head
-        +e.row.table-row
-          +e.title.table-cell.col-05
-            +e.checkbox.checkbox-features(@click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+        +e.row.table-row(v-if="!isXs")
+          +e.title.table-cell(v-for="(field, index) in fieldsShown"
+            :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+            +e.checkbox.checkbox-features(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
               +e.I.checkbox-icon.el-icon-check
-          +e.title.table-cell.col-2(v-for="(title, index) in tableTitles")
-            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
-              +e.title-text(v-html="title")
-              +e.title-sort(v-if="index < tableTitles.length - 1")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
+            +e.title-wrapper(v-else @click="index < fieldsShown.length - 1 && onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+              +e.title-text(v-html="field.title")
+              +e.title-sort(v-if="index < fields.length - 1")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'asc' }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'desc' }")
         //- table body
-        ItemFeatures(v-for="(item, index) in list" :key="index" :section="item" :isActive="idsSelected.indexOf(item.id) >= 0" @checkboxClicked="onItemCheckboxClick(item.id)"
+        ItemFeatures(v-for="(item, index) in list" :key="index" :section="item" :fields="fieldsShown" :isActive="idsSelected.indexOf(item.id) >= 0" @checkboxClicked="onItemCheckboxClick(item.id)"
           class="list-features__item table-row")
 
-      ButtonApp(v-if="list.length" :text="btnText" :btnType="btnType" :isDisabled="!idsSelected.length" @clicked="onBtnClick" class="list-features__btn")
+      ButtonApp(v-if="list.length" :text="btn.text" :btnType="btn.type" :isDisabled="!idsSelected.length" @clicked="onBtnClick" class="list-features__btn")
 </template>
 
 <script lang="ts">
@@ -31,6 +31,8 @@ import { Section, ListSort, EditPayload } from '../models'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
+import { TableField } from '../models'
+import { mapState } from 'vuex'
 
 const Mappers = Vue.extend({
   computed: {
@@ -48,25 +50,38 @@ const Mappers = Vue.extend({
     ItemFeatures,
     ButtonApp,
     MessageBox
+  },
+  computed: {
+    ...mapState('system', [
+      'breakpoint'
+    ])
   }
 })
 
 export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Section[]
   @Prop() isActive: boolean
+  breakpoint!: string
 
-  tableTitles: string[] = [ 'Название', 'Дата обновления', 'Дата создания', 'Статус' ]
-  fields: (keyof Section)[] = [ 'feature', 'updatedAt', 'createdAt' ]
   checkboxIsActive: boolean = false
   idsSelected: number[] = []
 
+  get fields(): TableField[] { return [
+    { field: null, title: '', isShown: true, isSmall: !this.isXs }, // checkbox column
+    { field: 'feature', isShown: true, title: 'Название' },
+    { field: 'updatedAt', isShown: true, title: 'Дата обновления' },
+    { field: 'createdAt', isShown: true, title: 'Дата создания' },
+    { field: 'active', isShown: !this.isLtMd, title: 'Статус' },
+  ]}
+  get fieldsShown() { return this.fields.filter(f => f.isShown) }
+  get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
+  get isXs() { return this.breakpoint === 'xs' }
   get amountTotal() { return this.list && this.list.length }
   get allAreSelected() { return this.idsSelected.length > 0 && this.amountTotal === this.idsSelected.length }
   get allIds() { return this.list && this.list.map(item => item.id) }
-  get listSortBy() { return this.listSort.by }
+  get listSortField() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
-  get btnText() { return this.isActive ? 'Деактивировать' : 'Активировать' }
-  get btnType() { return this.isActive ? 'warning' : 'success' }
+  get btn() { return this.isActive ? { text: 'Деактивировать', type: 'warning' } : { text: 'Активировать', type: 'success' } }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
@@ -92,8 +107,8 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
   }
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
-    const by: ListSort['by'] = this.fields[index]
-    const byIsUpdated = by !== this.listSortBy
+    const by: ListSort['by'] = this.fields[index].field
+    const byIsUpdated = by !== this.listSortField
     const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
 
     const listSort: ListSort = { by, direction }
@@ -141,6 +156,7 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
 
   &__title
     fontMedium()
+    width-between-property 'font-size' 601 14 1000 16 true true
     &:first-letter
       text-transform uppercase
     &.col-2:nth-of-type(2)
