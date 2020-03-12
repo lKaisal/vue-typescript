@@ -8,6 +8,13 @@ type ListSort = {
   direction: 'asc' | 'desc'
 }
 
+type TableField = {
+  field: keyof Service,
+  title: string,
+  isSmall?: boolean,
+  isMedium?: boolean
+}
+
 type EditPayload = { serviceName: string }[]
 
 type RequestStatus = RequestStatuses[RequestType]
@@ -19,4 +26,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit'
 }
 
-export { Service, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }
+export { Service, ListSort, TableField, EditPayload, RequestStatus, RequestType, RequestStatuses }

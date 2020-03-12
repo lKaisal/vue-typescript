@@ -3,17 +3,17 @@
 
   +b.item-restart
     +e.info
-      +e.cell.table-cell.col-05
-        +e.checkbox.checkbox-restart(@click="onCheckboxClick" :class="{ 'is-active': isActive }")
+      +e.cell.table-cell(v-for="(field, index) in fields"
+        :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+        +e.checkbox.checkbox-restart(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive }")
           +e.I.checkbox-icon.el-icon-check
-      +e.cell.table-cell(v-for="(item, index) in cells" :class="{ 'col-1': index === 1 }")
-        +e.cell-content(v-html="item" @click="index === 0 && onCheckboxClick()")
+        +e.cell-content(v-else v-html="section[field.field]" @click="index === 1 && onCheckboxClick()")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { restartMapper } from '../module/store'
-import { Service } from '../models'
+import { Service, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 
 @Component({
@@ -25,6 +25,7 @@ import ButtonApp from '@/components/ButtonApp.vue'
 export default class ItemFeatures extends Vue {
   @Prop() section: Service
   @Prop() isActive: boolean
+  @Prop() fields: TableField[]
 
   descrIsShown: boolean = false
   get cells() { return this.section && [ this.section.serviceName, this.section.replicas ] }

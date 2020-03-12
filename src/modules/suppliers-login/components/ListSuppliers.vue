@@ -11,8 +11,8 @@
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index !== fields.length - 1")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'desc' }")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'asc' }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'desc' }")
         //- table body
         ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
@@ -66,7 +66,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd, isXMedium: false }, // btn column
   ]}
   get amountTotal() { return this.list && this.list.length }
-  get listSortBy() { return this.listSort.by }
+  get listSortField() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -82,7 +82,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
     const by: ListSort['by'] = this.fields.map(f => f.field)[index]
-    const byIsUpdated = by !== this.listSortBy
+    const byIsUpdated = by !== this.listSortField
     const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
 
     const listSort: ListSort = { by, direction }

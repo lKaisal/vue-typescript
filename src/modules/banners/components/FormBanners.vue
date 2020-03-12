@@ -302,9 +302,10 @@ export default class FormBanners extends Mappers {
 .form-input
 .form-select
 .form-pickr
-  font-size 18px !important
-  input
-    font-size 18px
+.el-input__inner
+  width-between-property 'font-size' 1001 16 1440 18 true true
+  >>> input
+    width-between-property 'font-size' 1001 16 1440 18 true true
 
 .form-input
 .form-pickr

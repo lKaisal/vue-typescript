@@ -65,6 +65,7 @@ export default class App extends Vue {
     if (this.isRootPage) this.openMenu()
     else this.closeMenu()
   }
+
   created() {
     if (!this.isAuthorized) this.$router.push({ name: 'PageAuth' })
     this.$store.commit('system/setCurrentDevice', device)
