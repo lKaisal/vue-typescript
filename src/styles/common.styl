@@ -119,6 +119,7 @@ h1.page-title
   display flex
   align-items center
   max-width 1500px
+  min-width 28px
   +lt-md()
     padding 10px
 
@@ -138,6 +139,42 @@ h1.page-title
     left 0
     height 1px
     background-color $cLighterBorder
+
+.checkbox
+  padding 5px
+  margin -5px
+  display flex
+  justify-content center
+  align-items center
+  cursor pointer
+
+.checkbox-icon-wrapper
+  width 18px
+  height 18px
+  border 2px solid #afb6c1
+  border-radius 2px
+  transition(background-color\, border-color)
+  .is-active &
+    background-color $cBrand
+    border-color $cBrand
+
+.checkbox-icon
+  font-size 14px
+  color transparent
+  transform scale(0)
+  transition(color\, transform)
+  .is-active &
+    color white
+    transform scale(1)
+  .checkbox:hover &
+  .is-hovered &
+    color $cBrand
+    transform scale(.75)
+  .is-hovered.is-active &
+  .is-active:hover &
+    color white
+  .is-disabled &
+    pointer-events none
 
 .js-voa
   transition(opacity\, transform)

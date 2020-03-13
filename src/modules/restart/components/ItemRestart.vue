@@ -5,9 +5,11 @@
     +e.info
       +e.cell.table-cell(v-for="(field, index) in fields"
         :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-        +e.checkbox.checkbox-restart(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive }")
-          +e.I.checkbox-icon.el-icon-check
-        +e.cell-content(v-else v-html="section[field.field]" @click="index === 1 && onCheckboxClick()")
+        +e.checkbox.checkbox(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive, 'is-hovered': checkboxIsHovered }")
+          +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+            +e.I.checkbox-icon.el-icon-check.checkbox-icon
+        +e.cell-content(v-else v-html="section[field.field]" @click="index === 1 && onCheckboxClick()"
+          @mouseenter="setCheckboxIsHovered(index === 1)" @mouseleave="setCheckboxIsHovered(false)")
 </template>
 
 <script lang="ts">
@@ -28,15 +30,19 @@ export default class ItemFeatures extends Vue {
   @Prop() fields: TableField[]
 
   descrIsShown: boolean = false
+  checkboxIsHovered: boolean = false
   get cells() { return this.section && [ this.section.serviceName, this.section.replicas ] }
 
   onCheckboxClick() {
     this.$emit('checkboxClicked')
   }
+  setCheckboxIsHovered(payload: boolean) {
+    this.checkboxIsHovered = payload
+  }
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 @import '../../../styles/tools'
 @import '../common'
 

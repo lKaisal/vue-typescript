@@ -57,13 +57,13 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   breakpoint!: string
 
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isSmall: !this.isXl, isMedium: this.isXl, isXMedium: false },
-    { field: 'supplierName', title: 'Название поставщика', isSmall: false, isMedium: false, isXMedium: false },
-    { field: 'userId', title: 'UserID', isSmall: !this.isGtMd, isMedium: this.isGtMd, isXMedium: false },
-    { field: 'userName', title: 'Имя пользователя', isSmall: false, isMedium: false, isXMedium: false },
-    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: !this.isMd, isXMedium: false },
-    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: !this.isXl, isXMedium: this.isXl },
-    { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd, isXMedium: false }, // btn column
+    { field: 'supplierId', title: 'SupplierID', isSmall: this.isLg || this.isMd, isMedium: this.isXl },
+    { field: 'supplierName', title: 'Название поставщика' },
+    { field: 'userId', title: 'UserID', isSmall: this.isMd, isMedium: this.isGtMd },
+    { field: 'userName', title: 'Имя пользователя' },
+    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: this.isGtMd },
+    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl },
+    { field: null, title: '', isSmall: this.isMd, isMedium: this.isGtMd }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }

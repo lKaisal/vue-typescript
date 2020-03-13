@@ -23,7 +23,7 @@ export default {
       const { orientation, type, os  } = payload
       state.currentDevice = Object.assign({}, { orientation, type, os } )
     },
-    setRoutes(state, payload) { state.modules.push(payload) },
+    addModule(state, payload) { state.modules.push(payload) },
     toggleMenu: (state) => state.menuIsOpen = !state.menuIsOpen,
     openMenu: (state) => state.menuIsOpen = true,
     closeMenu: (state) => state.menuIsOpen = false,
@@ -33,7 +33,7 @@ export default {
     initializeModule ({ state, commit }, module: any) {
       registerModule(Store, [module.name], `${module.name}/`, module.store)
       Router.addRoutes(module.routes)
-      commit('setRoutes', ...module.routes)
+      commit('addModule', ...module.routes)
     },
     removeModule ({ dispatch }, module: any) {
       Store.unregisterModule(module.name)

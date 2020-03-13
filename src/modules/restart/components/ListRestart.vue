@@ -9,8 +9,9 @@
           //- +e.title.table-cell.col-05
           +e.title.table-cell(v-for="(field, index) in fields"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-            +e.checkbox.checkbox-restart(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
-              +e.I.checkbox-icon.el-icon-check
+            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+                +e.I.checkbox-icon.el-icon-check.checkbox-icon
             +e.title-wrapper(v-else @click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort

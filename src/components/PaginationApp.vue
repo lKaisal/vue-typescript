@@ -25,7 +25,7 @@ import { mapState } from 'vuex'
 export default class PaginationApp extends Vue {
   @Prop() total: number
   @Prop() pageSize: number
-  options: number[] = [ 15, 25, 50 ]
+  options: number[] = [ 10, 25, 50 ]
   currentPage: number = 1
   breakpoint!: string
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -62,6 +62,13 @@ export default class PaginationApp extends Vue {
     width 75px
     >>> input
       border 1px solid $cBrand !important
+      +lt-md()
+        padding-right 20px
+        padding-left 10px
+        font-size 14px
+        height 35px
     >>> i
       color $cBrand !important
+      +lt-md()
+        line-height 35px
 </style>

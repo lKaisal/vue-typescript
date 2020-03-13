@@ -5,8 +5,9 @@
     +e.info
       +e.cell.table-cell(v-for="(field, index) in fields"
         :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-        +e.checkbox.checkbox-features(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive }")
-          +e.I.checkbox-icon.el-icon-check
+        +e.checkbox.checkbox(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive }")
+          +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+            +e.I.checkbox-icon.el-icon-check.checkbox-icon
           +e.checkbox-text(v-if="isXs" v-html="btnText")
         +e.cell-content(v-else)
           +e.cell-content-title(v-if="isXs" v-html="field.title + ':&nbsp;'")
@@ -88,8 +89,8 @@ export default class ItemFeatures extends Vue {
       text-transform uppercase
 
   &__checkbox
-    +xs()
-      justify-content flex-start
+    // +xs()
+    //   justify-content flex-start
 
   &__checkbox-text
     margin-left 10px

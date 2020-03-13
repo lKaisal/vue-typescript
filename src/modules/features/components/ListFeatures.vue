@@ -8,9 +8,10 @@
         +e.row.table-row
           +e.title.table-cell(v-for="(field, index) in fieldsShown"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-            +e.checkbox.checkbox-features(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
-              +e.I.checkbox-icon.el-icon-check
-              +e.checkbox-text(v-if="isXs") Выбрать все
+            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+                +e.I.checkbox-icon.el-icon-check.checkbox-icon
+              +e.checkbox-text.checkbox-text(v-if="isXs") Выбрать все
             +e.title-wrapper(v-else-if="!isXs" @click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index < fields.length - 1")
@@ -199,10 +200,6 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
           transform translateY(-3px)
       &.is-active
         color $cBrand
-
-  &__checkbox
-    +xs()
-      justify-content flex-start
 
   &__checkbox-text
     margin-left 10px

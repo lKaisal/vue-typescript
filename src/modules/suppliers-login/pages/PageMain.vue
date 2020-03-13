@@ -65,7 +65,7 @@ const Mappers = Vue.extend({
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   newPhone: Supplier['phone'] = null // for repeated request
-  pageSize: number = 15
+  pageSize: number = 10
   currentPage: number = 1
   popupId: number = null
   searchFields: SearchField[] = [

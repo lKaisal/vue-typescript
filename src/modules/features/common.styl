@@ -1,36 +1,7 @@
 .col-05
   grid-size(.25, .25, .5, .5, .5)
+  +lt-md()
+    padding 5px
 
 .col-2
   grid-size(4, 2, 5/4, 7/4, 9/4)
-
-.checkbox-features
-  display flex
-  justify-content center
-  align-items center
-  width 18px
-  height 18px
-  border 2px solid #afb6c1
-  border-radius 2px
-  cursor pointer
-  transition(background-color\, border-color)
-  >>> i
-    font-size 14px
-    color transparent
-    transform scale(0)
-    transition(color\, transform)
-  &.is-active
-    background-color $cBrand
-    border-color $cBrand
-    >>> i
-      color white
-      transform scale(1)
-  &:hover
-    >>> i
-      color $cBrand
-      transform scale(.75)
-  &.is-active:hover
-    >>> i
-      color white
-  &.is-disabled
-    pointer-events none
