@@ -56,9 +56,7 @@ export default class App extends Vue {
   get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
   get crumbsShown() { return this.logOutIsShown && this.routes && this.routes.length }
   get routes() { return this.$store.getters['system/modules'] }
-  get accessToken() { return LocalStorageService.getAccessToken() }
-  get refreshToken() { return LocalStorageService.getRefreshToken() }
-  get isAuthorized() { return this.accessToken || this.refreshToken }
+  get isAuthorized() { return LocalStorageService.getIsAuthorized() }
 
   @Watch('$route', { immediate: true, deep: true }) 
   onRouteChange(val) {

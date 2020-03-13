@@ -27,4 +27,11 @@ type SearchField = {
   title: string
 }
 
-export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField }
+type MenuItem = {
+  alias: string,
+  order: number,
+  perrtutti_link: string,
+  title: string,
+}
+
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, MenuItem }
