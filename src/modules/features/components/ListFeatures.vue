@@ -5,12 +5,13 @@
     +e.container
       +e.table(:class="{ 'is-long-list': list.length > 2 }")
         //- table head
-        +e.row.table-row(v-if="!isXs")
+        +e.row.table-row
           +e.title.table-cell(v-for="(field, index) in fieldsShown"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
             +e.checkbox.checkbox-features(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
               +e.I.checkbox-icon.el-icon-check
-            +e.title-wrapper(v-else @click="index < fieldsShown.length - 1 && onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+              +e.checkbox-text(v-if="isXs") Выбрать все
+            +e.title-wrapper(v-else-if="!isXs" @click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index < fields.length - 1")
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'asc' }")
@@ -107,6 +108,8 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
   }
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
+    if (index === this.fields.length - 1 && !this.isLtMd) return
+
     const by: ListSort['by'] = this.fields[index].field
     const byIsUpdated = by !== this.listSortField
     const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
@@ -188,10 +191,22 @@ export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBox
       transition(color)
       &:first-child
         transform translateY(4px)
+        +lt-lg()
+          transform translateY(3px)
       &:last-child
         transform translateY(-4px)
+        +lt-lg()
+          transform translateY(-3px)
       &.is-active
         color $cBrand
+
+  &__checkbox
+    +xs()
+      justify-content flex-start
+
+  &__checkbox-text
+    margin-left 10px
+    white-space nowrap
 
   &__item
     background-color white

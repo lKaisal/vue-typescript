@@ -8,9 +8,13 @@
         +e.checkbox.checkbox-features(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive }")
           +e.I.checkbox-icon.el-icon-check
           +e.checkbox-text(v-if="isXs" v-html="btnText")
-        +e.cell-content(v-else v-html="getFieldContent(field)")
+        +e.cell-content(v-else)
+          +e.cell-content-title(v-if="isXs" v-html="field.title + ':&nbsp;'")
+          +e.cell-content-text(v-html="getFieldContent(field)")
     +e.descr-wrapper(v-if="section.description" @click="descrIsShown = !descrIsShown" :class="{ 'is-active': descrIsShown }")
-      +e.descr-content(v-html="section.description")
+      +e.descr-content
+        +e.descr-content-title(v-if="isXs" v-html="'Описание:&nbsp;'")
+        +e.descr-content-text(v-html="section.description")
 </template>
 
 <script lang="ts">
@@ -67,9 +71,21 @@ export default class ItemFeatures extends Vue {
   &__cell
     color $cPText
     width-between-property 'font-size' 601 14 1000 16 true true
-    &:nth-of-type(2)
-      flex-grow 1
-      fontMedium()
+    +gt-sm()
+      &:nth-of-type(2)
+        flex-grow 1
+        fontMedium()
+
+  &__cell-content-title
+  &__descr-content-title
+    display inline-block
+    fontMedium()
+
+  &__cell-content-text
+  &__descr-content-text
+    display inline-block
+    &::first-letter
+      text-transform uppercase
 
   &__checkbox
     +xs()
@@ -83,7 +99,6 @@ export default class ItemFeatures extends Vue {
 
   &__descr-wrapper
     padding 10px 15px
-    margin-top 10px
     +xl()
       margin-left grid-column(10, $gutterXl, .5)
       padding 10px 0
@@ -93,6 +108,8 @@ export default class ItemFeatures extends Vue {
       margin-left grid-column(6, $gutterMd, .5)
     +lt-md()
       padding 10px
+    +gt-sm()
+      margin-top 10px
 
   &__descr-content
     // margin-top 15px
