@@ -3,7 +3,8 @@
 
   +b.pagination-app
     +e.container
-      +e.EL-PAGINATION.pag(:background="!isLtMd" layout="prev, pager, next" :total="total" :page-size="pageSize" :currentPage.sync="currentPage" @current-change="onCurrentChange")
+      +e.EL-PAGINATION.pag(:background="!isLtMd" layout="prev, pager, next" :total="total" :page-size="pageSize" :currentPage.sync="currentPage" :pager-count="pagerCount"
+        @current-change="onCurrentChange")
       +e.EL-SELECT.select(:value="pageSize" :placeholder="pageSize.toString()" @change="onSelectChange")
         +e.EL-OPTION.option(v-for="(option, index) in options" :key="index" :value="option")
 </template>
@@ -25,6 +26,7 @@ import { mapState } from 'vuex'
 export default class PaginationApp extends Vue {
   @Prop() total: number
   @Prop() pageSize: number
+  @Prop() pagerCount: number
   options: number[] = [ 10, 25, 50 ]
   currentPage: number = 1
   breakpoint!: string

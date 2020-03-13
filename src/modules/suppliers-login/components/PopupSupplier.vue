@@ -136,15 +136,19 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     // display flex
     &:not(:last-child)
       margin-bottom 15px
+    +xs()
+      margin-bottom 15px
     &_title
-      margin-bottom 25px !important
+      +gt-sm()
+        margin-bottom 25px !important
 
   &__field-title
     margin-bottom 7px
     fontMedium()
 
   &__phone-block
-    height 40px
+    width 100%
+    min-height 40px
     display flex
     align-items center
 

@@ -108,10 +108,11 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 .phone-manage
 
   &__row
-    +gt-sm()
-      display flex
-      align-items center
-      // justify-content center
+    display flex
+    align-items center
+    // justify-content center
+    +xs()
+      flex-wrap wrap
 
   &__select
     max-width 110px
@@ -124,6 +125,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   &__select
   &__input
     >>> input
+      width-between-property 'font-size' 601 14 1000 16 true true
       transition(border-color)
     &.is-filled
       >>> input
@@ -149,16 +151,21 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   &__form
   &__btns
     display flex
+    +xs()
+      margin-bottom 15px
+      flex-grow 1
+      justify-content center
 
   &__form
     +gt-sm()
       margin-right 15px
-    +xs()
-      margin-bottom 15px
+
 
   &__btn
-    width 40px
-    height 40px
+    // width-between-property 'width' 320 30 600 30 true true
+    width 30px
+    // width-between-property 'height' 320 30 600 30 true true
+    height 30px
     display flex
     justify-content center
     align-items center

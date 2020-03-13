@@ -6,7 +6,7 @@
       SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
-      PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
+      PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
         class="page-main__pag")
     transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
@@ -78,7 +78,9 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   ]
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
+  breakpoint!: string
 
+  get isXs() { return this.breakpoint === 'xs' }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get editFailed() { return this.requestStatus === 'failEdit' }
   // list getters
@@ -100,6 +102,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   // popup getters
   get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
   get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
+  // PagApp getters
+  get pagPagerCount() { return this.isXs ? 5 : 7 }
 
   @Watch('popupIsShown', { immediate: true })
   onPopupIsShownChange(val) {
