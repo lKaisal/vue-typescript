@@ -7,7 +7,7 @@
       +e.TRANSITION-GROUP.nav(tag="div")
         //- BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
         LogOut(v-show="logOutIsShown" key="logout" class="app__log-out")
-        MenuApp(v-show="!isPageAuth" key="menu" class="app__menu")
+        MenuApp(v-show="!isPageAuth && isAuthorized" key="menu" class="app__menu")
 
       //- content
       transition(mode="out-in")
@@ -26,7 +26,8 @@ import LocalStorageService from './services/LocalStorageService'
 import device from 'current-device'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
+import { CurrentDevice, LocalStorage } from '@/models'
 const grid = require('@/styles/grid-config.json')
 
 @Component({
@@ -37,11 +38,20 @@ const grid = require('@/styles/grid-config.json')
     BreadcrumbsApp,
     MenuApp
   },
+  computed: {
+    ...mapGetters('auth', [
+      'isAuthorized'
+    ])
+  },
   methods: {
     ...mapMutations('system', [
       'openMenu',
       'closeMenu',
-      'setBreakpoint'
+      'setBreakpoint',
+      'setCurrentDevice'
+    ]),
+    ...mapActions('auth', [
+      'updateLocalStorageData',
     ])
   }
 })
@@ -49,14 +59,16 @@ const grid = require('@/styles/grid-config.json')
 export default class App extends Vue {
   openMenu!: () => void
   closeMenu!: () => void
-  setBreakpoint!: (string) => void
+  updateLocalStorageData!: (payload: LocalStorage) => void
+  setBreakpoint!: (payload: string) => void
+  setCurrentDevice!: (payload: CurrentDevice) => void
+  isAuthorized!: boolean
 
   get isRootPage() { return this.$route && this.$route.fullPath === '/' && this.$route.name }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
   get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
   get crumbsShown() { return this.logOutIsShown && this.routes && this.routes.length }
   get routes() { return this.$store.getters['system/modules'] }
-  get isAuthorized() { return LocalStorageService.getIsAuthorized() }
 
   @Watch('$route', { immediate: true, deep: true }) 
   onRouteChange(val) {
@@ -65,15 +77,19 @@ export default class App extends Vue {
   }
 
   created() {
+    this.updateFromLocalStorage()
+
     if (!this.isAuthorized) this.$router.push({ name: 'PageAuth' })
-    this.$store.commit('system/setCurrentDevice', device)
+
+    this.setCurrentDevice(device)
     window.addEventListener('resize', () => this.windowResizeHandler(grid))
     this.windowResizeHandler(grid)
   }
 
-  onBannersClick() { this.$router.push({path: '/banners'}) }
-  onFeaturesClick() { this.$router.push({path: '/features'}) }
-  onRestartClick() { this.$router.push({path: '/restart'}) }
+  updateFromLocalStorage() {
+    const data = LocalStorageService.getAllData()
+    if (data) this.updateLocalStorageData(data)
+  }
   windowResizeHandler(grid) {
     if (!grid) return
 

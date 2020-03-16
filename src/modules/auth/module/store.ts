@@ -3,6 +3,7 @@ import { Form, AuthForm, FormField } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 import LocalStorageService from '@/services/LocalStorageService'
+import { LocalStorage, MenuItem } from '@/models'
 
 const namespaced = true
 
@@ -19,6 +20,11 @@ class AuthState {
     ],
     isLoading: false,
     validationIsShown: false,
+  }
+  menu: MenuItem[] = null
+  tokens: { access: string, refresh: string } = {
+    access:  null,
+    refresh: null
   }
 }
 
@@ -38,6 +44,7 @@ class AuthGetters extends Getters<AuthState> {
 
     return formData
   }
+  get isAuthorized() { return this.state.menu && this.state.tokens.access && this.state.tokens.refresh }
 }
 
 class AuthMutations extends Mutations<AuthState> {
@@ -86,9 +93,18 @@ class AuthMutations extends Mutations<AuthState> {
       }
     }
   }
+  setMenu(payload) { this.state.menu = payload }
+  setAccessToken(payload) { this.state.tokens.access = payload }
+  setRefreshToken(payload) { this.state.tokens.refresh = payload }
 }
 
 class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthActions> {
+  updateLocalStorageData(payload: LocalStorage) {
+    const { access_token, refresh_token, menu } = payload
+    this.commit('setAccessToken', access_token)
+    this.commit('setRefreshToken', refresh_token)
+    this.commit('setMenu', menu)
+  }
   async sendForm() {
     return new Promise((resolve, reject) => {
       const formIsValid = this.getters.formIsValid
@@ -104,7 +120,9 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
 
       axios.post('/login', data)
         .then((res: AxiosResponse<any>) => {
-          LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh, menu: res.data.menu})
+          const data: LocalStorage = { access_token: res.data.token, refresh_token: res.data.refresh, menu: res.data.menu }
+          LocalStorageService.setToken(data)
+          this.dispatch('updateLocalStorageData', data)
           this.commit('setFormLoadingSuccess')
           console.log('Success: formLogin sent')
           resolve()

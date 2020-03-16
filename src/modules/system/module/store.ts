@@ -1,7 +1,7 @@
 import Store from '../../../services/store'
 import Router from '../../../services/router'
 import { registerModule, unregisterModule } from 'vuex-smart-module'
-import { CurrentDevice } from '@/models'
+import { CurrentDevice, MenuItem } from '@/models'
 
 export default {
   namespaced: true,
@@ -9,14 +9,14 @@ export default {
     currentDevice: { orientation: null, type: null, os: null } as CurrentDevice,
     menuIsOpen: false as boolean,
     modules: [],
-    breakpoint: null as string
+    breakpoint: null as string,
   },
   getters: {
     isMobile: (state) => state.currentDevice.type === 'mobile',
     isTablet: (state) => state.currentDevice.type === 'tablet',
     isDesktop: (state) => state.currentDevice.type === 'desktop',
     isTouchDevice: (state) => state.currentDevice.type !== 'desktop',
-    modules: (state) => state.modules && state.modules.filter(m => m.meta && m.meta.isDynamicModule)
+    modules: (state) => state.modules && state.modules.filter(m => m.meta && m.meta.isDynamicModule),
   },
   mutations: {
     setCurrentDevice(state, payload: CurrentDevice) {
@@ -27,7 +27,7 @@ export default {
     toggleMenu: (state) => state.menuIsOpen = !state.menuIsOpen,
     openMenu: (state) => state.menuIsOpen = true,
     closeMenu: (state) => state.menuIsOpen = false,
-    setBreakpoint: (state, payload: string) => state.breakpoint = payload
+    setBreakpoint: (state, payload: string) => state.breakpoint = payload,
   },
   actions: {
     initializeModule ({ state, commit }, module: any) {

@@ -27,11 +27,17 @@ type SearchField = {
   title: string
 }
 
+type LocalStorage = {
+  access_token: string,
+  refresh_token: string,
+  menu: MenuItem[]
+}
+
 type MenuItem = {
   alias: string,
   order: number,
-  perrtutti_link: string,
+  perrtuttiLink: string,
   title: string,
 }
 
-export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, MenuItem }
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, LocalStorage, MenuItem }

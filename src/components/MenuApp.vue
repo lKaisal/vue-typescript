@@ -8,9 +8,9 @@
       transition(mode="out-in")
         +e.links-wrapper(v-if="menuIsOpen" v-click-outside="onClickOutside")
           +e.links
-            +e.link-wrapper(v-for="(route, index) in routes")
-              +e.ROUTER-LINK.link(tag="div" :to="route.path")
-                +e.link-text(v-html="route.meta && route.meta.title")
+            +e.link-wrapper(v-for="(item, index) in menuLocalStorage")
+              +e.ROUTER-LINK.link(tag="div" :to="item.pertuttiLink")
+                +e.link-text(v-html="item.title")
                 +e.I.link-icon.el-icon-arrow-right
             +e.link-wrapper
               LogOut(:isInMenu="true")
@@ -23,6 +23,8 @@ import LogOut from '@/components/LogOut.vue'
 import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations } from 'vuex'
 import LocalStorageService from '../services/LocalStorageService'
+import { MenuItem } from '@/models'
+
 
 @Component({
   directives: {
@@ -50,7 +52,7 @@ export default class MenuApp extends Vue {
   public closeMenu!: () => void
   get routes() { return this.$store.getters['system/modules'] }
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
-  get menuLocalStorage() { return LocalStorageService.getMenu() }
+  get menuLocalStorage(): MenuItem[] { return LocalStorageService.getMenu() && LocalStorageService.getMenu().sort(i => i.order) }
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)
