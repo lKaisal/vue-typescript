@@ -29,7 +29,13 @@ export default {
       const { orientation, type, os  } = payload
       state.currentDevice = Object.assign({}, { orientation, type, os } )
     },
-    addModule(state, payload) { state.modules.push(payload) },
+    addModule(state, payload) {
+      state.modules.push(payload)
+    },
+    deleteModule(state, name) {
+      const indexOfModule = state.modules.map(m => m.name).indexOf(name)
+      if (indexOfModule >= 0) state.modules.splice(indexOfModule, 1)
+    },
     toggleMenu: (state) => state.menuIsOpen = !state.menuIsOpen,
     openMenu: (state) => state.menuIsOpen = true,
     closeMenu: (state) => state.menuIsOpen = false,
@@ -40,14 +46,20 @@ export default {
       const mod = payload.module
       registerModule(Store, [mod.name], `${mod.name}/`, mod.store)
 
-      const meta = Object.assign(mod.routes[0].meta || {}, { title: payload.title })
-      const routes = [Object.assign({}, ...mod.routes, { path: `/${payload.path}`, meta })]
-      Router.addRoutes(routes)
+      // add routes
+      const fullPath = `/${payload.path}`
+      const mathedComponents = Router.getMatchedComponents(fullPath)
+      if (mathedComponents.length <= 1) {
+        const meta = Object.assign(mod.routes[0].meta || {}, { title: payload.title })
+        const routes = [Object.assign({}, ...mod.routes, { path: fullPath, meta })]
+        Router.addRoutes(routes)
+      }
 
       commit('addModule', mod)
     },
-    removeModule ({ dispatch }, name: any) {
+    removeModule ({ commit }, name: any) {
       Store.unregisterModule(name)
+      commit('deleteModule', name)
     },
     initializeModules ({ state, dispatch, rootState, rootGetters }) {
       try {

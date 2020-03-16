@@ -38,19 +38,13 @@ export default class LogOut extends Vue {
   removeModule!: (string) => void
   modulePath: string = './modules/'
 
-  logOut() {
-    // console.log(Store)
-    // console.log(this.$store.unregisterModule('banners'))
+  async logOut() {
+    this.$router.push({ name: 'PageAuth' })
+    await this.$nextTick()
     LocalStorageService.clearToken()
     for (const mod of this.modules.slice(0)) {
-      // console.log(mod)
-      // console.log(mod.name)
-      // console.log(`@/modules/${mod.name}/module`)
-      // const modNew = import (`@/modules/${mod.name}/module`)
-      // console.log(modNew)
       this.removeModule(mod.name)
     }
-    this.$router.push({ name: 'PageAuth' })
   }
 }
 </script>

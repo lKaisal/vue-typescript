@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from '@/App.vue'
-import PageAuth from '@/modules/auth/pages/PageMain.vue'
 import LocalStorageService from '@/services/LocalStorageService'
 
 Vue.use(VueRouter)
@@ -15,7 +14,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to, LocalStorageService.getIsAuthorized())
   if (to.name !== 'PageAuth' && !LocalStorageService.getIsAuthorized()) next({ path: '/auth' })
   else next()
 })
