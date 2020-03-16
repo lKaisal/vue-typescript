@@ -20,7 +20,8 @@ type TableField = {
   title: string,
   isSmall?: boolean,
   isMedium?: boolean,
-  isXMedium?: boolean
+  isXMedium?: boolean,
+  isCentered?: boolean
 }
 
 type EditPayload = {

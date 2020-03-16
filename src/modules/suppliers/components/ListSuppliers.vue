@@ -7,7 +7,7 @@
         //- table head
         +e.row.table-row(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields"
-            :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': !field.isSmall && !field.isMedium && !field.isXMedium }")
+            :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': !field.isSmall && !field.isMedium && !field.isXMedium, 'is-centered': field.isCentered }")
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index !== fields.length - 1")
@@ -32,7 +32,6 @@ import { mapState } from 'vuex'
 const Mappers = Vue.extend({
   computed: {
     ...suppliersMapper.mapState(['listSort']),
-    // ...suppliersMapper.mapGetters(['listActive', 'listInactive'])
   },
   methods: {
     ...suppliersMapper.mapMutations(['updateListSort'])
@@ -57,13 +56,13 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   breakpoint!: string
 
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isSmall: this.isLg || this.isMd, isMedium: this.isXl },
+    { field: 'supplierId', title: 'SupplierID', isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
     { field: 'supplierName', title: 'Название поставщика' },
-    { field: 'userId', title: 'UserID', isSmall: this.isMd, isMedium: this.isGtMd },
-    { field: 'userName', title: 'Имя пользователя' },
-    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: this.isGtMd },
-    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl },
-    { field: null, title: '', isSmall: this.isMd, isMedium: this.isGtMd }, // btn column
+    { field: 'userId', title: 'UserID', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'userName', title: 'Имя пользователя', isCentered: !this.isLtMd },
+    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: null, title: '', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }

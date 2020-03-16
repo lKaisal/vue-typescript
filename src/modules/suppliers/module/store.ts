@@ -42,6 +42,7 @@ class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
 
         case 'supplierId':
         case 'userId':
+        case 'inn':
           sortA = Number(sortA)
           sortB = Number(sortB)
           break

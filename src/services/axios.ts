@@ -30,7 +30,6 @@ service.interceptors.response.use((response) => {
 
       if (res.status === 200) {
         // 1) put token to LocalStorage
-        console.log(res.data)
         LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh, menu: res.data.menu});
         // 2) Change Authorization header
         originalRequest.headers['Authorization'] = 'Bearer ' + LocalStorageService.getAccessToken();
