@@ -135,7 +135,6 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   &__select
     >>> input
       position relative
-      // background url('/static/images/russia.svg') no-repeat
       background-repeat no-repeat
       background-position 15px center
       background-size 20%
