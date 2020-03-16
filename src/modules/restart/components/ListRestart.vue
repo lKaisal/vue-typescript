@@ -6,17 +6,19 @@
       +e.table(:class="{ 'is-long-list': list.length > 2 }")
         //- table head
         +e.row.table-row
-          +e.title.table-cell.col-05
-            +e.checkbox.checkbox-restart(@click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
-              +e.I.checkbox-icon.el-icon-check
-          +e.title.table-cell(v-for="(title, index) in tableTitles" :class="{ 'col-1': index === 1 }")
-            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
-              +e.title-text(v-html="title")
+          //- +e.title.table-cell.col-05
+          +e.title.table-cell(v-for="(field, index) in fields"
+            :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+                +e.I.checkbox-icon.el-icon-check.checkbox-icon
+            +e.title-wrapper(v-else @click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+              +e.title-text(v-html="field.title")
               +e.title-sort
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index] && listSortDirection === 'desc' }")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
+        ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
           class="list-restart__item table-row")
 
       ButtonApp(v-if="list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onBtnClick" class="list-restart__btn")
@@ -31,6 +33,8 @@ import { Service, ListSort, EditPayload } from '../models'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
+import { TableField } from '../models'
+import { mapState } from 'vuex'
 
 const Mappers = Vue.extend({
   computed: {
@@ -47,22 +51,36 @@ const Mappers = Vue.extend({
     ItemRestart,
     ButtonApp,
     MessageBox
+  },
+  computed: {
+    ...mapState('system', [
+      'breakpoint'
+    ])
   }
 })
 
 export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Service[]
 
-  tableTitles: string[] = [ 'Название', 'Количество реплик' ]
-  fields: (keyof Service)[] = [ 'serviceName', 'replicas' ]
+  breakpoint!: string
+  // tableTitles: string[] = [ 'Название', 'Количество реплик' ]
+  // fields: (keyof Service)[] = [ 'serviceName', 'replicas' ]
   checkboxIsActive: boolean = false
   namesSelected: string[] = []
 
+  get fields(): TableField[] { return [
+    { field: null, title: '', isSmall: true }, // checkbox column
+    { field: 'serviceName', title: 'Название' },
+    { field: 'replicas', title: (this.isXs ? 'Кол-во реплик' : 'Количество реплик'), isMedium: true },
+  ]}
+  get isXs() { return this.breakpoint === 'xs' }
   get amountTotal() { return this.list && this.list.length }
   get allAreSelected() { return this.namesSelected.length > 0 && this.amountTotal === this.namesSelected.length }
   get allNames() { return this.list && this.list.map(item => item.serviceName) }
-  get listSortBy() { return this.listSort.by }
+  get listSortField() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
+  get isAscSorted() { return this.listSortDirection === 'asc' }
+  get isDescSorted() { return this.listSortDirection === 'desc' }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
@@ -88,8 +106,8 @@ export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   }
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
-    const by: ListSort['by'] = this.fields[index]
-    const byIsUpdated = by !== this.listSortBy
+    const by: ListSort['by'] = this.fields[index].field
+    const byIsUpdated = by !== this.listSortField
     const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
 
     const listSort: ListSort = { by, direction }
@@ -141,6 +159,8 @@ export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
       text-transform uppercase
     &:nth-of-type(2)
       flex-grow 1
+    +gt-sm()
+      white-space nowrap
 
   &__title-wrapper
     display flex

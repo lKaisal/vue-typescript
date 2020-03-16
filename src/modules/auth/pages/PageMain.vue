@@ -9,14 +9,15 @@
           +e.field._login(:class="{ 'is-invalid': isInvalid(formLogin), 'is-filled': login }")
             +e.label
               +e.LABEL(for="login") Логин
-            +e.EL-INPUT.input(placeholder="Логин" v-model="login")
+            +e.EL-INPUT.input(:disabled="isLoading" placeholder="Логин" v-model="login")
             +e.error(v-html="formLogin.errorMsg")
           +e.field._pswd(:class="{ 'is-invalid': isInvalid(formPswd), 'is-filled': pswd }")
             +e.label
               +e.LABEL(for="pswd") Пароль
-            +e.EL-INPUT.input(placeholder="Пароль" v-model="pswd" show-password)
+            +e.EL-INPUT.input(:disabled="isLoading" placeholder="Пароль" v-model="pswd" show-password)
             +e.error(v-html="formPswd.errorMsg")
-          ButtonApp(btnType="primary" :isDisabled="!login || !pswd" @clicked="onSubmit" text="Войти" class="page-main__btn")
+          ButtonApp(btnType="primary" :isDisabled="!login || !pswd || isLoading" :icon="isLoading ? 'el-icon-loading' : ''" @clicked="onSubmit"
+            text="Войти" class="page-main__btn")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
@@ -56,6 +57,7 @@ const Mappers = Vue.extend({
 })
 
 export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
+  get isLoading() { return this.form.isLoading }
   get login() { return this.formLogin.value }
   set login(value) { this.updateField({name: 'login', value}) }
   get pswd() { return this.formPswd.value }
@@ -149,9 +151,8 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
 
   &__input
     display block
-    font-size 18px
     >>> input
-      font-size 18px
+      width-between-property 'font-size' 1001 14 1440 18 true true
     .is-filled &
       >>> input
         // font-weight 500

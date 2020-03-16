@@ -22,6 +22,7 @@ import Router from '@/services/router'
 import LogOut from '@/components/LogOut.vue'
 import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations } from 'vuex'
+import LocalStorageService from '../services/LocalStorageService'
 
 @Component({
   directives: {
@@ -49,6 +50,7 @@ export default class MenuApp extends Vue {
   public closeMenu!: () => void
   get routes() { return this.$store.getters['system/modules'] }
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
+  get menuLocalStorage() { return LocalStorageService.getMenu() }
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)
@@ -104,10 +106,10 @@ export default class MenuApp extends Vue {
 
   &__toggle-icon
     font-size 36px
+    width-between-property 'font-size' 600 28 1000 32 true false
+    width-between-property 'font-size' 1001 32 1440 36 false true
     color $cBrand
     cursor pointer
-    +xs()
-      font-size 28px
 
   &__links-wrapper
     height 100%

@@ -120,22 +120,17 @@ export default class ListBanners extends Mappers {
   &__item
     grid-size(4, 4, 3, 2.6, 3)
     position relative
-    // height 500px
-    // max-height 100vh
     display flex
     flex-direction column
     align-items center
-    // padding 75px 50px 50px
-    // border 1px solid rgba(0,0,0,.125)
-    // border-radius .25rem
-    // background-color white
-    // transition(border-color)
-    // &:hover
-    //   border-color $cBrand
+    max-width 650px
     +xl()
       margin-bottom 75px
     +lt-xl()
       margin-bottom 50px
+    +lt-md()
+      margin-right auto
+      margin-left auto
     &_fake
       height 0
       visibility hidden

@@ -7,7 +7,6 @@ import LocalStorageService from '@/services/LocalStorageService'
 const namespaced = true
 
 class AuthState {
-  isLoading: boolean = false
   form: Form = {
     data: [
       { name: 'login', value: null, validationRequired: true, isValid: false, errorType: null, errorMsg: null },
@@ -105,7 +104,7 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
 
       axios.post('/login', data)
         .then((res: AxiosResponse<any>) => {
-          LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh})
+          LocalStorageService.setToken({access_token: res.data.token, refresh_token: res.data.refresh, menu: res.data.menu})
           this.commit('setFormLoadingSuccess')
           console.log('Success: formLogin sent')
           resolve()

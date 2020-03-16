@@ -6,7 +6,8 @@
       SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
-      PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
+      PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
+        class="page-main__pag")
     transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
@@ -64,7 +65,7 @@ const Mappers = Vue.extend({
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
   newPhone: Supplier['phone'] = null // for repeated request
-  pageSize: number = 15
+  pageSize: number = 10
   currentPage: number = 1
   popupId: number = null
   searchFields: SearchField[] = [
@@ -77,10 +78,12 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   ]
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
+  breakpoint!: string
 
-  // list getters
+  get isXs() { return this.breakpoint === 'xs' }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get editFailed() { return this.requestStatus === 'failEdit' }
+  // list getters
   get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
   get listByPages() {
     if (!this.listSorted) return
@@ -99,6 +102,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   // popup getters
   get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
   get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
+  // PagApp getters
+  get pagPagerCount() { return this.isXs ? 5 : 7 }
 
   @Watch('popupIsShown', { immediate: true })
   onPopupIsShownChange(val) {
@@ -174,15 +179,27 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 
 .page-main
 
+  &__container
+    display flex
+    flex-direction column
+
   &__search
     +gt-md()
       margin-bottom 20px
     +lt-md()
+      order -1
       margin-bottom 30px
 
   &__list
+    +lt-md()
+      order 1
     transition(opacity)
     &.v-enter
     &.v-leave-to
       opacity 0
+
+  &__pag
+    +lt-md()
+      order 0
+      margin-bottom 15px
 </style>

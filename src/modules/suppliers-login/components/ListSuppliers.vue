@@ -11,8 +11,8 @@
             +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="index !== fields.length - 1")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortBy === fields[index].field && listSortDirection === 'desc' }")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
         ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
@@ -57,22 +57,24 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   breakpoint!: string
 
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isSmall: !this.isXl, isMedium: this.isXl, isXMedium: false },
-    { field: 'supplierName', title: 'Название поставщика', isSmall: false, isMedium: false, isXMedium: false },
-    { field: 'userId', title: 'UserID', isSmall: !this.isGtMd, isMedium: this.isGtMd, isXMedium: false },
-    { field: 'userName', title: 'Имя пользователя', isSmall: false, isMedium: false, isXMedium: false },
-    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: !this.isMd, isXMedium: false },
-    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: !this.isXl, isXMedium: this.isXl },
-    { field: null, title: '', isSmall: true && !this.isLtMd, isMedium: this.isGtMd, isXMedium: false }, // btn column
+    { field: 'supplierId', title: 'SupplierID', isSmall: this.isLg || this.isMd, isMedium: this.isXl },
+    { field: 'supplierName', title: 'Название поставщика' },
+    { field: 'userId', title: 'UserID', isSmall: this.isMd, isMedium: this.isGtMd },
+    { field: 'userName', title: 'Имя пользователя' },
+    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: this.isGtMd },
+    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl },
+    { field: null, title: '', isSmall: this.isMd, isMedium: this.isGtMd }, // btn column
   ]}
-  get amountTotal() { return this.list && this.list.length }
-  get listSortBy() { return this.listSort.by }
-  get listSortDirection() { return this.listSort.direction }
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
   get isXl() { return this.breakpoint === 'xl' }
   get isLg() { return this.breakpoint === 'lg' }
   get isMd() { return this.breakpoint === 'md' }
+  get amountTotal() { return this.list && this.list.length }
+  get listSortField() { return this.listSort.by }
+  get listSortDirection() { return this.listSort.direction }
+  get isAscSorted() { return this.listSortDirection === 'asc' }
+  get isDescSorted() { return this.listSortDirection === 'desc' }
 
   @Watch('isActive', { immediate: true })
   onIsActiveChange(val) {
@@ -82,7 +84,7 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
     const by: ListSort['by'] = this.fields.map(f => f.field)[index]
-    const byIsUpdated = by !== this.listSortBy
+    const byIsUpdated = by !== this.listSortField
     const direction: ListSort['direction'] = (byIsUpdated || this.listSortDirection === 'desc') ? 'asc' : 'desc'
 
     const listSort: ListSort = { by, direction }
@@ -162,8 +164,12 @@ export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
       transition(color)
       &:first-child
         transform translateY(4px)
+        +lt-lg()
+          transform translateY(3px)
       &:last-child
         transform translateY(-4px)
+        +lt-lg()
+          transform translateY(-3px)
       &.is-active
         color $cBrand
 

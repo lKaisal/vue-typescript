@@ -14,6 +14,14 @@ type ListSort = {
   direction: 'asc' | 'desc'
 }
 
+type TableField = {
+  field: keyof Section,
+  title: string,
+  isShown: boolean,
+  isSmall?: boolean,
+  isMedium?: boolean
+}
+
 type EditPayload = { id: number, active: boolean }[]
 
 type RequestStatus = RequestStatuses[RequestType]
@@ -26,4 +34,4 @@ type RequestStatuses = {
   other: 'beforeEdit'
 }
 
-export { Section, ListSort, EditPayload, RequestStatus, RequestType, RequestStatuses }
+export { Section, ListSort, TableField, EditPayload, RequestStatus, RequestType, RequestStatuses }

@@ -1,44 +1,11 @@
 .col-05
   grid-size(.25, .25, .5, .5, .5)
+  +xs()
+    padding 0
 
 .col-2
-  grid-size(4, 2, 5/4, 7/4, 9/4)
+  grid-size(1, 2, 5/4, 7/4, 9/4)
 
 .col-1
-  grid-size(4, 2, 1.5, 1.5, 1.5)
+  grid-size(1, 1.1, 1.5, 1.5, 1.5)
   justify-content center
-
-.col-4-1
-  grid-size(4, 4, .5 + 5/4 * 2 - 1, .5 + 7/4 * 2 - 1, .5 + 9/4 * 2 - 1)
-
-
-.checkbox-restart
-  display flex
-  justify-content center
-  align-items center
-  width 18px
-  height 18px
-  border 2px solid #afb6c1
-  border-radius 2px
-  cursor pointer
-  transition(background-color\, border-color)
-  >>> i
-    font-size 14px
-    color transparent
-    transform scale(0)
-    transition(color\, transform)
-  &.is-active
-    background-color $cBrand
-    border-color $cBrand
-    >>> i
-      color white
-      transform scale(1)
-  &:hover
-    >>> i
-      color $cBrand
-      transform scale(.75)
-  &.is-active:hover
-    >>> i
-      color white
-  &.is-disabled
-    pointer-events none

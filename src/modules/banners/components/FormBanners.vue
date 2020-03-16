@@ -11,8 +11,9 @@
         //- isActive
         transition
           +e.field._is-active.form-field(v-show="isFormEdit && (isInactiveBanner || isDelayedBanner)" @click.stop="isActive = !isActive" :class="{ 'is-invalid': isInvalid(isActiveField), 'is-active': isActive }")
-            +e.checkbox
-              +e.I.checkbox-icon.el-icon-check
+            +e.checkbox.checkbox
+              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+                +e.I.checkbox-icon.el-icon-check.checkbox-icon
             +e.LABEL.label(for="isActive" v-html="isActiveLabel")
             +e.error.form-error(v-html="isActiveField.errorMsg")
       +e.column
@@ -187,6 +188,7 @@ export default class FormBanners extends Mappers {
           opacity .5
     &_is-active
       display inline-flex
+      align-items center
       padding 5px
       margin -5px
       // margin-bottom 30px
@@ -302,9 +304,10 @@ export default class FormBanners extends Mappers {
 .form-input
 .form-select
 .form-pickr
-  font-size 18px !important
-  input
-    font-size 18px
+.el-input__inner
+  width-between-property 'font-size' 1001 16 1440 18 true true
+  >>> input
+    width-between-property 'font-size' 1001 16 1440 18 true true
 
 .form-input
 .form-pickr
