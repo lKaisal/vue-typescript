@@ -2,6 +2,12 @@ import Store from '../../../services/store'
 import Router from '../../../services/router'
 import { registerModule, unregisterModule } from 'vuex-smart-module'
 import { CurrentDevice, MenuItem } from '@/models'
+import banners from '@/modules/banners/module'
+import features from '@/modules/features/module'
+import restart from '@/modules/restart/module'
+import suppliers from '@/modules/suppliers-login/module'
+
+const modulesFolders = { banners, features, restart, suppliers }
 
 export default {
   namespaced: true,
@@ -37,6 +43,18 @@ export default {
     },
     removeModule ({ dispatch }, module: any) {
       Store.unregisterModule(module.name)
+    },
+    initializeModules ({ state, dispatch, rootState, rootGetters }) {
+      try {
+        const menu: MenuItem[] = rootState.auth.menu
+  
+        for (const mod of menu) {
+          const moduleFolder = modulesFolders[mod.alias]
+          if (moduleFolder) dispatch('initializeModule', moduleFolder)
+        }
+      } catch(err) {
+        console.log(err)
+      }
     }
   }
 }

@@ -11,7 +11,7 @@
 
       //- content
       transition(mode="out-in")
-        router-view(v-if="!isRootPage" key="router" @loggedIn="goToPageRoot" @goToPageAuth="goToPageAuth" class="app__page page")
+        router-view(v-if="!isRootPage" key="router" @loggedIn="onLoggedIn" @goToPageAuth="goToPageAuth" class="app__page page")
 </template>
 
 <script lang="ts">
@@ -48,7 +48,10 @@ const grid = require('@/styles/grid-config.json')
       'openMenu',
       'closeMenu',
       'setBreakpoint',
-      'setCurrentDevice'
+      'setCurrentDevice',
+    ]),
+    ...mapActions('system', [
+      'initializeModules'
     ]),
     ...mapActions('auth', [
       'updateLocalStorageData',
@@ -62,6 +65,7 @@ export default class App extends Vue {
   updateLocalStorageData!: (payload: LocalStorage) => void
   setBreakpoint!: (payload: string) => void
   setCurrentDevice!: (payload: CurrentDevice) => void
+  initializeModules: () => void 
   isAuthorized!: boolean
 
   get isRootPage() { return this.$route && this.$route.fullPath === '/' && this.$route.name }
@@ -80,12 +84,17 @@ export default class App extends Vue {
     this.updateFromLocalStorage()
 
     if (!this.isAuthorized) this.$router.push({ name: 'PageAuth' })
+    else this.initializeModules()
 
     this.setCurrentDevice(device)
     window.addEventListener('resize', () => this.windowResizeHandler(grid))
     this.windowResizeHandler(grid)
   }
 
+  onLoggedIn() {
+    this.initializeModules()
+    this.goToPageRoot()
+  }
   updateFromLocalStorage() {
     const data = LocalStorageService.getAllData()
     if (data) this.updateLocalStorageData(data)
