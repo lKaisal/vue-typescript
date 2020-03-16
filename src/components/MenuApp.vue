@@ -8,9 +8,9 @@
       transition(mode="out-in")
         +e.links-wrapper(v-if="menuIsOpen" v-click-outside="onClickOutside")
           +e.links
-            +e.link-wrapper(v-for="(item, index) in menuLocalStorage")
-              +e.ROUTER-LINK.link(tag="div" :to="item.pertuttiLink")
-                +e.link-text(v-html="item.title")
+            +e.link-wrapper(v-for="(item, index) in modules")
+              +e.ROUTER-LINK.link(tag="div" :to="`${item.routes[0].path}`")
+                +e.link-text(v-html="item.routes[0].meta.title")
                 +e.I.link-icon.el-icon-arrow-right
             +e.link-wrapper
               LogOut(:isInMenu="true")
@@ -21,7 +21,7 @@ import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
 import Router from '@/services/router'
 import LogOut from '@/components/LogOut.vue'
 import vClickOutside from 'v-click-outside'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import LocalStorageService from '../services/LocalStorageService'
 import { MenuItem } from '@/models'
 
@@ -36,6 +36,9 @@ import { MenuItem } from '@/models'
   computed: {
     ...mapState('system', [
       'menuIsOpen'
+    ]),
+    ...mapGetters('system', [
+      'modules'
     ])
   },
   methods: {
@@ -50,9 +53,7 @@ export default class MenuApp extends Vue {
   public toggleMenu!: () => void
   public openMenu!: () => void
   public closeMenu!: () => void
-  get routes() { return this.$store.getters['system/modules'] }
   get isRootPage() { return this.$route && this.$route.fullPath === '/' }
-  get menuLocalStorage(): MenuItem[] { return LocalStorageService.getMenu() && LocalStorageService.getMenu().sort(i => i.order) }
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)

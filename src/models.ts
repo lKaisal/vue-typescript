@@ -36,7 +36,7 @@ type LocalStorage = {
 type MenuItem = {
   alias: string,
   order: number,
-  perrtuttiLink: string,
+  pertuttiLink: string,
   title: string,
 }
 

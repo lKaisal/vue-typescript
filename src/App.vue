@@ -41,7 +41,7 @@ const grid = require('@/styles/grid-config.json')
   computed: {
     ...mapGetters('auth', [
       'isAuthorized'
-    ])
+    ]),
   },
   methods: {
     ...mapMutations('system', [

@@ -1,18 +1,18 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-suppliers-login.page(v-loading.fullscreen.lock="isLoading")
+  +b.module-suppliers.page(v-loading.fullscreen.lock="isLoading")
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
       +e.title.H1.page-title.js-voa.js-voa-start Выбор поставщика
       router-view
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
-        @secondBtnClicked="goToPageApp()" class="module-suppliers-login__msg-box modal modal-msg")
+        @secondBtnClicked="goToPageApp()" class="module-suppliers__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { suppliersMapper } from '@/modules/suppliers-login/module/store'
+import { suppliersMapper } from '@/modules/suppliers/module/store'
 import ListRestart from '@/modules/restart/components/ListRestart.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
@@ -81,7 +81,7 @@ export default class ModuleSuppliersLogin extends Mixins(Mappers, MsgBoxToolsApp
 <style lang="stylus" scoped>
 @import '../styles/tools'
 
-.module-suppliers-login
+.module-suppliers
 
   &__list
     grid-size(4, 4, 6, 8, 10)

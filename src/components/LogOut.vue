@@ -12,18 +12,44 @@
 import { Vue, Component, Mixins, Watch, Prop } from 'vue-property-decorator'
 import IconSvg from '@/components/IconSvg.vue'
 import LocalStorageService from '@/services/LocalStorageService'
+import Store from '@/services/store'
+import { mapActions, mapGetters } from 'vuex'
+import banners from '@/modules/banners/module'
 
 @Component({
   components: {
     IconSvg,
+  },
+  computed: {
+    ...mapGetters('system', [
+      'modules'
+    ])
+  },
+  methods: {
+    ...mapActions('system', [
+      'removeModule'
+    ])
   }
 })
 
 export default class LogOut extends Vue {
   @Prop() isInMenu: boolean
+  modules!: any[]
+  removeModule!: (string) => void
+  modulePath: string = './modules/'
 
   logOut() {
+    // console.log(Store)
+    // console.log(this.$store.unregisterModule('banners'))
     LocalStorageService.clearToken()
+    for (const mod of this.modules.slice(0)) {
+      // console.log(mod)
+      // console.log(mod.name)
+      // console.log(`@/modules/${mod.name}/module`)
+      // const modNew = import (`@/modules/${mod.name}/module`)
+      // console.log(modNew)
+      this.removeModule(mod.name)
+    }
     this.$router.push({ name: 'PageAuth' })
   }
 }

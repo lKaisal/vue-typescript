@@ -5,7 +5,7 @@ import { CurrentDevice, MenuItem } from '@/models'
 import banners from '@/modules/banners/module'
 import features from '@/modules/features/module'
 import restart from '@/modules/restart/module'
-import suppliers from '@/modules/suppliers-login/module'
+import suppliers from '@/modules/suppliers/module'
 
 const modulesFolders = { banners, features, restart, suppliers }
 
@@ -22,7 +22,7 @@ export default {
     isTablet: (state) => state.currentDevice.type === 'tablet',
     isDesktop: (state) => state.currentDevice.type === 'desktop',
     isTouchDevice: (state) => state.currentDevice.type !== 'desktop',
-    modules: (state) => state.modules && state.modules.filter(m => m.meta && m.meta.isDynamicModule),
+    modules: (state) => state.modules && state.modules.filter(mod => mod.routes && mod.routes[0] && mod.routes[0].meta && mod.routes[0].meta.isDynamicModule),
   },
   mutations: {
     setCurrentDevice(state, payload: CurrentDevice) {
@@ -36,13 +36,18 @@ export default {
     setBreakpoint: (state, payload: string) => state.breakpoint = payload,
   },
   actions: {
-    initializeModule ({ state, commit }, module: any) {
-      registerModule(Store, [module.name], `${module.name}/`, module.store)
-      Router.addRoutes(module.routes)
-      commit('addModule', ...module.routes)
+    initializeModule ({ state, commit }, payload: { module: any, path: string, title: string } ) {
+      const mod = payload.module
+      registerModule(Store, [mod.name], `${mod.name}/`, mod.store)
+
+      const meta = Object.assign(mod.routes[0].meta || {}, { title: payload.title })
+      const routes = [Object.assign({}, ...mod.routes, { path: `/${payload.path}`, meta })]
+      Router.addRoutes(routes)
+
+      commit('addModule', mod)
     },
-    removeModule ({ dispatch }, module: any) {
-      Store.unregisterModule(module.name)
+    removeModule ({ dispatch }, name: any) {
+      Store.unregisterModule(name)
     },
     initializeModules ({ state, dispatch, rootState, rootGetters }) {
       try {
@@ -50,11 +55,10 @@ export default {
   
         for (const mod of menu) {
           const moduleFolder = modulesFolders[mod.alias]
-          if (moduleFolder) dispatch('initializeModule', moduleFolder)
+          const allFieldsNotEmpty: boolean = !!mod.alias && !!mod.order && !!mod.pertuttiLink && !!mod.title
+          if (moduleFolder && allFieldsNotEmpty) dispatch('initializeModule', { module: moduleFolder, path: mod.pertuttiLink, title: mod.title })
         }
-      } catch(err) {
-        console.log(err)
-      }
+      } catch {}
     }
   }
 }

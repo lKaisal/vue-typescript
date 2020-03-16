@@ -13,7 +13,7 @@ Vue.use(ElementUI)
 // Router.addRoutes(system.routes)
 
 /* Initialize Auth Module */
-Store.dispatch('system/initializeModule', auth)
+Store.dispatch('system/initializeModule', { module: auth, path: 'auth', title: 'Авторизация SMA' })
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);
