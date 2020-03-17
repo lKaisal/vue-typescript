@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "yarn svg-sprite && vue-cli-service serve",
     "build": "yarn svg-sprite && vue-cli-service build --dest www && ln -s www dist",
-    "postbuild": "vue-cli-service build --dest ../src/git.wildberries.ru/suppliers-mobile/sm-admin-gateway/public",
+    "postbuild": "vue-cli-service build --dest ../../go/src/git.wildberries.ru/suppliers-mobile/sm-admin-gateway/public",
     "serve-prd": "yarn svg-sprite && vue-cli-service serve --mode production",
     "start": "yarn svg-sprite && vue-cli-service serve",
     "svg-sprite": "svg-sprite --symbol --symbol-dest=public/static/images --symbol-sprite=sprite.svg src/assets/images/svg/*.svg"

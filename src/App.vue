@@ -5,7 +5,6 @@
     +e.container.container
       //- nav
       +e.TRANSITION-GROUP.nav(tag="div")
-        //- BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
         LogOut(v-show="logOutIsShown" key="logout" class="app__log-out")
         MenuApp(v-show="!isPageAuth && isAuthorized" key="menu" :closeIsDisabled="isRootPage" class="app__menu")
 
@@ -20,7 +19,6 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
 import LogOut from '@/components/LogOut.vue'
-import BreadcrumbsApp from '@/components/BreadcrumbsApp.vue'
 import MenuApp from '@/components/MenuApp.vue'
 import LocalStorageService from './services/LocalStorageService'
 import device from 'current-device'
@@ -35,7 +33,6 @@ const grid = require('@/styles/grid-config.json')
     ButtonApp,
     IconSvg,
     LogOut,
-    BreadcrumbsApp,
     MenuApp
   },
   computed: {
@@ -116,9 +113,6 @@ export default class App extends Vue {
 <style lang="stylus">
 @import '~@/styles/tools'
 @import '~@/styles/app'
-
-$arrowOffset = $offsetXl / 4
-$arrowSize = $offsetXl / 2
 
 .app
 
