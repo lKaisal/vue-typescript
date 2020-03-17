@@ -11,7 +11,6 @@ class RestartState {
   hashes: ['active', 'inactive'] = ['active', 'inactive']
   list: { data: Service[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listSort: ListSort = { by: 'serviceName', direction: 'asc' }
-  // list: { data: Service[], error: string, isLoading: boolean } =  { data: [{active: true, createdAt: '20-02-2020', description: 'description', feature: 'Feature', id: 1, name: 'Name', updatedAt: '20-02-2020', username: 'Username'}], error: null, isLoading: false }
 }
 
 class RestartGetters extends Getters<RestartState> {
@@ -69,7 +68,8 @@ class RestartMutations extends Mutations<RestartState> {
     this.state.edit.error = null
     this.state.edit.isLoading = true
   }
-  setEditSuccess() {
+  setEditSuccess(list) {
+    this.state.list.data = list
     this.state.edit.error = null
     this.state.edit.isLoading = false
   }
@@ -86,7 +86,9 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
 
       axios.get('/api/v1/services-list')
         .then((res: AxiosResponse<any>) => {
+          console.log(res)
           while (!Array.isArray(res)) res = res.data
+          console.log(res)
 
           this.commit('setListLoadingSuccess', res)
           if (isDev) console.log('Success: load list')
@@ -104,14 +106,15 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
       this.commit('startEdit')
 
       axios.post('/api/v1/services', payload)
-        .then(async () => {
+        .then(async (res) => {
           if (isDev) console.log('Success: edit list')
-          await this.dispatch('getList', null)
-          this.commit('setEditSuccess')
+          while (!Array.isArray(res)) res = res.data
+          // await this.dispatch('getList', null)
+          this.commit('setEditSuccess', res)
           resolve()
         })
         .catch(error => {
-          if (isDev) console.log(error.response)
+          if (isDev && error) console.log(error.response)
           else console.log('error')
 
           const errMsg = error.response && error.response.data && error.response.data.message || null
