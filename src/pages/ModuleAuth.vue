@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-auth(v-loading.fullscreen.lock="form.isLoading")
+  +b.module-auth
     router-view(@loggedIn="onLoggedIn")
 </template>
 

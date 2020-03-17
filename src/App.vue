@@ -4,9 +4,11 @@
   +b.app
     +e.container.container
       //- nav
-      +e.TRANSITION-GROUP.nav(tag="div")
-        LogOut(v-show="logOutIsShown && isAuthorized" key="logout" class="app__log-out")
-        MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="isRootPage" class="app__menu")
+      +e.nav
+        transition(appear)
+          LogOut(v-show="logOutIsShown && isAuthorized" key="logout" class="app__log-out")
+        transition(appear)
+          MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="!logOutIsShown || !isAuthorized" class="app__menu")
 
       //- content
       transition(mode="out-in")
@@ -103,7 +105,7 @@ export default class App extends Vue {
 
   onLoggedIn() {
     this.initializeModules()
-    this.goToPageRoot()
+    if (this.isPageAuth) this.goToPageRoot()
   }
   updateFromLocalStorage() {
     const data = LocalStorageService.getAllData()
@@ -118,8 +120,8 @@ export default class App extends Vue {
 
     this.setBreakpoint(breakpoint)
   }
-  goToPageAuth() { this.$router.push({ path: '/auth' }) }
-  goToPageRoot() { this.$router.push({ path: '/' }) }
+  goToPageAuth() { this.$router.push({ path: '/auth/', replace: true, hash: null }) }
+  goToPageRoot() { this.$router.push({ path: '/', replace: true, hash: null }) }
 }
 </script>
 
