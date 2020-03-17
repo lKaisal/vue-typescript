@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
+    +e.container.js-voa.js-voa-start
       ListRestart(:list="listSorted" :key="listSorted + editPayload" @editClicked="onEditClick" @updateClicked="onUpdateClick" class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown && editFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"

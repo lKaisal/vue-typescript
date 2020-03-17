@@ -54,7 +54,7 @@ class RestartMutations extends Mutations<RestartState> {
     this.state.list.isLoading = true
     this.state.list.error = null
   }
-  setListLoadingSuccess(payload: Service[]) {
+  setListLoadingSuccess(payload: any[]) {
     this.state.list.data = payload
     this.state.list.isLoading = false
     this.state.list.error = null
@@ -86,9 +86,7 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
 
       axios.get('/api/v1/services-list')
         .then((res: AxiosResponse<any>) => {
-          console.log(res)
-          while (!Array.isArray(res)) res = res.data
-          console.log(res)
+          while (res && !Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
           if (isDev) console.log('Success: load list')
@@ -108,7 +106,7 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
       axios.post('/api/v1/services', payload)
         .then(async (res) => {
           if (isDev) console.log('Success: edit list')
-          while (!Array.isArray(res)) res = res.data
+          while (res && !Array.isArray(res)) res = res.data
           // await this.dispatch('getList', null)
           this.commit('setEditSuccess', res)
           resolve()

@@ -3,26 +3,27 @@
 
   +b.list-restart
     +e.container
-      +e.table(:class="{ 'is-long-list': list.length > 2 }")
+      +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
         +e.row.table-row
           //- +e.title.table-cell.col-05
           +e.title.table-cell(v-for="(field, index) in fields"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
+            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list || !list.length }")
               +e.checkbox-icon-wrapper.checkbox-icon-wrapper
                 +e.I.checkbox-icon.el-icon-check.checkbox-icon
-            +e.title-wrapper(v-else @click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
+            +e.title-wrapper(v-else @click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
+                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': list && list.length && listSortField === fields[index].field && isAscSorted }")
+                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': list && list.length && listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
-          class="list-restart__item table-row")
+        +e.body(v-if="list && list.length")
+          ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
+            class="list-restart__item table-row")
 
       +e.btns
-        ButtonApp(v-show="list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onRestartClick" class="list-restart__btn")
+        ButtonApp(v-show="list && list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onRestartClick" class="list-restart__btn")
         ButtonApp(text="Обновить список" btnType="primaryText" @clicked="onUpdateClick" class="list-restart__btn")
 </template>
 
