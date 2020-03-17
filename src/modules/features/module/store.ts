@@ -4,6 +4,7 @@ import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
+const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class FeaturesState {
   edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
@@ -91,7 +92,7 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          console.log('Success: load list')
+          if (isDev) console.log('Success: load list')
           resolve()
         })
         .catch(error => {
@@ -107,13 +108,15 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
 
       axios.post('/api/v1/features', payload)
         .then(async () => {
-          console.log('Success: edit list')
+          if (isDev) console.log('Success: edit list')
           await this.dispatch('getList', null)
           this.commit('setEditSuccess')
           resolve()
         })
         .catch(error => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setEditFail', errMsg)
           reject()

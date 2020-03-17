@@ -4,6 +4,7 @@ import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
+const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class SuppliersLoginState {
   countries: Country[] = [
@@ -112,11 +113,12 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          console.log('Success: load list')
+          if (isDev) console.log('Success: load list')
           resolve()
         })
         .catch(error => {
-          if (error && error.response) console.log(error.response)
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
 
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setListLoadingFail', errMsg)
@@ -131,14 +133,16 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
       axios.post('/api/v1/phone', payload)
         .then(async (res) => {
           const data = res.data as EditResponse
-          console.log('Success: edit phone, userId: ' + data.userId)
+          if (isDev) console.log('Success: edit phone, userId: ' + data.userId)
           // await this.dispatch('getList', null)
           this.commit('setEditSuccess')
           this.commit('updateSupplier', data)
           resolve()
         })
         .catch(error => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setEditFail', errMsg)
           reject()

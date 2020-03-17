@@ -4,6 +4,7 @@ import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true
+const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class BannersState {
   activeAmount: { value: number, error: string, isLoading: boolean } = { value: null, error: null, isLoading: false }
@@ -159,7 +160,8 @@ class BannersGetters extends Getters<BannersState> {
   
       return formData
     } catch(err) {
-      console.log(err)
+      if (isDev) console.log(err)
+      else console.log('error')
     }
   }
 }
@@ -278,7 +280,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          console.log('Success: load list')
+          if (isDev) console.log('Success: load list')
           resolve()
         })
         .catch(error => {
@@ -306,12 +308,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.commit('setValidationIsShown', false)
           this.commit('setBannerCurrentSuccess', res.data)
           this.dispatch('updateFormByBannerData', (res.data))
-          console.log('Success: create banner id=' + res.data.id)
+          if (isDev) console.log('Success: create banner id=' + res.data.id)
           resolve()
         })
         .catch((error: AxiosError<any>) => {
           if (error && error.response) {
-            console.log(error.response)
+            if (isDev) console.log(error.response)
+            else console.log('error')
             this.commit('setValidationIsShown', true)
             if (!!error.response.data && error.response.data.errors) {
               const errors = error.response.data.errors
@@ -347,12 +350,14 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.commit('setValidationIsShown', false)
           this.commit('setBannerCurrentSuccess', res.data)
           this.dispatch('updateFormByBannerData', (res.data))
-          console.log('Success: edit banner id=' + res.data.id)
+          if (isDev) console.log('Success: edit banner id=' + res.data.id)
           resolve()
         })
         .catch((error: AxiosError<any>) => {
           if (error && error.response) {
-            console.log(error.response)
+            if (isDev) console.log(error.response)
+            else console.log('error')
+
             this.commit('setValidationIsShown', true)
             if (!!error.response.data && error.response.data.errors) {
               const errors = error.response.data.errors
@@ -375,12 +380,14 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('startLoading')
       axios.delete(`/api/v1/banner/${id}`)
         .then(() => {
-          console.log('Success: delete banner id=' + id)
+          if (isDev) console.log('Success: delete banner id=' + id)
           this.commit('setLoadingSuccess')
           resolve()
         })
         .catch((error: AxiosError<any>) => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setLoadingFail', errMsg)
           reject()
@@ -396,11 +403,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .then((res: AxiosResponse<any>) => {
           this.commit('setBannerCurrentSuccess', res.data)
           this.dispatch('updateFormByBannerData', res.data)
-          console.log('Success: get single banner id=' + id)
+          if (isDev) console.log('Success: get single banner id=' + id)
           resolve()
         })
         .catch((error: AxiosError<any>) => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message || null
           this.commit('setBannerCurrentFail', errMsg)
           reject()
@@ -522,12 +531,14 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       this.commit('startLoading')
       axios.post(`/api/v1/inactivate/${id}`)
         .then(() => {
-          console.log('Success: deactivate banner id=' + id)
+          if (isDev) console.log('Success: deactivate banner id=' + id)
           this.commit('setLoadingSuccess')
           resolve()
         })
         .catch((err: AxiosError) => {
-          console.log(err.response)
+          if (isDev) console.log(err.response)
+          else console.log('error')
+
           const errMsg = err.response && err.response.data && err.response.data.message
           this.commit('setLoadingFail', errMsg)
           reject()
@@ -542,11 +553,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       axios.get('/api/v1/active-count')
         .then((res: AxiosResponse<any>) => {
           this.commit('setActiveAmountSuccess', res.data.count)
-          console.log('Success: get activeAmount: '+ res.data.count)
+          if (isDev) console.log('Success: get activeAmount: '+ res.data.count)
           resolve()
         })
         .catch((error: AxiosError) => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message
           this.commit('setActiveAmountFail', errMsg)
           reject(error.response)
@@ -561,11 +574,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       axios.post(`/api/v1/active-count/${payload}`)
         .then((res: AxiosResponse<any>) => {
           this.commit('setActiveAmountSuccess', res.data.count)
-          console.log('Success: set activeAmount: ' + res.data.count)
+          if (isDev) console.log('Success: set activeAmount: ' + res.data.count)
           resolve()
         })
         .catch((error: AxiosError) => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message
           this.commit('setActiveAmountFail', errMsg)
           reject()
@@ -583,11 +598,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
           this.commit('setPageTypesList', res)
           this.commit('setLoadingSuccess')
-          console.log('Success: get pageTypes')
+          if (isDev) console.log('Success: get pageTypes')
           resolve()
         })
         .catch((error: AxiosError) => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
+
           const errMsg = error.response && error.response.data && error.response.data.message
           this.commit('setLoadingFail', errMsg)
           reject()

@@ -6,6 +6,7 @@ import LocalStorageService from '@/services/LocalStorageService'
 import { LocalStorage, MenuItem } from '@/models'
 
 const namespaced = true
+const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class AuthState {
   form: Form = {
@@ -124,11 +125,12 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
           LocalStorageService.setToken(data)
           this.dispatch('updateLocalStorageData', data)
           this.commit('setFormLoadingSuccess')
-          console.log('Success: formLogin sent')
+          if (isDev) console.log('Success: formLogin sent')
           resolve()
         })
         .catch((error: AxiosError<any>) => {
-          console.log(error.response)
+          if (isDev) console.log(error.response)
+          else console.log('error')
           this.commit('setValidationIsShown', true)
           if (!!error.response && !!error.response.data && error.response.data.message) this.commit('setFormLoadingFail', error.response.data.message)
           reject()
