@@ -54,7 +54,7 @@ class RestartMutations extends Mutations<RestartState> {
     this.state.list.isLoading = true
     this.state.list.error = null
   }
-  setListLoadingSuccess(payload: any[]) {
+  setListLoadingSuccess(payload) {
     this.state.list.data = payload
     this.state.list.isLoading = false
     this.state.list.error = null

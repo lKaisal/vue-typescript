@@ -137,7 +137,7 @@ export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 
 .list-restart
 
-  &__container
+  &\ontainer
     width 100%
     transition(opacity)
     &:not(:last-child)

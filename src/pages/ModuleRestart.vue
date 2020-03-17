@@ -2,8 +2,8 @@
   include ../tools/bemto.pug
 
   +b.module-restart.page(v-loading.fullscreen.lock="isLoading")
-    +e.container.js-voa.js-voa-start
-      +e.title.H1.page-title.js-voa.js-voa-start Перезапуск сервисов
+    +e.container
+      +e.title.H1.page-title Перезапуск сервисов
       router-view(@updateList="updateList")
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
