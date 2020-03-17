@@ -2,7 +2,8 @@
   include ../tools/bemto.pug
 
   +b.button-app
-    +e.container(:style="setContainerStyle()" :class="[btnType, { 'is-plain': isPlain, 'is-disabled': isDisabled, 'is-low': isLow, 'is-height-auto': isHeightAuto }]" @click="onClick")
+    +e.container(:style="setContainerStyle()" @click="onClick"
+      :class="[btnType, { 'is-plain': isPlain, 'is-disabled': isDisabled, 'is-low': isLow, 'is-height-auto': isHeightAuto }]")
       +e.text(:style="setTextStyle()" v-html="text")
       +e.icon-wrapper(v-if="icon")
         +e.I.icon(:class="icon")
@@ -128,6 +129,21 @@ export default class ButtonApp extends Vue {
         &:not(.is-disabled)
           &:hover
             background-color $cSuccess
+            color white
+    &.primaryText
+      background-color $cGreen
+      border 1px solid $cGreen
+      transition(background-color\, color)
+      &:not(.is-disabled)
+        &:hover
+          background-color white
+          color $cGreen
+      &.is-plain
+        background-color white
+        color $cGreen
+        &:not(.is-disabled)
+          &:hover
+            background-color $cGreen
             color white
 
   &__text

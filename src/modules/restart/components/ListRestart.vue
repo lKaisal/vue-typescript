@@ -21,7 +21,9 @@
         ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
           class="list-restart__item table-row")
 
-      ButtonApp(v-if="list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onBtnClick" class="list-restart__btn")
+      +e.btns
+        ButtonApp(v-show="list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onRestartClick" class="list-restart__btn")
+        ButtonApp(text="Обновить список" btnType="primaryText" @clicked="onUpdateClick" class="list-restart__btn")
 </template>
 
 <script lang="ts">
@@ -63,8 +65,6 @@ export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   @Prop() list: Service[]
 
   breakpoint!: string
-  // tableTitles: string[] = [ 'Название', 'Количество реплик' ]
-  // fields: (keyof Service)[] = [ 'serviceName', 'replicas' ]
   checkboxIsActive: boolean = false
   namesSelected: string[] = []
 
@@ -118,11 +118,14 @@ export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     this.updateListSort(listSort)
   }
   // SUBMIT METHOD
-  onBtnClick() {
+  onRestartClick() {
     const payload: EditPayload = []
     for (const serviceName of this.namesSelected) payload.push({ serviceName })
 
     this.$emit('editClicked', payload)
+  }
+  onUpdateClick() {
+    this.$emit('updateClicked')
   }
 }
 </script>
@@ -196,4 +199,11 @@ export default class ListRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     .is-long-list &
       &:nth-of-type(2n + 1)
         background-color $cDisabled
+
+  &__btns
+    display flex
+
+  &__btn
+    &:not(:last-child)
+      margin-right 10px
 </style>

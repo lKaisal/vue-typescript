@@ -4,7 +4,7 @@
   +b.module-restart.page(v-loading.fullscreen.lock="isLoading")
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
       +e.title.H1.page-title.js-voa.js-voa-start Перезапуск сервисов
-      router-view
+      router-view(@updateList="updateList")
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-restart__msg-box modal modal-msg")

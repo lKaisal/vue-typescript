@@ -3,7 +3,7 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-      ListRestart(:list="listSorted" @editClicked="onEditClick" class="page-main__list")
+      ListRestart(:list="listSorted" :key="listSorted + editPayload" @editClicked="onEditClick" @updateClicked="onUpdateClick" class="page-main__list")
     transition
       MessageBox(v-show="msgBoxIsShown && editFailed" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
@@ -60,6 +60,9 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.requestStatus = 'failEdit'
         this.openMsgBox()
       })
+  }
+  onUpdateClick() {
+    this.$emit('updateList')
   }
   // MSGBOX click handler
   onFirstBtnClick() {
