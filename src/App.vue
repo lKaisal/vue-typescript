@@ -5,8 +5,8 @@
     +e.container.container
       //- nav
       +e.TRANSITION-GROUP.nav(tag="div")
-        LogOut(v-show="logOutIsShown" key="logout" class="app__log-out")
-        MenuApp(v-show="!isPageAuth && isAuthorized" key="menu" :closeIsDisabled="isRootPage" class="app__menu")
+        LogOut(v-show="logOutIsShown && isAuthorized" key="logout" class="app__log-out")
+        MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="isRootPage" class="app__menu")
 
       //- content
       transition(mode="out-in")
@@ -26,6 +26,7 @@ import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 import { CurrentDevice, LocalStorage } from '@/models'
+import Router from '@/services/router'
 const grid = require('@/styles/grid-config.json')
 
 @Component({
@@ -64,17 +65,29 @@ export default class App extends Vue {
   setCurrentDevice!: (payload: CurrentDevice) => void
   initializeModules: () => void 
   isAuthorized!: boolean
+  logOutIsShown: boolean = false
+  menuIsShown: boolean = false
 
   get isRootPage() { return this.$route && this.$route.name === 'App' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
-  get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
-  get crumbsShown() { return this.logOutIsShown && this.routes && this.routes.length }
   get routes() { return this.$store.getters['system/modules'] }
 
-  @Watch('$route', { immediate: true, deep: true }) 
+  @Watch('$route', { immediate: true, deep: true })
   onRouteChange(val) {
-    if (this.isRootPage) this.openMenu()
-    else this.closeMenu()
+    if (this.isRootPage) {
+      this.openMenu()
+      this.logOutIsShown = false
+      this.menuIsShown = true
+    } else {
+      if (this.isPageAuth) {
+        this.logOutIsShown = false
+        this.menuIsShown = false
+      } else if (this.$route.name) {
+        this.logOutIsShown = true
+        this.menuIsShown = true
+      }
+      this.closeMenu()
+    }
   }
 
   created() {

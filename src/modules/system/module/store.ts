@@ -30,7 +30,8 @@ export default {
       state.currentDevice = Object.assign({}, { orientation, type, os } )
     },
     addModule(state, payload) {
-      state.modules.push(payload)
+      const indexOfModule = state.modules.map(m => m.name).indexOf(payload.name)
+      if (indexOfModule < 0) state.modules.push(payload)
     },
     deleteModule(state, name) {
       const indexOfModule = state.modules.map(m => m.name).indexOf(name)
