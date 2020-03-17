@@ -3,8 +3,10 @@
 
   +b.menu-app
     +e.container(:class="{ 'is-open': menuIsOpen }")
-      +e.toggle(key="icon-toggle")
-        +e.I.toggle-icon(:key="menuIsOpen" @click="onToggleClick" :class="{ 'el-icon-s-fold': menuIsOpen, 'el-icon-s-unfold': !menuIsOpen }")
+      transition
+        +e.toggle(v-show="!closeIsDisabled" key="icon-toggle")
+          +e.I.toggle-icon(:key="menuIsOpen" @click="onToggleClick"
+            :class="{ 'el-icon-s-fold': menuIsOpen, 'el-icon-s-unfold': !menuIsOpen }")
       transition(mode="out-in")
         +e.links-wrapper(v-if="menuIsOpen" v-click-outside="onClickOutside")
           +e.links
@@ -24,7 +26,6 @@ import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import LocalStorageService from '../services/LocalStorageService'
 import { MenuItem } from '@/models'
-
 
 @Component({
   directives: {
@@ -49,11 +50,11 @@ import { MenuItem } from '@/models'
 })
 
 export default class MenuApp extends Vue {
+  @Prop() closeIsDisabled: boolean
   public menuIsOpen!: boolean
   public toggleMenu!: () => void
   public openMenu!: () => void
   public closeMenu!: () => void
-  get isRootPage() { return this.$route && this.$route.fullPath === '/' }
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)
@@ -63,12 +64,10 @@ export default class MenuApp extends Vue {
   }
 
   onToggleClick() {
-    if (!this.isRootPage) this.toggleMenu()
+    if (!this.closeIsDisabled) this.toggleMenu()
   }
   onClickOutside() {
-    if (this.isRootPage) return
-
-    if (this.menuIsOpen) this.closeMenu()
+    if (!this.closeIsDisabled && this.menuIsOpen) this.closeMenu()
   }
   keyDownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') this.onClickOutside()
@@ -106,6 +105,10 @@ export default class MenuApp extends Vue {
     position fixed
     top 20px
     left 20px
+    transition()
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__toggle-icon
     font-size 36px

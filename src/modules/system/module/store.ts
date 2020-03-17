@@ -43,10 +43,12 @@ export default {
   },
   actions: {
     initializeModule ({ state, commit }, payload: { module: any, path: string, title: string } ) {
+      // init store module
       const mod = payload.module
-      registerModule(Store, [mod.name], `${mod.name}/`, mod.store)
+      const storeModuleAdded = Store.state[mod.name]
+      if (!storeModuleAdded) registerModule(Store, [mod.name], `${mod.name}/`, mod.store)
 
-      // add routes
+      // init routes
       const fullPath = `/${payload.path}`
       const mathedComponents = Router.getMatchedComponents(fullPath)
       if (mathedComponents.length <= 1) {

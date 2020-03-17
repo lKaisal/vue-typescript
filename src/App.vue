@@ -7,7 +7,7 @@
       +e.TRANSITION-GROUP.nav(tag="div")
         //- BreadcrumbsApp(v-show="crumbsShown" key="breadcrumbs" class="app__breadcrumbs")
         LogOut(v-show="logOutIsShown" key="logout" class="app__log-out")
-        MenuApp(v-show="!isPageAuth && isAuthorized" key="menu" class="app__menu")
+        MenuApp(v-show="!isPageAuth && isAuthorized" key="menu" :closeIsDisabled="isRootPage" class="app__menu")
 
       //- content
       transition(mode="out-in")
@@ -68,7 +68,7 @@ export default class App extends Vue {
   initializeModules: () => void 
   isAuthorized!: boolean
 
-  get isRootPage() { return this.$route && this.$route.fullPath === '/' && this.$route.name }
+  get isRootPage() { return this.$route && this.$route.name === 'App' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
   get logOutIsShown() { return !this.isPageAuth && !this.isRootPage && !!LocalStorageService.getAccessToken() && !!LocalStorageService.getRefreshToken() }
   get crumbsShown() { return this.logOutIsShown && this.routes && this.routes.length }

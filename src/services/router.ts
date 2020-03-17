@@ -8,7 +8,7 @@ Vue.use(VueRouter)
 const router = new VueRouter({
   mode: 'history',
   routes: [
-    { path: '/', component: App, name: 'App' },
+    { path: '/', name: 'App' },
     { path: '*', redirect: { name: 'App' } }
   ]
 })
