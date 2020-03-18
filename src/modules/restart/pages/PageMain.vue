@@ -54,7 +54,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     this.editList(this.editPayload)
       .then(() => {
         this.editPayload = null
-        this.$emit('updateList')
+        // this.$emit('updateList')
       })
       .catch(() => {
         this.requestStatus = 'failEdit'

@@ -3,7 +3,7 @@
 
   +b.list-restart
     +e.container
-      +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
+      +e.table.js-voa.js-voa-start(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
         +e.row.table-row
           //- +e.title.table-cell.col-05
@@ -22,7 +22,7 @@
           ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
             class="list-restart__item table-row")
 
-      +e.btns
+      +e.btns.js-voa.js-voa-start
         ButtonApp(v-show="list && list.length" text="Перезапустить" :isDisabled="!namesSelected.length" @clicked="onRestartClick" class="list-restart__btn")
         ButtonApp(text="Обновить список" btnType="primaryText" @clicked="onUpdateClick" class="list-restart__btn")
 </template>

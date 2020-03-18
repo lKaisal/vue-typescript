@@ -43,10 +43,8 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
 
   @Watch('list', { deep: true })
   async onListChange(val) {
-    if (val.data && val.data.length) {
-      await this.$nextTick()
-      animateIfVisible()
-    }
+    await this.$nextTick()
+    animateIfVisible()
   }
 
   created() {
