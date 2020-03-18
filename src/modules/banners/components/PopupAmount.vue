@@ -22,7 +22,7 @@
 import { Vue, Component, Watch, Prop, Mixins, Ref } from 'vue-property-decorator'
 import { MsgBoxContent, Button } from '@/models'
 import ButtonApp from '@/components/ButtonApp.vue'
-import { bannersMapper, banners } from '../module/store'
+import { bannersMapper } from '../module/store'
 import { ElInput } from 'element-ui/types/input'
 import vClickOutside from 'v-click-outside'
 

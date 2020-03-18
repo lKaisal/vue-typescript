@@ -1,8 +1,8 @@
-import { restart } from './module/store'
+import { RestartStore } from './module/store'
 import routes from './module/routes'
 
 export default {
   name: 'restart',
-  store: restart,
+  store: RestartStore,
   routes
 }

@@ -35,8 +35,15 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { TableField } from '../models'
 import { mapState } from 'vuex'
+// import { rootMapper } from '@/modules/system/module/store'
 
-const Mappers = Vue.extend({
+const RootMappers = Vue.extend({
+  // computed: {
+  //   ...rootMapper.mapState(['breakpoint'])
+  // }
+})
+
+const FeatureMappers = Vue.extend({
   computed: {
     ...featuresMapper.mapState(['listSort', 'hashes']),
     ...featuresMapper.mapGetters(['listActive', 'listInactive'])
@@ -53,17 +60,11 @@ const Mappers = Vue.extend({
     ButtonApp,
     MessageBox
   },
-  computed: {
-    ...mapState('system', [
-      'breakpoint'
-    ])
-  }
 })
 
-export default class ListFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ListFeatures extends Mixins(RootMappers, FeatureMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Section[]
   @Prop() isActive: boolean
-  breakpoint!: string
 
   checkboxIsActive: boolean = false
   idsSelected: number[] = []

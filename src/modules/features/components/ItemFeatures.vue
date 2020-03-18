@@ -23,25 +23,25 @@ import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { featuresMapper } from '../module/store'
 import { Section, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
-import { mapState } from 'vuex'
+// import { rootMapper } from '@/modules/system/module/store'
+
+const RootMappers = Vue.extend({
+  // computed: {
+  //   ...rootMapper.mapState(['breakpoint'])
+  // }
+})
 
 @Component({
   components: {
     ButtonApp
-  },
-  computed: {
-    ...mapState('system', [
-      'breakpoint'
-    ])
   }
 })
 
-export default class ItemFeatures extends Vue {
+export default class ItemFeatures extends RootMappers {
   @Prop() section: Section
   @Prop() isActive: boolean
   @Prop() fields: TableField[]
 
-  breakpoint!: string
   descrIsShown: boolean = false
 
   get isXs() { return this.breakpoint === 'xs' }

@@ -122,7 +122,7 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
   }
 }
 
-export const restart = new Module({
+export const RestartStore = new Module({
   namespaced,
   state: RestartState,
   getters: RestartGetters,
@@ -130,4 +130,4 @@ export const restart = new Module({
   actions: RestartActions
 })
 
-export const restartMapper = createMapper(restart)
+export const restartMapper = createMapper(RestartStore)

@@ -17,7 +17,7 @@
 
 <script lang="ts">
 
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
 import LogOut from '@/components/LogOut.vue'
@@ -29,7 +29,24 @@ import sleep from '@/mixins/sleep'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 import { CurrentDevice, LocalStorage } from '@/models'
 import Router from '@/services/router'
+import { rootMapper } from '@/modules/system/module/store'
+import { authMapper } from './modules/auth/module/store'
 const grid = require('@/styles/grid-config.json')
+
+const RootMappers = Vue.extend({
+  methods: {
+    ...rootMapper.mapMutations([ 'openMenu', 'closeMenu', 'setBreakpoint', 'setCurrentDevice' ]),
+    ...rootMapper.mapActions(['initializeModules'])
+  }
+})
+const AuthMappers = Vue.extend({
+  computed: {
+    ...authMapper.mapGetters(['isAuthorized'])
+  },
+  methods: {
+    ...authMapper.mapActions(['updateLocalStorageData'])
+  }
+})
 
 @Component({
   components: {
@@ -38,41 +55,14 @@ const grid = require('@/styles/grid-config.json')
     LogOut,
     MenuApp
   },
-  computed: {
-    ...mapGetters('auth', [
-      'isAuthorized'
-    ]),
-  },
-  methods: {
-    ...mapMutations('system', [
-      'openMenu',
-      'closeMenu',
-      'setBreakpoint',
-      'setCurrentDevice',
-    ]),
-    ...mapActions('system', [
-      'initializeModules'
-    ]),
-    ...mapActions('auth', [
-      'updateLocalStorageData',
-    ])
-  }
 })
 
-export default class App extends Vue {
-  openMenu!: () => void
-  closeMenu!: () => void
-  updateLocalStorageData!: (payload: LocalStorage) => void
-  setBreakpoint!: (payload: string) => void
-  setCurrentDevice!: (payload: CurrentDevice) => void
-  initializeModules: () => void 
-  isAuthorized!: boolean
+export default class App extends Mixins(RootMappers, AuthMappers) {
   logOutIsShown: boolean = false
   menuIsShown: boolean = false
 
   get isRootPage() { return this.$route && this.$route.name === 'App' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
-  get routes() { return this.$store.getters['system/modules'] }
 
   @Watch('$route', { immediate: true, deep: true })
   onRouteChange(val) {

@@ -28,8 +28,15 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { mapState } from 'vuex'
+// import { rootMapper } from '@/modules/system/module/store'
 
-const Mappers = Vue.extend({
+const RootMappers = Vue.extend({
+  // computed: {
+  //   ...rootMapper.mapState(['breakpoint'])
+  // }
+})
+
+const SuppliersMappers = Vue.extend({
   computed: {
     ...suppliersMapper.mapState(['listSort']),
   },
@@ -44,14 +51,9 @@ const Mappers = Vue.extend({
     ButtonApp,
     MessageBox
   },
-  computed: {
-    ...mapState('system', [
-      'breakpoint'
-    ])
-  }
 })
 
-export default class ListSuppliers extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ListSuppliers extends Mixins(SuppliersMappers, RootMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Supplier[]
   breakpoint!: string
 

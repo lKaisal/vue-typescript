@@ -1,8 +1,8 @@
-import { banners } from './module/store'
+import { BannersStore } from './module/store'
 import routes from './module/routes'
 
 export default {
   name: 'banners',
-  store: banners,
+  store: BannersStore,
   routes
 }

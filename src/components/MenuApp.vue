@@ -26,6 +26,17 @@ import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import LocalStorageService from '../services/LocalStorageService'
 import { MenuItem } from '@/models'
+import { rootMapper } from '@/modules/system/module/store'
+
+const RootMappers = Vue.extend({
+  computed: {
+    ...rootMapper.mapState(['menuIsOpen']),
+    ...rootMapper.mapGetters(['modules'])
+  },
+  methods: {
+    ...rootMapper.mapMutations(['toggleMenu', 'openMenu', 'closeMenu'])
+  }
+})
 
 @Component({
   directives: {
@@ -34,27 +45,10 @@ import { MenuItem } from '@/models'
   components: {
     LogOut
   },
-  computed: {
-    ...mapState('system', [
-      'menuIsOpen'
-    ]),
-    ...mapGetters('system', [
-      'modules'
-    ])
-  },
-  methods: {
-    ...mapMutations('system', [
-      'toggleMenu', 'openMenu', 'closeMenu'
-    ])
-  }
 })
 
-export default class MenuApp extends Vue {
+export default class MenuApp extends RootMappers {
   @Prop() closeIsDisabled: boolean
-  public menuIsOpen!: boolean
-  public toggleMenu!: () => void
-  public openMenu!: () => void
-  public closeMenu!: () => void
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)

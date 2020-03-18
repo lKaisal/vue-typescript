@@ -15,27 +15,25 @@ import LocalStorageService from '@/services/LocalStorageService'
 import Store from '@/services/store'
 import { mapActions, mapGetters } from 'vuex'
 import banners from '@/modules/banners/module'
+import { rootMapper } from '@/modules/system/module/store'
+
+const RootMappers = Vue.extend({
+  computed: {
+    ...rootMapper.mapGetters(['modules'])
+  },
+  methods: {
+    ...rootMapper.mapActions(['removeModule'])
+  }
+})
 
 @Component({
   components: {
     IconSvg,
   },
-  computed: {
-    ...mapGetters('system', [
-      'modules'
-    ])
-  },
-  methods: {
-    ...mapActions('system', [
-      'removeModule'
-    ])
-  }
 })
 
-export default class LogOut extends Vue {
+export default class LogOut extends RootMappers {
   @Prop() isInMenu: boolean
-  modules!: any[]
-  removeModule!: (string) => void
   modulePath: string = './modules/'
 
   async logOut() {

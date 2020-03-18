@@ -641,7 +641,7 @@ const getDateTime = (date: string) => {
   return dateTime
 }
 
-export const banners = new Module({
+export const BannersStore = new Module({
   namespaced,
   state: BannersState,
   getters: BannersGetters,
@@ -649,4 +649,4 @@ export const banners = new Module({
   actions: BannersActions
 })
 
-export const bannersMapper = createMapper(banners)
+export const bannersMapper = createMapper(BannersStore)

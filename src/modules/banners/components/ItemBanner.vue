@@ -40,11 +40,18 @@ import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
 import { VisibilityObserver, VisibilityObserverOptions } from '@/mixins/VisibilityObserver'
+// import { rootMapper } from '@/modules/system/module/store'
+
+const RootMappers = Vue.extend({
+  // computed: {
+  //   ...rootMapper.mapGetters(['isTouchDevice'])
+  // }
+})
 
 @Component({
 })
 
-export default class ItemBanners extends Vue {
+export default class ItemBanners extends RootMappers {
   @Prop() banner: Banner
   @Prop({ default: true }) editIconsShown: boolean
   imgIsLoading: boolean = false
@@ -55,7 +62,6 @@ export default class ItemBanners extends Vue {
   observer = null
   count: number = 0
 
-  get isTouchDevice() { return this.$store.getters['system/isTouchDevice'] }
   get isActive() { return this.banner.isActive }
   get activeFromToText() {
     if (this.isActive) {

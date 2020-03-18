@@ -139,7 +139,7 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
   }
 }
 
-export const auth = new Module({
+export const AuthStore = new Module({
   namespaced,
   state: AuthState,
   getters: AuthGetters,
@@ -147,4 +147,4 @@ export const auth = new Module({
   actions: AuthActions
 })
 
-export const authMapper = createMapper(auth)
+export const authMapper = createMapper(AuthStore)

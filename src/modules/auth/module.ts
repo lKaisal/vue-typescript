@@ -1,8 +1,8 @@
-import { auth } from './module/store'
+import { AuthStore } from './module/store'
 import routes from './module/routes'
 
 export default {
   name: 'auth',
-  store: auth,
+  store: AuthStore,
   routes
 }

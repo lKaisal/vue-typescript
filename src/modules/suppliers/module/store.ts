@@ -167,7 +167,7 @@ const dateParser = (date) => {
   return Date.parse(newDate.toString())
 }
 
-export const suppliers = new Module({
+export const SuppliersStore = new Module({
   namespaced,
   state: SuppliersLoginState,
   getters: SuppliersLoginGetters,
@@ -175,4 +175,4 @@ export const suppliers = new Module({
   actions: SuppliersLoginActions
 })
 
-export const suppliersMapper = createMapper(suppliers)
+export const suppliersMapper = createMapper(SuppliersStore)

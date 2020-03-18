@@ -32,8 +32,15 @@ import ListSuppliers from '../components/ListSuppliers.vue'
 import PopupSupplier from '../components/PopupSupplier.vue'
 import { mapState } from 'vuex'
 import SearchApp from '@/components/SearchApp.vue'
+// import { rootMapper } from '@/modules/system/module/store'
 
-const Mappers = Vue.extend({
+const RootMappers = Vue.extend({
+  computed: {
+    // ...rootMapper.mapState(['breakpoint'])
+  }
+})
+
+const SuppliersMappers = Vue.extend({
   computed: {
     ...suppliersMapper.mapState(['list', 'listFiltered']),
     ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
@@ -56,14 +63,9 @@ const Mappers = Vue.extend({
   mixins: [
     MsgBoxTools
   ],
-  computed: {
-    ...mapState('system', [
-      'breakpoint'
-    ])
-  }
 })
 
-export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
+export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, RootMappers, SuppliersMappers) {
   newPhone: Supplier['phone'] = null // for repeated request
   pageSize: number = 10
   currentPage: number = 1
@@ -78,7 +80,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   ]
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
-  breakpoint!: string
 
   get isXs() { return this.breakpoint === 'xs' }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }

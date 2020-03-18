@@ -12,24 +12,23 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { mapState } from 'vuex'
+import { rootMapper } from '@/modules/system/module/store'
 
-@Component({
-  components: {
-  },
+const RootMappers = Vue.extend({
   computed: {
-    ...mapState('system', [
-      'breakpoint'
-    ])
-  }
+    ...rootMapper.mapState(['breakpoint'])
+  },
 })
 
-export default class PaginationApp extends Vue {
+@Component({
+})
+
+export default class PaginationApp extends RootMappers {
   @Prop() total: number
   @Prop() pageSize: number
   @Prop() pagerCount: number
   options: number[] = [ 10, 25, 50 ]
   currentPage: number = 1
-  breakpoint!: string
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
 
   @Watch('currentPage')

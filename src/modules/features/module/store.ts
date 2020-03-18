@@ -139,7 +139,7 @@ const getDateTime = (date: string) => {
   return dateTime
 }
 
-export const features = new Module({
+export const FeaturesStore = new Module({
   namespaced,
   state: FeaturesState,
   getters: FeaturesGetters,
@@ -147,4 +147,4 @@ export const features = new Module({
   actions: FeaturesActions
 })
 
-export const featuresMapper = createMapper(features)
+export const featuresMapper = createMapper(FeaturesStore)

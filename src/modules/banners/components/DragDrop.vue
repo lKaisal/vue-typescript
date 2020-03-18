@@ -16,11 +16,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
-import { bannersMapper, banners } from '../module/store'
+import { Vue, Component, Ref, Watch, Mixins } from 'vue-property-decorator'
+import { bannersMapper } from '../module/store'
+// import { rootMapper } from '@/modules/system/module/store'
 import preloadImages from '@/mixins/preloadImages'
 
-const Mappers = Vue.extend({
+const BannersMapper = Vue.extend({
   computed: {
     ...bannersMapper.mapGetters(['formFile', 'bannerById'])
   },
@@ -28,13 +29,18 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapActions(['updateField'])
   }
 })
+const RootMappers = Vue.extend({
+  // computed: {
+  //   ...rootMapper.mapGetters(['isTouchDevice'])
+  // }
+})
 
 @Component({
   components: {
   }
 })
 
-export default class DragDrop extends Mappers {
+export default class DragDrop extends Mixins(BannersMapper, RootMappers) {
   imgUrl: any = ''
   dropDeleteIsShown: boolean = false
   imgLoaded: boolean = false
@@ -44,7 +50,6 @@ export default class DragDrop extends Mappers {
   set file(value) { this.updateFile(value) }
   get banner() { return this.bannerById(Number(this.$route.params.id)) }
   get bannerImgUrl() { return this.banner && this.banner.bannerImageUrl }
-  get isTouchDevice() { return this.$store.getters['system/isTouchDevice'] }
 
   @Ref() readonly fileinput!: HTMLInputElement
 
