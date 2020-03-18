@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Vue, Component, Ref, Watch, Mixins } from 'vue-property-decorator'
 import { bannersMapper } from '../module/store'
-// import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
 import preloadImages from '@/mixins/preloadImages'
 
 const BannersMapper = Vue.extend({
@@ -29,10 +29,10 @@ const BannersMapper = Vue.extend({
     ...bannersMapper.mapActions(['updateField'])
   }
 })
-const RootMappers = Vue.extend({
-  // computed: {
-  //   ...rootMapper.mapGetters(['isTouchDevice'])
-  // }
+const SystemMappers = Vue.extend({
+  computed: {
+    ...systemMapper.mapGetters(['isTouchDevice'])
+  }
 })
 
 @Component({
@@ -40,7 +40,7 @@ const RootMappers = Vue.extend({
   }
 })
 
-export default class DragDrop extends Mixins(BannersMapper, RootMappers) {
+export default class DragDrop extends Mixins(BannersMapper, SystemMappers) {
   imgUrl: any = ''
   dropDeleteIsShown: boolean = false
   imgLoaded: boolean = false

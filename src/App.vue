@@ -6,7 +6,7 @@
       //- nav
       +e.nav
         transition(appear)
-          LogOut(v-show="logOutIsShown && isAuthorized" key="logout" class="app__log-out")
+          LogOut(v-show="logOutIsShown && isAuthorized" @logOut="onLogOut" key="logout" class="app__log-out")
         transition(appear)
           MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="!logOutIsShown || !isAuthorized" class="app__menu")
 
@@ -29,14 +29,13 @@ import sleep from '@/mixins/sleep'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 import { CurrentDevice, LocalStorage } from '@/models'
 import Router from '@/services/router'
-import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
 import { authMapper } from './modules/auth/module/store'
 const grid = require('@/styles/grid-config.json')
 
-const RootMappers = Vue.extend({
+const SystemMappers = Vue.extend({
   methods: {
-    ...rootMapper.mapMutations([ 'openMenu', 'closeMenu', 'setBreakpoint', 'setCurrentDevice' ]),
-    ...rootMapper.mapActions(['initializeModules'])
+    ...systemMapper.mapMutations([ 'openMenu', 'closeMenu', 'setBreakpoint', 'setCurrentDevice' ]),
   }
 })
 const AuthMappers = Vue.extend({
@@ -55,47 +54,68 @@ const AuthMappers = Vue.extend({
     LogOut,
     MenuApp
   },
+  methods: {
+    ...mapActions(['initializeModules'])
+  }
 })
 
-export default class App extends Mixins(RootMappers, AuthMappers) {
+export default class App extends Mixins(SystemMappers, AuthMappers) {
   logOutIsShown: boolean = false
   menuIsShown: boolean = false
+  initializeModules!: () => void
 
+  get isDev() { return process && process.env && process.env.NODE_ENV === 'development' }
   get isRootPage() { return this.$route && this.$route.name === 'App' }
   get isPageAuth() { return this.$route && this.$route.path.includes('auth') }
 
   @Watch('$route', { immediate: true, deep: true })
   onRouteChange(val) {
-    if (this.isRootPage) {
-      this.openMenu()
-      this.logOutIsShown = false
-      this.menuIsShown = true
-    } else {
-      if (this.isPageAuth) {
+    try {
+      if (this.isRootPage) {
+        this.openMenu()
         this.logOutIsShown = false
-        this.menuIsShown = false
-      } else if (this.$route.name) {
-        this.logOutIsShown = true
         this.menuIsShown = true
+      } else {
+        if (this.isPageAuth) {
+          this.logOutIsShown = false
+          this.menuIsShown = false
+        } else if (this.$route.name) {
+          this.logOutIsShown = true
+          this.menuIsShown = true
+        }
+        this.closeMenu()
       }
-      this.closeMenu()
+    } catch(err) {
+      if (this.isDev) console.log(err)
     }
   }
 
   created() {
-    this.updateFromLocalStorage()
+    try {
+      this.updateFromLocalStorage()
 
-    if (!this.isAuthorized) this.$router.push({ name: 'PageAuth' })
-    else this.initializeModules()
-
-    this.setCurrentDevice(device)
-    window.addEventListener('resize', () => this.windowResizeHandler(grid))
-    this.windowResizeHandler(grid)
+      // if (!this.isAuthorized) this.goToPageAuth()
+      if (this.isAuthorized) this.initializeModules()
+  
+      this.setCurrentDevice(device)
+      window.addEventListener('resize', () => this.windowResizeHandler(grid))
+      this.windowResizeHandler(grid)
+    } catch(err) {
+      if (this.isDev) console.log(err)
+    }
   }
 
   onLoggedIn() {
     this.initializeModules()
     if (this.isPageAuth) this.goToPageRoot()
+  }
+  async onLogOut() {
+    this.goToPageAuth()
+    await this.$nextTick()
+    LocalStorageService.clearToken()
+    // for (const mod of this.modules.slice(0)) {
+    //   this.removeModule(mod.name)
+    // }
   }
   updateFromLocalStorage() {
     const data = LocalStorageService.getAllData()

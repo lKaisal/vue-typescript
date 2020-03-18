@@ -2,40 +2,45 @@
   include ../tools/bemto.pug
 
   +b.menu-app
-    +e.container(:class="{ 'is-open': menuIsOpen }")
+    +e.container(:class="{ 'is-open': menuIsOpenGetter }")
       transition
         +e.toggle(v-show="!closeIsDisabled" key="icon-toggle")
-          +e.I.toggle-icon(:key="menuIsOpen" @click="onToggleClick"
-            :class="{ 'el-icon-s-fold': menuIsOpen, 'el-icon-s-unfold': !menuIsOpen }")
+          +e.I.toggle-icon(:key="menuIsOpenGetter" @click="onToggleClick"
+            :class="{ 'el-icon-s-fold': menuIsOpenGetter, 'el-icon-s-unfold': !menuIsOpenGetter }")
       transition(mode="out-in")
-        +e.links-wrapper(v-if="menuIsOpen" v-click-outside="onClickOutside")
-          +e.links
-            +e.link-wrapper(v-for="(item, index) in modules")
-              +e.ROUTER-LINK.link(tag="div" :to="`${item.routes[0].path}`")
-                +e.link-text(v-html="item.routes[0].meta.title")
+        +e.links-wrapper(v-if="menuIsOpenGetter" v-click-outside="onClickOutside")
+          +e.links(v-if="menu && menu.length")
+            +e.link-wrapper(v-for="(item, index) in menu")
+              +e.ROUTER-LINK.link(tag="div" :to="`/${item.pertuttiLink}`")
+                +e.link-text(v-html="item.title")
                 +e.I.link-icon.el-icon-arrow-right
             +e.link-wrapper
               LogOut(:isInMenu="true")
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
+import { Vue, Component, Watch, Prop, Mixins } from 'vue-property-decorator'
 import Router from '@/services/router'
 import LogOut from '@/components/LogOut.vue'
 import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import LocalStorageService from '../services/LocalStorageService'
 import { MenuItem } from '@/models'
-import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
+import { authMapper } from '@/modules/auth/module/store'
 
-const RootMappers = Vue.extend({
+const SystemMappers = Vue.extend({
   computed: {
-    ...rootMapper.mapState(['menuIsOpen']),
-    ...rootMapper.mapGetters(['modules'])
+    ...systemMapper.mapState(['menuIsOpen']),
   },
   methods: {
-    ...rootMapper.mapMutations(['toggleMenu', 'openMenu', 'closeMenu'])
+    ...systemMapper.mapMutations(['toggleMenu', 'openMenu', 'closeMenu'])
   }
+})
+const AuthMappers = Vue.extend({
+  computed: {
+    ...authMapper.mapState(['menu'])
+  },
 })
 
 @Component({
@@ -47,8 +52,17 @@ const RootMappers = Vue.extend({
   },
 })
 
-export default class MenuApp extends RootMappers {
+export default class MenuApp extends Mixins(SystemMappers, AuthMappers) {
   @Prop() closeIsDisabled: boolean
+
+  get isDev() { return process && process.env && process.env.NODE_ENV === 'development' }
+  get menuIsOpenGetter() {
+    try {
+      return this.menuIsOpen
+    } catch(err) {
+      if (this.isDev) console.log(err)
+    }
+  }
 
   created() {
     document.addEventListener('keydown', this.keyDownHandler)
@@ -58,10 +72,18 @@ export default class MenuApp extends RootMappers {
   }
 
   onToggleClick() {
-    if (!this.closeIsDisabled) this.toggleMenu()
+    try {
+      if (!this.closeIsDisabled) this.toggleMenu()
+    } catch(err) {
+      if (this.isDev) console.log(err)
+    }
   }
   onClickOutside() {
-    if (!this.closeIsDisabled && this.menuIsOpen) this.closeMenu()
+    try {
+      if (!this.closeIsDisabled && this.menuIsOpen) this.closeMenu()
+    } catch(err) {
+      if (this.isDev) console.log(err)
+    }
   }
   keyDownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') this.onClickOutside()

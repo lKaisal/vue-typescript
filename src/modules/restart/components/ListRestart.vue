@@ -37,12 +37,12 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { TableField } from '../models'
 import { mapState } from 'vuex'
-// import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
 
-const RootMappers = Vue.extend({
-  // computed: {
-  //   ...rootMapper.mapState(['breakpoint'])
-  // }
+const SystemMappers = Vue.extend({
+  computed: {
+    ...systemMapper.mapState(['breakpoint'])
+  }
 })
 
 const RestartMappers = Vue.extend({
@@ -63,7 +63,7 @@ const RestartMappers = Vue.extend({
   },
 })
 
-export default class ListRestart extends Mixins(RootMappers, RestartMappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ListRestart extends Mixins(SystemMappers, RestartMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Service[]
   checkboxIsActive: boolean = false
   namesSelected: string[] = []

@@ -35,12 +35,12 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { TableField } from '../models'
 import { mapState } from 'vuex'
-// import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
 
-const RootMappers = Vue.extend({
-  // computed: {
-  //   ...rootMapper.mapState(['breakpoint'])
-  // }
+const SystemMappers = Vue.extend({
+  computed: {
+    ...systemMapper.mapState(['breakpoint'])
+  }
 })
 
 const FeatureMappers = Vue.extend({
@@ -62,7 +62,7 @@ const FeatureMappers = Vue.extend({
   },
 })
 
-export default class ListFeatures extends Mixins(RootMappers, FeatureMappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ListFeatures extends Mixins(SystemMappers, FeatureMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Section[]
   @Prop() isActive: boolean
 

@@ -23,12 +23,12 @@ import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { featuresMapper } from '../module/store'
 import { Section, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
-// import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
 
-const RootMappers = Vue.extend({
-  // computed: {
-  //   ...rootMapper.mapState(['breakpoint'])
-  // }
+const SystemMappers = Vue.extend({
+  computed: {
+    ...systemMapper.mapState(['breakpoint'])
+  }
 })
 
 @Component({
@@ -37,7 +37,7 @@ const RootMappers = Vue.extend({
   }
 })
 
-export default class ItemFeatures extends RootMappers {
+export default class ItemFeatures extends SystemMappers {
   @Prop() section: Section
   @Prop() isActive: boolean
   @Prop() fields: TableField[]

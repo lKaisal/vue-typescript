@@ -1,8 +1,8 @@
-import { RootStore } from './module/store'
+import { SystemStore } from './module/store'
 import routes from './module/routes'
 
 export default {
   name: 'banners',
-  store: RootStore,
+  store: SystemStore,
   routes
 }

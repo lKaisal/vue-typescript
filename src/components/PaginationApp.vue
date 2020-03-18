@@ -12,18 +12,18 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { mapState } from 'vuex'
-import { rootMapper } from '@/modules/system/module/store'
+import { systemMapper } from '@/modules/system/module/store'
 
-const RootMappers = Vue.extend({
+const SystemMappers = Vue.extend({
   computed: {
-    ...rootMapper.mapState(['breakpoint'])
+    ...systemMapper.mapState(['breakpoint'])
   },
 })
 
 @Component({
 })
 
-export default class PaginationApp extends RootMappers {
+export default class PaginationApp extends SystemMappers {
   @Prop() total: number
   @Prop() pageSize: number
   @Prop() pagerCount: number

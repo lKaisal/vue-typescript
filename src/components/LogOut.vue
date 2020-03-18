@@ -14,17 +14,6 @@ import IconSvg from '@/components/IconSvg.vue'
 import LocalStorageService from '@/services/LocalStorageService'
 import Store from '@/services/store'
 import { mapActions, mapGetters } from 'vuex'
-import banners from '@/modules/banners/module'
-import { rootMapper } from '@/modules/system/module/store'
-
-const RootMappers = Vue.extend({
-  computed: {
-    ...rootMapper.mapGetters(['modules'])
-  },
-  methods: {
-    ...rootMapper.mapActions(['removeModule'])
-  }
-})
 
 @Component({
   components: {
@@ -32,17 +21,11 @@ const RootMappers = Vue.extend({
   },
 })
 
-export default class LogOut extends RootMappers {
+export default class LogOut extends Vue {
   @Prop() isInMenu: boolean
-  modulePath: string = './modules/'
 
   async logOut() {
-    this.$router.push({ name: 'PageAuth' })
-    await this.$nextTick()
-    LocalStorageService.clearToken()
-    for (const mod of this.modules.slice(0)) {
-      this.removeModule(mod.name)
-    }
+    this.$emit('logOut')
   }
 }
 </script>
