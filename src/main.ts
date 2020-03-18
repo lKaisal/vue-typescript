@@ -9,11 +9,11 @@ import auth from './modules/auth/module'
 Vue.use(ElementUI)
 
 /* Initialize Root Module */ // initialized by default 
-// Store.registerModule('system', system.store)
-// Router.addRoutes(system.routes)
+// Store.registerModule('ui', ui.store)
+// Router.addRoutes(ui.routes)
 
 /* Initialize Auth Module */
-// Store.dispatch('system/initializeModule', { module: auth, path: 'auth', title: 'Авторизация SMA' })
+// Store.dispatch('ui/initializeModule', { module: auth, path: 'auth', title: 'Авторизация SMA' })
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);

@@ -40,18 +40,18 @@ import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
 import { VisibilityObserver, VisibilityObserverOptions } from '@/mixins/VisibilityObserver'
-import { systemMapper } from '@/modules/system/module/store'
+import { uiMapper } from '@/modules/ui/module/store'
 
-const SystemMappers = Vue.extend({
+const UiMappers = Vue.extend({
   computed: {
-    ...systemMapper.mapGetters(['isTouchDevice'])
+    ...uiMapper.mapGetters(['isTouchDevice'])
   }
 })
 
 @Component({
 })
 
-export default class ItemBanners extends SystemMappers {
+export default class ItemBanners extends UiMappers {
   @Prop() banner: Banner
   @Prop({ default: true }) editIconsShown: boolean
   imgIsLoading: boolean = false

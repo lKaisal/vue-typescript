@@ -1,7 +1,7 @@
-import { MenuItem, LocalStorage } from '@/models'
+import { LocalStorageObj } from '@/models'
 
 class LocalStorageService {
-  setToken(tokenObj: {access_token: string, refresh_token: string, menu: MenuItem[] }) {
+  setToken(tokenObj: LocalStorageObj) {
     localStorage.setItem('access_token', tokenObj.access_token);
     localStorage.setItem('refresh_token', tokenObj.refresh_token);
     localStorage.setItem('menu', JSON.stringify(tokenObj.menu));
@@ -18,7 +18,7 @@ class LocalStorageService {
   getIsAuthorized() { return this.getAccessToken() && this.getRefreshToken() && this.getMenu() }
   getAllData() {
     if (this.getIsAuthorized()) {
-      const data: LocalStorage = { access_token: this.getAccessToken(), refresh_token: this.getRefreshToken(), menu: this.getMenu() }
+      const data: LocalStorageObj = { access_token: this.getAccessToken(), refresh_token: this.getRefreshToken(), menu: this.getMenu() }
   
       return data
     }

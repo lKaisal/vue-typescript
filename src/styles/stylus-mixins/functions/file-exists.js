@@ -4,7 +4,7 @@ module.exports = function() {
   return function(style) {
 
     /**
-     * Check if file exists in file system
+     * Check if file exists in file ui
      * @param  {string} relative file path
      * @return {boolean} is file exists (`true/false`)
      */

@@ -8,7 +8,8 @@
         transition(appear)
           LogOut(v-show="logOutIsShown && isAuthorized" @logOut="onLogOut" key="logout" class="app__log-out")
         transition(appear)
-          MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="!logOutIsShown || !isAuthorized" class="app__menu")
+          MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="!logOutIsShown || !isAuthorized" @logOut="onLogOut"
+            class="app__menu")
 
       //- content
       transition(mode="out-in")
@@ -27,15 +28,16 @@ import device from 'current-device'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
-import { CurrentDevice, LocalStorage } from '@/models'
+import { CurrentDevice } from '@/models'
 import Router from '@/services/router'
-import { systemMapper } from '@/modules/system/module/store'
+import { uiMapper } from '@/modules/ui/module/store'
 import { authMapper } from './modules/auth/module/store'
+
 const grid = require('@/styles/grid-config.json')
 
-const SystemMappers = Vue.extend({
+const UiMappers = Vue.extend({
   methods: {
-    ...systemMapper.mapMutations([ 'openMenu', 'closeMenu', 'setBreakpoint', 'setCurrentDevice' ]),
+    ...uiMapper.mapMutations([ 'openMenu', 'closeMenu', 'setBreakpoint', 'setCurrentDevice' ]),
   }
 })
 const AuthMappers = Vue.extend({
@@ -59,7 +61,7 @@ const AuthMappers = Vue.extend({
   }
 })
 
-export default class App extends Mixins(SystemMappers, AuthMappers) {
+export default class App extends Mixins(UiMappers, AuthMappers) {
   logOutIsShown: boolean = false
   menuIsShown: boolean = false
   initializeModules!: () => void
@@ -94,7 +96,6 @@ export default class App extends Mixins(SystemMappers, AuthMappers) {
     try {
       this.updateFromLocalStorage()
 
-      // if (!this.isAuthorized) this.goToPageAuth()
       if (this.isAuthorized) this.initializeModules()
   
       this.setCurrentDevice(device)
@@ -113,9 +114,6 @@ export default class App extends Mixins(SystemMappers, AuthMappers) {
     this.goToPageAuth()
     await this.$nextTick()
     LocalStorageService.clearToken()
-    // for (const mod of this.modules.slice(0)) {
-    //   this.removeModule(mod.name)
-    // }
   }
   updateFromLocalStorage() {
     const data = LocalStorageService.getAllData()

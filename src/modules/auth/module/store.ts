@@ -3,7 +3,7 @@ import { Form, AuthForm, FormField } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 import LocalStorageService from '@/services/LocalStorageService'
-import { LocalStorage, MenuItem } from '@/models'
+import { LocalStorageObj, LocalStorageRefreshObj, MenuItem } from '@/models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -56,12 +56,12 @@ class AuthMutations extends Mutations<AuthState> {
     this.state.form.isLoading = false
     this.state.form.error = null
   }
-  setFormLoadingFail(err) {
+  setFormLoadingFail(err: Form['error']) {
     this.state.form.isLoading = false
     this.state.form.error = err
   }
   setValidationIsShown(payload: boolean) { this.state.form.validationIsShown = payload }
-  updateField({name, value}: {name: keyof AuthForm, value: FormField["value"]}) {
+  updateField({name, value}: {name: keyof AuthForm, value: FormField['value']}) {
     const field = this.state.form.data.find(field => field.name === name)
     field.value = value
     field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
@@ -84,23 +84,13 @@ class AuthMutations extends Mutations<AuthState> {
 
     this.state.form.validationIsShown = false
   }
-  handleFormErrors(errors) {
-    const names = Object.keys(errors)
-    if (names && names.length) {
-      for (const name of names) {
-        const field = this.state.form.data.find(f => f.name === name)
-        field.errorMsg = errors[name]
-        field.isValid = false
-      }
-    }
-  }
-  setMenu(payload) { this.state.menu = payload }
-  setAccessToken(payload) { this.state.tokens.access = payload }
-  setRefreshToken(payload) { this.state.tokens.refresh = payload }
+  setMenu(payload: MenuItem[]) { this.state.menu = payload }
+  setAccessToken(payload: string) { this.state.tokens.access = payload }
+  setRefreshToken(payload: string) { this.state.tokens.refresh = payload }
 }
 
 class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthActions> {
-  updateLocalStorageData(payload: LocalStorage) {
+  updateLocalStorageData(payload: LocalStorageObj) {
     const { access_token, refresh_token, menu } = payload
     this.commit('setAccessToken', access_token)
     this.commit('setRefreshToken', refresh_token)
@@ -116,23 +106,25 @@ class AuthActions extends Actions<AuthState, AuthGetters, AuthMutations, AuthAct
         return
       }
 
-      this.commit('startFormLoading')
+      this.commit('startFormLoading', null)
       const data = this.getters.formData
 
       axios.post('/login', data)
-        .then((res: AxiosResponse<any>) => {
-          const data: LocalStorage = { access_token: res.data.token, refresh_token: res.data.refresh, menu: res.data.menu }
+        .then((res: AxiosResponse<LocalStorageRefreshObj>) => {
+          const { token, refresh, menu } = res.data
+          const data: LocalStorageObj = { access_token: token, refresh_token: refresh, menu: menu }
           LocalStorageService.setToken(data)
           this.dispatch('updateLocalStorageData', data)
-          this.commit('setFormLoadingSuccess')
+          this.commit('setFormLoadingSuccess', null)
           if (isDev) console.log('Success: formLogin sent')
           resolve()
         })
         .catch((error: AxiosError<any>) => {
-          if (isDev) console.log(error.response)
+          if (isDev && error && error.response) console.log(error.response)
           else console.log('error')
           this.commit('setValidationIsShown', true)
-          if (!!error.response && !!error.response.data && error.response.data.message) this.commit('setFormLoadingFail', error.response.data.message)
+          const errMsg = !!error && !!error.response && !!error.response.data && error.response.data.message || null
+          this.commit('setFormLoadingFail', errMsg)
           reject()
         })
     })

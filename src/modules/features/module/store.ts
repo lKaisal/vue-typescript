@@ -96,9 +96,10 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
           resolve()
         })
         .catch(error => {
-          const errMsg = error.response && error.response.data && error.response.data.message || null
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
           this.commit('setListLoadingFail', errMsg)
-          reject(error.response)
+          if (error && error.response) reject(error.response)
+          else reject()
         })
     })
   }
@@ -114,10 +115,10 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
           resolve()
         })
         .catch(error => {
-          if (isDev) console.log(error.response)
+          if (isDev && error && error.response) console.log(error.response)
           else console.log('error')
 
-          const errMsg = error.response && error.response.data && error.response.data.message || null
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
           this.commit('setEditFail', errMsg)
           reject()
         })

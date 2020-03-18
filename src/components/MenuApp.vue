@@ -15,7 +15,7 @@
                 +e.link-text(v-html="item.title")
                 +e.I.link-icon.el-icon-arrow-right
             +e.link-wrapper
-              LogOut(:isInMenu="true")
+              LogOut(:isInMenu="true" @logOut="onLogOut")
 </template>
 
 <script lang="ts">
@@ -26,15 +26,15 @@ import vClickOutside from 'v-click-outside'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import LocalStorageService from '../services/LocalStorageService'
 import { MenuItem } from '@/models'
-import { systemMapper } from '@/modules/system/module/store'
+import { uiMapper } from '@/modules/ui/module/store'
 import { authMapper } from '@/modules/auth/module/store'
 
-const SystemMappers = Vue.extend({
+const UiMappers = Vue.extend({
   computed: {
-    ...systemMapper.mapState(['menuIsOpen']),
+    ...uiMapper.mapState(['menuIsOpen']),
   },
   methods: {
-    ...systemMapper.mapMutations(['toggleMenu', 'openMenu', 'closeMenu'])
+    ...uiMapper.mapMutations(['toggleMenu', 'openMenu', 'closeMenu'])
   }
 })
 const AuthMappers = Vue.extend({
@@ -52,7 +52,7 @@ const AuthMappers = Vue.extend({
   },
 })
 
-export default class MenuApp extends Mixins(SystemMappers, AuthMappers) {
+export default class MenuApp extends Mixins(UiMappers, AuthMappers) {
   @Prop() closeIsDisabled: boolean
 
   get isDev() { return process && process.env && process.env.NODE_ENV === 'development' }
@@ -87,6 +87,9 @@ export default class MenuApp extends Mixins(SystemMappers, AuthMappers) {
   }
   keyDownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') this.onClickOutside()
+  }
+  onLogOut() {
+    this.$emit('logOut')
   }
 }
 </script>

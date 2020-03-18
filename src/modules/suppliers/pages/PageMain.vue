@@ -32,11 +32,11 @@ import ListSuppliers from '../components/ListSuppliers.vue'
 import PopupSupplier from '../components/PopupSupplier.vue'
 import { mapState } from 'vuex'
 import SearchApp from '@/components/SearchApp.vue'
-import { systemMapper } from '@/modules/system/module/store'
+import { uiMapper } from '@/modules/ui/module/store'
 
-const SystemMappers = Vue.extend({
+const UiMappers = Vue.extend({
   computed: {
-    ...systemMapper.mapState(['breakpoint'])
+    ...uiMapper.mapState(['breakpoint'])
   }
 })
 
@@ -65,7 +65,7 @@ const SuppliersMappers = Vue.extend({
   ],
 })
 
-export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, SystemMappers, SuppliersMappers) {
+export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMappers, SuppliersMappers) {
   newPhone: Supplier['phone'] = null // for repeated request
   pageSize: number = 10
   currentPage: number = 1

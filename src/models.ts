@@ -1,3 +1,5 @@
+import { Module } from 'vuex-smart-module'
+
 type MsgBoxContent = {
   title: string,
   msg: string,
@@ -27,9 +29,15 @@ type SearchField = {
   title: string
 }
 
-type LocalStorage = {
+type LocalStorageObj = {
   access_token: string,
   refresh_token: string,
+  menu: MenuItem[]
+}
+
+type LocalStorageRefreshObj = {
+  token: string,
+  refresh: string,
   menu: MenuItem[]
 }
 
@@ -40,4 +48,16 @@ type MenuItem = {
   title: string,
 }
 
-export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, LocalStorage, MenuItem }
+type InitedModule = {
+  module: DynamicModule,
+  path: string,
+  title: string
+}
+
+type DynamicModule = {
+  name: string,
+  store: Module<any, any, any, any>,
+  routes: any[]
+}
+
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, LocalStorageObj, LocalStorageRefreshObj, MenuItem, InitedModule, DynamicModule }

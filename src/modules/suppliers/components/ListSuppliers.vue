@@ -28,11 +28,11 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { mapState } from 'vuex'
-import { systemMapper } from '@/modules/system/module/store'
+import { uiMapper } from '@/modules/ui/module/store'
 
-const SystemMappers = Vue.extend({
+const UiMappers = Vue.extend({
   computed: {
-    ...systemMapper.mapState(['breakpoint'])
+    ...uiMapper.mapState(['breakpoint'])
   }
 })
 
@@ -53,7 +53,7 @@ const SuppliersMappers = Vue.extend({
   },
 })
 
-export default class ListSuppliers extends Mixins(SuppliersMappers, SystemMappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Supplier[]
   breakpoint!: string
 
