@@ -9,22 +9,22 @@
           +e.field._login(:class="{ 'is-invalid': isInvalid(formLogin), 'is-filled': login }")
             +e.label
               +e.LABEL(for="login") Логин
-            +e.EL-INPUT.input(:disabled="isLoading" placeholder="Логин" v-model="login")
+            +e.EL-INPUT.input._login(:disabled="isLoading" placeholder="Логин" v-model="login" @focus="btnIsFocused=false")
             +e.error(v-html="formLogin.errorMsg")
           +e.field._pswd(:class="{ 'is-invalid': isInvalid(formPswd), 'is-filled': pswd }")
             +e.label
               +e.LABEL(for="pswd") Пароль
-            +e.EL-INPUT.input(:disabled="isLoading" placeholder="Пароль" v-model="pswd" show-password)
+            +e.EL-INPUT.input._pswd(:disabled="isLoading" placeholder="Пароль" v-model="pswd" show-password @focus="btnIsFocused=false")
             +e.error(v-html="formPswd.errorMsg")
           ButtonApp(btnType="primary" :isDisabled="!login || !pswd || isLoading" :icon="isLoading ? 'el-icon-loading' : ''" @clicked="onSubmit"
-            text="Войти" class="page-main__btn")
+            text="Войти" ref="btnRef" :class="{ 'is-focused': btnIsFocused }" class="page-main__btn")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="closeMsgBox"
         class="list-features__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Watch, Ref } from 'vue-property-decorator'
 import { Button } from '@/models'
 import { FormField } from '../models'
 import { authMapper } from '../module/store'
@@ -57,6 +57,8 @@ const Mappers = Vue.extend({
 })
 
 export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
+  @Ref() readonly btnRef!: ButtonApp
+  btnIsFocused: boolean = false
   get isLoading() { return this.form.isLoading }
   get login() { return this.formLogin.value }
   set login(value) { this.updateField({name: 'login', value}) }
@@ -65,10 +67,15 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
 
   created() {
     this.clearForm()
+    document.addEventListener('keydown', this.keyDownHandler)
+  }
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.keyDownHandler)
   }
 
   isInvalid(field: FormField) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
   onSubmit() {
+    this.btnIsFocused = false
     this.sendForm()
       .then(() => this.$emit('loggedIn'))
       .catch(async () => {
@@ -79,6 +86,17 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
           this.closeMsgBox()
         }
       })
+  }
+  keyDownHandler(evt: KeyboardEvent) {
+    if (evt.key === 'Enter' && this.btnIsFocused && this.formIsValid) this.onSubmit()
+    else if (evt.key === 'Tab') {
+      const target = evt.target
+      // @ts-ignore
+      const targetParent = target.parentElement
+      const isPswdInput = targetParent.classList.contains('page-main__input_pswd')
+      const btnElt = this.btnRef.$el
+      this.btnIsFocused = isPswdInput
+    }
   }
 }
 </script>
