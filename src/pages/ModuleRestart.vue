@@ -41,8 +41,8 @@ export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
   secondBtn: Button = { type: 'success', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
 
-  @Watch('list', { deep: true })
-  async onListChange(val) {
+  @Watch('list', { deep: true, immediate: true })
+  async onListChange() {
     await this.$nextTick()
     animateIfVisible()
   }

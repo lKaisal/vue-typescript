@@ -108,7 +108,6 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
         .then(async (res) => {
           if (isDev) console.log('Success: edit list')
           while (res && !Array.isArray(res)) res = res.data
-          // await this.dispatch('getList', null)
           this.commit('setEditSuccess', res)
           resolve()
         })
