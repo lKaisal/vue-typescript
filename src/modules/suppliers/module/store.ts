@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Supplier, ListSort, EditPayload, Country, EditResponse } from '../models'
+import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
@@ -19,11 +19,57 @@ class SuppliersLoginState {
   list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listFiltered: Supplier[] = null
   listSort: ListSort = { by: 'createdAt', direction: 'desc' }
+  smsData: SmsFields = { lastSMS: '1111', visitDate: '03-03-2020 12:00', smsAttempts: 2, isActive: true }
 }
 
 class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
   get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading }
   get loadingError() { return this.state.list.error || this.state.edit.error }
+  get listSMSExtended() {
+    const list = [...this.state.list.data]
+
+    if (!list && !list.length) return
+
+    list.forEach(i => Object.assign(i, this.state.smsData))
+
+    return list
+  }
+  get listExtendedSorted() {
+    if (!this.state.list.data || !this.state.list.data.length) return
+
+    const list = this.state.listFiltered || [...this.getters.listSMSExtended]
+    const sortBy = this.state.listSort.by
+    const sortDirection = this.state.listSort.direction
+
+    const sorted = list.sort((a,b) => {
+      let sortA = a[sortBy]
+      let sortB = b[sortBy]
+
+      switch (sortBy) {
+        case 'createdAt':
+          sortA = dateParser(sortA)
+          sortB = dateParser(sortB)
+          break
+
+        case 'supplierId':
+        case 'userId':
+        case 'inn':
+          sortA = Number(sortA)
+          sortB = Number(sortB)
+          break
+
+        default:
+          sortA = sortA.toString().toLowerCase()
+          sortB = sortB.toString().toLowerCase()
+          break
+      }
+
+      if ((sortA > sortB && sortDirection === 'asc') || (sortA < sortB && sortDirection === 'desc')) return 1
+      else return -1
+    })
+
+    return sorted
+  }
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
@@ -127,15 +173,14 @@ class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginG
         })
     })
   }
-  async editPhone(payload: EditPayload) {
+  editPhone(payload: EditPayload) {
     return new Promise((resolve, reject) => {
       this.commit('startEdit')
 
       axios.post('/api/v1/phone', payload)
-        .then(async (res) => {
+        .then((res) => {
           const data = res.data as EditResponse
           if (isDev) console.log('Success: edit phone, userId: ' + data.userId)
-          // await this.dispatch('getList', null)
           this.commit('setEditSuccess')
           this.commit('updateSupplier', data)
           resolve()

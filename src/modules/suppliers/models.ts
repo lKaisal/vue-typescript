@@ -1,13 +1,24 @@
-type Supplier = {
-  createdAt: string,
-  email: string,
-  inn: string,
-  phone: string,
-  phoneAuthId: number,
-  supplierId: number,
-  supplierName: string,
-  userId: number,
-  userName: string,
+class SmsFields {
+  lastSMS: string
+  visitDate: string
+  smsAttempts: number
+  isActive: boolean
+}
+
+class Supplier extends SmsFields {
+  createdAt: string
+  email: string
+  inn: string
+  phone: string
+  phoneAuthId: number
+  supplierId: number
+  supplierName: string
+  userId: number
+  userName: string
+}
+
+namespace SupplierSMS {
+  export class Supplier {}
 }
 
 type ListSort = {
@@ -52,4 +63,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit'
 }
 
-export { Supplier, ListSort, TableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, SmsFields, ListSort, TableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }

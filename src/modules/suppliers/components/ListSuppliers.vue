@@ -65,6 +65,15 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
     { field: 'phone', title: 'Телефон', isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
     { field: null, title: '', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
+    /** FIELDS
+     *lastSMS: Добавить информацию о последнем отправленном SMS. 
+      visitDate: Дату , когда последний раз использовал приложение. 
+      attempts: Выводить число попыток , запроса SMS. 
+      status: Выводить статус пользователя на данный момент. Авторизован/не авторизован.
+
+      METHODS
+      smsAttemptsManage: Добавить возможность сбросить число попыток запроса SMS
+    */
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }

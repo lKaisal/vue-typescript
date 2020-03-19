@@ -1,13 +1,13 @@
 import ModuleSuppliers from '../../../pages/ModuleSuppliers.vue'
-import PageSuplliersLogin from '../pages/PageMain.vue'
+import PageSuppliers from '../pages/PageMain.vue'
 
 const children = [
-  { path: '/', component: PageSuplliersLogin, name: 'PageSuplliersLogin'},
-  { path: '*', redirect: { name: 'PageSuplliersLogin' } }
+  { path: '/', component: PageSuppliers, name: 'PageSuppliers'},
+  { path: '*', redirect: { name: 'PageSuppliers' } }
 ]
 export default [
   { 
-    path: '/suppliers-login', component: () => import(/* webpackChunkName: 'suppliers-login' */ '@/pages/ModuleSuppliers.vue'), name: 'ModuleSuppliers', redirect: { name: 'PageSuplliersLogin' },
+    path: '/suppliers-login', component: () => import(/* webpackChunkName: 'suppliers-login' */ '@/pages/ModuleSuppliers.vue'), name: 'ModuleSuppliers', redirect: { name: 'PageSuppliers' },
     children, 
     meta: { title: 'Визитки поставщиков', isDynamicModule: true }
   },

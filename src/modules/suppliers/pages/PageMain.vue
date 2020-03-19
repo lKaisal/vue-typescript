@@ -3,10 +3,15 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
+      //- SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
+      //- transition(mode="out-in")
+      //-   ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
+      //- PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
+      //-   class="page-main__pag")
+      SearchApp(:list="listExtendedSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
-      PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
+      PaginationApp(:total="listExtendedSorted && listExtendedSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
         class="page-main__pag")
     transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
@@ -43,7 +48,7 @@ const UiMappers = Vue.extend({
 const SuppliersMappers = Vue.extend({
   computed: {
     ...suppliersMapper.mapState(['list', 'listFiltered']),
-    ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
+    ...suppliersMapper.mapGetters(['isLoading', 'listSorted', 'listExtendedSorted'])
   },
   methods: {
     ...suppliersMapper.mapMutations(['setListFiltered']),
@@ -85,15 +90,29 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get editFailed() { return this.requestStatus === 'failEdit' }
   // list getters
-  get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
+  // get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
+  get pagesAmount() { return this.listExtendedSorted && this.listExtendedSorted.length / this.pageSize }
+  // get listByPages() {
+  //   if (!this.listSorted) return
+
+  //   const arr = []
+  //   for (let i = 0; i < this.pagesAmount; i ++) {
+  //     const start = i * this.pageSize
+  //     const end = start + this.pageSize
+  //     const part = this.listSorted.slice(start, end)
+  //     arr.push(part)
+  //   }
+
+  //   return arr
+  // }
   get listByPages() {
-    if (!this.listSorted) return
+    if (!this.listExtendedSorted) return
 
     const arr = []
     for (let i = 0; i < this.pagesAmount; i ++) {
       const start = i * this.pageSize
       const end = start + this.pageSize
-      const part = this.listSorted.slice(start, end)
+      const part = this.listExtendedSorted.slice(start, end)
       arr.push(part)
     }
 
@@ -102,7 +121,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get currentList() { return this.listByPages && this.listByPages[this.currentPage - 1] }
   // popup getters
   get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
-  get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
+  // get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
+  get popupSupplier() { return this.listExtendedSorted && this.listExtendedSorted.find(s => s.userId === this.popupId) }
   // PagApp getters
   get pagPagerCount() { return this.isXs ? 5 : 7 }
 

@@ -85,7 +85,7 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
       })
   }
   keyDownHandler(evt: KeyboardEvent) {
-    if (evt.key === 'Enter' && this.formIsValid) this.onSubmit()
+    if (evt.key === 'Enter') this.onSubmit()
   }
 }
 </script>
@@ -126,9 +126,10 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
   &__field
     position relative
     max-width 100%
-    width-between-property 'margin-bottom' 1001 20 1440 25 true false
-    width-between-property 'margin-bottom' 1441 25 1920 35 false true
+    width-between-property 'margin-bottom' 1441 30 1920 35 true true
     transition()
+    &:nth-last-child(2)
+      width-between-property 'margin-bottom' 1441 40 1920 45 true true
     &.is-disabled
       pointer-events none
       >>> input
@@ -142,14 +143,15 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
 
   &__error
     position absolute
-    top calc(100% + 7px)
     left 0
     fontLight()
     font-size 12px
     color $cDanger
     opacity 0
     transition()
-    +lg()
+    +xl()
+      top calc(100% + 7px)
+    +lt-xl()
       top calc(100% + 5px)
     .is-invalid &
       opacity 1
