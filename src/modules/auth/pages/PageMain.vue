@@ -65,6 +65,10 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
 
   created() {
     this.clearForm()
+    document.addEventListener('keydown', this.keyDownHandler)
+  }
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.keyDownHandler)
   }
 
   isInvalid(field: FormField) { return this.form.validationIsShown && field.validationRequired && !field.isValid }
@@ -79,6 +83,9 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
           this.closeMsgBox()
         }
       })
+  }
+  keyDownHandler(evt: KeyboardEvent) {
+    if (evt.key === 'Enter' && this.formIsValid) this.onSubmit()
   }
 }
 </script>
