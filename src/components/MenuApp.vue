@@ -68,7 +68,7 @@ export default class MenuApp extends Mixins(UiMappers, AuthMappers) {
     document.addEventListener('keydown', this.keyDownHandler)
   }
   beforeDestroy() {
-    document.removeEventListener('keydown', this.keyDownHandler)
+    document.addEventListener('keydown', this.keyDownHandler)
   }
 
   onToggleClick() {

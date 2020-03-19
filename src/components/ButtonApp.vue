@@ -51,7 +51,6 @@ export default class ButtonApp extends Vue {
 .button-app
 
   &__container
-    position relative
     display inline-flex
     justify-content center
     align-items center
@@ -79,7 +78,6 @@ export default class ButtonApp extends Vue {
         &:hover
           background-color white
           color $cBrand
-          border 1px solid $cBrand
       &.is-plain
         background-color white
         color $cBrand
@@ -87,7 +85,6 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cBrand
             color white
-            border 1px solid $cBrand
     &.danger
       background-color $cDanger
       border 1px solid $cDanger
@@ -96,7 +93,6 @@ export default class ButtonApp extends Vue {
         &:hover
           background-color white
           color $cDanger
-          border 1px solid $cDanger
       &.is-plain
         background-color white
         color $cDanger
@@ -104,7 +100,6 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cDanger
             color white
-            border 1px solid $cDanger
     &.warning
       background-color $cWarning
       border 1px solid $cWarning
@@ -113,7 +108,6 @@ export default class ButtonApp extends Vue {
         &:hover
           background-color white
           color $cWarning
-          border 1px solid $cWarning
       &.is-plain
         background-color white
         color $cWarning
@@ -121,7 +115,6 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cWarning
             color white
-            border 1px solid $cWarning
     &.success
       background-color $cSuccess
       border 1px solid $cSuccess
@@ -130,7 +123,6 @@ export default class ButtonApp extends Vue {
         &:hover
           background-color white
           color $cSuccess
-          border 1px solid $cSuccess
       &.is-plain
         background-color white
         color $cSuccess
@@ -138,7 +130,6 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cSuccess
             color white
-            border 1px solid $cSuccess
     &.primaryText
       background-color $cGreen
       border 1px solid $cGreen
@@ -147,7 +138,6 @@ export default class ButtonApp extends Vue {
         &:hover
           background-color white
           color $cGreen
-          border 1px solid $cGreen
       &.is-plain
         background-color white
         color $cGreen
@@ -155,10 +145,6 @@ export default class ButtonApp extends Vue {
           &:hover
             background-color $cGreen
             color white
-            border 1px solid $cGreen
-    .is-focused &
-      &:not(.is-disabled)
-        border 1px dashed $cWarning
 
   &__text
     // display inline-block
