@@ -6,7 +6,7 @@ import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-mo
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
-class SuppliersLoginState {
+class SuppliersState {
   countries: Country[] = [
     { name: 'Russia', code: 'RU', phoneCode: 7, mask: '999 999 99 99' },
     { name: 'Belarus', code: 'BY', phoneCode: 375, mask: '99 999 99 99' },
@@ -21,13 +21,13 @@ class SuppliersLoginState {
   listSort: ListSort = { by: 'createdAt', direction: 'desc' }
 }
 
-class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
+class SuppliersGetters extends Getters<SuppliersState> {
   get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading }
   get loadingError() { return this.state.list.error || this.state.edit.error }
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
-    const list = this.state.listFiltered || [...this.state.list.data]
+    const list = this.state.listFiltered && [...this.state.listFiltered] || [...this.state.list.data]
     const sortBy = this.state.listSort.by
     const sortDirection = this.state.listSort.direction
 
@@ -62,7 +62,7 @@ class SuppliersLoginGetters extends Getters<SuppliersLoginState> {
   }
 }
 
-class SuppliersLoginMutations extends Mutations<SuppliersLoginState> {
+class SuppliersMutations extends Mutations<SuppliersState> {
   updateListSort(payload: ListSort) {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
@@ -103,7 +103,7 @@ class SuppliersLoginMutations extends Mutations<SuppliersLoginState> {
   } 
 }
 
-class SuppliersLoginActions extends Actions<SuppliersLoginState, SuppliersLoginGetters, SuppliersLoginMutations, SuppliersLoginActions> {
+class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, SuppliersMutations, SuppliersActions> {
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
@@ -170,10 +170,10 @@ const dateParser = (date) => {
 
 export const SuppliersStore = new Module({
   namespaced,
-  state: SuppliersLoginState,
-  getters: SuppliersLoginGetters,
-  mutations: SuppliersLoginMutations,
-  actions: SuppliersLoginActions
+  state: SuppliersState,
+  getters: SuppliersGetters,
+  mutations: SuppliersMutations,
+  actions: SuppliersActions
 })
 
 export const suppliersMapper = createMapper(SuppliersStore)
