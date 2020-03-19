@@ -50,6 +50,9 @@ const AuthMappers = Vue.extend({
 })
 
 @Component({
+  metaInfo: {
+    title: 'WB Партнёры',
+  },
   components: {
     ButtonApp,
     IconSvg,

@@ -109,18 +109,25 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
     text-align center
 
   &__form
-    padding 40px
+    // padding 40px
+    width-between-property 'padding-top' 1001 20 1440 40 true true
+    width-between-property 'padding-right' 1001 20 1440 40 true true
+    width-between-property 'padding-bottom' 1001 20 1440 40 true true
+    width-between-property 'padding-left' 1001 20 1440 40 true true
     border 1px solid $cBaseBorder
     border-radius 5px
     +gt-sm()
       width 450px
+      min-width 350px
+      max-width 35vw
     +xs()
       width 100%
 
   &__field
     position relative
     max-width 100%
-    width-between-property 'margin-bottom' 1441 30 1920 35 true true
+    width-between-property 'margin-bottom' 1001 20 1440 25 true false
+    width-between-property 'margin-bottom' 1441 25 1920 35 false true
     transition()
     &.is-disabled
       pointer-events none
@@ -159,7 +166,7 @@ export default class PageMain extends Mixins(Mappers, MsgBoxTools) {
   &__input
     display block
     >>> input
-      width-between-property 'font-size' 1001 14 1440 18 true true
+      width-between-property 'font-size' 1001 14 1920 18 true true
     .is-filled &
       >>> input
         // font-weight 500

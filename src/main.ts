@@ -4,9 +4,10 @@ import Store from './services/store'
 import App from './App.vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import auth from './modules/auth/module'
+import VueMeta from 'vue-meta'
 
 Vue.use(ElementUI)
+Vue.use(VueMeta)
 
 /* Initialize Root Module */ // initialized by default 
 // Store.registerModule('ui', ui.store)
