@@ -3,7 +3,7 @@
 
   +b.module-features.page(v-loading.fullscreen.lock="isLoading")
     +e.container(v-if="list.data && list.data.length")
-      +e.title.H1.page-title.js-voa.js-voa-start Управление разделами приложения
+      +e.title.H1.page-title.js-voa.js-voa-start(v-html="activeSection && activeSection.title")
       router-view
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp" @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
@@ -19,14 +19,20 @@ import MsgBoxTools from '@/modules/features/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 import { Button } from '@/models'
 import animateIfVisible from '@/mixins/animateIfVisible'
+import { authMapper } from '@/modules/auth/module/store'
 
-const Mappers = Vue.extend({
+const FeaturesMappers = Vue.extend({
   computed: {
     ...featuresMapper.mapState(['list']),
     ...featuresMapper.mapGetters(['isLoading'])
   },
   methods: {
     ...featuresMapper.mapActions(['getList']),
+  }
+})
+const AuthMappers = Vue.extend({
+  computed: {
+    ...authMapper.mapGetters(['activeMenuSectionByLink'])
   }
 })
 
@@ -37,8 +43,10 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ModuleFeatures extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ModuleFeatures extends Mixins(FeaturesMappers, AuthMappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'success', isPlain: true }
+  get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
 
   @Watch('list', {deep: true})
   async onListChange(val) {

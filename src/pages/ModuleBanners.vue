@@ -17,7 +17,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '@/modules/banners/mixins/MsgBoxTools'
 import { Button } from '../models'
 
-const Mappers = Vue.extend({
+const BannersMappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list']),
     ...bannersMapper.mapGetters(['isLoading'])
@@ -34,7 +34,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ModuleBanners extends Mixins(Mappers, MsgBoxTools, MsgBoxToolsApp) {
+export default class ModuleBanners extends Mixins(BannersMappers, MsgBoxTools, MsgBoxToolsApp) {
   secondBtn: Button = { type: 'success', isPlain: true }
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
 

@@ -46,6 +46,9 @@ class AuthGetters extends Getters<AuthState> {
     return formData
   }
   get isAuthorized() { return this.state.menu && this.state.tokens.access && this.state.tokens.refresh }
+  get activeMenuSectionByLink() {
+    return (link: MenuItem['pertuttiLink']) => { return this.state.menu && this.state.menu.find(sect => sect.pertuttiLink === link) }
+  }
 }
 
 class AuthMutations extends Mutations<AuthState> {

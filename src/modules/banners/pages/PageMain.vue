@@ -3,7 +3,7 @@
 
   +b.page-main.page
     +e.container
-      +e.title.H1.page-title.js-voa.js-voa-start Список баннеров
+      +e.title.H1.page-title.js-voa.js-voa-start(v-html="activeSection && activeSection.title")
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn js-voa js-voa-start")
       ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount js-voa js-voa-start")
       ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @animateOneMore="animateOneMoreTime" @deleteItem="onDeleteClick" class="page-main__list js-voa js-voa-start")
@@ -26,14 +26,20 @@ import ListBanners from '../components/ListBanners.vue'
 import ToggleAmount from '../components/ToggleAmount.vue'
 import PopupAmount from '../components/PopupAmount.vue'
 import animateIfVisible from '@/mixins/animateIfVisible'
+import { authMapper } from '@/modules/auth/module/store'
 
-const Mappers = Vue.extend({
+const BannersMappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['list', 'activeAmount']),
     ...bannersMapper.mapGetters(['isLoading'])
   },
   methods: {
     ...bannersMapper.mapActions(['deleteBanner', 'updateActiveAmount'])
+  }
+})
+const AuthMappers = Vue.extend({
+  computed: {
+    ...authMapper.mapGetters(['activeMenuSectionByLink'])
   }
 })
 
@@ -50,7 +56,7 @@ const Mappers = Vue.extend({
   ]
 })
 
-export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
+export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMappers, BannersMappers) {
   deleteId: number = null
   secondBtn: Button = null
   popupAmountIsShown: boolean = false
@@ -58,6 +64,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get activeAmountValue() { return this.activeAmount.value }
+  get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
 
   @Watch('list', { immediate: true })
   async onListChange() {

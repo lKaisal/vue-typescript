@@ -3,7 +3,7 @@
 
   +b.module-restart.page(v-loading.fullscreen.lock="isLoading")
     +e.container
-      +e.title.H1.page-title Перезапуск сервисов
+      +e.title.H1.page-title(v-html="activeSection && activeSection.title")
       router-view(@updateList="updateList")
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
@@ -19,14 +19,20 @@ import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 import { Button } from '@/models'
 import animateIfVisible from '@/mixins/animateIfVisible'
+import { authMapper } from '@/modules/auth/module/store'
 
-const Mappers = Vue.extend({
+const RestartMappers = Vue.extend({
   computed: {
     ...restartMapper.mapState(['list']),
     ...restartMapper.mapGetters(['isLoading'])
   },
   methods: {
     ...restartMapper.mapActions(['getList']),
+  }
+})
+const AuthMappers = Vue.extend({
+  computed: {
+    ...authMapper.mapGetters(['activeMenuSectionByLink'])
   }
 })
 
@@ -37,9 +43,11 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ModuleRestart extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class ModuleRestart extends Mixins(RestartMappers, AuthMappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'success', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
+  get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
 
   @Watch('list', { deep: true, immediate: true })
   async onListChange() {
