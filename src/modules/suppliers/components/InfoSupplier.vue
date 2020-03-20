@@ -7,7 +7,7 @@
       +e.info
         +e.field._title
           +e.field-title(v-html="`${fields[0].title}:&nbsp;`")
-          +e.field-content(v-html="currentSupplier[fields[0].field]")
+          +e.field-content(v-html="supplier[fields[0].field]")
         +e.row
           +e.column(v-for="(col, colIndex) in 2")
             +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, colIndex * itemsPerCol + itemsPerCol)")
@@ -16,7 +16,7 @@
     +e.phone-block
       transition(mode="out-in")
         +e.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
-        PhoneManage(v-else :id="currentSupplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="info-supplier__phone-manage")
+        PhoneManage(v-else :id="supplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="info-supplier__phone-manage")
 </template>
 
 <script lang="ts">
@@ -29,14 +29,6 @@ import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 import PhoneManage from '../components/PhoneManage.vue'
 
-const SuppliersMappers = Vue.extend({
-  computed: {
-    ...suppliersMapper.mapGetters(['supplierByUserId'])
-  },
-  methods: {
-  }
-})
-
 @Component({
   directives: {
     clickOutside: vClickOutside.directive
@@ -47,8 +39,9 @@ const SuppliersMappers = Vue.extend({
   }
 })
 
-export default class InfoSupplier extends Mixins(SuppliersMappers, MsgBoxToolsApp, MsgBoxTools) {
-  // @Prop() phoneManageIsShown: boolean
+export default class InfoSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
+  @Prop() supplier: Supplier
+  @Prop() phoneManageIsShown: boolean
 
   phoneMangeIsShown: boolean = false
   fields: TableField[] = [
@@ -63,14 +56,12 @@ export default class InfoSupplier extends Mixins(SuppliersMappers, MsgBoxToolsAp
   ]
   itemsPerCol: number = 3
 
-  get currentUserId() { return this.$route.params.userId }
-  get currentSupplier() { return this.currentUserId && this.supplierByUserId(Number(this.currentUserId)) }
   get supplierName() { return this.fields[0] }
   get otherFields() { return this.fields.slice(1) }
 
   getFieldContent(field: TableField) {
     const isPhone = field.field === 'phone'
-    return isPhone ? `+${this.currentSupplier[field.field]}` : this.currentSupplier[field.field]
+    return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
   }
   onPhoneConfirm(phone) {
     this.$emit('editPhone', phone)
@@ -83,12 +74,12 @@ export default class InfoSupplier extends Mixins(SuppliersMappers, MsgBoxToolsAp
     if (targetIsModal) this.discard()
   }
   showPhoneManage() {
-    // this.$emit('showPhoneManage')
-    this.phoneMangeIsShown = true
+    this.$emit('showPhoneManage')
+    // this.phoneMangeIsShown = true
   }
   hidePhoneManage() {
-    // this.$emit('hidePhoneManage')
-    this.phoneMangeIsShown = false
+    this.$emit('hidePhoneManage')
+    // this.phoneMangeIsShown = false
   }
 }
 </script>

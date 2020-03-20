@@ -2,12 +2,12 @@
   include ../../../tools/bemto.pug
 
   +b.page-supplier.page
-    +e.container.js-voa.js-voa-start(v-click-outside="onClickOutside")
+    +e.container(v-if="currentSupplier && identity.data" v-click-outside="onClickOutside")
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
       //- +e.info-wrapper
-      InfoSupplier(class="page-suppliers__info-wrapper")
+      InfoSupplier(:supplier="currentSupplier" class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-supplier__msg-box modal modal-msg")
@@ -28,6 +28,16 @@ import InfoSupplier from '../components/InfoSupplier.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 
+const SuppliersMappers = Vue.extend({
+  computed: {
+    ...suppliersMapper.mapState(['identity']),
+    ...suppliersMapper.mapGetters(['supplierByUserId'])
+  },
+  methods: {
+    ...suppliersMapper.mapActions(['getIdentity'])
+  }
+})
+
 @Component({
   directives: {
     clickOutside: vClickOuside.directive
@@ -38,15 +48,18 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
   }
 })
 
-export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp) {
+export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, SuppliersMappers) {
   bannerId: number = null
   secondBtn: Button = null
   popupFormIsShown: boolean = false
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
+  get currentUserId() { return this.$route.params.userId }
+  get currentSupplier() { return this.currentUserId && this.supplierByUserId(Number(this.currentUserId)) }
 
   // HOOKS
-  created() {
+  async created() {
+    await this.getIdentity()
     document.addEventListener('keydown', this.keydownHandler)
   }
   async mounted() {

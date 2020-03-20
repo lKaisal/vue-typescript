@@ -43,8 +43,8 @@ const AuthMappers = Vue.extend({
 export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'success', isPlain: true }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
-  get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
-  get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
 
   @Watch('list', { immediate: true, deep: true })
   async onListChange(val) {
