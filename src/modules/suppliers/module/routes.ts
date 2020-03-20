@@ -1,8 +1,10 @@
 import ModuleSuppliers from '../../../pages/ModuleSuppliers.vue'
 import PageSuppliers from '../pages/PageMain.vue'
+import PageSupplier from '../pages/PageSupplier.vue'
 
 const children = [
   { path: '/', component: PageSuppliers, name: 'PageSuppliers'},
+  { path: '/:userId', component: PageSupplier, name: 'PageSupplier'},
   { path: '*', redirect: { name: 'PageSuppliers' } }
 ]
 export default [

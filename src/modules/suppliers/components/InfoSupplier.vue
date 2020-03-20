@@ -1,36 +1,41 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.popup-supplier
-    +e.container.modal-popup-container(v-click-outside="onClickOutside")
-      +e.btn-close(@click="discard")
-        +e.I.icon-close.el-icon-close.modal-icon-close.large
-      +e.H3.title Информация о пользователе
-      +e.info-block
-        +e.info
-          +e.field._title
-            +e.field-title(v-html="`${fields[0].title}:&nbsp;`")
-            +e.field-content(v-html="supplier[fields[0].field]")
-          +e.row
-            +e.column(v-for="(col, colIndex) in 2")
-              +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, colIndex * itemsPerCol + itemsPerCol)")
-                +e.field-title(v-html="`${field.title}:&nbsp;`")
-                +e.field-content(v-html="getFieldContent(field)")
-      +e.phone-block
-        transition(mode="out-in")
-          +e.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
-          PhoneManage(v-else :id="supplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="popup-supplier__phone-manage")
+  +b.info-supplier
+    +e.H1.title.page-title Информация о пользователе
+    +e.info-block
+      +e.info
+        +e.field._title
+          +e.field-title(v-html="`${fields[0].title}:&nbsp;`")
+          +e.field-content(v-html="currentSupplier[fields[0].field]")
+        +e.row
+          +e.column(v-for="(col, colIndex) in 2")
+            +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, colIndex * itemsPerCol + itemsPerCol)")
+              +e.field-title(v-html="`${field.title}:&nbsp;`")
+              +e.field-content(v-html="getFieldContent(field)")
+    +e.phone-block
+      transition(mode="out-in")
+        +e.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
+        PhoneManage(v-else :id="currentSupplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="info-supplier__phone-manage")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
-// import { suppliersMappers } from '../module/store'
+import { suppliersMapper } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 import { Supplier, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 import PhoneManage from '../components/PhoneManage.vue'
+
+const SuppliersMappers = Vue.extend({
+  computed: {
+    ...suppliersMapper.mapGetters(['supplierByUserId'])
+  },
+  methods: {
+  }
+})
 
 @Component({
   directives: {
@@ -42,9 +47,10 @@ import PhoneManage from '../components/PhoneManage.vue'
   }
 })
 
-export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
-  @Prop() supplier: Supplier
-  @Prop() phoneManageIsShown: boolean
+export default class InfoSupplier extends Mixins(SuppliersMappers, MsgBoxToolsApp, MsgBoxTools) {
+  // @Prop() phoneManageIsShown: boolean
+
+  phoneMangeIsShown: boolean = false
   fields: TableField[] = [
     { field: 'supplierName', title: 'Название поставщика' },
     { field: 'supplierId', title: 'SupplierID' },
@@ -56,12 +62,15 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     { field: 'email', title: 'E-mail' },
   ]
   itemsPerCol: number = 3
+
+  get currentUserId() { return this.$route.params.userId }
+  get currentSupplier() { return this.currentUserId && this.supplierByUserId(Number(this.currentUserId)) }
   get supplierName() { return this.fields[0] }
   get otherFields() { return this.fields.slice(1) }
 
   getFieldContent(field: TableField) {
     const isPhone = field.field === 'phone'
-    return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
+    return isPhone ? `+${this.currentSupplier[field.field]}` : this.currentSupplier[field.field]
   }
   onPhoneConfirm(phone) {
     this.$emit('editPhone', phone)
@@ -74,10 +83,12 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     if (targetIsModal) this.discard()
   }
   showPhoneManage() {
-    this.$emit('showPhoneManage')
+    // this.$emit('showPhoneManage')
+    this.phoneMangeIsShown = true
   }
   hidePhoneManage() {
-    this.$emit('hidePhoneManage')
+    // this.$emit('hidePhoneManage')
+    this.phoneMangeIsShown = false
   }
 }
 </script>
@@ -85,7 +96,7 @@ export default class PopupSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.popup-supplier
+.info-supplier
 
   &__container
     position relative

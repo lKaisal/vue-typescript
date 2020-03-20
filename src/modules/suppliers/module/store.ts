@@ -25,6 +25,9 @@ class SuppliersState {
 class SuppliersGetters extends Getters<SuppliersState> {
   get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading }
   get loadingError() { return this.state.list.error || this.state.edit.error }
+  get supplierByUserId() {
+    return (userId: Supplier['userId']) => this.getters.listSMSExtended.find(s => s.userId === userId)
+  }
   get listSMSExtended() {
     const list = [...this.state.list.data]
 

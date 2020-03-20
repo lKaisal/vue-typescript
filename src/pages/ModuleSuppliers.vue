@@ -2,9 +2,8 @@
   include ../tools/bemto.pug
 
   +b.module-suppliers.page(v-loading.fullscreen.lock="isLoading")
-    +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-      +e.title.H1.page-title.js-voa.js-voa-start(v-html="activeSection && activeSection.title")
-      router-view
+    //- +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
+    router-view
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-suppliers__msg-box modal modal-msg")

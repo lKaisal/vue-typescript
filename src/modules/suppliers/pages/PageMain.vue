@@ -3,6 +3,7 @@
 
   +b.page-main.page
     +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
+      +e.title.H1.page-title.js-voa.js-voa-start(v-html="activeSection && activeSection.title")
       //- SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       //- transition(mode="out-in")
       //-   ListSuppliers(:list="currentList" @itemClicked="onItemClick" class="page-main__list")
@@ -16,8 +17,8 @@
     transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
-    transition
-      PopupSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
+    //- transition
+      InfoSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
         @showPhoneManage="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false" class="page-main__popup modal modal-popup")
 </template>
 
@@ -34,7 +35,7 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
-import PopupSupplier from '../components/PopupSupplier.vue'
+import InfoSupplier from '../components/InfoSupplier.vue'
 import { mapState } from 'vuex'
 import SearchApp from '@/components/SearchApp.vue'
 import { uiMapper } from '@/modules/ui/module/store'
@@ -62,7 +63,7 @@ const SuppliersMappers = Vue.extend({
     ButtonApp,
     ListSuppliers,
     PaginationApp,
-    PopupSupplier,
+    InfoSupplier,
     SearchApp
   },
   mixins: [
@@ -128,10 +129,14 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
 
   @Watch('popupIsShown', { immediate: true })
   onPopupIsShownChange(val) {
-    if (val) document.body.classList.add('modal-open')
-    else document.body.classList.remove('modal-open')
+    // if (val) document.body.classList.add('modal-open')
+    // else document.body.classList.remove('modal-open')
+    if (val) this.goToPageSupplier()
   }
 
+  goToPageSupplier() {
+    this.$router.push({ path: `/${this.popupSupplier.userId}` })
+  }
   // SEARCH handlers
   handleSearchProgress(res) {
     this.setListFiltered(res)
