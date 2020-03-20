@@ -64,8 +64,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get activeAmountValue() { return this.activeAmount.value }
-  get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
-  get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
 
   @Watch('list', { immediate: true })
   async onListChange() {
@@ -90,7 +90,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
   }
 
   // CLICK HANDLERS
-  onCreateClick() { this.$router.push({ path: '/banners/create' }) }
+  onCreateClick() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
   onDeleteClick(id) {
     // store id here in case of repeated request
     if (id) this.deleteId = id
