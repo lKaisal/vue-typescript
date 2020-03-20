@@ -14,13 +14,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch, Ref } from 'vue-property-decorator'
+import { Vue, Component, Watch, Ref, Mixins } from 'vue-property-decorator'
 import { Banner } from '../models'
 import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 
-const Mappers = Vue.extend({
+const BannersMapper = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['activeAmount', 'hashes']),
     ...bannersMapper.mapGetters(['listActive', 'listInactive', 'listDelayed'])
@@ -37,7 +37,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class ListBanners extends Mappers {
+export default class ListBanners extends Mixins(BannersMapper) {
   observer = null
 
   get tabs() {
@@ -64,6 +64,7 @@ export default class ListBanners extends Mappers {
 
     return composed
   }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
   async mounted() {
     await this.$nextTick()
@@ -87,8 +88,8 @@ export default class ListBanners extends Mappers {
       this.goToPageCreate()
     }
   }
-  goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
-  goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/banners/edit/${id}` }).catch(err => {}) }
+  goToPageCreate() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
+  goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/${this.moduleLink}/edit/${id}` }).catch(err => {}) }
   animateOneMoreTime() {
     this.$emit('animateOneMore')
   }

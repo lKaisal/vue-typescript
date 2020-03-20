@@ -13,9 +13,8 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { suppliersMapper } from '@/modules/suppliers/module/store'
-import ListRestart from '@/modules/restart/components/ListRestart.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
-import MsgBoxTools from '@/modules/restart/mixins/MsgBoxTools'
+import MsgBoxTools from '@/modules/suppliers/mixins/MsgBoxTools'
 import MessageBox from '@/components/MessageBox.vue'
 import { Button } from '@/models'
 import animateIfVisible from '@/mixins/animateIfVisible'
@@ -38,7 +37,6 @@ const AuthMappers = Vue.extend({
 
 @Component({
   components: {
-    ListRestart,
     MessageBox
   }
 })

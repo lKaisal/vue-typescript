@@ -98,6 +98,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   }
   get isActiveBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'active' }
   get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
   @Watch('banner', {immediate: true})
   async onBannerChange(val) {
@@ -222,7 +223,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     if (this.formActiveFrom.value && !this.isActiveBanner) this.submitForm()
     else this.deactivateBannerConflict()
   }
-  goToPageMain() { this.$router.push({ path: '/banners/list', hash: `#${this.bannerCurrentStatus}` }).catch(err => {}) }
+  goToPageMain() { this.$router.push({ path: `/${this.moduleLink}/list`, hash: `#${this.bannerCurrentStatus}` }).catch(err => {}) }
   // STORE ACTIONS CALL
   updateBannerData() {
     const id = Number(this.$route.params.id)

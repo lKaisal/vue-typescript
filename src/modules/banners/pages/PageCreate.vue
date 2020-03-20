@@ -35,7 +35,7 @@ import PopupConflict from '../components/PopupConflict.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 
-const Mappers = Vue.extend({
+const BannersMappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'pageTypes']),
     ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom'])
@@ -45,7 +45,6 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapActions(['createBanner', 'deactivateBanner', 'updateFormByBannerData'])
   }
 })
-
 @Component({
   directives: {
     clickOutside: vClickOuside.directive
@@ -58,7 +57,7 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mappers) {
+export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, BannersMappers) {
   bannerId: number = null
   secondBtn: Button = null
   popupFormIsShown: boolean = false
@@ -66,7 +65,8 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get bannerConflict() { return this.listActive.find(b => b.position === this.formSort.value) }
   get bannerConflictId() { return this.bannerConflict && this.bannerConflict.id }
-  get isPageCreate() { return this.$route.path.includes('/banners/create') }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get isPageCreate() { return this.$route.path.includes(`/${this.moduleLink}/create`) }
   get isSmthToCommit() {
     try {
       // check if any field was changed
@@ -159,11 +159,11 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapp
     if (this.formActiveFrom.value) this.submitForm()
     else this.deactivateBannerConflict()
   }
-  goToPageMain() { this.$router.push({ path: '/banners/list' }).catch(err => {}) }
+  goToPageMain() { this.$router.push({ path: `/${this.moduleLink}/list` }).catch(err => {}) }
   goToPageEdit() {
     if (!this.bannerCurrent.data) return
 
-    this.$router.push({ path: `/banners/edit/${this.bannerCurrent.data.id}` }).catch(err => {})
+    this.$router.push({ path: `/${this.moduleLink}/edit/${this.bannerCurrent.data.id}` }).catch(err => {})
   }
   // OTHER HANDLERS
   keydownHandler(evt: KeyboardEvent) {

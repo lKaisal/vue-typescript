@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Mixins } from 'vue-property-decorator'
 import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
@@ -51,9 +51,10 @@ const UiMappers = Vue.extend({
 @Component({
 })
 
-export default class ItemBanners extends UiMappers {
+export default class ItemBanners extends Mixins(UiMappers) {
   @Prop() banner: Banner
   @Prop({ default: true }) editIconsShown: boolean
+
   imgIsLoading: boolean = false
   imgLoaded: boolean = false
   editHovered: boolean = false
@@ -71,12 +72,13 @@ export default class ItemBanners extends UiMappers {
       if (this.banner.activeFrom && this.banner.activeTo) return `Действует: <span class="item-banner__text">${this.banner.activeFrom}&nbsp;&ndash;&nbsp;${this.banner.activeTo}</span>`
     }
   }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
   mounted() {
     this.initObserver()
   }
 
-  goToPageCreate() { this.$router.push({ path: '/banners/create' }) }
+  goToPageCreate() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
   onEditClick() { this.$emit('editClicked') }
   onDeleteClick() { this.$emit('deleteClicked') }
   onCreateClick() { this.$emit('createClicked') }
@@ -85,7 +87,6 @@ export default class ItemBanners extends UiMappers {
 
     preloadImages(this.banner.bannerImageUrl)
       .then(async () => {
-        // await sleep(1000)
         this.imgLoaded = true
       })
       .catch(() => this.preloadImage())
