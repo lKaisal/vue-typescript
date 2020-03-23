@@ -10,8 +10,13 @@
         @showPhoneInput="phoneManageIsShown=true" @hidePhoneInput="phoneManageIsShown=false"
         class="page-supplier__info-wrapper")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
+      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
+        @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-supplier__msg-box modal modal-msg")
+      PhoneManage(v-show="phoneManageIsShown" key="phone" :inputIsShown="phoneManageIsShown" :prevNumber="currentSupplier.phone"
+          @showInput="phoneManageIsShown=true"
+          @confirm="onEditPhone" @discard="phoneManageIsShown=false"
+          class="page-supplier__phone-manage modal modal-phone")
 </template>
 
 <script lang="ts">
@@ -24,6 +29,7 @@ import sleep from '@/mixins/sleep'
 import { suppliersMapper } from '../module/store'
 import { Supplier, EditPayload } from '../models'
 import CardSupplier from '../components/CardSupplier.vue'
+import PhoneManage from '../components/PhoneManage.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 
@@ -44,6 +50,7 @@ const SuppliersMappers = Vue.extend({
   components: {
     CardSupplier,
     MessageBox,
+    PhoneManage,
   }
 })
 
@@ -70,6 +77,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
     document.removeEventListener('keydown', this.keydownHandler)
   }
 
+  goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
   onEditPhone(phone?: Supplier['phone']) {
     if (phone) this.newPhone = phone // stored here in case of repeated request
 
@@ -91,32 +99,23 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   // CLICK HANDLERS
   onFirstBtnClick() {
     this.closeMsgBox()
-    // switch (this.requestStatus) {
-    //   case 'successCreate':
-    //     this.goToPageEdit()
-    //     break
-    //   case 'failDeactivate':
-    //     this.deactivateBannerConflict()
-    //     break
-    //   default:
-    //     this.submitForm()
-    //     break
-    // }
+    switch (this.requestStatus) {
+      case 'failEdit':
+        this.onEditPhone()
+        break;
+    }
   }
   onSecondBtnClick() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
-      case ('successEdit'):
+      case 'successEdit':
         this.goToPageMain()
         break
     }
   }
-  goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
   // OTHER HANDLERS
   keydownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
-      // if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
-      // if (this.popupFormIsShown) this.closePopupConflict()
-      // else if (this.msgBoxIsShown) this.closeMsgBox()
       if (this.msgBoxIsShown) this.closeMsgBox()
     }
   }

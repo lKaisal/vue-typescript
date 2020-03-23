@@ -32,7 +32,8 @@ type TableField = {
   isSmall?: boolean,
   isMedium?: boolean,
   isXMedium?: boolean,
-  isCentered?: boolean
+  isCentered?: boolean,
+  isVariable?: boolean
 }
 
 type EditPayload = {

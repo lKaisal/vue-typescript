@@ -1,35 +1,23 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.phone-manage
-    //- +e.row
+  +b.sms-manage
+    +e.row
       +e.H5.title(@click="showInput" :class="{ 'is-disabled': inputIsShown }") Сменить номер телефона
-    //- transition(mode="out-in")
+    transition(mode="out-in")
       +e.row(v-show="inputIsShown")
-    +e.container.modal-popup-container(v-click-outside="onClickOutside")
-      +e.H3.title Изменить номер телефона
-      +e.btn-close
-        +e.I.icon-close.el-icon-close.modal-icon-close
-      +e.form
-        +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange" ref="selectRef")
-          +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
-            IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
-            +e.SPAN(v-html="`+${country.phoneCode}`")
-        +e.EL-INPUT.input(v-model="number" ref="numberRef" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }"
-          @focus="inputFocused=true" @blur="inputFocused=false")
-      +e.info(v-if="prevNumber")
-        +e.SPAN Текущий номер&nbsp;
-        +e.SPAN.phone(v-html="`+${prevNumber}`")
-      +e.btns
-        ButtonApp(btnType="primary" :isPlain="false" :isDisabled="!number || numberIsInvalid" :isFullWidth="true"
-          @clicked="confirm" text="Сохранить" class="phone-manage__btn")
-        //- ButtonApp(btnType="danger" :isPlain="true" :isLow="true"
-          @clicked="discard" text="Отмена" class="phone-manage__btn")
-      //- +e.btns
-      //-   +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
-      //-     +e.I.btn-icon._confirm.el-icon-check
-      //-   +e.btn._discard(@click="discard")
-      //-     +e.I.btn-icon._discard.el-icon-close
+        +e.form
+          +e.EL-SELECT.select.is-filled(v-model="activeIndex" size="mini" @change="onSelectChange" ref="selectRef")
+            +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
+              IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="sms-manage__img")
+              +e.SPAN(v-html="`+${country.phoneCode}`")
+          +e.EL-INPUT.input(v-model="number" ref="numberRef" size="mini" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }"
+            @focus="inputFocused=true" @blur="inputFocused=false")
+        +e.btns
+          +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
+            +e.I.btn-icon._confirm.el-icon-check
+          +e.btn._discard(@click="discard")
+            +e.I.btn-icon._discard.el-icon-close
 </template>
 
 <script lang="ts">
@@ -52,27 +40,21 @@ const Mappers = Vue.extend({
 })
 
 @Component({
-  directives: {
-    clickOutside: vClickOutside.directive
-  },
   components: {
     ButtonApp,
     IconSvg
   }
 })
 
-export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class SmsManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() inputIsShown: boolean
-  @Prop() prevNumber: string
   @Ref() selectRef!: ElSelect
   @Ref() numberRef!: ElInput
-
   im = null
   activeIndex: number = 0
   number: string = null
   numberIsComplete: boolean = false
   inputFocused: boolean = false
-
   get activeCountry() { return this.countries[this.activeIndex] }
   get countryCode() { return this.activeCountry.phoneCode }
   get activeFlag() { return `/static/images/${this.activeCountry.name.toLowerCase()}.svg` }
@@ -134,21 +116,13 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   discard() {
     this.$emit('discard')
   }
-  onClickOutside(evt) {
-    const targetIsModal = evt.srcElement.classList.contains('modal-phone')
-    if (targetIsModal) this.discard()
-  }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.phone-manage
-
-  &__container
-    position relative
-    padding 40px 48px 48px
+.sms-manage
 
   &__row
     display flex
@@ -162,20 +136,23 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
       flex-wrap wrap
 
   &__title
-    color $cPrimaryText
-    line-height 1
-    margin-bottom 27px
-
-  &__btn-close
-    position absolute
-    top 7px
-    right 7px
+    display inline
     padding 5px
     margin -5px
+    margin-bottom 0px
+    color $cBrand
+    border-bottom 1px dashed $cBrand
+    border-color $cBrand
+    fontReg()
     cursor pointer
-    transition(opacity)
+    transition(opacity\, border-color)
+    transition-delay $tFast
     &:hover
       opacity .75
+    &.is-disabled
+      border-color transparent
+      transition-delay 0s
+      pointer-events none
 
   &__select
     max-width 110px
@@ -183,7 +160,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 
   &__input
     width 130px
-    // margin-right 10px
+    margin-right 10px
 
   &__select
   &__input
@@ -210,26 +187,56 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     margin-right 5px
     transform translateY(4px)
 
-  // &__form
-  // &__btns
-  //   display flex
-  //   +xs()
-  //     margin-bottom 15px
-  //     flex-grow 1
-  //     justify-content center
+  &__form
+  &__btns
+    display flex
+    +xs()
+      margin-bottom 15px
+      flex-grow 1
+      justify-content center
 
   &__form
-    margin-bottom 12px
-
-  &__info
-    margin-bottom 27px
-    font-size 14px
-
-  &__phone
-    fontMedium()
+    +gt-sm()
+      margin-right 10px
 
   &__btn
-    width 100%
+    // width-between-property 'width' 320 30 600 30 true true
+    width 27px
+    // width-between-property 'height' 320 30 600 30 true true
+    height 27px
+    display flex
+    justify-content center
+    align-items center
+    // border-radius 5px
+    cursor pointer
+    transition(background-color\, opacity)
     &:not(:last-child)
-      margin-right 10px
+      // margin-right 10px
+    &.is-disabled
+      opacity .75
+      cursor not-allowed
+    >>> i
+      font-size 20px
+      transition(color)
+    &_confirm
+      border 1px solid $cBrand
+      border-radius 5px 0 0 5px
+      background-color white
+      >>> i
+        color $cBrand
+      &:not(.is-disabled)
+        &:hover
+          background-color $cBrand
+          >>> i
+            color white
+    &_discard
+      border 1px solid $cDanger
+      border-radius 0 5px 5px 0
+      background-color white
+      >>> i
+        color $cDanger
+      &:hover
+        background-color $cDanger
+        >>> i
+          color white
 </style>

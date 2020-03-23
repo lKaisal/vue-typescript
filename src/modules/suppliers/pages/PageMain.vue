@@ -9,12 +9,9 @@
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
         class="page-main__pag")
-    transition
+    //- transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
-    //- transition
-      CardSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
-        @showPhoneManage="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false" class="page-main__popup modal modal-popup")
 </template>
 
 <script lang="ts">
@@ -105,23 +102,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     return arr
   }
   get currentList() { return this.listByPages && this.listByPages[this.currentPage - 1] }
-  // popup getters
-  // get popupIsShown() { return typeof this.popupId === 'number' && this.popupSupplier }
-  // get popupSupplier() { return this.listSorted && this.listSorted.find(s => s.userId === this.popupId) }
-  // PagApp getters
   get pagPagerCount() { return this.isXs ? 5 : 7 }
 
-  // @Watch('popupIsShown', { immediate: true })
-  // onPopupIsShownChange(val) {
-  //   // if (val) document.body.classList.add('modal-open')
-  //   // else document.body.classList.remove('modal-open')
-  //   // if (val) this.goToPageSupplier()
-  // }
-
-  goToPageSupplier(userId) {
-    // console.log(`/${this.moduleLink}/${userId}`)
-    this.$router.push({ path: `/${this.moduleLink}/user/${userId}` }).catch(() => {})
-  }
   // SEARCH handlers
   handleSearchProgress(res) {
     this.setListFiltered(res)
@@ -137,33 +119,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     this.pageSize = n
   }
   // LIST click handlers
-  onItemClick(id) {
-    // this.popupId = id
-    // if (this.popupSupplier) this.goToPageSupplier()
-  }
-  // POPUP click handlers
-  onPopupDiscard() {
-    // this.popupId = null
-    // this.phoneManageIsShown = false
-  }
-  // MSGBOX click handler
-  onFirstBtnClick() {
-    this.closeMsgBox()
-
-    switch (this.requestStatus) {
-      case 'failEdit':
-        this.onEditPhone()
-        break
-    }
-  }
-  onSecondBtnClick() {
-    this.closeMsgBox()
-
-    switch (this.requestStatus) {
-      case 'successEdit':
-        this.onPopupDiscard()
-        break
-    }
+  goToPageSupplier(userId) {
+    this.$router.push({ path: `/${this.moduleLink}/user/${userId}` }).catch(() => {})
   }
 }
 </script>
