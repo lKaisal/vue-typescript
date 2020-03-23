@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins, Prop, Ref } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Prop, Ref, Watch } from 'vue-property-decorator'
 import { suppliersMapper } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
@@ -62,6 +62,16 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   get numberIsInvalid() { return this.number && !this.numberIsComplete }
   get fullNumber() { return this.countryCode.toString() + this.number.toString() }
 
+  @Watch('inputIsShown')
+  async onInputIsShownChange(val) {
+    if (val) {
+      this.activeIndex = 0
+      this.number = null
+      await this.$nextTick()
+      this.initInputmask()
+      this.setSelectFlag()
+    }
+  }
   async mounted() {
     await this.$nextTick()
     this.initInputmask()
@@ -116,7 +126,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 
   &__row
     display flex
-    align-items center
+    // align-items center
     // justify-content center
     transition(opacity)
     &.v-enter
@@ -129,7 +139,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     display inline
     padding 5px
     margin -5px
-    margin-bottom 5px
+    margin-bottom 0px
     color $cBrand
     border-bottom 1px dashed $cBrand
     border-color $cBrand
@@ -187,22 +197,21 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
 
   &__form
     +gt-sm()
-      margin-right 15px
-
+      margin-right 10px
 
   &__btn
     // width-between-property 'width' 320 30 600 30 true true
-    width 30px
+    width 27px
     // width-between-property 'height' 320 30 600 30 true true
-    height 30px
+    height 27px
     display flex
     justify-content center
     align-items center
-    border-radius 5px
+    // border-radius 5px
     cursor pointer
     transition(background-color\, opacity)
     &:not(:last-child)
-      margin-right 10px
+      // margin-right 10px
     &.is-disabled
       opacity .75
       cursor not-allowed
@@ -211,16 +220,18 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
       transition(color)
     &_confirm
       border 1px solid $cBrand
-      background-color $cBrand
+      border-radius 5px 0 0 5px
+      background-color white
       >>> i
-        color white
+        color $cBrand
       &:not(.is-disabled)
         &:hover
-          background-color white
+          background-color $cBrand
           >>> i
-            color $cBrand
+            color white
     &_discard
       border 1px solid $cDanger
+      border-radius 0 5px 5px 0
       background-color white
       >>> i
         color $cDanger

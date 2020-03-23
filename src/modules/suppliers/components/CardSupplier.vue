@@ -10,9 +10,11 @@
           +e.field-content(v-html="supplier[supplierName.field]")
         +e.row
           +e.column._general
-            +e.field(v-for="(field, index) in generalFields")
-              +e.field-title(v-html="`${field.title}`")
-              +e.field-content(v-html="getFieldContent(field)")
+            +e.H4.subtitle Учетные данные
+            +e.fields
+              +e.field(v-for="(field, index) in generalFields")
+                +e.field-title(v-html="`${field.title}`")
+                +e.field-content(v-html="getFieldContent(field)")
           +e.column._contact
             +e.H4.subtitle Контактная информация
             +e.fields
@@ -20,7 +22,7 @@
                 +e.field-title(v-html="`${field.title}`")
                 +e.field-content(v-html="getFieldContent(field)")
             PhoneManage(:inputIsShown="phoneInputIsShown" :id="supplier.id" @showInput="showPhoneInput"
-              @confirm="onPhoneConfirm" @discard="hidePhoneManage"
+              @confirm="onPhoneConfirm" @discard="hidePhoneInput"
               class="card-supplier__phone-manage")
 </template>
 
@@ -82,8 +84,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     this.$emit('showPhoneInput')
     // this.phoneMangeIsShown = true
   }
-  hidePhoneManage() {
-    this.$emit('hidePhoneManage')
+  hidePhoneInput() {
+    this.$emit('hidePhoneInput')
     // this.phoneMangeIsShown = false
   }
 }
@@ -158,7 +160,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     margin-bottom 25px
 
   &__fields
-    margin-bottom 25px
+    &:not(:last-child)
+      margin-bottom 25px
 
   &__field
     // display flex
@@ -178,7 +181,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
 
   &__phone-manage
     width 100%
-    min-height 60px
+    min-height 50px
     // display flex
     // align-items center
 </style>

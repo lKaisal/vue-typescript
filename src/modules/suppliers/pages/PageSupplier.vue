@@ -6,8 +6,8 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" :phoneInputIsShown="phoneManageIsShown"
-        @showPhoneInput="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false"
+      CardSupplier(:supplier="currentSupplier" :phoneInputIsShown="phoneManageIsShown" @editPhone="onEditPhone"
+        @showPhoneInput="phoneManageIsShown=true" @hidePhoneInput="phoneManageIsShown=false"
         class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
@@ -22,7 +22,7 @@ import { MsgBoxContent, Button } from '@/models'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import sleep from '@/mixins/sleep'
 import { suppliersMapper } from '../module/store'
-import { Supplier } from '../models'
+import { Supplier, EditPayload } from '../models'
 import CardSupplier from '../components/CardSupplier.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
@@ -33,7 +33,7 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['supplierByUserId'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getIdentity'])
+    ...suppliersMapper.mapActions(['getIdentity', 'editPhone'])
   }
 })
 
@@ -49,8 +49,9 @@ const SuppliersMappers = Vue.extend({
 
 export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, SuppliersMappers) {
   bannerId: number = null
-  secondBtn: Button = null
+  newPhone: Supplier['phone'] = null // for repeated request
   phoneManageIsShown: boolean = false
+  secondBtn: Button = null
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get currentUserId() { return this.$route.params.userId }
@@ -69,6 +70,24 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
     document.removeEventListener('keydown', this.keydownHandler)
   }
 
+  onEditPhone(phone?: Supplier['phone']) {
+    if (phone) this.newPhone = phone // stored here in case of repeated request
+
+    const editPayload: EditPayload = {phoneAuthId: this.currentSupplier.phoneAuthId, phone: this.newPhone}
+    this.editPhone(editPayload)
+      .then(() => {
+        this.newPhone = null
+        this.requestStatus = 'successEdit'
+        this.secondBtn = { type: 'success', isPlain: true }
+        this.phoneManageIsShown = false
+        this.openMsgBox()
+      })
+      .catch(() => {
+        this.requestStatus = 'failEdit'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+      })
+  }
   // CLICK HANDLERS
   onFirstBtnClick() {
     this.closeMsgBox()
@@ -85,18 +104,11 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
     // }
   }
   onSecondBtnClick() {
-    // switch (this.requestStatus) {
-    //   case ('successCreate'):
-    //     this.goToPageMain()
-    //     break
-    //   case 'failDeactivate':
-    //     this.closeMsgBox()
-    //     this.closePopupConflict()
-    //     break
-    //   default:
-    //     this.closeMsgBox()
-    //     break
-    // }
+    switch (this.requestStatus) {
+      case ('successEdit'):
+        this.goToPageMain()
+        break
+    }
   }
   goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
   // OTHER HANDLERS

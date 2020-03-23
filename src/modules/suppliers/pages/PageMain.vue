@@ -71,7 +71,6 @@ const AuthMappers = Vue.extend({
 })
 
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMappers, SuppliersMappers, AuthMappers) {
-  newPhone: Supplier['phone'] = null // for repeated request
   pageSize: number = 10
   currentPage: number = 1
   // popupId: number = null
@@ -143,24 +142,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     // if (this.popupSupplier) this.goToPageSupplier()
   }
   // POPUP click handlers
-  onEditPhone(phone?: Supplier['phone']) {
-    // if (phone) this.newPhone = phone // stored here in case of repeated request
-
-    // const editPayload: EditPayload = {phoneAuthId: this.popupSupplier.phoneAuthId, phone: this.newPhone}
-    // this.editPhone(editPayload)
-    //   .then(() => {
-    //     this.newPhone = null
-    //     this.requestStatus = 'successEdit'
-    //     this.secondBtn = { type: 'success', isPlain: true }
-    //     this.phoneManageIsShown = false
-    //     this.openMsgBox()
-    //   })
-    //   .catch(() => {
-    //     this.requestStatus = 'failEdit'
-    //     this.secondBtn = { type: 'danger', isPlain: true }
-    //     this.openMsgBox()
-    //   })
-  }
   onPopupDiscard() {
     // this.popupId = null
     // this.phoneManageIsShown = false
