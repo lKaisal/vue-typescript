@@ -13,7 +13,7 @@
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
     //- transition
-      InfoSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
+      CardSupplier(v-if="popupIsShown" :key="breakpoint" :supplier="popupSupplier" :phoneManageIsShown="phoneManageIsShown" key="popup" @editPhone="onEditPhone" @discard="onPopupDiscard"
         @showPhoneManage="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false" class="page-main__popup modal modal-popup")
 </template>
 
@@ -30,7 +30,7 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
-import InfoSupplier from '../components/InfoSupplier.vue'
+import CardSupplier from '../components/CardSupplier.vue'
 import SearchApp from '@/components/SearchApp.vue'
 import { uiMapper } from '@/modules/ui/module/store'
 import { authMapper } from '@/modules/auth/module/store'
@@ -62,7 +62,7 @@ const AuthMappers = Vue.extend({
     ButtonApp,
     ListSuppliers,
     PaginationApp,
-    InfoSupplier,
+    CardSupplier,
     SearchApp
   },
   mixins: [

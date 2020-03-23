@@ -1,22 +1,27 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.info-supplier
+  +b.card-supplier
     +e.H1.title.page-title Информация о пользователе
     +e.info-block
       +e.info
         +e.field._title
-          +e.field-title(v-html="`${fields[0].title}:&nbsp;`")
-          +e.field-content(v-html="supplier[fields[0].field]")
+          +e.field-title(v-html="`${supplierName.title}`")
+          +e.field-content(v-html="supplier[supplierName.field]")
         +e.row
-          +e.column(v-for="(col, colIndex) in 2")
-            +e.field(v-for="(field, index) in otherFields.slice(colIndex * itemsPerCol, colIndex * itemsPerCol + itemsPerCol)")
-              +e.field-title(v-html="`${field.title}:&nbsp;`")
+          +e.column._general
+            +e.field(v-for="(field, index) in generalFields")
+              +e.field-title(v-html="`${field.title}`")
               +e.field-content(v-html="getFieldContent(field)")
-    +e.phone-block
-      transition(mode="out-in")
-        +e.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
-        PhoneManage(v-else :id="supplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="info-supplier__phone-manage")
+          +e.column._contact
+            +e.H4.subtitle Контактная информация
+            +e.field(v-for="(field, index) in contactFields")
+              +e.field-title(v-html="`${field.title}`")
+              +e.field-content(v-html="getFieldContent(field)")
+            +e.phone-block
+              transition(mode="out-in")
+                +e.H5.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
+                PhoneManage(v-else :id="supplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="card-supplier__phone-manage")
 </template>
 
 <script lang="ts">
@@ -39,25 +44,25 @@ import PhoneManage from '../components/PhoneManage.vue'
   }
 })
 
-export default class InfoSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
+export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   @Prop() supplier: Supplier
   @Prop() phoneManageIsShown: boolean
 
   phoneMangeIsShown: boolean = false
-  fields: TableField[] = [
-    { field: 'supplierName', title: 'Название поставщика' },
+  generalFields: TableField[] = [
     { field: 'supplierId', title: 'SupplierID' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'userId', title: 'UserID' },
     // { field: 'createdAt', title: 'Дата создания' },
     { field: 'inn', title: 'ИНН' },
-    { field: 'phone', title: 'Телефон' },
+  ]
+  contactFields: TableField[] = [
     { field: 'email', title: 'E-mail' },
+    { field: 'phone', title: 'Телефон' },
   ]
   itemsPerCol: number = 3
 
-  get supplierName() { return this.fields[0] }
-  get otherFields() { return this.fields.slice(1) }
+  get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
 
   getFieldContent(field: TableField) {
     const isPhone = field.field === 'phone'
@@ -87,7 +92,7 @@ export default class InfoSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.info-supplier
+.card-supplier
 
   &__container
     position relative
@@ -131,8 +136,26 @@ export default class InfoSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
       display flex
 
   &__column
+    position relative
+    width 50%
+    // padding-top 10px
+    // padding-bottom 10px
     &:first-child
-      margin-right 25%
+      padding-right 25px
+    &:last-child
+      padding-left 25px
+      &:before
+        content ''
+        position absolute
+        top 0
+        bottom 0
+        left 0
+        width 1px
+        height 100%
+        background-color $cBaseBorder
+
+  &__subtitle
+    margin-bottom 25px
 
   &__field
     // display flex
@@ -145,8 +168,10 @@ export default class InfoSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
         margin-bottom 25px !important
 
   &__field-title
-    margin-bottom 7px
-    fontMedium()
+    margin-bottom 5px
+    // fontMedium()
+    color $cSecondaryText
+    font-size 12px
 
   &__phone-block
     width 100%
@@ -167,6 +192,7 @@ export default class InfoSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     margin -5px
     color $cBrand
     border-bottom 1px dashed $cBrand
+    fontReg()
     cursor pointer
     transition(opacity)
     &:hover

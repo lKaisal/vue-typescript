@@ -6,7 +6,7 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      InfoSupplier(:supplier="currentSupplier" class="page-supplier__info-wrapper")
+      CardSupplier(:supplier="currentSupplier" class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-supplier__msg-box modal modal-msg")
@@ -23,7 +23,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import sleep from '@/mixins/sleep'
 import { suppliersMapper } from '../module/store'
 import { Supplier } from '../models'
-import InfoSupplier from '../components/InfoSupplier.vue'
+import CardSupplier from '../components/CardSupplier.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
 
@@ -42,7 +42,7 @@ const SuppliersMappers = Vue.extend({
     clickOutside: vClickOuside.directive
   },
   components: {
-    InfoSupplier,
+    CardSupplier,
     MessageBox,
   }
 })
