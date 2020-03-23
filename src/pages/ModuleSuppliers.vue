@@ -2,8 +2,8 @@
   include ../tools/bemto.pug
 
   +b.module-suppliers.page(v-loading.fullscreen.lock="isLoading")
-    //- +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-    router-view
+    transition(mode="out-in")
+      router-view(class="module-suppliers__page page")
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-suppliers__msg-box modal modal-msg")
@@ -88,7 +88,9 @@ export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMapper
 
 .module-suppliers
 
-  &__list
-    grid-size(4, 4, 6, 8, 10)
-    margin 0 auto
+  &__page
+    &.page-supplier
+      width 100%
+      display flex
+      flex-grow 1
 </style>

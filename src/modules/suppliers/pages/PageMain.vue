@@ -2,8 +2,8 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container.js-voa.js-voa-start(v-if="list.data && list.data.length")
-      +e.title.H1.page-title.js-voa.js-voa-start(v-html="activeSection && activeSection.title")
+    +e.container(v-if="list.data && list.data.length")
+      +e.title.H1.page-title(v-html="activeSection && activeSection.title")
       SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
@@ -31,7 +31,6 @@ import animateIfVisible from '@/mixins/animateIfVisible'
 import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
 import InfoSupplier from '../components/InfoSupplier.vue'
-import { mapState } from 'vuex'
 import SearchApp from '@/components/SearchApp.vue'
 import { uiMapper } from '@/modules/ui/module/store'
 import { authMapper } from '@/modules/auth/module/store'
@@ -206,6 +205,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
       margin-bottom 30px
 
   &__list
+    // grid-size(4, 4, 6, 8, 10)
+    // margin 0 auto
     +lt-md()
       order 1
     transition(opacity)

@@ -6,7 +6,6 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      //- +e.info-wrapper
       InfoSupplier(:supplier="currentSupplier" class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
