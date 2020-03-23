@@ -15,13 +15,13 @@
               +e.field-content(v-html="getFieldContent(field)")
           +e.column._contact
             +e.H4.subtitle Контактная информация
-            +e.field(v-for="(field, index) in contactFields")
-              +e.field-title(v-html="`${field.title}`")
-              +e.field-content(v-html="getFieldContent(field)")
-            +e.phone-block
-              transition(mode="out-in")
-                +e.H5.phone-title(v-if="!phoneManageIsShown" @click="showPhoneManage") Сменить номер телефона
-                PhoneManage(v-else :id="supplier.id" @confirm="onPhoneConfirm" @discard="hidePhoneManage" class="card-supplier__phone-manage")
+            +e.fields
+              +e.field(v-for="(field, index) in contactFields")
+                +e.field-title(v-html="`${field.title}`")
+                +e.field-content(v-html="getFieldContent(field)")
+            PhoneManage(:inputIsShown="phoneInputIsShown" :id="supplier.id" @showInput="showPhoneInput"
+              @confirm="onPhoneConfirm" @discard="hidePhoneManage"
+              class="card-supplier__phone-manage")
 </template>
 
 <script lang="ts">
@@ -46,7 +46,7 @@ import PhoneManage from '../components/PhoneManage.vue'
 
 export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   @Prop() supplier: Supplier
-  @Prop() phoneManageIsShown: boolean
+  @Prop() phoneInputIsShown: boolean
 
   phoneMangeIsShown: boolean = false
   generalFields: TableField[] = [
@@ -78,8 +78,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     const targetIsModal = evt.srcElement.classList.contains('modal-popup')
     if (targetIsModal) this.discard()
   }
-  showPhoneManage() {
-    this.$emit('showPhoneManage')
+  showPhoneInput() {
+    this.$emit('showPhoneInput')
     // this.phoneMangeIsShown = true
   }
   hidePhoneManage() {
@@ -138,8 +138,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
   &__column
     position relative
     width 50%
-    // padding-top 10px
-    // padding-bottom 10px
+    padding-top 5px
+    // padding-bottom 5px
     &:first-child
       padding-right 25px
     &:last-child
@@ -155,6 +155,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
         background-color $cBaseBorder
 
   &__subtitle
+    margin-bottom 25px
+
+  &__fields
     margin-bottom 25px
 
   &__field
@@ -173,28 +176,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools) {
     color $cSecondaryText
     font-size 12px
 
-  &__phone-block
-    width 100%
-    min-height 40px
-    display flex
-    align-items center
-
-  &__phone-title
   &__phone-manage
-    transition(opacity)
-    &.v-enter
-    &.v-elave-to
-      opacity 0
-
-  &__phone-title
-    display inline
-    padding 5px
-    margin -5px
-    color $cBrand
-    border-bottom 1px dashed $cBrand
-    fontReg()
-    cursor pointer
-    transition(opacity)
-    &:hover
-      opacity .75
+    width 100%
+    min-height 60px
+    // display flex
+    // align-items center
 </style>

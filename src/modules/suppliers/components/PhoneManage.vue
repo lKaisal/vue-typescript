@@ -3,17 +3,21 @@
 
   +b.phone-manage
     +e.row
-      +e.form
-        +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange" ref="selectRef")
-          +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
-            IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
-            +e.SPAN(v-html="`+${country.phoneCode}`")
-        +e.EL-INPUT.input(v-model="number" ref="numberRef" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }" @focus="inputFocused=true" @blur="inputFocused=false")
-      +e.btns
-        +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
-          +e.I.btn-icon._confirm.el-icon-check
-        +e.btn._discard(@click="discard")
-          +e.I.btn-icon._discard.el-icon-close
+      +e.H5.title(@click="showInput" :class="{ 'is-disabled': inputIsShown }") Сменить номер телефона
+    transition(mode="out-in")
+      +e.row(v-show="inputIsShown")
+        +e.form
+          +e.EL-SELECT.select.is-filled(v-model="activeIndex" size="mini" @change="onSelectChange" ref="selectRef")
+            +e.EL-OPTION(v-for="(country, index) in countries" :key="country.code" :label="('+' + country.phoneCode).toString()" :value="index")
+              IMG(:src="`/static/images/${country.name.toLowerCase()}.svg`" class="phone-manage__img")
+              +e.SPAN(v-html="`+${country.phoneCode}`")
+          +e.EL-INPUT.input(v-model="number" ref="numberRef" size="mini" :class="{ 'is-filled': number, 'is-invalid': numberIsInvalid && !inputFocused }"
+            @focus="inputFocused=true" @blur="inputFocused=false")
+        +e.btns
+          +e.btn._confirm(:class="{ 'is-disabled': !number || numberIsInvalid }" @click="confirm")
+            +e.I.btn-icon._confirm.el-icon-check
+          +e.btn._discard(@click="discard")
+            +e.I.btn-icon._discard.el-icon-close
 </template>
 
 <script lang="ts">
@@ -43,7 +47,7 @@ const Mappers = Vue.extend({
 })
 
 export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
-  @Prop() userId: Supplier['userId']
+  @Prop() inputIsShown: boolean
   @Ref() selectRef!: ElSelect
   @Ref() numberRef!: ElInput
   im = null
@@ -91,6 +95,9 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     if (!container) return
     container.setAttribute('style', `background-image: url(${this.activeFlag})`)
   }
+  showInput() {
+    this.$emit('showInput')
+  }
   confirm() {
     if (!this.number || this.numberIsInvalid) return
 
@@ -111,8 +118,31 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
     display flex
     align-items center
     // justify-content center
+    transition(opacity)
+    &.v-enter
+    &.v-elave-to
+      opacity 0
     +xs()
       flex-wrap wrap
+
+  &__title
+    display inline
+    padding 5px
+    margin -5px
+    margin-bottom 5px
+    color $cBrand
+    border-bottom 1px dashed $cBrand
+    border-color $cBrand
+    fontReg()
+    cursor pointer
+    transition(opacity\, border-color)
+    transition-delay $tFast
+    &:hover
+      opacity .75
+    &.is-disabled
+      border-color transparent
+      transition-delay 0s
+      pointer-events none
 
   &__select
     max-width 110px
@@ -125,7 +155,7 @@ export default class PhoneManage extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxT
   &__select
   &__input
     >>> input
-      width-between-property 'font-size' 601 14 1000 16 true true
+      width-between-property 'font-size' 601 12 1000 14 true true
       transition(border-color)
     &.is-filled
       >>> input

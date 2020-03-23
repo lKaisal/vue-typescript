@@ -6,12 +6,12 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" class="page-supplier__info-wrapper")
+      CardSupplier(:supplier="currentSupplier" :phoneInputIsShown="phoneManageIsShown"
+        @showPhoneInput="phoneManageIsShown=true" @hidePhoneManage="phoneManageIsShown=false"
+        class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-supplier__msg-box modal modal-msg")
-      PopupConflict(v-if="popupFormIsShown && currentSupplier" key="popup" :banner="currentSupplier" :dateStart="formActiveFrom.value"
-        @confirm="onConflictConfirm" @discard="closePopupConflict" class="page-supplier__popup modal modal-conflict")
 </template>
 
 <script lang="ts">
@@ -50,7 +50,7 @@ const SuppliersMappers = Vue.extend({
 export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, SuppliersMappers) {
   bannerId: number = null
   secondBtn: Button = null
-  popupFormIsShown: boolean = false
+  phoneManageIsShown: boolean = false
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get currentUserId() { return this.$route.params.userId }
@@ -178,8 +178,4 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
       padding 25px
     &.v-enter
       jsVoaStart()
-
-  &__popup
-    +lt-lg()
-      display block
 </style>

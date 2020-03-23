@@ -120,7 +120,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   // }
 
   goToPageSupplier(userId) {
-    console.log(userId)
     // console.log(`/${this.moduleLink}/${userId}`)
     this.$router.push({ path: `/${this.moduleLink}/user/${userId}` }).catch(() => {})
   }
