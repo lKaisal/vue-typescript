@@ -8,7 +8,7 @@
       +e.row(v-show="inputIsShown")
     +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.H3.title Изменить номер телефона
-      +e.btn-close
+      +e.btn-close(@click="discard")
         +e.I.icon-close.el-icon-close.modal-icon-close
       +e.form
         +e.EL-SELECT.select.is-filled(v-model="activeIndex" @change="onSelectChange" ref="selectRef")
