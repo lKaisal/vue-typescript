@@ -34,7 +34,7 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['supplierByUserId'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getIdentity', 'editPhone'])
+    ...suppliersMapper.mapActions(['getIdentity'])
   }
 })
 
@@ -66,10 +66,10 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
   get identityFields(): TableField[] {
     return [
-      { field: 'lastSMS', title: 'Последний sms-код' },
-      { field: 'visitDate', title: 'Дата последнего визита' },
-      { field: 'smsAttempts', title: 'Кол-во попыток sms' },
       { field: 'isActive', title: 'Статус пользователя' },
+      { field: 'lastSMS', title: 'Последний sms-код' },
+      { field: 'smsAttempts', title: 'Кол-во попыток sms' },
+      { field: 'visitDate', title: 'Дата последнего визита' },
     ]
   }
   get columns() {

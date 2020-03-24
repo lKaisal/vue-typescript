@@ -6,16 +6,13 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" :phoneInputIsShown="phoneManageIsShown" @editPhone="onEditPhone"
-        @showPhoneInput="phoneManageIsShown=true" @hidePhoneInput="phoneManageIsShown=false"
-        class="page-supplier__info-wrapper")
+      CardSupplier(:supplier="currentSupplier" @showPhoneInput="showPhoneManage" class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-supplier__msg-box modal modal-msg")
       PhoneManage(v-show="phoneManageIsShown" key="phone" :inputIsShown="phoneManageIsShown" :prevNumber="currentSupplier.phone"
-          @showInput="phoneManageIsShown=true"
-          @confirm="onEditPhone" @discard="phoneManageIsShown=false"
+          @confirm="onEditPhone" @discard="hidePhoneManage"
           class="page-supplier__phone-manage modal modal-phone")
 </template>
 
@@ -78,6 +75,15 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   }
 
   goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
+  // PHONE MANAGES METHODS
+  showPhoneManage() {
+    document.body.classList.add('modal-open')
+    this.phoneManageIsShown = true
+  }
+  hidePhoneManage() {
+    document.body.classList.remove('modal-open')
+    this.phoneManageIsShown = false
+  }
   onEditPhone(phone?: Supplier['phone']) {
     if (phone) this.newPhone = phone // stored here in case of repeated request
 
