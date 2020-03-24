@@ -33,7 +33,9 @@ export default class ItemSuppliers extends Vue {
     this.$emit('clicked')
   }
   getFieldContent(field: TableField) {
-    return field.field === 'phone' ? `+${this.supplier[field.field]}` : this.supplier[field.field]
+    const value = this.supplier[field.field]
+
+    return field.field === 'phone' ? `+${value}` : value
   }
 }
 </script>

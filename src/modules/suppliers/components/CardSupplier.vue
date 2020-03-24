@@ -84,8 +84,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     const isIdentityField = colIndex === 1
 
     if (isIdentityField) {
-      const value = this.identity.data[field.field]
-      return field.field === 'isActive' ? (value ? 'Активен' : 'Неактивен') : value
+      return this.identity.data[field.field]
     } else {
       const isPhone = field.field === 'phone'
       return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]

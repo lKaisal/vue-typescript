@@ -37,6 +37,10 @@ class SuppliersGetters extends Getters<SuppliersState> {
     if (!this.state.list.data || !this.state.list.data.length) return
 
     const list = this.state.listFiltered && [...this.state.listFiltered] || [...this.state.list.data]
+
+    // TODO: убрать, когда появятся данные
+    list.forEach(f => f.isActive = Math.random() >= .5 ? 'Активен' : 'Неактивен')
+
     const sortBy = this.state.listSort.by
     const sortDirection = this.state.listSort.direction
 
@@ -162,7 +166,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
     return new Promise(async (resolve, reject) => {
       this.commit('startIdentityLoading')
       await sleep(1000)
-      const res = { lastSMS: '1111', visitDate: '03-03-2020 12:00', smsAttempts: 2, isActive: true }
+      const res = { lastSMS: '1111', visitDate: '03-03-2020 12:00', smsAttempts: 2, isActive: 'Активен' }
       this.commit('setIdentityLoadingSuccess', res)
       resolve()
 

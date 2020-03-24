@@ -8,9 +8,9 @@
         +e.row.table-row(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields"
             :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': !field.isSmall && !field.isMedium && !field.isXMedium, 'is-centered': field.isCentered }")
-            +e.title-wrapper(@click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
+            +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
-              +e.title-sort(v-if="index !== fields.length - 1")
+              +e.title-sort(v-if="field.isSortable")
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
@@ -58,22 +58,14 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   breakpoint!: string
 
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: 'supplierName', title: 'Название поставщика' },
-    { field: 'userId', title: 'UserID', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'userName', title: 'Имя пользователя', isCentered: !this.isLtMd },
-    { field: 'inn', title: 'ИНН', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'phone', title: 'Телефон', isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: null, title: '', isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
-    /** FIELDS
-     *lastSMS: Добавить информацию о последнем отправленном SMS. 
-      visitDate: Дату , когда последний раз использовал приложение. 
-      attempts: Выводить число попыток , запроса SMS. 
-      status: Выводить статус пользователя на данный момент. Авторизован/не авторизован.
-
-      METHODS
-      smsAttemptsManage: Добавить возможность сбросить число попыток запроса SMS
-    */
+    { field: 'supplierId', title: 'SupplierID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: 'supplierName', title: 'Название поставщика', isSortable: true },
+    { field: 'userId', title: 'UserID', isSortable: true,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'userName', title: 'Имя пользователя', isSortable: true,  isCentered: !this.isLtMd },
+    { field: 'inn', title: 'ИНН', isSortable: true,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'phone', title: 'Телефон', isSortable: true,  isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: 'isActive', title: 'Статус пользователя', isSortable: false,  isSmall: !this.isLtMd, isCentered: !this.isLtMd },
+    { field: null, title: '', isSortable: false,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -85,11 +77,6 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   get listSortDirection() { return this.listSort.direction }
   get isAscSorted() { return this.listSortDirection === 'asc' }
   get isDescSorted() { return this.listSortDirection === 'desc' }
-
-  @Watch('isActive', { immediate: true })
-  onIsActiveChange(val) {
-    this.resetSort()
-  }
 
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {

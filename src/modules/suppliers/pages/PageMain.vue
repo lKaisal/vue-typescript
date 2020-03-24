@@ -77,7 +77,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     { field: 'userId', title: 'UserId' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'inn', title: 'ИНН' },
-    { field: 'phone', title: 'Номер телефона' }
+    { field: 'phone', title: 'Номер телефона' },
   ]
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
