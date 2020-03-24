@@ -251,6 +251,11 @@ class BannersMutations extends Mutations<BannersState> {
       }
     }
   }
+  // FORM FIELDS MUTATIONS
+  setField(payload: {field: FormField, prop: keyof FormField, value: any}) {
+    // @ts-ignore
+    payload.field[payload.prop] = payload.value
+  }
   // PAGETYPES
   addPageType(payload: Banner['pageType']) {
     this.state.pageTypes.push(payload)
@@ -429,19 +434,24 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
     const newsId = this.state.form.data.find(f => f.name === 'newsId')
     const isFormEdit = this.state.form.type === 'edit'
 
-    field.value = value
-    field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
-    field.isValid = field.value && !!field.value.toString()
+    this.commit('setField', {field, prop: 'value', value})
+
+    const errorType = !field.value && field.validationRequired && 'empty' || 'default'
+    const isValid = field.value && !!field.value.toString()
+    this.commit('setField', {field, prop: 'errorType', value: errorType})
+    this.commit('setField', {field, prop: 'isValid', value: isValid})
 
     switch (name) {
       case 'activeFrom':
-        field.errorType = !!activeTo.value && 'emptyActiveFrom' || field.errorType
-        activeTo.validationRequired = !!value
+        const activeFromErrorType = !!activeTo.value && 'emptyActiveFrom' || field.errorType
+        this.commit('setField', {field, prop: 'errorType', value: activeFromErrorType})
+        // this.commit('setField', {field: activeTo, prop: 'validationRequired', value: !!value})
         break
 
       case 'activeTo':
-        field.errorType = !!activeFrom.value && 'emptyActiveTo' || field.errorType
-        activeFrom.validationRequired = !!value
+        const activeToErrorType = !!activeFrom.value && 'emptyActiveTo' || field.errorType
+        this.commit('setField', {field, prop: 'errorType', value: activeToErrorType})
+        // this.commit('setField', {field: activeFrom, prop: 'validationRequired', value: !!value})
         break
 
       case 'file':
@@ -452,13 +462,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         const type = value.type
         for (const ext of this.state.imgExtensions) {
           const extChecked = type.includes(ext)
-          field.isValid = extChecked
+          this.commit('setField', {field, prop: 'isValid', value: extChecked})
           if (extChecked) return
         }
 
         if (!field.isValid && value) {
-          field.value = null
-          field.errorType = 'imgExtension'
+          this.commit('setField', {field, prop: 'value', value: null})
+          this.commit('setField', {field, prop: 'errorType', value: 'imgExtension'})
         }
         break
 
@@ -474,32 +484,35 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         break
 
       case 'newsId':
-        if (!field.value) field.value = ''
-        field.isValid = !!Number(field.value)
-        if (value && value.toString() && !field.isValid) field.errorType = 'default'
+        if (!field.value) this.commit('setField', {field, prop: 'value', value: ''})
+        const newsIdIsValid = !!Number(field.value)
+        this.commit('setField', {field, prop: 'isValid', value: newsIdIsValid})
+        if (value && value.toString() && !field.isValid) this.commit('setField', {field, prop: 'errorType', value: 'default'})
         break
 
       case 'pageType':
         if (field.value === 'news') {
-          newsId.validationRequired = true
+          this.commit('setField', {field: newsId, prop: 'validationRequired', value: true})
           this.dispatch('updateField', ({name: 'newsId', value: newsId.value}))
-          appLink.validationRequired = false
+          this.commit('setField', {field: appLink, prop: 'validationRequired', value: false})
         }
         else {
-          appLink.validationRequired = true
+          this.commit('setField', {field: appLink, prop: 'validationRequired', value: true})
           this.dispatch('updateField', ({name: 'appLink', value: appLink.value}))
-          newsId.validationRequired = false
+          this.commit('setField', {field: newsId, prop: 'validationRequired', value: false})
         }
         break
 
       case 'sort':
         const currValue = Number(field.value)
         const activeAmount = Number(this.state.activeAmount.value)
-        field.value = Math.abs(currValue) > activeAmount && activeAmount ? activeAmount : Number(field.value) || activeAmount
+        const sortValue = Math.abs(currValue) > activeAmount && activeAmount ? activeAmount : Number(field.value) || activeAmount
+        this.commit('setField', {field, prop: 'value', value: sortValue})
         break
     }
 
-    field.errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
+    const errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
+    this.commit('setField', {field, prop: 'errorMsg', value: errorMsg})
   }
   /** Update form by existing banner data */
   updateFormByBannerData(data: Banner) {

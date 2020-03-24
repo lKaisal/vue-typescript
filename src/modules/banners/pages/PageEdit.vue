@@ -250,8 +250,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()
-        await sleep(3000)
-        this.closeMsgBox()
+        // await sleep(3000)
+        // this.closeMsgBox()
       })
       .catch(error => {
         if (this.formIsValid) {
