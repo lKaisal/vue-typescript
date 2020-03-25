@@ -83,17 +83,19 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   }
 
   getFieldContent(field: TableField, colIndex: number) {
-    const isIdentityField = colIndex === 1
-
-    if (isIdentityField) {
-      const value = this.identity.data[field.field]
-      const isStatus = field.field === 'status'
-      if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
-      else return value
-    } else {
-      const isPhone = field.field === 'phone'
-      return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
-    }
+    try {
+      const isIdentityField = colIndex === 1
+  
+      if (isIdentityField) {
+        const value = this.identity.data[field.field]
+        const isStatus = field.field === 'status'
+        if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
+        else return value
+      } else {
+        const isPhone = field.field === 'phone'
+        return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
+      }
+    } catch{}
   }
   showPhoneInput() {
     this.$emit('showPhoneInput')

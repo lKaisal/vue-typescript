@@ -2,7 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.page-supplier.page
-    +e.container(v-if="currentSupplier && identity.data" v-click-outside="onClickOutside")
+    +e.container(v-if="currentSupplier" v-click-outside="onClickOutside")
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
@@ -62,8 +62,8 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   get currentSupplier() { return this.currentUserId && this.supplierByUserId(Number(this.currentUserId)) }
 
   // HOOKS
-  async created() {
-    await this.getIdentity()
+  created() {
+    this.getIdentityData()
     document.addEventListener('keydown', this.keydownHandler)
   }
   async mounted() {
@@ -75,6 +75,15 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   }
 
   goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
+  getIdentityData() {
+    this.getIdentity(Number(this.currentUserId))
+      .catch(() => {
+        this.requestStatus = 'failFetchIdentity'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+        return
+      })
+  }
   // PHONE MANAGES METHODS
   showPhoneManage() {
     document.body.classList.add('modal-open')
@@ -109,6 +118,9 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
       case 'failEdit':
         this.onEditPhone()
         break;
+      case 'failFetchIdentity':
+        this.getIdentityData()
+        break
     }
   }
   onSecondBtnClick() {

@@ -60,8 +60,8 @@ type RequestStatus = RequestStatuses[RequestType]
 type RequestType = 'success' | 'fail'
 
 type RequestStatuses = {
-  success: 'successFetchList' | 'successEdit'
-  fail: 'failFetchList' | 'failEdit'
+  success: 'successFetchList' | 'successEdit' | 'successFetchIdentity'
+  fail: 'failFetchList' | 'failEdit' | 'failFetchIdentity'
 }
 
 export { Supplier, SmsFields, ListSort, TableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }

@@ -165,28 +165,25 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
   async getIdentity(userId: Supplier['userId']) {
     return new Promise(async (resolve, reject) => {
       this.commit('startIdentityLoading')
-      await sleep(1000)
-      const res: SmsFields = { lastSmsCode: '1111', lastVisit: '03-03-2020 12:00', smsSendCount: 2, smsTryCount: 2, status: true }
-      this.commit('setIdentityLoadingSuccess', res)
-      resolve()
 
-      // axios.get('/api/v1/suppliers-list')
-      //   .then((res: AxiosResponse<any>) => {
-      //     while (!Array.isArray(res)) res = res.data
+      axios.get(`/api/v1/sms-info/${userId}`)
+        .then((res: AxiosResponse<any>) => {
+          // while (!Array.isArray(res)) res = res.data
+          const data: SmsFields = res.data
 
-      //     this.commit('setIdentityLoadingSuccess', res)
-      //     if (isDev) console.log('Success: load list')
-      //     resolve()
-      //   })
-      //   .catch(error => {
-      //     if (isDev && error && error.response) console.log(error.response)
-      //     else console.log('error')
+          this.commit('setIdentityLoadingSuccess', data)
+          if (isDev) console.log('Success: load list')
+          resolve()
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
 
-      //     const errMsg = error && error.response && error.response.data && error.response.data.message || null
-      //     this.commit('setIdentityLoadingFail', errMsg)
-      //     if (error && error.response) reject(error.response)
-      //     else reject()
-      //   })
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setIdentityLoadingFail', errMsg)
+          if (error && error.response) reject(error.response)
+          else reject()
+        })
     })
   }
   editPhone(payload: EditPayload) {

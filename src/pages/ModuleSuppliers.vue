@@ -3,7 +3,7 @@
 
   +b.module-suppliers.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
-      router-view(class="module-suppliers__page page")
+      router-view(@loadList="updateList" class="module-suppliers__page page")
     transition
       MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-suppliers__msg-box modal modal-msg")
