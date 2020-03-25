@@ -5,7 +5,7 @@
     +e.container.modal-popup-container(v-click-outside="onClickOutside")
       +e.text(v-if="dateStart" v-html="`Выбранное поле сортировки занято другим баннером.<br>Если продолжить сохранение, этот баннер будет перезаписан <span>${dateStart}</span>.<br>Хотите продолжить?`")
       +e.text(v-else) Выбранное поле сортировки занято другим баннером.<br>Хотите заменить этот баннер?
-      ItemBanner(:banner="banner" :editIconsShown="false" class="popup-conflict__item")
+      ItemBanner(:banner="banner" :editIconsShown="false" :isSmallImg="true" class="popup-conflict__item")
       +e.btns
         ButtonApp(btnType="primary" @clicked="confirm" :text="confirmText" class="popup-conflict__btn")
         ButtonApp(btnType="danger" @clicked="discard" text="Отмена" class="popup-conflict__btn")
@@ -20,10 +20,12 @@ import ItemBanner from '../components/ItemBanner.vue'
 import { Banner } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
+import { uiMapper } from '@/modules/ui/module/store'
 
-const Mappers = Vue.extend({
-  methods: {
-  }
+const UiMappers = Vue.extend({
+  computed: {
+    ...uiMapper.mapState(['breakpoint'])
+  },
 })
 
 @Component({
@@ -36,9 +38,11 @@ const Mappers = Vue.extend({
   }
 })
 
-export default class PopupConflict extends Mixins(Mappers, MsgBoxToolsApp, MsgBoxTools) {
+export default class PopupConflict extends Mixins(UiMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() banner: Banner
   @Prop() dateStart: string
+  get isGtLg() { return this.breakpoint === 'lg' || this.breakpoint === 'xl' }
+  get isLg() { return this.breakpoint === 'lg' }
   get confirmText() { return this.dateStart ? 'Подтвердить' : 'Заменить' }
 
   confirm() {
@@ -61,8 +65,10 @@ export default class PopupConflict extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
 
   &__container
     margin 50px auto
-    +gt-lg()
-      max-width 40vw
+    +xl()
+      max-width 60vw
+    +lg()
+      max-width 60vw
     +md()
       max-width 60vw
     +sm()
@@ -74,7 +80,6 @@ export default class PopupConflict extends Mixins(Mappers, MsgBoxToolsApp, MsgBo
     >>> span
       fontMedium()
       white-space nowrap
-
 
   &__item
     margin-bottom 25px

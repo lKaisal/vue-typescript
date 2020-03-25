@@ -2,16 +2,17 @@
   include ../../../tools/bemto.pug
 
   +b.item-banner
-    +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false" :class="{ 'is-hovered': cardIsHovered && editIconsShown }")
+    +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false"
+      :class="{ 'is-hovered': cardIsHovered && editIconsShown }")
       transition
-        +e.icons(v-show="editIconsShown && cardIsHovered || isTouchDevice" :class="{ 'is-small': isTouchDevice }")
+        +e.icons(v-show="editIconsShown && (cardIsHovered || isTouchDevice)" :class="{ 'is-small': isTouchDevice }")
           +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
             i(class="el-icon-edit")
           +e.icon._delete(v-if="banner && (banner.isActive || banner.delayStart)" @click="onDeleteClick" @mouseenter="deleteHovered=true" @mouseleave="deleteHovered=false" :class="{ 'is-active': !editHovered }")
             i(class="el-icon-delete")
           +e.icon._add(v-if="!banner" @click="onCreateClick")
             i(class="el-icon-plus")
-      +e.img-wrapper
+      +e.img-wrapper(:class="{ 'is-small': isSmallImg }")
         transition(mode="in-out")
           IMG.item-banner__img(v-if="banner && imgLoaded" :src="banner.bannerImageUrl")
           +e.img.bg-empty(v-else :class="{ 'item-banner__img_loading': imgIsLoading }")
@@ -54,6 +55,7 @@ const UiMappers = Vue.extend({
 export default class ItemBanners extends Mixins(UiMappers) {
   @Prop() banner: Banner
   @Prop({ default: true }) editIconsShown: boolean
+  @Prop() isSmallImg: boolean
 
   imgIsLoading: boolean = false
   imgLoaded: boolean = false
@@ -70,6 +72,8 @@ export default class ItemBanners extends Mixins(UiMappers) {
       else return `Действует до:&nbsp;<span class="item-banner__text">${this.banner.activeTo}</span>`
     } else {
       if (this.banner.activeFrom && this.banner.activeTo) return `Действует: <span class="item-banner__text">${this.banner.activeFrom}&nbsp;&ndash;&nbsp;${this.banner.activeTo}</span>`
+      else if (!this.banner.activeFrom && this.banner.activeTo) return `Действует до:&nbsp;<span class="item-banner__text">${this.banner.activeTo}</span>`
+      else if (this.banner.activeFrom && !this.banner.activeTo) return `Действует c:&nbsp;<span class="item-banner__text">${this.banner.activeFrom}</span>`
     }
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
@@ -225,11 +229,20 @@ export default class ItemBanners extends Mixins(UiMappers) {
   &__img-wrapper
     position relative
     width 100%
+    margin-bottom 50px
     padding-top 59.7%
     overflow hidden
-    margin-bottom 50px
     align-self flex-start
     transition(transform)
+    +xs()
+      margin-bottom 30px
+    &.is-small
+      margin-bottom 30px
+      +gt-sm()
+        margin-right auto
+        margin-left auto
+        width 75%
+        padding-top calc(75% * .597)
 
   &__img
     position absolute
@@ -258,6 +271,8 @@ export default class ItemBanners extends Mixins(UiMappers) {
     width 100%
     line-height 1.25
     font-size 16px
+    +xs()
+      font-size 14px
 
   &__info-item
     margin 0 auto
