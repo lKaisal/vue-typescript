@@ -65,7 +65,7 @@ export default class MessageBox extends Vue{
     transition(transform)
     +gt-sm()
       max-width 40vw
-      min-width 420px
+      min-width 460px
     +xs()
       width 100%
       height 100%
