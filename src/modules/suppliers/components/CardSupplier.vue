@@ -5,7 +5,7 @@
     +e.H1.title.page-title Информация о пользователе
     +e.info-block
       +e.info
-        +e.field._title
+        //- +e.field._title
           +e.field-title(v-html="`${supplierName.title}`")
           +e.field-content(v-html="supplier[supplierName.field]")
         +e.row
@@ -24,7 +24,7 @@ import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 import { suppliersMapper } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
-import { Supplier, TableField } from '../models'
+import { Supplier, TableField, SmsFields } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 
@@ -50,8 +50,9 @@ const SuppliersMappers = Vue.extend({
 export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, SuppliersMappers) {
   @Prop() supplier: Supplier
 
-  subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией (SMS)']
+  subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией']
   generalFields: TableField[] = [
+    { field: 'supplierName', title: 'Название поставщика' },
     { field: 'supplierId', title: 'SupplierID' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'userId', title: 'UserID' },
@@ -63,13 +64,14 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   ]
   itemsPerCol: number = 3
 
-  get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
+  // get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
   get identityFields(): TableField[] {
     return [
-      { field: 'isActive', title: 'Статус пользователя' },
-      { field: 'lastSMS', title: 'Последний sms-код' },
-      { field: 'smsAttempts', title: 'Кол-во попыток sms' },
-      { field: 'visitDate', title: 'Дата последнего визита' },
+      { field: 'status', title: 'Статус пользователя' },
+      { field: 'lastSmsCode', title: 'Последний sms-код' },
+      { field: 'smsSendCount', title: 'Кол-во высланных sms за сутки' },
+      { field: 'smsTryCount', title: 'Кол-во попыток ввода sms' },
+      { field: 'lastVisit', title: 'Дата последнего визита' },
     ]
   }
   get columns() {
@@ -84,7 +86,10 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     const isIdentityField = colIndex === 1
 
     if (isIdentityField) {
-      return this.identity.data[field.field]
+      const value = this.identity.data[field.field]
+      const isStatus = field.field === 'status'
+      if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
+      else return value
     } else {
       const isPhone = field.field === 'phone'
       return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
@@ -146,6 +151,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
   &__column
     position relative
+    // border 1px solid red
     +gt-lg()
       width 33.3%
     +lt-lg()
@@ -153,43 +159,21 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     +xs()
       width 100%
     padding-top 5px
-    // padding-bottom 5px
-    &:first-child
+    +gt-md()
       padding-right 25px
-    +gt-lg()
-      &:nth-of-type(2)
-        padding-right 25px
-      &:nth-of-type(3)
-        padding-left 25px
-    +gt-sm()
-      &:nth-of-type(2)
-        padding-left 25px
-        // &:before
-        //   content ''
-        //   position absolute
-        //   top 0
-        //   bottom 0
-        //   left 0
-        //   width 1px
-        //   height 100%
-        //   background-color $cBaseBorder
+      padding-left 25px
     +md()
       &:nth-of-type(3)
         margin-top 25px
         padding-top 25px
     +sm()
+      &:first-child
+        padding-right 25px
+      &:nth-of-type(2)
+        padding-left 25px
       &:nth-of-type(3)
         margin-top 25px
         padding-top 25px
-        // &:before
-        //   content ''
-        //   position absolute
-        //   top 0
-        //   right 0
-        //   left 0
-        //   width 100%
-        //   height 1px
-        //   background-color $cBaseBorder
     +xs()
       &:not(:last-child)
         margin-bottom 50px
@@ -222,7 +206,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     align-items center
 
   &__field-content-inner
-    margin-right 15px
+    // margin-right 15px
 
   &__field-manage
     display inline

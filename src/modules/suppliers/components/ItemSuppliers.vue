@@ -35,7 +35,8 @@ export default class ItemSuppliers extends Vue {
   getFieldContent(field: TableField) {
     const value = this.supplier[field.field]
 
-    return field.field === 'phone' ? `+${value}` : value
+    if (field.field === 'confirmed') return value ? 'Подтвержден' : 'Не подтвержден'
+    else return field.field === 'phone' ? `+${value}` : value
   }
 }
 </script>

@@ -64,7 +64,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'userName', title: 'Имя пользователя', isSortable: true,  isCentered: !this.isLtMd },
     { field: 'inn', title: 'ИНН', isSortable: true,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
     { field: 'phone', title: 'Телефон', isSortable: true,  isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: 'isActive', title: 'Статус пользователя', isSortable: false,  isSmall: !this.isLtMd, isCentered: !this.isLtMd },
+    { field: 'confirmed', title: 'Статус пользователя', isSortable: false,  isSmall: !this.isLtMd, isCentered: !this.isLtMd },
     { field: null, title: '', isSortable: false,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }

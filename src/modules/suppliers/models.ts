@@ -1,14 +1,16 @@
 class SmsFields {
-  lastSMS: string
-  visitDate: string
-  smsAttempts: number
-  isActive: 'Активен' | 'Неактивен'
+  lastSmsCode: string
+  lastVisit: string
+  smsSendCount: number
+  smsTryCount: number
+  status: boolean
 }
 
 class Supplier extends SmsFields {
+  confirmed: boolean
   createdAt: string
   email: string
-  isActive: 'Активен' | 'Неактивен'
+  status: boolean
   inn: string
   phone: string
   phoneAuthId: number
@@ -16,10 +18,6 @@ class Supplier extends SmsFields {
   supplierName: string
   userId: number
   userName: string
-}
-
-namespace SupplierSMS {
-  export class Supplier {}
 }
 
 type ListSort = {
