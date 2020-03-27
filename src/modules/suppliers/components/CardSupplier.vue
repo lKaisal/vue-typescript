@@ -133,18 +133,15 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   // click methods
   onFieldManageClick(field: TableField | SmsTableField) {
     if (field.field === 'phone') this.showPhoneManage()
-    else if (field.fields.includes('smsTryCount')) this.emitResetSmsTryCount()
-    else if (field.fields.includes('smsSendCount')) this.emitResetSmsSendCount()
+    else if (field.fields.includes('smsTryCount')) this.emitResetSmsCount('smsTryCount')
+    else if (field.fields.includes('smsSendCount')) this.emitResetSmsCount('smsSendCount')
   }
   // emit methods
   showPhoneManage() {
     this.$emit('showPhoneManage')
   }
-  emitResetSmsTryCount() {
-    this.$emit('resetSmsTryCount')
-  }
-  emitResetSmsSendCount() {
-    this.$emit('resetSmsSendCount')
+  emitResetSmsCount(field: keyof SmsFields) {
+    this.$emit('resetSmsCount', field)
   }
   emitUpdateIdentity() {
     this.$emit('updateIdentity')

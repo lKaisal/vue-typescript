@@ -6,8 +6,8 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" :timer="timerValue" @showPhoneManage="showPhoneManage" @resetSmsTryCount="initSmsTryCountReset"
-        @resetSmsSendCount="initSmsTryCountReset" @updateIdentity="getIdentityData" @deleteIdentity="deleteIdentity"
+      CardSupplier(:supplier="currentSupplier" :timer="timerValue" @showPhoneManage="showPhoneManage" @resetSmsCount="initSmsCountReset"
+        @updateIdentity="getIdentityData" @deleteIdentity="deleteIdentity"
         class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
@@ -26,7 +26,7 @@ import { MsgBoxContent, Button } from '@/models'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import sleep from '@/mixins/sleep'
 import { suppliersMapper } from '../module/store'
-import { Supplier, EditPayload } from '../models'
+import { Supplier, EditPayload, SmsFields } from '../models'
 import CardSupplier from '../components/CardSupplier.vue'
 import PhoneManage from '../components/PhoneManage.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
@@ -34,11 +34,11 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const SuppliersMappers = Vue.extend({
   computed: {
-    ...suppliersMapper.mapState(['identity']),
+    ...suppliersMapper.mapState(['identity', 'smsReset']),
     ...suppliersMapper.mapGetters(['supplierByUserId'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getIdentity', 'editPhone', 'resetSmsTryCount'])
+    ...suppliersMapper.mapActions(['getIdentity', 'editPhone', 'resetSmsCount'])
   }
 })
 
@@ -141,17 +141,22 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   destroyIdentityTimer() {
     this.identityTimerRunning = false
   }
-  initSmsTryCountReset() {
+  initSmsCountReset(field: keyof SmsFields) {
     this.destroyIdentityTimer()
-    this.resetSmsTryCount(Number(this.currentUserId))
-      .then(() => {
+    this.resetSmsCount({userId: Number(this.currentUserId), field})
+      .then(async () => {
         this.initIdentityTimer()
-        this.requestStatus = 'successResetSmsTryCount'
+        // @ts-ignore
+        this.requestStatus = 'successReset' + field.charAt(0).toUpperCase() + field.slice(1)
         this.secondBtn = null
         this.openMsgBox()
+        await sleep(3000)
+        this.closeMsgBox()
+        return
       })
       .catch(() => {
-        this.requestStatus = 'failResetSmsTryCount'
+        // @ts-ignore
+        this.requestStatus = 'failReset' + field.charAt(0).toUpperCase() + field.slice(1)
         this.secondBtn = { type: 'danger', isPlain: true }
         this.openMsgBox()
         return
@@ -171,12 +176,14 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
 
     const editPayload: EditPayload = {phoneAuthId: this.currentSupplier.phoneAuthId, phone: this.newPhone}
     this.editPhone(editPayload)
-      .then(() => {
+      .then(async () => {
         this.newPhone = null
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.phoneManageIsShown = false
         this.openMsgBox()
+        await sleep(3000)
+        this.closeMsgBox()
       })
       .catch(() => {
         this.requestStatus = 'failEdit'
@@ -195,7 +202,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         this.getIdentityData()
         break
       case 'failResetSmsTryCount':
-        this.initSmsTryCountReset()
+        this.initSmsCountReset(this.smsReset.field)
         break
     }
   }

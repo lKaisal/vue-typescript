@@ -25,7 +25,7 @@ class SuppliersState {
     error: null,
     isLoading: false
   }
-  smsReset: { error: string, isLoading: boolean } = { error: null, isLoading: false }
+  smsReset: { error: string, isLoading: boolean, field: keyof SmsFields } = { error: null, isLoading: false, field: null }
   phoneAuthDelete: { error: string, isLoading: boolean } = { error: null, isLoading: false }
 }
 
@@ -130,7 +130,8 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.identity.data = null
   }
   // Mutations SmsTryCount reset
-  startSmsReset() {
+  startSmsReset(payload: keyof SmsFields) {
+    this.state.smsReset.field = payload
     this.state.smsReset.isLoading = true
     this.state.smsReset.error = null
   }
@@ -162,7 +163,8 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     supplier.phoneAuthId = payload.phoneAuthId
   }
   updateIdentity(payload: SmsFields) {
-    this.state.identity.data = payload
+    const keys = Object.keys(payload)
+    keys.forEach(key => this.state.identity.data[key] = payload[key])
   }
 }
 
@@ -214,17 +216,23 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
         })
     })
   }
-  async resetSmsTryCount(userId: Supplier['userId']) {
+  async resetSmsCount(payload: {userId: Supplier['userId'], field: keyof SmsFields}) {
+    let api = null
+    if (payload.field === 'smsSendCount') api = `/api/v1/sms-list/${payload.userId}`
+    else if (payload.field === 'smsTryCount') api = `/api/v1/sms-attempts/${payload.userId}`
+    else return
+
     return new Promise(async (resolve, reject) => {
       this.commit('startSmsReset')
 
-      axios.get(`/api/v1/sms-info/${userId}`)
+      axios.delete(api)
         .then((res: AxiosResponse<any>) => {
           const data: SmsFields = res.data
+          console.log(data)
 
           this.commit('updateIdentity', data)
           this.commit('setSmsResetSuccess')
-          if (isDev) console.log('Success: smsTryCount reset')
+          if (isDev) console.log('Success: ' + payload.field + ' reset')
           resolve()
         })
         .catch(error => {
