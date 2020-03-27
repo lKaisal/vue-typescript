@@ -6,8 +6,8 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" @showPhoneManage="showPhoneManage" @resetSmsTryCount="initSmsTryCountReset"
-        @resetSmsSendCount="initSmsTryCountReset" @updateIdentity="getIdentityData"
+      CardSupplier(:supplier="currentSupplier" :timer="timerValue" @showPhoneManage="showPhoneManage" @resetSmsTryCount="initSmsTryCountReset"
+        @resetSmsSendCount="initSmsTryCountReset" @updateIdentity="getIdentityData" @deleteIdentity="deleteIdentity"
         class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
@@ -58,6 +58,8 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   newPhone: Supplier['phone'] = null // for repeated request
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
+  timerValue: number = 0
+  identityTimerRunning: boolean = false
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get currentUserId() { return this.$route.params.userId }
@@ -74,12 +76,19 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   }
   beforeDestroy() {
     document.removeEventListener('keydown', this.keydownHandler)
+    this.destroyIdentityTimer()
   }
 
   goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
   // IDENTITY METHODS
   getIdentityData() {
+    this.destroyIdentityTimer()
     this.getIdentity(Number(this.currentUserId))
+      .then(() => {
+        // this.timerValue = this.identity.data.lastCodeExpired
+        this.timerValue = 871
+        this.initIdentityTimer()
+      })
       .catch(() => {
         this.requestStatus = 'failFetchIdentity'
         this.secondBtn = { type: 'danger', isPlain: true }
@@ -87,9 +96,56 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         return
       })
   }
+  deleteIdentity() {
+    this.destroyIdentityTimer()
+    this.getIdentity(Number(this.currentUserId))
+      .then(() => {
+        // this.timerValue = this.identity.data.lastCodeExpired
+        // this.timerValue = 871
+        // this.initIdentityTimer()
+        this.goToPageMain()
+      })
+      // .catch(() => {
+      //   this.requestStatus = 'failFetchIdentity'
+      //   this.secondBtn = { type: 'danger', isPlain: true }
+      //   this.openMsgBox()
+      //   return
+      // })
+  }
+  initIdentityTimer() {
+    this.identityTimerRunning = true
+    let startTime = (new Date()).getTime()
+    const timerValue = () => {
+      if (!this.identityTimerRunning) return
+
+      if (this.timerValue === 0) {
+        this.destroyIdentityTimer()
+        return
+      }
+
+      const currentTime = (new Date()).getTime()
+      const timePassed = currentTime - startTime
+      if (timePassed >= 1000) {
+        startTime = (new Date()).getTime()
+        this.timerValue -= 1
+        requestAnimationFrame(timerValue)
+        return
+      } else {
+        requestAnimationFrame(timerValue)
+        return
+      }
+    }
+
+    requestAnimationFrame(timerValue)
+  }
+  destroyIdentityTimer() {
+    this.identityTimerRunning = false
+  }
   initSmsTryCountReset() {
+    this.destroyIdentityTimer()
     this.resetSmsTryCount(Number(this.currentUserId))
       .then(() => {
+        this.initIdentityTimer()
         this.requestStatus = 'successResetSmsTryCount'
         this.secondBtn = null
         this.openMsgBox()

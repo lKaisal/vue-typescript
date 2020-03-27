@@ -17,7 +17,10 @@
                 +e.field-content
                   +e.field-content-inner(v-html="getFieldContent(field, colIndex)")
                   +e.H5.field-manage(v-if="field.isVariable && getFieldContent(field, colIndex)" @click="onFieldManageClick(field)" v-html="field.variableText")
-              +e.H5.field-manage._single(v-if="colIndex === 1" @click="emitUpdateIdentity" v-html="identityFieldManageText")
+              //- +e.H5.field-manage._single(v-if="colIndex === 1" @click="emitUpdateIdentity" v-html="identityFieldManageText")
+      +e.btns
+        ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-supplier__btn")
+        ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-supplier__btn")
 </template>
 
 <script lang="ts">
@@ -50,6 +53,7 @@ const SuppliersMappers = Vue.extend({
 
 export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, SuppliersMappers) {
   @Prop() supplier: Supplier
+  @Prop() timer: number
 
   subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией']
   generalFields: TableField[] = [
@@ -72,9 +76,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       // { fields: ['status'], title: 'Статус пользователя' },
       { fields: ['lastVisit'], title: 'Дата последнего визита' },
       { fields: ['lastSmsCode'], title: 'Последний sms-код' },
+      { fields: ['lastCodeExpired'], title: 'Код перестанет работать через:' },
       { fields: ['smsSendCount', 'sendMaxCount'], title: 'Кол-во высланных sms за сутки (текущее / макс.)', isVariable: true, variableText: 'Сбросить' },
       { fields: ['smsTryCount', 'tryMaxCount'], title: 'Кол-во попыток ввода sms (текущее / макс.)', isVariable: true, variableText: 'Сбросить' },
-      { fields: ['lastCodeExpired'], title: 'Обнуление счетчика через:' },
     ]
   }
   get columns() {
@@ -87,6 +91,22 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   get identityFieldManageText() {
     return this.identity.error ? 'Загрузить данные' : 'Обновить данные'
   }
+  get formattedTimer() {
+    let time: number | string = this.timer
+    const secs = time % 60
+    time = (time - secs) / 60
+    const mins = time % 60
+    const hours = (time - mins) / 60
+
+    const formatItem = (i) => {
+      const res = i > 9 ? i : '0' + i
+      return String(res)
+    }
+    if (hours > 0) time = [formatItem(hours), formatItem(mins), formatItem(secs)].join(':')
+    else time = [formatItem(mins), formatItem(secs)].join(':')
+
+    return time
+  }
 
   getFieldContent(field: TableField | SmsTableField, colIndex: number) {
     try {
@@ -95,11 +115,11 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       if (isIdentityField) {
         const value = field.fields.map(f => this.identity.data[f]).join(' / ')
         const isStatus = field.fields.includes('status')
+        const isExpire = field.fields.includes('lastCodeExpired')
 
         if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
-        else {
-          return value
-        }
+        else if (isExpire) return this.formattedTimer
+        else return value
       } else {
         const isPhone = field.field === 'phone'
         const isStatus = field.field === 'confirmed'
@@ -110,11 +130,13 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       }
     } catch{}
   }
+  // click methods
   onFieldManageClick(field: TableField | SmsTableField) {
     if (field.field === 'phone') this.showPhoneManage()
     else if (field.fields.includes('smsTryCount')) this.emitResetSmsTryCount()
     else if (field.fields.includes('smsSendCount')) this.emitResetSmsSendCount()
   }
+  // emit methods
   showPhoneManage() {
     this.$emit('showPhoneManage')
   }
@@ -126,6 +148,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   }
   emitUpdateIdentity() {
     this.$emit('updateIdentity')
+  }
+  emitDeleteIdentity(){
+    this.$emit('deleteIdentity')
   }
 }
 </script>
@@ -169,7 +194,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
   &__info-block
     width 100%
-    margin-bottom 50px
+    // margin-bottom 50px
 
   &__row
     +gt-sm()
@@ -249,4 +274,12 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     &.is-disabled
       transition-delay 0s
       pointer-events none
+
+  &__btns
+    margin-top 75px
+    display flex
+
+  &__btn
+    &:not(:last-child)
+      margin-right 10px
 </style>

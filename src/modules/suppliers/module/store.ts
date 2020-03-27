@@ -26,11 +26,12 @@ class SuppliersState {
     isLoading: false
   }
   smsReset: { error: string, isLoading: boolean } = { error: null, isLoading: false }
+  phoneAuthDelete: { error: string, isLoading: boolean } = { error: null, isLoading: false }
 }
 
 class SuppliersGetters extends Getters<SuppliersState> {
-  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading }
-  get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error }
+  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading || this.state.phoneAuthDelete.isLoading }
+  get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error || this.state.smsReset.error || this.state.phoneAuthDelete.error }
   get supplierByUserId() {
     return (userId: Supplier['userId']) => this.state.list.data.find(s => s.userId === userId)
   }
@@ -128,7 +129,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
   clearIdentity() {
     this.state.identity.data = null
   }
-  // Mutationd SmsTryCount reset
+  // Mutations SmsTryCount reset
   startSmsReset() {
     this.state.smsReset.isLoading = true
     this.state.smsReset.error = null
@@ -140,6 +141,19 @@ class SuppliersMutations extends Mutations<SuppliersState> {
   setSmsResetFail(err) {
     this.state.smsReset.isLoading = false
     this.state.smsReset.error = err
+  }
+  // Mutations PhoneAuth Delete
+  startPhoneAuthDelete() {
+    this.state.phoneAuthDelete.isLoading = true
+    this.state.phoneAuthDelete.error = null
+  }
+  setPhoneAuthDeleteSuccess() {
+    this.state.phoneAuthDelete.isLoading = false
+    this.state.phoneAuthDelete.error = null
+  }
+  setPhoneAuthDeleteFail(err) {
+    this.state.phoneAuthDelete.isLoading = false
+    this.state.phoneAuthDelete.error = err
   }
   // Mutations Update
   updateSupplier(payload: EditResponse) {
