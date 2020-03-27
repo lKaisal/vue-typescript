@@ -127,7 +127,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
       const timePassed = currentTime - startTime
       if (timePassed >= 1000) {
         startTime = (new Date()).getTime()
-        this.timerValue -= 1
+        this.timerValue = Math.round(this.timerValue - timePassed / 1000)
         requestAnimationFrame(timerValue)
         return
       } else {
