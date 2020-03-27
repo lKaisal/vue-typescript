@@ -16,7 +16,8 @@
                 +e.field-title(v-html="`${field.title}`")
                 +e.field-content
                   +e.field-content-inner(v-html="getFieldContent(field, colIndex)")
-                  +e.H5.field-manage(v-if="field.isVariable" @click="showPhoneInput") Изменить
+                  +e.H5.field-manage(v-if="field.isVariable && getFieldContent(field, colIndex)" @click="onFieldManageClick(field)" v-html="field.variableText")
+              +e.H5.field-manage._single(v-if="colIndex === 1" @click="emitUpdateIdentity" v-html="identityFieldManageText")
 </template>
 
 <script lang="ts">
@@ -60,7 +61,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   ]
   contactFields: TableField[] = [
     { field: 'email', title: 'E-mail' },
-    { field: 'phone', title: 'Телефон', isVariable: true },
+    { field: 'phone', title: 'Телефон', isVariable: true, variableText: 'Изменить' },
   ]
   itemsPerCol: number = 3
 
@@ -70,7 +71,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       { field: 'status', title: 'Статус пользователя' },
       { field: 'lastSmsCode', title: 'Последний sms-код' },
       { field: 'smsSendCount', title: 'Кол-во высланных sms за сутки' },
-      { field: 'smsTryCount', title: 'Кол-во попыток ввода sms' },
+      { field: 'smsTryCount', title: 'Кол-во попыток ввода sms', isVariable: true, variableText: 'Сбросить' },
       { field: 'lastVisit', title: 'Дата последнего визита' },
     ]
   }
@@ -80,6 +81,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       { subtitle: this.subtitles[2], fields: this.identityFields },
       { subtitle: this.subtitles[1], fields: this.contactFields },
     ]
+  }
+  get identityFieldManageText() {
+    return this.identity.error ? 'Загрузить данные' : 'Обновить данные'
   }
 
   getFieldContent(field: TableField, colIndex: number) {
@@ -97,8 +101,18 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       }
     } catch{}
   }
-  showPhoneInput() {
-    this.$emit('showPhoneInput')
+  onFieldManageClick(field: TableField) {
+    if (field.field === 'phone') this.showPhoneManage()
+    else if (field.field === 'smsTryCount') this.emitResetSmsTryCount()
+  }
+  showPhoneManage() {
+    this.$emit('showPhoneManage')
+  }
+  emitResetSmsTryCount() {
+    this.$emit('resetSmsTryCount')
+  }
+  emitUpdateIdentity() {
+    this.$emit('updateIdentity')
   }
 }
 </script>
@@ -212,8 +226,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
   &__field-manage
     display inline
-    padding 0 5px
-    // margin -5px
+    padding 5px
+    margin -5px 0
+    margin-left 5px
     // margin-bottom 0px
     color $cBrand
     // border-bottom 1px dashed $cBrand
@@ -224,14 +239,10 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     transition-delay $tFast
     &:hover
       opacity .75
+    &_single
+      margin -5px
     &.is-disabled
       border-color transparent
       transition-delay 0s
       pointer-events none
-
-  &__phone-manage
-    width 100%
-    min-height 50px
-    // display flex
-    // align-items center
 </style>

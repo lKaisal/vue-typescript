@@ -7,11 +7,9 @@
       SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
+      ButtonApp(btnType="primaryText" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
         class="page-main__pag")
-    //- transition
-      MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" :secondBtn="secondBtn" @close="closeMsgBox"
-        @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" class="list-features__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
@@ -105,9 +103,12 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get pagPagerCount() { return this.isXs ? 5 : 7 }
 
   created() {
-    this.$emit('loadList')
+    this.emitLoadList()
   }
 
+  emitLoadList() {
+    this.$emit('loadList')
+  }
   // SEARCH handlers
   handleSearchProgress(res) {
     this.setListFiltered(res)
@@ -148,6 +149,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   &__list
     // grid-size(4, 4, 6, 8, 10)
     // margin 0 auto
+    +gt-md()
+      margin-bottom 20px
     +lt-md()
       order 1
     transition(opacity)
@@ -159,4 +162,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     +lt-md()
       order 0
       margin-bottom 15px
+
+  &__btn
+    margin-bottom 50px
 </style>

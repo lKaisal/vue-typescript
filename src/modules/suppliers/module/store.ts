@@ -25,10 +25,11 @@ class SuppliersState {
     error: null,
     isLoading: false
   }
+  smsReset: { error: string, isLoading: boolean } = { error: null, isLoading: false }
 }
 
 class SuppliersGetters extends Getters<SuppliersState> {
-  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading }
+  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading }
   get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error }
   get supplierByUserId() {
     return (userId: Supplier['userId']) => this.state.list.data.find(s => s.userId === userId)
@@ -36,10 +37,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
-    const list = this.state.listFiltered && [...this.state.listFiltered] || [...this.state.list.data]
-
-    // TODO: убрать, когда появятся данные
-    // list.forEach(f => f.isActive = Math.random() >= .5 ? 'Активен' : 'Неактивен')
+    const list = this.state.listFiltered ? [...this.state.listFiltered] : [...this.state.list.data]
 
     const sortBy = this.state.listSort.by
     const sortDirection = this.state.listSort.direction
@@ -130,11 +128,27 @@ class SuppliersMutations extends Mutations<SuppliersState> {
   clearIdentity() {
     this.state.identity.data = null
   }
-  // Mutations Update supplier (not used)
+  // Mutationd SmsTryCount reset
+  startSmsReset() {
+    this.state.smsReset.isLoading = true
+    this.state.smsReset.error = null
+  }
+  setSmsResetSuccess() {
+    this.state.smsReset.isLoading = false
+    this.state.smsReset.error = null
+  }
+  setSmsResetFail(err) {
+    this.state.smsReset.isLoading = false
+    this.state.smsReset.error = err
+  }
+  // Mutations Update
   updateSupplier(payload: EditResponse) {
     const supplier = this.state.list.data.find(s => s.userId === payload.userId)
     supplier.phone = payload.phone
     supplier.phoneAuthId = payload.phoneAuthId
+  }
+  updateIdentity(payload: SmsFields) {
+    this.state.identity.data = payload
   }
 }
 
@@ -186,13 +200,37 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
         })
     })
   }
+  async resetSmsTryCount(userId: Supplier['userId']) {
+    return new Promise(async (resolve, reject) => {
+      this.commit('startSmsReset')
+
+      axios.get(`/api/v1/sms-info/${userId}`)
+        .then((res: AxiosResponse<any>) => {
+          const data: SmsFields = res.data
+
+          this.commit('updateIdentity', data)
+          this.commit('setSmsResetSuccess')
+          if (isDev) console.log('Success: smsTryCount reset')
+          resolve()
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setSmsResetFail', errMsg)
+          if (error && error.response) reject(error.response)
+          else reject()
+        })
+    })
+  }
   editPhone(payload: EditPayload) {
     return new Promise((resolve, reject) => {
       this.commit('startEdit')
 
       axios.post('/api/v1/phone', payload)
         .then((res) => {
-          const data = res.data as EditResponse
+          const data: EditResponse = res.data
           if (isDev) console.log('Success: edit phone, userId: ' + data.userId)
           this.commit('setEditSuccess')
           this.commit('updateSupplier', data)

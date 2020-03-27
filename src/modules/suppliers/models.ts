@@ -4,6 +4,7 @@ class SmsFields {
   smsSendCount: number
   smsTryCount: number
   status: boolean
+  userId: Supplier['userId']
 }
 
 class Supplier extends SmsFields {
@@ -34,6 +35,7 @@ type TableField = {
   isXMedium?: boolean,
   isCentered?: boolean,
   isVariable?: boolean,
+  variableText?: string
 }
 
 type EditPayload = {
@@ -60,8 +62,8 @@ type RequestStatus = RequestStatuses[RequestType]
 type RequestType = 'success' | 'fail'
 
 type RequestStatuses = {
-  success: 'successFetchList' | 'successEdit' | 'successFetchIdentity'
-  fail: 'failFetchList' | 'failEdit' | 'failFetchIdentity'
+  success: 'successFetchList' | 'successEdit' | 'successFetchIdentity' | 'successResetSmsTryCount'
+  fail: 'failFetchList' | 'failEdit' | 'failFetchIdentity' | 'failResetSmsTryCount'
 }
 
 export { Supplier, SmsFields, ListSort, TableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }

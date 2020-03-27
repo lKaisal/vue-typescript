@@ -124,7 +124,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     padding 10px 0
 
   &__table
-    margin-bottom 50px
+    // margin-bottom 50px
     width 100%
 
   &__sort

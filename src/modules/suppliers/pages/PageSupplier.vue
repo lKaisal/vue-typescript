@@ -6,7 +6,8 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" @showPhoneInput="showPhoneManage" class="page-supplier__info-wrapper")
+      CardSupplier(:supplier="currentSupplier" @showPhoneManage="showPhoneManage" @resetSmsTryCount="initSmsTryCountReset" @updateIdentity="getIdentityData"
+        class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
@@ -36,7 +37,7 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['supplierByUserId'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getIdentity', 'editPhone'])
+    ...suppliersMapper.mapActions(['getIdentity', 'editPhone', 'resetSmsTryCount'])
   }
 })
 
@@ -75,10 +76,25 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   }
 
   goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
+  // IDENTITY METHODS
   getIdentityData() {
     this.getIdentity(Number(this.currentUserId))
       .catch(() => {
         this.requestStatus = 'failFetchIdentity'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+        return
+      })
+  }
+  initSmsTryCountReset() {
+    this.resetSmsTryCount(Number(this.currentUserId))
+      .then(() => {
+        this.requestStatus = 'successResetSmsTryCount'
+        this.secondBtn = null
+        this.openMsgBox()
+      })
+      .catch(() => {
+        this.requestStatus = 'failResetSmsTryCount'
         this.secondBtn = { type: 'danger', isPlain: true }
         this.openMsgBox()
         return
@@ -120,6 +136,9 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         break;
       case 'failFetchIdentity':
         this.getIdentityData()
+        break
+      case 'failResetSmsTryCount':
+        this.initSmsTryCountReset()
         break
     }
   }

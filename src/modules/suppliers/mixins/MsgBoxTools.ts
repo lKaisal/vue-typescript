@@ -19,21 +19,24 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   requestStatus: RequestStatus = 'failFetchList'
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!'}
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
-    success: [ 'successFetchList', 'successEdit', 'successFetchIdentity' ],
-    fail: [ 'failFetchList', 'failEdit', 'failFetchIdentity' ],
+    success: [ 'successFetchList', 'successEdit', 'successFetchIdentity', 'successResetSmsTryCount' ],
+    fail: [ 'failFetchList', 'failEdit', 'failFetchIdentity', 'failResetSmsTryCount' ],
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
     successFetchList: { firstBtn: 'Закрыть' },
     successEdit: { firstBtn: 'Продолжить', secondBtn: 'Закрыть карточку' },
     successFetchIdentity: { firstBtn: 'Закрыть' },
+    successResetSmsTryCount: { firstBtn: 'Закрыть' },
     failFetchList: { firstBtn: 'Повторить попытку', secondBtn: 'К списку разделов' },
     failEdit: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
-    failFetchIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' }
+    failFetchIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    failResetSmsTryCount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' }
   }
   msgBoxMsgSuccess: {[key in RequestStatuses['success']]: string} = {
     successFetchList: 'Данные успешно загружены', 
     successFetchIdentity: 'Данные успешно загружены', 
-    successEdit: 'Телефон успешно изменен'
+    successEdit: 'Телефон успешно изменен',
+    successResetSmsTryCount: 'Количество попыток ввода sms успешно сброшено'
   }
 
   get statusType() {
