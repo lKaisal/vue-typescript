@@ -6,7 +6,8 @@
       +e.row-back(@click="goToPageMain")
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
-      CardSupplier(:supplier="currentSupplier" @showPhoneManage="showPhoneManage" @resetSmsTryCount="initSmsTryCountReset" @updateIdentity="getIdentityData"
+      CardSupplier(:supplier="currentSupplier" @showPhoneManage="showPhoneManage" @resetSmsTryCount="initSmsTryCountReset"
+        @resetSmsSendCount="initSmsTryCountReset" @updateIdentity="getIdentityData"
         class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"

@@ -72,7 +72,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       // { fields: ['status'], title: 'Статус пользователя' },
       { fields: ['lastVisit'], title: 'Дата последнего визита' },
       { fields: ['lastSmsCode'], title: 'Последний sms-код' },
-      { fields: ['smsSendCount', 'sendMaxCount'], title: 'Кол-во высланных sms за сутки (текущее / макс.)' },
+      { fields: ['smsSendCount', 'sendMaxCount'], title: 'Кол-во высланных sms за сутки (текущее / макс.)', isVariable: true, variableText: 'Сбросить' },
       { fields: ['smsTryCount', 'tryMaxCount'], title: 'Кол-во попыток ввода sms (текущее / макс.)', isVariable: true, variableText: 'Сбросить' },
       { fields: ['lastCodeExpired'], title: 'Обнуление счетчика через:' },
     ]
@@ -113,12 +113,16 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   onFieldManageClick(field: TableField | SmsTableField) {
     if (field.field === 'phone') this.showPhoneManage()
     else if (field.fields.includes('smsTryCount')) this.emitResetSmsTryCount()
+    else if (field.fields.includes('smsSendCount')) this.emitResetSmsSendCount()
   }
   showPhoneManage() {
     this.$emit('showPhoneManage')
   }
   emitResetSmsTryCount() {
     this.$emit('resetSmsTryCount')
+  }
+  emitResetSmsSendCount() {
+    this.$emit('resetSmsSendCount')
   }
   emitUpdateIdentity() {
     this.$emit('updateIdentity')
