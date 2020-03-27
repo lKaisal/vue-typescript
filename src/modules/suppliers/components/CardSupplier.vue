@@ -273,10 +273,16 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       pointer-events none
 
   &__btns
-    margin-top 75px
+    // margin-top 75px
+    width-between-property 'margin-top' 600 40 1440 75 true true
     display flex
+    flex-wrap wrap
+    +gt-md()
+      margin-right 25px
+      margin-left 25px
 
   &__btn
     &:not(:last-child)
       margin-right 10px
+      margin-bottom 10px
 </style>

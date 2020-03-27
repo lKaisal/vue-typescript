@@ -232,7 +232,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
 
           this.commit('updateIdentity', data)
           this.commit('setSmsResetSuccess')
-          if (isDev) console.log('Success: ' + payload.field + ' reset')
+          if (isDev) console.log('Success: ' + payload.field + ' reset, userId: ' + payload.userId)
           resolve()
         })
         .catch(error => {
@@ -264,6 +264,27 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
 
           const errMsg = error && error.response && error.response.data && error.response.data.message || null
           this.commit('setEditFail', errMsg)
+          reject()
+        })
+    })
+  }
+  deletePhoneAuth(userId: SmsFields['userId']) {
+    return new Promise((resolve, reject) => {
+      this.commit('startPhoneAuthDelete')
+
+      axios.delete(`/api/v1/phone-auth/${userId}`)
+        .then((res) => {
+          const data: EditResponse = res.data
+          if (isDev) console.log('Success: delete phoneAuth, userId: ' + userId)
+          this.commit('setPhoneAuthDeleteSuccess')
+          resolve()
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setPhoneAuthDeleteFail', errMsg)
           reject()
         })
     })

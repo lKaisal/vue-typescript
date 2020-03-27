@@ -38,7 +38,8 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['supplierByUserId'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getIdentity', 'editPhone', 'resetSmsCount'])
+    ...suppliersMapper.mapMutations(['clearIdentity']),
+    ...suppliersMapper.mapActions(['getIdentity', 'editPhone', 'resetSmsCount', 'deletePhoneAuth'])
   }
 })
 
@@ -77,10 +78,11 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   beforeDestroy() {
     document.removeEventListener('keydown', this.keydownHandler)
     this.destroyIdentityTimer()
+    this.clearIdentity()
   }
 
   goToPageMain() { this.$router.push({ name: 'PageSuppliers' }).catch(err => {}) }
-  // IDENTITY METHODS
+  // IDENTITY DATA METHODS
   getIdentityData() {
     this.destroyIdentityTimer()
     this.getIdentity(Number(this.currentUserId))
@@ -98,49 +100,22 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
   }
   deleteIdentity() {
     this.destroyIdentityTimer()
-    this.getIdentity(Number(this.currentUserId))
-      .then(() => {
-        // this.timerValue = this.identity.data.lastCodeExpired
-        // this.timerValue = 871
-        // this.initIdentityTimer()
+    this.deletePhoneAuth(Number(this.currentUserId))
+      .then(async () => {
+        this.requestStatus = 'successDeleteIdentity'
+        this.openMsgBox()
+        await sleep(3000)
+        this.closeMsgBox()
         this.goToPageMain()
       })
-      // .catch(() => {
-      //   this.requestStatus = 'failFetchIdentity'
-      //   this.secondBtn = { type: 'danger', isPlain: true }
-      //   this.openMsgBox()
-      //   return
-      // })
-  }
-  initIdentityTimer() {
-    this.identityTimerRunning = true
-    let startTime = (new Date()).getTime()
-    const timerValue = () => {
-      if (!this.identityTimerRunning) return
-
-      if (this.timerValue === 0) {
-        this.destroyIdentityTimer()
+      .catch(() => {
+        this.requestStatus = 'failDeleteIdentity'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
         return
-      }
-
-      const currentTime = (new Date()).getTime()
-      const timePassed = currentTime - startTime
-      if (timePassed >= 1000) {
-        startTime = (new Date()).getTime()
-        this.timerValue = Math.max(Math.round(this.timerValue - timePassed / 1000), 0)
-        requestAnimationFrame(timerValue)
-        return
-      } else {
-        requestAnimationFrame(timerValue)
-        return
-      }
-    }
-
-    requestAnimationFrame(timerValue)
+      })
   }
-  destroyIdentityTimer() {
-    this.identityTimerRunning = false
-  }
+  // SMS RESET METHODS
   initSmsCountReset(field: keyof SmsFields) {
     this.destroyIdentityTimer()
     this.resetSmsCount({userId: Number(this.currentUserId), field})
@@ -191,6 +166,36 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         this.openMsgBox()
       })
   }
+  // IDENTITY TIMER METHODS
+  initIdentityTimer() {
+    this.identityTimerRunning = true
+    let startTime = (new Date()).getTime()
+    const timerValue = () => {
+      if (!this.identityTimerRunning) return
+
+      if (this.timerValue === 0) {
+        this.destroyIdentityTimer()
+        return
+      }
+
+      const currentTime = (new Date()).getTime()
+      const timePassed = currentTime - startTime
+      if (timePassed >= 1000) {
+        startTime = (new Date()).getTime()
+        this.timerValue = Math.max(Math.round(this.timerValue - timePassed / 1000), 0)
+        requestAnimationFrame(timerValue)
+        return
+      } else {
+        requestAnimationFrame(timerValue)
+        return
+      }
+    }
+
+    requestAnimationFrame(timerValue)
+  }
+  destroyIdentityTimer() {
+    this.identityTimerRunning = false
+  }
   // CLICK HANDLERS
   onFirstBtnClick() {
     this.closeMsgBox()
@@ -203,6 +208,12 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         break
       case 'failResetSmsTryCount':
         this.initSmsCountReset(this.smsReset.field)
+        break
+      case 'successDeleteIdentity':
+        this.goToPageMain()
+        break
+      case 'failDeleteIdentity':
+        this.deleteIdentity()
         break
     }
   }
@@ -276,9 +287,12 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
     white-space nowrap
 
   &__info-wrapper
-    padding 50px
+    padding-top 50px
+    padding-bottom 50px
     width 100%
     +gt-sm()
+      width-between-property 'padding-right' 601 25 1000 50 true true
+      width-between-property 'padding-left' 601 25 1000 50 true true
       border-radius 6px
       border 2px solid $cBrand
       box-shadow 0 1rem 3rem rgba(0,0,0,.175)!important
@@ -287,7 +301,10 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
       left 50%
       transform translateX(-50%)
       width 100vw
-      padding 25px
+      padding-top 25px
+      padding-bottom 25px
+      width-between-property 'padding-right' 375 25 600 50 true true
+      width-between-property 'padding-left' 375 25 600 50 true true
     &.v-enter
       jsVoaStart()
 </style>

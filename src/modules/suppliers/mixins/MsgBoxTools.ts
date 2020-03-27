@@ -19,8 +19,8 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   requestStatus: RequestStatus = 'failFetchList'
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!'}
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
-    success: [ 'successFetchList', 'successEdit', 'successFetchIdentity', 'successResetSmsTryCount', 'successResetSmsSendCount' ],
-    fail: [ 'failFetchList', 'failEdit', 'failFetchIdentity', 'failResetSmsTryCount', 'failResetSmsSendCount' ],
+    success: [ 'successFetchList', 'successEdit', 'successFetchIdentity', 'successResetSmsTryCount', 'successResetSmsSendCount', 'successDeleteIdentity' ],
+    fail: [ 'failFetchList', 'failEdit', 'failFetchIdentity', 'failResetSmsTryCount', 'failResetSmsSendCount', 'failDeleteIdentity' ],
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
     successFetchList: { firstBtn: 'Закрыть' },
@@ -28,18 +28,21 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     successFetchIdentity: { firstBtn: 'Закрыть' },
     successResetSmsTryCount: { firstBtn: 'Закрыть' },
     successResetSmsSendCount: { firstBtn: 'Закрыть' },
+    successDeleteIdentity: { firstBtn: 'Закрыть' },
     failFetchList: { firstBtn: 'Повторить попытку', secondBtn: 'К списку разделов' },
     failEdit: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
     failFetchIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
     failResetSmsTryCount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
-    failResetSmsSendCount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' }
+    failResetSmsSendCount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    failDeleteIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' }
   }
   msgBoxMsgSuccess: {[key in RequestStatuses['success']]: string} = {
     successFetchList: 'Данные успешно загружены', 
     successFetchIdentity: 'Данные успешно загружены', 
     successEdit: 'Телефон успешно изменен',
     successResetSmsTryCount: 'Количество попыток ввода sms успешно сброшено',
-    successResetSmsSendCount: 'Количество попыток отправки sms успешно сброшено'
+    successResetSmsSendCount: 'Количество отправленных sms успешно сброшено',
+    successDeleteIdentity: 'Запись успешно удалена'
   }
 
   get statusType() {
