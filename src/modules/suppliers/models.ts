@@ -1,13 +1,16 @@
-class SmsFields {
+type SmsFields = {
+  lastCodeExpired: number // через сколько секунд перестанет работать счетчик
   lastSmsCode: string
   lastVisit: string
-  smsSendCount: number
-  smsTryCount: number
+  sendMaxCount: number // максимально допустимое число смс в сутки
+  smsSendCount: number // кол-во отправленных смс
+  smsTryCount: number // кол-во попыток ввода смс
   status: boolean
+  tryMaxCount: number // максимально допустимое число попыток ввода смс
   userId: Supplier['userId']
 }
 
-class Supplier extends SmsFields {
+type Supplier = {
   confirmed: boolean
   createdAt: string
   email: string
@@ -28,6 +31,7 @@ type ListSort = {
 
 type TableField = {
   field: keyof Supplier,
+  fields?: undefined,
   title: string,
   isSortable?: boolean,
   isSmall?: boolean,
@@ -35,6 +39,14 @@ type TableField = {
   isXMedium?: boolean,
   isCentered?: boolean,
   isVariable?: boolean,
+  variableText?: string
+}
+
+type SmsTableField = {
+  field?: undefined
+  fields: (keyof SmsFields)[]
+  title: string
+  isVariable?: boolean
   variableText?: string
 }
 
@@ -66,4 +78,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failEdit' | 'failFetchIdentity' | 'failResetSmsTryCount'
 }
 
-export { Supplier, SmsFields, ListSort, TableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, SmsFields, ListSort, TableField, SmsTableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }

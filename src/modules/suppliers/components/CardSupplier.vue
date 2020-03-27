@@ -25,7 +25,7 @@ import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 import { suppliersMapper } from '../module/store'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MsgBoxTools from '../mixins/MsgBoxTools'
-import { Supplier, TableField, SmsFields } from '../models'
+import { Supplier, TableField, SmsFields, SmsTableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
 
@@ -54,6 +54,7 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией']
   generalFields: TableField[] = [
     { field: 'supplierName', title: 'Название поставщика' },
+    { field: 'confirmed', title: 'Статус пользователя' },
     { field: 'supplierId', title: 'SupplierID' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'userId', title: 'UserID' },
@@ -66,13 +67,14 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   itemsPerCol: number = 3
 
   // get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
-  get identityFields(): TableField[] {
+  get identityFields(): SmsTableField[] {
     return [
-      { field: 'status', title: 'Статус пользователя' },
-      { field: 'lastSmsCode', title: 'Последний sms-код' },
-      { field: 'smsSendCount', title: 'Кол-во высланных sms за сутки' },
-      { field: 'smsTryCount', title: 'Кол-во попыток ввода sms', isVariable: true, variableText: 'Сбросить' },
-      { field: 'lastVisit', title: 'Дата последнего визита' },
+      // { fields: ['status'], title: 'Статус пользователя' },
+      { fields: ['lastVisit'], title: 'Дата последнего визита' },
+      { fields: ['lastSmsCode'], title: 'Последний sms-код' },
+      { fields: ['smsSendCount', 'sendMaxCount'], title: 'Кол-во высланных sms за сутки (текущее / макс.)' },
+      { fields: ['smsTryCount', 'tryMaxCount'], title: 'Кол-во попыток ввода sms (текущее / макс.)', isVariable: true, variableText: 'Сбросить' },
+      { fields: ['lastCodeExpired'], title: 'Обнуление счетчика через:' },
     ]
   }
   get columns() {
@@ -86,24 +88,31 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     return this.identity.error ? 'Загрузить данные' : 'Обновить данные'
   }
 
-  getFieldContent(field: TableField, colIndex: number) {
+  getFieldContent(field: TableField | SmsTableField, colIndex: number) {
     try {
       const isIdentityField = colIndex === 1
   
       if (isIdentityField) {
-        const value = this.identity.data[field.field]
-        const isStatus = field.field === 'status'
+        const value = field.fields.map(f => this.identity.data[f]).join(' / ')
+        const isStatus = field.fields.includes('status')
+
         if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
-        else return value
+        else {
+          return value
+        }
       } else {
         const isPhone = field.field === 'phone'
-        return isPhone ? `+${this.supplier[field.field]}` : this.supplier[field.field]
+        const isStatus = field.field === 'confirmed'
+        const value = this.supplier[field.field]
+        if (isPhone) return `+${value}`
+        else if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
+        else return value
       }
     } catch{}
   }
-  onFieldManageClick(field: TableField) {
+  onFieldManageClick(field: TableField | SmsTableField) {
     if (field.field === 'phone') this.showPhoneManage()
-    else if (field.field === 'smsTryCount') this.emitResetSmsTryCount()
+    else if (field.fields.includes('smsTryCount')) this.emitResetSmsTryCount()
   }
   showPhoneManage() {
     this.$emit('showPhoneManage')
@@ -124,7 +133,6 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
   &__container
     position relative
-    // margin 50px auto
     +xl()
       width 50vw
     +lg()
@@ -167,7 +175,6 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
   &__column
     position relative
-    // border 1px solid red
     +gt-lg()
       width 33.3%
     +lt-lg()
@@ -202,7 +209,6 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       margin-bottom 25px
 
   &__field
-    // display flex
     &:not(:last-child)
       margin-bottom 15px
     +xs()
@@ -221,18 +227,12 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     display flex
     align-items center
 
-  &__field-content-inner
-    // margin-right 15px
-
   &__field-manage
     display inline
     padding 5px
     margin -5px 0
     margin-left 5px
-    // margin-bottom 0px
     color $cBrand
-    // border-bottom 1px dashed $cBrand
-    border-color $cBrand
     fontReg()
     cursor pointer
     transition(opacity\, border-color)
@@ -241,8 +241,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       opacity .75
     &_single
       margin -5px
+      color $cGreen
     &.is-disabled
-      border-color transparent
       transition-delay 0s
       pointer-events none
 </style>
