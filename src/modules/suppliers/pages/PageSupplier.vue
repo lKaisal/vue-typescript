@@ -86,7 +86,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
     this.getIdentity(Number(this.currentUserId))
       .then(() => {
         // this.timerValue = this.identity.data.lastCodeExpired
-        this.timerValue = 871
+        this.timerValue = 20
         this.initIdentityTimer()
       })
       .catch(() => {
@@ -127,7 +127,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
       const timePassed = currentTime - startTime
       if (timePassed >= 1000) {
         startTime = (new Date()).getTime()
-        this.timerValue = Math.round(this.timerValue - timePassed / 1000)
+        this.timerValue = Math.max(Math.round(this.timerValue - timePassed / 1000), 0)
         requestAnimationFrame(timerValue)
         return
       } else {
