@@ -228,7 +228,6 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
       axios.delete(api)
         .then((res: AxiosResponse<any>) => {
           const data: SmsFields = res.data
-          console.log(data)
 
           this.commit('updateIdentity', data)
           this.commit('setSmsResetSuccess')
@@ -274,7 +273,6 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
 
       axios.delete(`/api/v1/phone-auth/${userId}`)
         .then((res) => {
-          const data: EditResponse = res.data
           if (isDev) console.log('Success: delete phoneAuth, userId: ' + userId)
           this.commit('setPhoneAuthDeleteSuccess')
           resolve()

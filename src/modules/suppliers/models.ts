@@ -71,11 +71,12 @@ type Country = {
 
 type RequestStatus = RequestStatuses[RequestType]
 
-type RequestType = 'success' | 'fail'
+type RequestType = 'success' | 'fail' | 'other'
 
 type RequestStatuses = {
   success: 'successFetchList' | 'successEdit' | 'successFetchIdentity' | 'successResetSmsTryCount' | 'successResetSmsSendCount' | 'successDeleteIdentity'
   fail: 'failFetchList' | 'failEdit' | 'failFetchIdentity' | 'failResetSmsTryCount' | 'failResetSmsSendCount' | 'failDeleteIdentity'
+  other: 'beforeDeleteIdentity'
 }
 
 export { Supplier, SmsFields, ListSort, TableField, SmsTableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }

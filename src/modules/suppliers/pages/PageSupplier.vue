@@ -7,7 +7,7 @@
         i(class="el-icon-back page-supplier__icon-back")
         +e.text-back Вернуться к списку
       CardSupplier(:supplier="currentSupplier" :timer="timerValue" @showPhoneManage="showPhoneManage" @resetSmsCount="initSmsCountReset"
-        @updateIdentity="getIdentityData" @deleteIdentity="deleteIdentity"
+        @updateIdentity="getIdentityData" @deleteIdentity="initDeleteIdentity"
         class="page-supplier__info-wrapper")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
@@ -96,6 +96,11 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         this.openMsgBox()
         return
       })
+  }
+  initDeleteIdentity() {
+    this.requestStatus = 'beforeDeleteIdentity'
+    this.secondBtn = { type: 'danger', isPlain: true }
+    this.openMsgBox()
   }
   deleteIdentity() {
     this.destroyIdentityTimer()
@@ -212,6 +217,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
         this.goToPageMain()
         break
       case 'failDeleteIdentity':
+      case 'beforeDeleteIdentity':
         this.deleteIdentity()
         break
     }

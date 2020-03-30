@@ -17,10 +17,11 @@ interface IMixinInterface extends MsgBoxToolsApp {}
 export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBoxToolsApp) {
   loadingError: string
   requestStatus: RequestStatus = 'failFetchList'
-  titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!'}
+  titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': 'Хотите продолжить?'}
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ 'successFetchList', 'successEdit', 'successFetchIdentity', 'successResetSmsTryCount', 'successResetSmsSendCount', 'successDeleteIdentity' ],
     fail: [ 'failFetchList', 'failEdit', 'failFetchIdentity', 'failResetSmsTryCount', 'failResetSmsSendCount', 'failDeleteIdentity' ],
+    other: [ 'beforeDeleteIdentity' ]
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
     successFetchList: { firstBtn: 'Закрыть' },
@@ -34,7 +35,8 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     failFetchIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
     failResetSmsTryCount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
     failResetSmsSendCount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
-    failDeleteIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' }
+    failDeleteIdentity: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    beforeDeleteIdentity: { firstBtn: 'Подтвердить', secondBtn: 'Отмена' }
   }
   msgBoxMsgSuccess: {[key in RequestStatuses['success']]: string} = {
     successFetchList: 'Данные успешно загружены', 
@@ -43,6 +45,9 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     successResetSmsTryCount: 'Количество попыток ввода sms успешно сброшено',
     successResetSmsSendCount: 'Количество отправленных sms успешно сброшено',
     successDeleteIdentity: 'Запись успешно удалена'
+  }
+  msgBoxMsgOther: {[key in RequestStatuses['other']]: string} = {
+    beforeDeleteIdentity: 'Данный процесс удалит учетную запись из мобильного приложения'
   }
 
   get statusType() {
@@ -53,6 +58,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   get msgBoxTitle() { return this.titles[this.statusType]}
   get msgBoxMsg() {
     if (this.statusType === 'success') return this.msgBoxMsgSuccess[this.requestStatus]
+    else if (this.statusType === 'other') return this.msgBoxMsgOther[this.requestStatus]
     else return this.loadingError
   }
   get msgBoxBtns() { return this.btns[this.requestStatus] }
