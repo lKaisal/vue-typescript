@@ -87,8 +87,7 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
     this.destroyIdentityTimer()
     this.getIdentity(Number(this.currentUserId))
       .then(() => {
-        // this.timerValue = this.identity.data.lastCodeExpired
-        this.timerValue = 20
+        this.timerValue = this.identity.data.lastCodeExpired
         this.initIdentityTimer()
       })
       .catch(() => {
