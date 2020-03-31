@@ -13,10 +13,6 @@
 .col-11
   grid-size(4, 4, 1.1, 1.1, 1.1)
 
-.col-4-1
-  grid-size(4, 4, .5 + 5/4 * 2 - 1, .5 + 7/4 * 2 - 1, .5 + 9/4 * 2 - 1)
-
-
 .table-row
   padding-top 0px
   padding-bottom 0px
@@ -34,6 +30,13 @@
       display none
 
 .table-cell
+  &.col-2
+    min-width 250px
+  &.col-05
+  &.col-075
+  &.col-1
+  &.col-11
+    min-width 120px
   &.is-centered
     justify-content center
     text-align center

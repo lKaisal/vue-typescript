@@ -60,12 +60,14 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   get fields(): TableField[] { return [
     { field: 'supplierId', title: 'SupplierID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
     { field: 'supplierName', title: 'Название поставщика', isSortable: true },
-    { field: 'userId', title: 'UserID', isSortable: true,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'userName', title: 'Имя пользователя', isSortable: true,  isCentered: !this.isLtMd },
-    { field: 'inn', title: 'ИНН', isSortable: true,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'phone', title: 'Телефон', isSortable: true,  isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: 'confirmed', title: 'Статус пользователя', isSortable: false,  isSmall: !this.isLtMd, isCentered: !this.isLtMd },
-    { field: null, title: '', isSortable: false,  isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
+    { field: 'createdAt', title: 'Дата регистрации', isSortable: true },
+    { field: 'createdAt', title: 'Дата последней активности*', isSortable: true },
+    { field: 'userId', title: 'UserID', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'userName', title: 'Имя пользователя', isSortable: true, isCentered: !this.isLtMd },
+    { field: 'inn', title: 'ИНН', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'phone', title: 'Телефон', isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: 'confirmed', title: 'Статус пользователя', isSortable: false, isSmall: !this.isLtMd, isCentered: !this.isLtMd },
+    { field: null, title: 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -136,6 +138,11 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
       text-transform uppercase
     &.col-2:nth-of-type(2)
       flex-grow 1
+    &:last-child
+      z-index 1000
+      position sticky
+      right 0
+      background-color white
 
   &__title-wrapper
     display flex

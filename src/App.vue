@@ -32,6 +32,7 @@ import { CurrentDevice } from '@/models'
 import Router from '@/services/router'
 import { uiMapper } from '@/modules/ui/module/store'
 import { authMapper } from './modules/auth/module/store'
+import axios from 'axios'
 
 const grid = require('@/styles/grid-config.json')
 
@@ -95,11 +96,15 @@ export default class App extends Mixins(UiMappers, AuthMappers) {
     }
   }
 
-  created() {
+  async created() {
     try {
       this.updateFromLocalStorage()
 
-      if (this.isAuthorized) this.initializeModules()
+      if (this.isAuthorized) {
+        axios.post('/refresh', { 'refresh': LocalStorageService.getRefreshToken() })
+          .then(() => this.initializeModules())
+          .catch(() => this.goToPageAuth())
+      }
   
       this.setCurrentDevice(device)
       window.addEventListener('resize', () => this.windowResizeHandler(grid))
