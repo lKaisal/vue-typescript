@@ -3,11 +3,11 @@
 
   +b.list-suppliers
     +e.container
-      +e.table
+      +e.table(ref="tableRef" :class="{ 'is-horiz-scrolled': horizontalOverscroll }")
         //- table head
         +e.row.table-row(v-if="!isLtMd")
-          +e.title.table-cell(v-for="(field, index) in fields"
-            :class="{ 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': !field.isSmall && !field.isMedium && !field.isXMedium, 'is-centered': field.isCentered }")
+          +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef"
+            :class="{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }")
             +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="field.isSortable")
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Mixins, Prop, Watch, Ref } from 'vue-property-decorator'
 import { suppliersMapper } from '../module/store'
 import ItemSuppliers from '../components/ItemSuppliers.vue'
 import ButtonApp from '@/components/ButtonApp.vue'
@@ -55,19 +55,27 @@ const SuppliersMappers = Vue.extend({
 
 export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Supplier[]
+  @Ref() tableRef!: HTMLElement
+  @Ref() titleRef!: HTMLElement[]
   breakpoint!: string
+  horizontalOverscroll: number = 0
+  mouseIsDown: boolean = false
+  startX: number = null
+  scrollLeft: number = null
+  isStickyLeft: boolean = false
+  isStickyRight: boolean = false
 
   get fields(): TableField[] { return [
     { field: 'supplierId', title: 'SupplierID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: 'supplierName', title: 'Название поставщика', isSortable: true },
-    { field: 'createdAt', title: 'Дата регистрации', isSortable: true },
-    { field: 'createdAt', title: 'Дата последней активности*', isSortable: true },
+    { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
+    { field: 'createdAt', title: 'Дата регистрации', isSortable: true, isMedium: true, isCentered: true },
+    { field: 'createdAt', title: 'Дата последней активности*', isSortable: true, isMedium: true, isCentered: true },
     { field: 'userId', title: 'UserID', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'userName', title: 'Имя пользователя', isSortable: true, isCentered: !this.isLtMd },
+    { field: 'userName', title: 'Имя пользователя', isSortable: true, isMedium: true, isCentered: !this.isLtMd },
     { field: 'inn', title: 'ИНН', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
     { field: 'phone', title: 'Телефон', isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
     { field: 'confirmed', title: 'Статус пользователя', isSortable: false, isSmall: !this.isLtMd, isCentered: !this.isLtMd },
-    { field: null, title: 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd }, // btn column
+    { field: null, title: 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd, isSticky: this.isStickyRight }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -79,7 +87,65 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   get listSortDirection() { return this.listSort.direction }
   get isAscSorted() { return this.listSortDirection === 'asc' }
   get isDescSorted() { return this.listSortDirection === 'desc' }
+  get isHorizontalOverscroll() { return this.horizontalOverscroll > 0 }
 
+  async mounted() {
+    await this.$nextTick()
+    this.checkTableOverscroll()
+    if (this.isHorizontalOverscroll) this.initHorizontalScroll()
+  }
+  beforeDestroy() {
+    if (this.isHorizontalOverscroll) this.destroyTableScroll()
+  }
+
+  // HORIZONTAL SCROLL METHODS
+  updateSticky() {
+    this.isStickyLeft = this.tableRef.scrollLeft > 0
+    this.isStickyRight = this.tableRef.scrollLeft < this.horizontalOverscroll
+  }
+  checkTableOverscroll() {
+    if (!this.tableRef || !this.titleRef) return
+
+    const tableWidth = this.tableRef.offsetWidth
+    let cellsWidth = 0
+    this.titleRef.forEach((el) => cellsWidth += el.offsetWidth)
+    this.horizontalOverscroll = cellsWidth - tableWidth
+  }
+  destroyTableScroll() {
+    if (!this.tableRef) return
+
+    this.tableRef.removeEventListener('mousedown', this.startDrag);
+    this.tableRef.removeEventListener('mousemove', this.progressDrag);
+    this.tableRef.removeEventListener('mouseleave', this.finishDrag);
+    this.tableRef.removeEventListener('mouseup', this.finishDrag);
+  }
+  initHorizontalScroll() {
+    if (!this.tableRef) return
+
+    this.tableRef.addEventListener('mousedown', (evt) => this.startDrag(evt));
+    this.tableRef.addEventListener('mousemove', (evt) => this.progressDrag(evt));
+    this.tableRef.addEventListener('mouseleave', () => this.finishDrag());
+    this.tableRef.addEventListener('mouseup', () => this.finishDrag());
+    this.updateSticky()
+  }
+  startDrag(evt) {
+    this.mouseIsDown = true;
+    this.startX = evt.pageX - this.tableRef.offsetLeft;
+    this.scrollLeft = this.tableRef.scrollLeft;
+  }
+  progressDrag(evt) {
+    if (!this.mouseIsDown) return
+
+    evt.preventDefault()
+    const x = evt.pageX - this.tableRef.offsetLeft
+    const walk = (x - this.startX) * 3
+    this.tableRef.scrollLeft = this.scrollLeft - walk
+    this.updateSticky()
+  }
+  finishDrag() {
+    this.mouseIsDown = false;
+    this.updateSticky()
+  }
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
     const by: ListSort['by'] = this.fields.map(f => f.field)[index]
@@ -123,26 +189,37 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
   &__row
     display flex
-    padding 10px 0
+    margin-top 10px
 
   &__table
     // margin-bottom 50px
     width 100%
+    &.is-horiz-scrolled
+      overflow-x scroll
+      cursor grab
 
   &__sort
     margin-bottom 50px
 
   &__title
+    position relative
     fontMedium()
     &:first-letter
       text-transform uppercase
     &.col-2:nth-of-type(2)
       flex-grow 1
+    &:first-child
+    &:nth-child(2)
     &:last-child
-      z-index 1000
+      z-index 1
       position sticky
-      right 0
       background-color white
+    &:first-child
+      left 0
+    &:nth-child(2)
+      left 120px
+    &:last-child
+      right 0
 
   &__title-wrapper
     display flex

@@ -37,14 +37,17 @@ type TableField = {
   isSmall?: boolean,
   isMedium?: boolean,
   isXMedium?: boolean,
+  isLarge?: boolean,
+  isXLarge?: boolean,
   isCentered?: boolean,
   isVariable?: boolean,
-  variableText?: string
+  variableText?: string,
+  isSticky?: boolean
 }
 
 type SmsTableField = {
   field?: undefined
-  fields: (keyof SmsFields)[]
+  fields: (keyof SmsFields)[] | (keyof TableField)[]
   title: string
   isVariable?: boolean
   variableText?: string

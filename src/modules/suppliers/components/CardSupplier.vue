@@ -70,10 +70,11 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   ]
   itemsPerCol: number = 3
 
-  // get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
-  get identityFields(): SmsTableField[] {
+  get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
+  get identityFields() {
     return [
       // { fields: ['status'], title: 'Статус пользователя' },
+      { fields: ['createdAt'], title: 'Дата регистрации' },
       { fields: ['lastVisit'], title: 'Дата последнего визита' },
       { fields: ['lastSmsCode'], title: 'Последний sms-код' },
       { fields: ['lastCodeExpired'], title: 'Код перестанет работать через:' },
@@ -121,10 +122,13 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
         else if (isExpire) return this.formattedTimer
         else return value
       } else {
+        const value = this.supplier[field.field]
         const isPhone = field.field === 'phone'
         const isStatus = field.field === 'confirmed'
-        const value = this.supplier[field.field]
+        const isCreatedAt = field.field === 'createdAt' && field.title === 'Дата регистрации'
+
         if (isPhone) return `+${value}`
+        else if (isCreatedAt) return value.toString().split(' ')[0]
         else if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
         else return value
       }
