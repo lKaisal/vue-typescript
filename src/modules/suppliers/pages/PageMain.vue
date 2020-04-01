@@ -139,11 +139,14 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     display flex
     flex-direction column
 
+  &__title
+    order -1
+
   &__search
     +gt-md()
       margin-bottom 20px
     +lt-md()
-      order -1
+      order 0
       margin-bottom 30px
 
   &__list
@@ -152,7 +155,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     +gt-md()
       margin-bottom 20px
     +lt-md()
-      order 1
+      order 2
     transition(opacity)
     &.v-enter
     &.v-leave-to
@@ -160,9 +163,13 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
 
   &__pag
     +lt-md()
-      order 0
+      order 1
       margin-bottom 15px
 
   &__btn
-    margin-bottom 50px
+    +gt-md()
+      margin-bottom 50px
+    +lt-md()
+      order 5
+      margin-top 35px
 </style>
