@@ -67,6 +67,7 @@ export default class ItemSuppliers extends Vue {
       display flex
       align-items flex-start
       flex-wrap wrap
+      border-bottom none
     &:first-child
     &:nth-child(2)
     &:last-child

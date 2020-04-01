@@ -14,7 +14,8 @@
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" @clicked="onItemClick(item)"
+        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields"
+          @clicked="onItemClick(item)"
           class="list-suppliers__item table-row")
 </template>
 
@@ -75,7 +76,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'inn', title: 'ИНН', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
     { field: 'phone', title: 'Телефон', isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
     { field: 'confirmed', title: 'Статус пользователя', isSortable: false, isSmall: !this.isLtMd, isCentered: !this.isLtMd },
-    { field: null, title: 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd, isSticky: this.isStickyRight }, // btn column
+    { field: null, title: !this.isLtMd && 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd, isSticky: this.isStickyRight }, // btn column
   ]}
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -87,18 +88,22 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   get listSortDirection() { return this.listSort.direction }
   get isAscSorted() { return this.listSortDirection === 'asc' }
   get isDescSorted() { return this.listSortDirection === 'desc' }
-  get isHorizontalOverscroll() { return this.horizontalOverscroll > 50 }
+  get isHorizontalOverscroll() { return this.horizontalOverscroll > 50 && !this.isLtMd }
 
   @Watch('breakpoint')
   async onBreakpointChange() {
     this.destroyTableScroll()
     this.isStickyLeft = false
     this.isStickyRight = false
+
+    if (this.isLtMd) return
+
     await this.$nextTick()
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
   }
   async mounted() {
+    if (this.isLtMd) return
     await this.$nextTick()
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
@@ -109,8 +114,8 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
   // HORIZONTAL SCROLL METHODS
   updateSticky() {
-    this.isStickyLeft = Math.round(this.tableRef.scrollLeft) > 0
-    this.isStickyRight = Math.round(this.tableRef.scrollLeft) < this.horizontalOverscroll
+    this.isStickyLeft = Math.floor(this.tableRef.scrollLeft) > 0
+    this.isStickyRight = Math.ceil(this.tableRef.scrollLeft) < this.horizontalOverscroll
   }
   checkTableOverscroll() {
     if (!this.tableRef || !this.titleRef) return
