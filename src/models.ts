@@ -24,11 +24,6 @@ type CurrentDevice = {
   os: string
 }
 
-type SearchField = {
-  field: string,
-  title: string
-}
-
 type LocalStorageObj = {
   access_token: string,
   refresh_token: string,
@@ -60,4 +55,15 @@ type DynamicModule = {
   routes: any[]
 }
 
-export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, LocalStorageObj, LocalStorageRefreshObj, MenuItem, InitedModule, DynamicModule }
+type SearchField = {
+  field: string,
+  title: string
+}
+
+type FilterItem = {
+  field: string
+  title: string
+  values: string[]
+}
+
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, LocalStorageObj, LocalStorageRefreshObj, MenuItem, InitedModule, DynamicModule, FilterItem }
