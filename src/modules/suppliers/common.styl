@@ -1,8 +1,8 @@
 .col-05
-  grid-size(.25, .25, .5, .5, .5)
+  grid-size(4, 4, .5, .5, .5)
 
 .col-075
-  grid-size(4, 2, .75, .75, .75)
+  grid-size(4, 4, .75, .75, .75)
 
 .col-2
   grid-size(4, 4, 2, 2, 2)
@@ -34,19 +34,28 @@
       display none
 
 .table-cell
+  +lt-md()
+    width 100%
+    justify-content flex-start
+    text-align left
   &.col-3
-    min-width 250px
+    +gt-md()
+      min-width 250px
   &.col-2
-    min-width 180px
+    +gt-md()
+      min-width 180px
   &.col-11
   &.col-1
-    min-width 150px
+    +gt-md()
+      min-width 150px
   &.col-075
   &.col-05
-    min-width 120px
+    +gt-md()
+      min-width 120px
   &.is-centered
-    justify-content center
-    text-align center
+    +gt-md()
+      justify-content center
+      text-align center
   &.is-sticky
     &:nth-of-type(2)
       box-shadow 10px 0 13px -5px rgba(0,0,0,.12)
