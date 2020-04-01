@@ -58,7 +58,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией']
   generalFields: TableField[] = [
     { field: 'supplierName', title: 'Название поставщика' },
-    { field: 'confirmed', title: 'Статус пользователя' },
+    { field: 'createdAt', title: 'Дата регистрации' },
+    // { field: 'confirmed', title: 'Статус пользователя' },
     { field: 'supplierId', title: 'SupplierID' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'userId', title: 'UserID' },
@@ -73,8 +74,8 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
   get supplierName(): TableField { return { field: 'supplierName', title: 'Название поставщика' } }
   get identityFields() {
     return [
-      // { fields: ['status'], title: 'Статус пользователя' },
-      { fields: ['createdAt'], title: 'Дата регистрации' },
+      { fields: ['status'], title: 'Статус пользователя' },
+      // { fields: ['createdAt'], title: 'Дата регистрации' },
       { fields: ['lastVisit'], title: 'Дата последнего визита' },
       { fields: ['lastSmsCode'], title: 'Последний sms-код' },
       { fields: ['lastCodeExpired'], title: 'Код перестанет работать через:' },

@@ -47,7 +47,7 @@ type TableField = {
 
 type SmsTableField = {
   field?: undefined
-  fields: (keyof SmsFields)[] | (keyof TableField)[]
+  fields: (keyof SmsFields)[]
   title: string
   isVariable?: boolean
   variableText?: string

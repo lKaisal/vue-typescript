@@ -7,7 +7,7 @@
         //- table head
         +e.row.table-row(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef"
-            :class="{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }")
+            :class="{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }")
             +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="field.isSortable")
@@ -69,7 +69,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'supplierId', title: 'SupplierID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
     { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
     { field: 'createdAt', title: 'Дата регистрации', isSortable: true, isMedium: true, isCentered: true },
-    { field: 'createdAt', title: 'Дата последней активности*', isSortable: true, isMedium: true, isCentered: true },
+    // { field: 'createdAt', title: 'Дата последней активности*', isSortable: true, isMedium: true, isCentered: true },
     { field: 'userId', title: 'UserID', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
     { field: 'userName', title: 'Имя пользователя', isSortable: true, isMedium: true, isCentered: !this.isLtMd },
     { field: 'inn', title: 'ИНН', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
@@ -87,8 +87,17 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   get listSortDirection() { return this.listSort.direction }
   get isAscSorted() { return this.listSortDirection === 'asc' }
   get isDescSorted() { return this.listSortDirection === 'desc' }
-  get isHorizontalOverscroll() { return this.horizontalOverscroll > 0 }
+  get isHorizontalOverscroll() { return this.horizontalOverscroll > 50 }
 
+  @Watch('breakpoint')
+  async onBreakpointChange() {
+    this.destroyTableScroll()
+    this.isStickyLeft = false
+    this.isStickyRight = false
+    await this.$nextTick()
+    this.checkTableOverscroll()
+    if (this.isHorizontalOverscroll) this.initHorizontalScroll()
+  }
   async mounted() {
     await this.$nextTick()
     this.checkTableOverscroll()
@@ -100,9 +109,8 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
   // HORIZONTAL SCROLL METHODS
   updateSticky() {
-    this.isStickyLeft = this.tableRef.scrollLeft > 0
-    this.isStickyRight = this.tableRef.scrollLeft < this.horizontalOverscroll
-    console.log(this.tableRef.scrollLeft)
+    this.isStickyLeft = Math.round(this.tableRef.scrollLeft) > 0
+    this.isStickyRight = Math.round(this.tableRef.scrollLeft) < this.horizontalOverscroll
   }
   checkTableOverscroll() {
     if (!this.tableRef || !this.titleRef) return
