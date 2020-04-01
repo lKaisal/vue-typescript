@@ -97,6 +97,7 @@ export default class SearchApp extends Vue {
 
   &__select
   &__input
+    max-width 400px
     >>> input
       fontMedium()
       transition(border-color)
