@@ -102,6 +102,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   updateSticky() {
     this.isStickyLeft = this.tableRef.scrollLeft > 0
     this.isStickyRight = this.tableRef.scrollLeft < this.horizontalOverscroll
+    console.log(this.tableRef.scrollLeft)
   }
   checkTableOverscroll() {
     if (!this.tableRef || !this.titleRef) return
@@ -116,6 +117,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
     this.tableRef.removeEventListener('mousedown', this.startDrag);
     this.tableRef.removeEventListener('mousemove', this.progressDrag);
+    this.tableRef.removeEventListener('mousewheel', this.updateSticky)
     this.tableRef.removeEventListener('mouseleave', this.finishDrag);
     this.tableRef.removeEventListener('mouseup', this.finishDrag);
   }
@@ -124,6 +126,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
     this.tableRef.addEventListener('mousedown', (evt) => this.startDrag(evt));
     this.tableRef.addEventListener('mousemove', (evt) => this.progressDrag(evt));
+    this.tableRef.addEventListener('mousewheel', this.updateSticky)
     this.tableRef.addEventListener('mouseleave', () => this.finishDrag());
     this.tableRef.addEventListener('mouseup', () => this.finishDrag());
     this.updateSticky()
