@@ -1,5 +1,6 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields } from '../models'
+import { FilterItem } from '@/models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 import sleep from '@/mixins/sleep'
@@ -16,10 +17,12 @@ class SuppliersState {
     { name: 'Ukraine', code: 'UA', phoneCode: 380, mask: '99 999 99 99' },
     { name: 'Armenia', code: 'AM', phoneCode: 374, mask: '99 99 99 99' },
   ]
-  edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
+  // LIST STATE
   list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listFiltered: Supplier[] = null
   listSort: ListSort = { by: 'createdAt', direction: 'desc' }
+  // PHONE & IDENTITY STATE
+  edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   identity: { data: SmsFields, error: string, isLoading: boolean} = {
     data: null,
     error: null,
@@ -27,11 +30,15 @@ class SuppliersState {
   }
   smsReset: { error: string, isLoading: boolean, field: keyof SmsFields } = { error: null, isLoading: false, field: null }
   phoneAuthDelete: { error: string, isLoading: boolean } = { error: null, isLoading: false }
+  // FILTER STATE
+  contracts: { data: string[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
 }
 
 class SuppliersGetters extends Getters<SuppliersState> {
-  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading || this.state.phoneAuthDelete.isLoading }
-  get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error || this.state.smsReset.error || this.state.phoneAuthDelete.error }
+  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading ||
+    this.state.phoneAuthDelete.isLoading || this.state.contracts.isLoading }
+  get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error || this.state.smsReset.error ||
+    this.state.phoneAuthDelete.error || this.state.contracts.isLoading }
   get supplierByUserId() {
     return (userId: Supplier['userId']) => this.state.list.data.find(s => s.userId === userId)
   }
@@ -75,7 +82,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
 }
 
 class SuppliersMutations extends Mutations<SuppliersState> {
-  // List sort, filter
+  // List sort, contract
   updateListSort(payload: ListSort) {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
@@ -166,9 +173,33 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     const keys = Object.keys(payload)
     keys.forEach(key => this.state.identity.data[key] = payload[key])
   }
+  // Mutations contracts
+  startContractsLoading() {
+    this.state.contracts.isLoading = true
+    this.state.contracts.error = null
+  }
+  setContractsLoadingSuccess(payload: string[]) {
+    this.state.contracts.data = payload
+    this.state.contracts.isLoading = false
+    this.state.contracts.error = null
+  }
+  setContractsLoadingFail(err) {
+    this.state.contracts.data = null
+    this.state.contracts.isLoading = false
+    this.state.contracts.error = err
+  }
 }
 
 class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, SuppliersMutations, SuppliersActions> {
+  async loadGlobalData() {
+    return new Promise((resolve, reject) => {
+      const promisesArr = [this.dispatch('getList', null), this.dispatch('getContractsList', null)]
+      Promise.all(promisesArr)
+        .then(() => resolve())
+        .catch((err) => reject(err))
+    })
+  }
+  // LIST ACTIONS
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
@@ -192,6 +223,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
         })
     })
   }
+  // PHONE & IDENTITY ACTIONS
   async getIdentity(userId: Supplier['userId']) {
     return new Promise(async (resolve, reject) => {
       this.commit('startIdentityLoading')
@@ -285,6 +317,29 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
           this.commit('setPhoneAuthDeleteFail', errMsg)
           reject()
         })
+    })
+  }
+  // FILTER ACTIONS
+  getContractsList() {
+    return new Promise((resolve, reject) => {
+      this.commit('startContractsLoading')
+
+      // axios.get('/api/v1/contracts-list')
+      //   .then((res) => {
+      //     if (isDev) console.log('Success: load conractsList')
+      //     const data = res.data
+          const data = ['Тип 1', 'Тип 2', 'Тип 3', 'Тип 4', 'Тип 5']
+          this.commit('setContractsLoadingSuccess', data)
+          resolve()
+        // })
+        // .catch(error => {
+        //   if (isDev && error && error.response) console.log(error.response)
+        //   else console.log('error')
+
+        //   const errMsg = error && error.response && error.response.data && error.response.data.message || null
+        //   this.commit('setContractsLoadingFail', errMsg)
+        //   reject()
+        // })
     })
   }
 }

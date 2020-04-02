@@ -25,7 +25,7 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['isLoading'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getList']),
+    ...suppliersMapper.mapActions(['getList', 'loadGlobalData']),
   }
 })
 const AuthMappers = Vue.extend({
@@ -55,7 +55,7 @@ export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMapper
   }
 
   created() {
-    this.updateList()
+    this.loadData()
   }
 
   goToPageApp() { this.$router.push({ path: '/' }) }
@@ -72,6 +72,20 @@ export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMapper
     if (this.list.isLoading) return
 
     this.getList()
+      .catch((err) => {
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
+      })
+  }
+  loadData() {
+    if (this.list.isLoading) return
+
+    if (this.msgBoxIsShown) this.closeMsgBox()
+
+    this.loadGlobalData()
       .catch((err) => {
         if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
         else {

@@ -39,7 +39,7 @@ const UiMappers = Vue.extend({
 })
 const SuppliersMappers = Vue.extend({
   computed: {
-    ...suppliersMapper.mapState(['list', 'listFiltered']),
+    ...suppliersMapper.mapState(['list', 'listFiltered', 'contracts']),
     ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
   },
   methods: {
@@ -71,7 +71,6 @@ const AuthMappers = Vue.extend({
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMappers, SuppliersMappers, AuthMappers) {
   pageSize: number = 10
   currentPage: number = 1
-  // popupId: number = null
   searchFields: SearchField[] = [
     { field: 'supplierId', title: 'SupplierId' },
     { field: 'supplierName', title: 'Имя поставщика' },
@@ -107,7 +106,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   // FILTER GETTERS
   get filterItems(): FilterItem[] {
     return [
-      { field: 'contractType', title: 'Тип договора', values: ['Тип 1', 'Тип 2', 'Тип 3', 'Тип 4', 'Тип 5'] }
+      { field: 'contractType', title: 'Тип договора', values: this.contracts && this.contracts.data }
     ]
   }
 

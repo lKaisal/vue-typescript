@@ -6,13 +6,13 @@
       +e.row
         +e.title(@click="toggleSubitems")
           +e.title-content(v-html="item.title")
-          +e.I.el-icon(:class="this.currentIcon")
+          +e.I.title-icon(:class="this.currentIcon")
         +e.reset(:class="{ 'is-inactive': !smthIsSelected }" @click="resetFilter")
           +e.reset-content Сбросить
       transition
         +e.subitems-and-button(v-if="subitemsAreShown")
           SubitemsFilter(:values="item.values" :selected="selectedIndexes" @clicked="onSubitemClick" class="item-filter__subitems")
-          ButtonApp(:isLow="true" :isPlain="true" text="Применить" :isDisabled="!smthIsSelected" class="item-filter__btn")
+          //- ButtonApp(:isLow="true" :isPlain="true" text="Применить" :isDisabled="!smthIsSelected" class="item-filter__btn")
 </template>
 
 <script lang="ts">
@@ -78,6 +78,9 @@ export default class ItemFilter extends Vue {
     transition(opacity)
     &:hover
       opacity .75
+
+  &__title-icon
+    margin-left 5px
 
   &__reset
     padding 5px
