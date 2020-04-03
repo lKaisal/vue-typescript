@@ -1,5 +1,5 @@
 <template lang="pug">
-  include ../tools/bemto.pug
+  include ../../../../tools/bemto.pug
 
   +b.subitems-filter
     +e.container
@@ -41,7 +41,7 @@ export default class SubitemsFilter extends Vue {
 </script>
 
 <style lang="stylus" scoped>
-@import '../styles/tools'
+@import '../../../../styles/tools'
 
 .subitems-filter
 

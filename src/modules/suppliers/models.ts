@@ -12,9 +12,9 @@ type SmsFields = {
 
 type Supplier = {
   confirmed: boolean
+  contractType: string
   createdAt: string
   email: string
-  status: boolean
   inn: string
   phone: string
   phoneAuthId: number
@@ -72,6 +72,12 @@ type Country = {
   mask: string
 }
 
+type FilterItem = {
+  field: keyof Supplier
+  title: string
+  values: Supplier[keyof Supplier][]
+}
+
 type RequestStatus = RequestStatuses[RequestType]
 
 type RequestType = 'success' | 'fail' | 'other'
@@ -82,4 +88,4 @@ type RequestStatuses = {
   other: 'beforeDeleteIdentity'
 }
 
-export { Supplier, SmsFields, ListSort, TableField, SmsTableField, EditPayload, EditResponse, Country, RequestStatus, RequestType, RequestStatuses }
+export { Supplier, SmsFields, ListSort, TableField, SmsTableField, EditPayload, EditResponse, Country, FilterItem, RequestStatus, RequestType, RequestStatuses }

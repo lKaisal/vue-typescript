@@ -1,6 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields } from '../models'
-import { FilterItem } from '@/models'
+import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields, FilterItem } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 import sleep from '@/mixins/sleep'
@@ -31,14 +30,14 @@ class SuppliersState {
   smsReset: { error: string, isLoading: boolean, field: keyof SmsFields } = { error: null, isLoading: false, field: null }
   phoneAuthDelete: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   // FILTER STATE
-  contracts: { data: string[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
+  filter: FilterItem[] = []
 }
 
 class SuppliersGetters extends Getters<SuppliersState> {
   get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading ||
-    this.state.phoneAuthDelete.isLoading || this.state.contracts.isLoading }
+    this.state.phoneAuthDelete.isLoading }
   get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error || this.state.smsReset.error ||
-    this.state.phoneAuthDelete.error || this.state.contracts.isLoading }
+    this.state.phoneAuthDelete.error }
   get supplierByUserId() {
     return (userId: Supplier['userId']) => this.state.list.data.find(s => s.userId === userId)
   }
@@ -79,15 +78,43 @@ class SuppliersGetters extends Getters<SuppliersState> {
 
     return sorted
   }
+  get listSortedAndFiltered() {
+    const list = this.getters.listSorted
+
+    if (!list) return
+
+    const filters = this.state.filter
+
+    const res = list.filter(supplier => {
+      return filters.every(filter => {
+        if (!filter.values.length) return true
+        else {
+          const field = filter.field
+          const supplierField = supplier[field]
+          return filter.values.includes(supplierField)
+        }
+      })
+    })
+
+    return res
+  }
+  get contractTypes() {
+    const set: Set<Supplier['contractType']> = new Set()
+    for (const el of this.getters.listSorted) {
+      set.add(el.contractType)
+    }
+
+    return Array.from(set).sort()
+  }
 }
 
 class SuppliersMutations extends Mutations<SuppliersState> {
-  // List sort, contract
+  // List sort, filter
   updateListSort(payload: ListSort) {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
   }
-  setListFiltered(payload) {
+  setListSearched(payload) {
     this.state.listFiltered = payload
   } 
   // Mutations List loading
@@ -164,7 +191,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.phoneAuthDelete.isLoading = false
     this.state.phoneAuthDelete.error = err
   }
-  // Mutations Update
+  // Mutations Update list partial data
   updateSupplier(payload: EditResponse) {
     const supplier = this.state.list.data.find(s => s.userId === payload.userId)
     supplier.phone = payload.phone
@@ -174,55 +201,55 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     const keys = Object.keys(payload)
     keys.forEach(key => this.state.identity.data[key] = payload[key])
   }
-  // Mutations contracts
-  startContractsLoading() {
-    this.state.contracts.isLoading = true
-    this.state.contracts.error = null
+  // Mutations Filter
+  addFilterFields(filters: FilterItem[]) {
+    this.state.filter = []
+    for (const filter of filters) {
+      const { field, title } = filter
+      this.state.filter.push({ field, title, values: [] })
+    }
   }
-  setContractsLoadingSuccess(payload: string[]) {
-    this.state.contracts.data = payload
-    this.state.contracts.isLoading = false
-    this.state.contracts.error = null
-  }
-  setContractsLoadingFail(err) {
-    this.state.contracts.data = null
-    this.state.contracts.isLoading = false
-    this.state.contracts.error = err
+  updateFilterValues(payload: {field: FilterItem['field'], values: FilterItem['values']}) {
+    const filterField = this.state.filter.find(f => f.field === payload.field)
+    filterField.values = payload.values
   }
 }
 
 class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, SuppliersMutations, SuppliersActions> {
-  async loadGlobalData() {
-    return new Promise((resolve, reject) => {
-      const promisesArr = [this.dispatch('getList', null), this.dispatch('getContractsList', null)]
-      Promise.all(promisesArr)
-        .then(() => resolve())
-        .catch((err) => reject(err))
-    })
-  }
   // LIST ACTIONS
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
 
-      axios.get('/api/v1/suppliers-list')
-        .then((res: AxiosResponse<any>) => {
-          while (!Array.isArray(res)) res = res.data
+      // axios.get('/api/v1/suppliers-list')
+      //   .then((res: AxiosResponse<any>) => {
+      //     while (!Array.isArray(res)) res = res.data
+          const res: Supplier[] = [
+            { confirmed: true, contractType: 'Тип 1', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001110', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 2', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001111', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 3', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001112', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 4', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001113', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 5', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001114', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 1', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001115', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 2', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001116', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 3', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001117', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 4', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001118', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+          ]
 
           this.commit('setListLoadingSuccess', res)
           if (isDev) console.log('Success: load list')
           console.log('list load resolve ' + res.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
           resolve()
-        })
-        .catch(error => {
-          if (isDev && error && error.response) console.log(error.response)
-          else console.log('error')
+        // })
+        // .catch(error => {
+        //   if (isDev && error && error.response) console.log(error.response)
+        //   else console.log('error')
 
-          const errMsg = error && error.response && error.response.data && error.response.data.message || null
-          this.commit('setListLoadingFail', errMsg)
-          if (error && error.response) reject(error.response)
-          else reject()
-        })
+        //   const errMsg = error && error.response && error.response.data && error.response.data.message || null
+        //   this.commit('setListLoadingFail', errMsg)
+        //   if (error && error.response) reject(error.response)
+        //   else reject()
+        // })
     })
   }
   // PHONE & IDENTITY ACTIONS
@@ -319,29 +346,6 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
           this.commit('setPhoneAuthDeleteFail', errMsg)
           reject()
         })
-    })
-  }
-  // FILTER ACTIONS
-  getContractsList() {
-    return new Promise((resolve, reject) => {
-      this.commit('startContractsLoading')
-
-      // axios.get('/api/v1/contracts-list')
-      //   .then((res) => {
-      //     if (isDev) console.log('Success: load conractsList')
-      //     const data = res.data
-          const data = ['Тип 1', 'Тип 2', 'Тип 3', 'Тип 4', 'Тип 5']
-          this.commit('setContractsLoadingSuccess', data)
-          resolve()
-        // })
-        // .catch(error => {
-        //   if (isDev && error && error.response) console.log(error.response)
-        //   else console.log('error')
-
-        //   const errMsg = error && error.response && error.response.data && error.response.data.message || null
-        //   this.commit('setContractsLoadingFail', errMsg)
-        //   reject()
-        // })
     })
   }
 }

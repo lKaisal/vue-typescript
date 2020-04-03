@@ -4,8 +4,9 @@
   +b.page-main.page
     +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(v-if="searchIsInited" :list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
-      FilterApp(:list="listSorted" :filterItems="filterItems" class="page-main__filter")
+      //- SearchApp(v-if="searchIsInited" :list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
+        @searchFinished="handleSearchFinished" class="page-main__search")
+      FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
@@ -25,7 +26,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
 import SearchApp from '@/components/SearchApp.vue'
-import FilterApp from '@/components/FilterApp.vue'
+import FilterSuppliers from '../components/filter/FilterSuppliers.vue'
 import { suppliersMapper } from '../module/store'
 import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
@@ -39,11 +40,11 @@ const UiMappers = Vue.extend({
 })
 const SuppliersMappers = Vue.extend({
   computed: {
-    ...suppliersMapper.mapState(['list', 'listFiltered', 'contracts']),
-    ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
+    ...suppliersMapper.mapState(['list', 'listFiltered']),
+    ...suppliersMapper.mapGetters(['isLoading', 'listSorted', 'listSortedAndFiltered'])
   },
   methods: {
-    ...suppliersMapper.mapMutations(['setListFiltered']),
+    ...suppliersMapper.mapMutations(['setListSearched']),
     ...suppliersMapper.mapActions(['editPhone'])
   }
 })
@@ -61,7 +62,7 @@ const AuthMappers = Vue.extend({
     PaginationApp,
     CardSupplier,
     SearchApp,
-    FilterApp
+    FilterSuppliers
   },
   mixins: [
     MsgBoxTools
@@ -88,15 +89,15 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
   get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
   // LIST GETTERS
-  get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
+  get pagesAmount() { return this.listSortedAndFiltered && this.listSortedAndFiltered.length / this.pageSize }
   get listByPages() {
-    if (!this.listSorted) return
+    if (!this.listSortedAndFiltered) return
 
     const arr = []
     for (let i = 0; i < this.pagesAmount; i ++) {
       const start = i * this.pageSize
       const end = start + this.pageSize
-      const part = this.listSorted.slice(start, end)
+      const part = this.listSortedAndFiltered.slice(start, end)
       arr.push(part)
     }
 
@@ -104,12 +105,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   }
   get currentList() { return this.listByPages && this.listByPages[this.currentPage - 1] }
   get pagPagerCount() { return this.isXs ? 5 : 7 }
-  // FILTER GETTERS
-  get filterItems(): FilterItem[] {
-    return [
-      { field: 'contractType', title: 'Тип договора', values: this.contracts && this.contracts.data }
-    ]
-  }
 
   @Watch('list', {deep:true})
   onListChange() {
@@ -125,10 +120,10 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   }
   // SEARCH handlers
   handleSearchProgress(res) {
-    this.setListFiltered(res)
+    this.setListSearched(res)
   }
   handleSearchFinished() {
-    this.setListFiltered(null)
+    this.setListSearched(null)
   }
   // PAGINATION click handlers
   onCurrentChange(n) {

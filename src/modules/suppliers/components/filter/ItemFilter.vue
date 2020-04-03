@@ -1,5 +1,5 @@
 <template lang="pug">
-  include ../tools/bemto.pug
+  include ../../../../tools/bemto.pug
 
   +b.item-filter
     +e.container
@@ -17,9 +17,16 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
-import { FilterItem } from '@/models'
+import { FilterItem } from '../../models'
 import ButtonApp from '@/components/ButtonApp.vue'
-import SubitemsFilter from '@/components/SubitemsFilter.vue'
+import SubitemsFilter from './SubitemsFilter.vue'
+import { suppliersMapper } from '../../module/store'
+
+const SuppliersMappers = Vue.extend({
+  methods: {
+    ...suppliersMapper.mapMutations(['updateFilterValues']),
+  }
+})
 
 @Component({
   components: {
@@ -28,7 +35,7 @@ import SubitemsFilter from '@/components/SubitemsFilter.vue'
   }
 })
 
-export default class ItemFilter extends Vue {
+export default class ItemFilter extends Mixins(SuppliersMappers) {
   @Prop() item: FilterItem
 
   subitemsAreShown: boolean = false
@@ -38,6 +45,7 @@ export default class ItemFilter extends Vue {
 
   get smthIsSelected() { return this.selectedIndexes.length }
   get currentIcon() { return this.subitemsAreShown ? this.iconActive : this.iconInactive }
+  get selectedValues() { return this.item.values.filter((item, index) => this.selectedIndexes.includes(index)).sort() }
 
   toggleSubitems() {
     this.subitemsAreShown = !this.subitemsAreShown
@@ -51,15 +59,19 @@ export default class ItemFilter extends Vue {
     } else {
       this.selectedIndexes.splice(indexInSelected, 1)
     }
+
+    this.updateFilterValues({field: this.item.field, values: this.selectedValues})
   }
   resetFilter() {
     this.selectedIndexes = []
+
+    this.updateFilterValues({field: this.item.field, values: this.selectedValues})
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-@import '../styles/tools'
+@import '../../../../styles/tools'
 
 .item-filter
 

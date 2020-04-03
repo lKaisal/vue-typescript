@@ -26,7 +26,7 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['isLoading'])
   },
   methods: {
-    ...suppliersMapper.mapActions(['getList', 'loadGlobalData']),
+    ...suppliersMapper.mapActions(['getList']),
   }
 })
 const AuthMappers = Vue.extend({
@@ -76,23 +76,6 @@ export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMapper
     this.getList()
       .then(() => {
         console.log('list data loaded ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
-      })
-      .catch((err) => {
-        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
-        else {
-          this.requestStatus = 'failFetchList'
-          this.openMsgBox()
-        }
-      })
-  }
-  loadData() {
-    if (this.list.isLoading) return
-
-    if (this.msgBoxIsShown) this.closeMsgBox()
-
-    this.loadGlobalData()
-      .then(() => {
-        console.log('module data loaded ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
       })
       .catch((err) => {
         if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')

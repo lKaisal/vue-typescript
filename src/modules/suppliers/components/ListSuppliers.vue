@@ -71,6 +71,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
     { field: 'createdAt', title: 'Дата регистрации', isSortable: true, isMedium: true, isCentered: true },
     // { field: 'createdAt', title: 'Дата последней активности*', isSortable: true, isMedium: true, isCentered: true },
+    { field: 'contractType', title: 'Тип договора', isSortable: true, isMedium: true, isCentered: true },
     { field: 'userId', title: 'UserID', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
     { field: 'userName', title: 'Имя пользователя', isSortable: true, isMedium: true, isCentered: !this.isLtMd },
     { field: 'inn', title: 'ИНН', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
