@@ -99,6 +99,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.list.data = payload
     this.state.list.isLoading = false
     this.state.list.error = null
+    console.log('set list loading success ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
   }
   setListLoadingFail(err) {
     this.state.list.data = null
@@ -210,6 +211,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
 
           this.commit('setListLoadingSuccess', res)
           if (isDev) console.log('Success: load list')
+          console.log('list load resolve ' + res.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
           resolve()
         })
         .catch(error => {

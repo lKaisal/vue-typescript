@@ -2,9 +2,9 @@
   include ../../../tools/bemto.pug
 
   +b.page-main.page
-    +e.container(v-if="list.data && list.data.length")
+    +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
+      SearchApp(v-if="searchIsInited" :list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
       FilterApp(:list="listSorted" :filterItems="filterItems" class="page-main__filter")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
@@ -81,6 +81,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   ]
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
+  searchIsInited: boolean = false
 
   get isXs() { return this.breakpoint === 'xs' }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
@@ -110,6 +111,11 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
     ]
   }
 
+  @Watch('list', {deep:true})
+  onListChange() {
+    this.searchIsInited = true
+    console.log('list upd ' + this.list.data.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
+  }
   created() {
     this.emitLoadList()
   }

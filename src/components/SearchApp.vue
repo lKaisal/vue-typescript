@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
-import * as JsSearch from 'js-search'
+// import * as JsSearch from 'js-search'
 import { SearchField } from '@/models'
 
 @Component({
@@ -28,14 +28,22 @@ export default class SearchApp extends Vue {
   activeField: string = null // EL-SELECT
   searchText: string = null // EL-INPUT
   search = null // JsSearch instance
+  JsSearch!: any
   get uniqueField() { return this.fields[this.uniqueFieldIndex].field }
 
+  @Watch('list', {deep:true, immediate: true})
+  onListChange() {
+    console.log('list upd ' + this.list.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
+  }
   created() {
+    console.log('search created ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
     this.initSearch()
   }
   async initSearch(field?: SearchField['field']) {
-    this.search = new JsSearch.Search(this.uniqueField)
-    this.search.indexStrategy = new JsSearch.AllSubstringsIndexStrategy()
+    this.JsSearch = await import ('js-search')
+    console.log('search inited ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
+    this.search = new this.JsSearch.Search(this.uniqueField)
+    this.search.indexStrategy = new this.JsSearch.AllSubstringsIndexStrategy()
 
     if (field) this.search.addIndex(field)
     else {
