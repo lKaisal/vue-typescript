@@ -36,10 +36,8 @@ export default class ItemSuppliers extends Vue {
     const value = this.supplier[field.field]
     const isConfirmed = field.field === 'confirmed'
     const isPhone = field.field === 'phone'
-    const isCreatedAt = field.field === 'createdAt' && field.title === 'Дата регистрации'
 
     if (isConfirmed) return value ? 'Подтвержден' : 'Не подтвержден'
-    else if (isCreatedAt) return value.toString().split(' ')[0]
     else return isPhone ? `+${value}` : value
   }
   
