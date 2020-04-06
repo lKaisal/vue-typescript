@@ -75,7 +75,8 @@ type Country = {
 type FilterItem = {
   field: keyof Supplier
   title: string
-  values: Supplier[keyof Supplier][]
+  valuesTotal: Supplier[keyof Supplier][]
+  valuesSelected: Supplier[keyof Supplier][]
 }
 
 type RequestStatus = RequestStatuses[RequestType]

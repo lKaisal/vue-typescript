@@ -11,7 +11,7 @@
           +e.reset-content Сбросить
       transition
         +e.subitems-and-button(v-if="subitemsAreShown")
-          SubitemsFilter(:values="item.values" :selected="selectedIndexes" @clicked="onSubitemClick" class="item-filter__subitems")
+          SubitemsFilter(:values="item.valuesTotal" :selected="selectedIndexes" @clicked="onSubitemClick" class="item-filter__subitems")
           //- ButtonApp(:isLow="true" :isPlain="true" text="Применить" :isDisabled="!smthIsSelected" class="item-filter__btn")
 </template>
 
@@ -24,7 +24,7 @@ import { suppliersMapper } from '../../module/store'
 
 const SuppliersMappers = Vue.extend({
   methods: {
-    ...suppliersMapper.mapMutations(['updateFilterValues']),
+    ...suppliersMapper.mapMutations(['addFilterSelected']),
   }
 })
 
@@ -45,7 +45,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
 
   get smthIsSelected() { return this.selectedIndexes.length }
   get currentIcon() { return this.subitemsAreShown ? this.iconActive : this.iconInactive }
-  get selectedValues() { return this.item.values.filter((item, index) => this.selectedIndexes.includes(index)).sort() }
+  get selectedValues() { return this.item.valuesTotal.filter((item, index) => this.selectedIndexes.includes(index)).sort() }
 
   toggleSubitems() {
     this.subitemsAreShown = !this.subitemsAreShown
@@ -60,12 +60,12 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
       this.selectedIndexes.splice(indexInSelected, 1)
     }
 
-    this.updateFilterValues({field: this.item.field, values: this.selectedValues})
+    this.addFilterSelected({field: this.item.field, values: this.selectedValues})
   }
   resetFilter() {
     this.selectedIndexes = []
 
-    this.updateFilterValues({field: this.item.field, values: this.selectedValues})
+    this.addFilterSelected({field: this.item.field, values: this.selectedValues})
   }
 }
 </script>

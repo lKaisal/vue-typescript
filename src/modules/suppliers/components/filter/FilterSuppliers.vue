@@ -3,7 +3,7 @@
 
   +b.filter-app
     +e.container
-      ItemFilter(v-for="(item, index) in filterItems" :item="item")
+      ItemFilter(v-for="(item, index) in filterItems" :key="index" :item="item")
 </template>
 
 <script lang="ts">
@@ -15,7 +15,7 @@ import { suppliersMapper } from '../../module/store'
 
 const SuppliersMappers = Vue.extend({
   computed: {
-    ...suppliersMapper.mapGetters(['contractTypes'])
+    ...suppliersMapper.mapGetters(['uniqueFields'])
   },
   methods: {
     ...suppliersMapper.mapMutations(['addFilterFields']),
@@ -30,8 +30,11 @@ const SuppliersMappers = Vue.extend({
 })
 
 export default class FilterSuppliers extends Mixins(SuppliersMappers) {
+  get contractTypes() { return this.uniqueFields('contractType') }
+  get confirmedFields() { return this.uniqueFields('confirmed') }
   get filterItems(): FilterItem[] { return [
-    { 'field': 'contractType', 'title': 'Тип договора', values: this.contractTypes }
+    { 'field': 'contractType', 'title': 'Тип договора', valuesTotal: this.contractTypes, valuesSelected: [] },
+    { 'field': 'confirmed', 'title': 'Номер подтвержден', valuesTotal: this.confirmedFields, valuesSelected: [] }
   ]}
 
   created() {
