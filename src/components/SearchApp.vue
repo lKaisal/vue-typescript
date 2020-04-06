@@ -24,70 +24,46 @@ import { SearchField } from '@/models'
 export default class SearchApp extends Vue {
   @Prop() list: Object[]
   @Prop() fields: SearchField[]
-  @Prop() uniqueFieldIndex: number
-  activeField: string = null // EL-SELECT
-  searchText: string = null // EL-INPUT
-  search = null // JsSearch instance
-  JsSearch!: any
   searchedList: Object[] = null
   listInitial: Object[] = null
+  activeField: string = null // EL-SELECT
+  searchText: string = null // EL-INPUT
 
-  get uniqueField() { return this.fields[this.uniqueFieldIndex].field }
-
-  @Watch('list', {deep:true, immediate: true})
-  onListChange() {
-    console.log('list upd ' + this.list.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
-  }
   created() {
+    this.initSearch()
+  }
+  async initSearch() {
     this.searchedList = [...this.list]
     this.listInitial = [...this.list]
-    // console.log('search created ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
-    // this.initSearch()
-  }
-  async initSearch(field?: SearchField['field']) {
-    // this.JsSearch = await import ('js-search')
-    // console.log('search inited ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
-    // this.search = new this.JsSearch.Search(this.uniqueField)
-    // this.search.indexStrategy = new this.JsSearch.AllSubstringsIndexStrategy()
-
-    // if (field) this.search.addIndex(field)
-    // else {
-    //   for (const field of this.fields) {
-    //     this.search.addIndex(field.field)
-    //   }
-    // }
-
-    // this.search.addDocuments([...this.list])
-    // this.onSearchTextChange()
   }
   async onSearchTextChange() {
     if (!this.searchText) {
+      this.activeField = null
       this.$emit('searchFinished')
       await this.$nextTick()
       this.searchedList = this.listInitial
     } else {
-      const textFormatted = this.searchText.toString().trim().toLowerCase()
-
-      this.searchedList = this.listInitial.filter(supplier => {
-        return this.fields.some((field, index) => {
-          const supplierValue = supplier[field.field]
-          const supplierValueFormatted = supplierValue.toString().trim().toLowerCase()
-          return supplierValueFormatted.includes(textFormatted)
-        })
-      })
-
-      this.$emit('searchProgress', this.searchedList)
+      this.searchThroughList()
     }
   }
   async onActiveFieldChange() {
-    console.log(this.activeField)
-    // // !!! reset list (or it will filter only list left after previous filter)
-    // this.$emit('searchFinished')
-    // await this.$nextTick()
-    // this.search = null
+    this.searchThroughList()
+  }
+  searchThroughList() {
+    const textFormatted = this.searchText.toString().trim().toLowerCase()
 
-    // // init JsSearch with (or without) activeField
-    // this.initSearch(this.activeField)
+    const findText = (supplierValue) => {
+      const supplierValueFormatted = supplierValue.toString().trim().toLowerCase()
+
+      return supplierValueFormatted.includes(textFormatted)
+    }
+
+    this.searchedList = this.listInitial.filter(supplier => {
+      if (this.activeField) return findText(supplier[this.activeField])
+      else return this.fields.some((field, index) => findText(supplier[field.field]))
+    })
+
+    this.$emit('searchProgress', this.searchedList)
   }
 }
 </script>
