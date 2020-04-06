@@ -1,12 +1,12 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-main.page
+  +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
       //- SearchApp(v-if="searchIsInited" :list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
         @searchFinished="handleSearchFinished" class="page-main__search")
-      FilterSuppliers(class="page-main__filter")
+      //- FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")

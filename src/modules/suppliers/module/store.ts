@@ -280,35 +280,24 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
 
-      // axios.get('/api/v1/suppliers-list')
-      //   .then((res: AxiosResponse<any>) => {
-      //     while (!Array.isArray(res)) res = res.data
-          const res: Supplier[] = [
-            { confirmed: true, contractType: 'Тип 1', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001110', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 2', createdAt: '22-02-2020 10:09', email: 'email@mail.com', inn: '11100001111', phone: '79159998877', userId: 1111, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 3', createdAt: '18-03-2020 10:09', email: 'email@mail.com', inn: '11100001112', phone: '79159998877', userId: 1111, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: false, contractType: 'Тип 4', createdAt: '01-03-2020 10:09', email: 'email@mail.com', inn: '11100001113', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 5', createdAt: '22-01-2020 10:09', email: 'email@mail.com', inn: '11100001114', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 1', createdAt: '22-02-2020 10:09', email: 'email@mail.com', inn: '11100001115', phone: '79159998877', userId: 3333, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 2', createdAt: '25-03-2020 10:09', email: 'email@mail.com', inn: '11100001116', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: false, contractType: 'Тип 3', createdAt: '01-04-2020 10:09', email: 'email@mail.com', inn: '11100001117', phone: '79159998877', userId: 1111, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 4', createdAt: '21-03-2020 10:09', email: 'email@mail.com', inn: '11100001118', phone: '79159998877', userId: 3333, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
-          ]
+      axios.get('/api/v1/suppliers-list')
+        .then((res: AxiosResponse<any>) => {
+          while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
           if (isDev) console.log('Success: load list')
           console.log('list load resolve ' + res.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
           resolve()
-        // })
-        // .catch(error => {
-        //   if (isDev && error && error.response) console.log(error.response)
-        //   else console.log('error')
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
 
-        //   const errMsg = error && error.response && error.response.data && error.response.data.message || null
-        //   this.commit('setListLoadingFail', errMsg)
-        //   if (error && error.response) reject(error.response)
-        //   else reject()
-        // })
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setListLoadingFail', errMsg)
+          if (error && error.response) reject(error.response)
+          else reject()
+        })
     })
   }
   // PHONE & IDENTITY ACTIONS
