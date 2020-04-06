@@ -10,19 +10,24 @@
         +e.reset(:class="{ 'is-inactive': !smthIsSelected }" @click="resetFilter")
           +e.reset-content Сбросить
       transition
-        +e.subitems-and-button(v-if="subitemsAreShown")
-          SubitemsFilter(:values="item.valuesTotal" :selected="selectedIndexes" @clicked="onSubitemClick" class="item-filter__subitems")
-          //- ButtonApp(:isLow="true" :isPlain="true" text="Применить" :isDisabled="!smthIsSelected" class="item-filter__btn")
+        +e.subitems(v-if="subitemsAreShown")
+          +e.subitem(v-for="(value, index) in availableValues")
+            +e.checkbox.checkbox(@click="onSubitemClick(index)" :class="{ 'is-active': getSubitemIsActive(index) }")
+              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+                +e.I.checkbox-icon.el-icon-check.checkbox-icon
+              +e.checkbox-label(v-html="value")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { FilterItem } from '../../models'
 import ButtonApp from '@/components/ButtonApp.vue'
-import SubitemsFilter from './SubitemsFilter.vue'
 import { suppliersMapper } from '../../module/store'
 
 const SuppliersMappers = Vue.extend({
+  computed: {
+    ...suppliersMapper.mapGetters(['availableFields'])
+  },
   methods: {
     ...suppliersMapper.mapMutations(['addFilterSelected']),
   }
@@ -30,7 +35,6 @@ const SuppliersMappers = Vue.extend({
 
 @Component({
   components: {
-    SubitemsFilter,
     ButtonApp
   }
 })
@@ -46,6 +50,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
   get smthIsSelected() { return this.selectedIndexes.length }
   get currentIcon() { return this.subitemsAreShown ? this.iconActive : this.iconInactive }
   get selectedValues() { return this.item.valuesTotal.filter((item, index) => this.selectedIndexes.includes(index)).sort() }
+  get availableValues() { return this.item.valuesTotal.filter((val, index) => this.availableFields(this.item.field)[index]) }
 
   toggleSubitems() {
     this.subitemsAreShown = !this.subitemsAreShown
@@ -61,6 +66,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     }
 
     this.addFilterSelected({field: this.item.field, values: this.selectedValues})
+  }
+  getSubitemIsActive(index) {
+    return this.selectedIndexes.indexOf(index) >= 0
   }
   resetFilter() {
     this.selectedIndexes = []
@@ -107,4 +115,18 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     &.is-inactive
       opacity 0
       pointer-events none
+
+  &__subitems
+    display flex
+    flex-wrap wrap
+
+  &__subitem
+    &:not(:last-child)
+      margin-right 15px
+      margin-bottom 15px
+    &.is-disabled
+      opacity .5
+
+  &__checkbox-label
+    margin-left 5px
 </style>

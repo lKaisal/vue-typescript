@@ -2,7 +2,6 @@ import { AxiosResponse, AxiosError } from 'axios'
 import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields, FilterItem } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import sleep from '@/mixins/sleep'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -79,7 +78,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
     return sorted
   }
   get listSortedAndFiltered() {
-    const list = this.getters.listSorted
+    const list = [...this.getters.listSorted]
 
     if (!list) return
 
@@ -97,6 +96,29 @@ class SuppliersGetters extends Getters<SuppliersState> {
     })
 
     return res
+  }
+  listSortedAndFilteredExceptField() {
+    return (fieldIndex: number) => {
+      const list = [...this.getters.listSorted]
+
+      if (!list) return
+
+      const filters = [...this.state.filter]
+      filters.splice(fieldIndex, 1)
+
+      const res = list.filter(supplier => {
+        return filters.every(filter => {
+          if (!filter.valuesSelected.length) return true
+          else {
+            const field = filter.field
+            const supplierField = supplier[field]
+            return filter.valuesSelected.includes(supplierField)
+          }
+        })
+      })
+
+      return res
+    }
   }
   get uniqueFields() {
     return (field: keyof Supplier) => {
@@ -117,8 +139,22 @@ class SuppliersGetters extends Getters<SuppliersState> {
           else return 0
         }
       })
-  
+
       return res
+    }
+  }
+  get availableFields() {
+    return (field: keyof Supplier) => {
+      const unique = [...this.getters.uniqueFields(field)]
+      const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
+
+      // console.log(field, this.getters.listSortedAndFilteredExceptField()(indexOfField))
+      return unique.map(val => {
+        // console.log(val)
+        return this.getters.listSortedAndFilteredExceptField()(indexOfField).some(supplier => {
+          return supplier[field] === val
+        })
+      })
     }
   }
 }
