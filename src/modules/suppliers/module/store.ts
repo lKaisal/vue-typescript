@@ -87,11 +87,10 @@ class SuppliersGetters extends Getters<SuppliersState> {
     const res = list.filter(supplier => {
       return filters.every(filter => {
         if (!filter.valuesSelected.length) return true
-        else {
-          const field = filter.field
-          const supplierField = supplier[field]
-          return filter.valuesSelected.includes(supplierField)
-        }
+
+        const field = filter.field
+        const supplierField = supplier[field]
+        return  filter.valuesSelected.includes(supplierField)
       })
     })
 
@@ -109,11 +108,12 @@ class SuppliersGetters extends Getters<SuppliersState> {
       const res = list.filter(supplier => {
         return filters.every(filter => {
           if (!filter.valuesSelected.length) return true
-          else {
-            const field = filter.field
-            const supplierField = supplier[field]
-            return filter.valuesSelected.includes(supplierField)
-          }
+
+          const field = filter.field
+          const supplierField = supplier[field]
+          const res = filter.valuesSelected.includes(supplierField)
+
+          return res
         })
       })
 
@@ -148,9 +148,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
       const unique = [...this.getters.uniqueFields(field)]
       const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
 
-      // console.log(field, this.getters.listSortedAndFilteredExceptField()(indexOfField))
       return unique.map(val => {
-        // console.log(val)
         return this.getters.listSortedAndFilteredExceptField()(indexOfField).some(supplier => {
           return supplier[field] === val
         })
@@ -259,9 +257,20 @@ class SuppliersMutations extends Mutations<SuppliersState> {
       this.state.filter.push(filter)
     }
   }
-  addFilterSelected(payload: {field: FilterItem['field'], values: FilterItem['valuesSelected']}) {
+  updateFilterSelected(payload: {field: FilterItem['field'], value: (FilterItem['valuesSelected'])[0]}) {
     const filterField = this.state.filter.find(f => f.field === payload.field)
-    filterField.valuesSelected = payload.values
+    const valuesSelected = filterField.valuesSelected
+    const indexInSelected = valuesSelected.indexOf(payload.value)
+
+    if (indexInSelected < 0) {
+      valuesSelected.push(payload.value)
+    } else {
+      valuesSelected.splice(indexInSelected, 1)
+    }
+  }
+  clearFilterSelected(field: FilterItem['field']) {
+    const filterField = this.state.filter.find(f => f.field === field)
+    filterField.valuesSelected = []
   }
 }
 
@@ -275,15 +284,15 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
       //   .then((res: AxiosResponse<any>) => {
       //     while (!Array.isArray(res)) res = res.data
           const res: Supplier[] = [
-            { confirmed: true, contractType: 'Тип 1', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001110', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 2', createdAt: '22-02-2020 10:09', email: 'email@mail.com', inn: '11100001111', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 3', createdAt: '18-03-2020 10:09', email: 'email@mail.com', inn: '11100001112', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: false, contractType: 'Тип 4', createdAt: '01-03-2020 10:09', email: 'email@mail.com', inn: '11100001113', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 5', createdAt: '22-01-2020 10:09', email: 'email@mail.com', inn: '11100001114', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 1', createdAt: '22-02-2020 10:09', email: 'email@mail.com', inn: '11100001115', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 2', createdAt: '25-03-2020 10:09', email: 'email@mail.com', inn: '11100001116', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: false, contractType: 'Тип 3', createdAt: '01-04-2020 10:09', email: 'email@mail.com', inn: '11100001117', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
-            { confirmed: true, contractType: 'Тип 4', createdAt: '21-03-2020 10:09', email: 'email@mail.com', inn: '11100001118', phone: '79159998877', phoneAuthId: 1234, supplierId: 1234, supplierName: '1234', userId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 1', createdAt: '22-03-2020 10:09', email: 'email@mail.com', inn: '11100001110', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 2', createdAt: '22-02-2020 10:09', email: 'email@mail.com', inn: '11100001111', phone: '79159998877', userId: 1111, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 3', createdAt: '18-03-2020 10:09', email: 'email@mail.com', inn: '11100001112', phone: '79159998877', userId: 1111, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: false, contractType: 'Тип 4', createdAt: '01-03-2020 10:09', email: 'email@mail.com', inn: '11100001113', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 5', createdAt: '22-01-2020 10:09', email: 'email@mail.com', inn: '11100001114', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 1', createdAt: '22-02-2020 10:09', email: 'email@mail.com', inn: '11100001115', phone: '79159998877', userId: 3333, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 2', createdAt: '25-03-2020 10:09', email: 'email@mail.com', inn: '11100001116', phone: '79159998877', userId: 1234, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: false, contractType: 'Тип 3', createdAt: '01-04-2020 10:09', email: 'email@mail.com', inn: '11100001117', phone: '79159998877', userId: 1111, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
+            { confirmed: true, contractType: 'Тип 4', createdAt: '21-03-2020 10:09', email: 'email@mail.com', inn: '11100001118', phone: '79159998877', userId: 3333, supplierId: 1234, supplierName: '1234', phoneAuthId: 1234, userName: 'username' },
           ]
 
           this.commit('setListLoadingSuccess', res)

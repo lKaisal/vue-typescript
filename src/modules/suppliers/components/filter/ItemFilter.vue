@@ -12,7 +12,7 @@
       transition
         +e.subitems(v-if="subitemsAreShown")
           +e.subitem(v-for="(value, index) in availableValues")
-            +e.checkbox.checkbox(@click="onSubitemClick(index)" :class="{ 'is-active': getSubitemIsActive(index) }")
+            +e.checkbox.checkbox(@click="onSubitemClick(value)" :class="{ 'is-active': getSubitemIsActive(value) }")
               +e.checkbox-icon-wrapper.checkbox-icon-wrapper
                 +e.I.checkbox-icon.el-icon-check.checkbox-icon
               +e.checkbox-label(v-html="value")
@@ -29,7 +29,7 @@ const SuppliersMappers = Vue.extend({
     ...suppliersMapper.mapGetters(['availableFields'])
   },
   methods: {
-    ...suppliersMapper.mapMutations(['addFilterSelected']),
+    ...suppliersMapper.mapMutations(['updateFilterSelected', 'clearFilterSelected']),
   }
 })
 
@@ -45,35 +45,22 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
   subitemsAreShown: boolean = false
   iconInactive: string = 'el-icon-arrow-right'
   iconActive: string = 'el-icon-arrow-down'
-  selectedIndexes: number[] = []
 
-  get smthIsSelected() { return this.selectedIndexes.length }
+  get smthIsSelected() { return this.item.valuesSelected.length }
   get currentIcon() { return this.subitemsAreShown ? this.iconActive : this.iconInactive }
-  get selectedValues() { return this.item.valuesTotal.filter((item, index) => this.selectedIndexes.includes(index)).sort() }
   get availableValues() { return this.item.valuesTotal.filter((val, index) => this.availableFields(this.item.field)[index]) }
 
   toggleSubitems() {
     this.subitemsAreShown = !this.subitemsAreShown
   }
-  onSubitemClick(index) {
-    const indexInSelected = this.selectedIndexes.indexOf(index)
-
-    if (indexInSelected < 0) {
-      this.selectedIndexes.push(index)
-      this.selectedIndexes.sort()
-    } else {
-      this.selectedIndexes.splice(indexInSelected, 1)
-    }
-
-    this.addFilterSelected({field: this.item.field, values: this.selectedValues})
+  onSubitemClick(value) {
+    this.updateFilterSelected({field: this.item.field, value: value})
   }
-  getSubitemIsActive(index) {
-    return this.selectedIndexes.indexOf(index) >= 0
+  getSubitemIsActive(value) {
+    return this.item.valuesSelected.indexOf(value) >= 0
   }
   resetFilter() {
-    this.selectedIndexes = []
-
-    this.addFilterSelected({field: this.item.field, values: this.selectedValues})
+    this.clearFilterSelected(this.item.field)
   }
 }
 </script>
@@ -121,9 +108,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     flex-wrap wrap
 
   &__subitem
+    margin-bottom 15px
     &:not(:last-child)
       margin-right 15px
-      margin-bottom 15px
     &.is-disabled
       opacity .5
 
