@@ -20,7 +20,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': null }
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ 'successCreate', 'successEdit', 'successDelete' ],
-    fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount' ],
+    fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount', 'failSortUpdate' ],
     other: [ 'beforeDelete' ]
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
@@ -34,10 +34,13 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     failDelete: { firstBtn: 'Повторить попытку', secondBtn: 'Отменить' },
     failDeactivate: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
     failSetAmount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    failSortUpdate: { firstBtn: 'Обновить страницу', secondBtn: 'Повторить попытку' },
     beforeDelete: { firstBtn: 'Подтвердить', secondBtn: 'Отмена' }
   }
   msgBoxOtherTitles: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'Отправить в архив?' }
-  msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = { successCreate: 'Баннер успешно сохранен', successDelete: 'Баннер перемещен в архив', successEdit: 'Данные успешно изменены' }
+  msgBoxSuccessMsgs: { [key in RequestStatuses['success']]: string } = {
+    successCreate: 'Баннер успешно сохранен', successDelete: 'Баннер перемещен в архив', successEdit: 'Данные успешно изменены'
+  }
   msgBoxOtherMsgs: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'После перевода в архив баннер перестанет отображаться в приложении' }
 
   get statusType() {

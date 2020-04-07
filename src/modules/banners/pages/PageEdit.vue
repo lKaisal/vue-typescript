@@ -200,20 +200,10 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     }
   }
   onSecondBtnClick() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
-      case 'failCreate':
-      case 'failEdit':
-      case 'failDelete':
-      case 'failDeactivate':
-      case 'beforeDelete':
-        this.closeMsgBox()
-        break
-      case 'failFetchList':
-        this.closeMsgBox()
-        break
+      case 'successCreate':
       case 'successEdit':
-      default:
-        this.closeMsgBox()
         this.goToPageMain()
         break
     }
@@ -235,7 +225,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
           this.requestStatus = 'failFetchBanner'
           this.secondBtn = { type: 'danger', isPlain: true }
           this.openMsgBox()
-          this.$emit('updateList')
+          this.$emit('updateData')
           return
         })
     } else {

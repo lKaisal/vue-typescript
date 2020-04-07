@@ -6,16 +6,17 @@
       +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item" :class="{ 'is-disabled': !tabs[index].list.length }")
       transition(mode="out-in" @enter="animateOneMoreTime")
-        +e.DRAGGABLE.items(v-if="draggableList && draggableList.length" :key="activeHashIndex" v-model="draggableList" draggable=".list-banners__item")
-          ItemBanner(v-for="(item, index) in draggableList" :key="item && item.id || index" :banner="item"
+        +e.items(v-if="activeDraggableList && activeDraggableList.length" :is="activeHashIndex === 0 ? 'draggable' : 'div'" :key="activeHashIndex"
+          v-model="draggableList" @end="onDragEnd" draggable=".list-banners__item")
+          ItemBanner(v-for="(item, index) in activeDraggableList" :key="item && item.id || index" :banner="item"
             @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)" @dblclick.prevent.native="onDblClick(item, index + 1)"
-            :class="[{ 'list-banners__item_free': !item }, 'list-banners__item' ]")
+            :class="[{ 'list-banners__item_free': !item, 'list-banners__item_draggable': activeHashIndex === 0 }, 'list-banners__item' ]")
           +e.item._fake(v-for="n in 3")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Watch, Ref, Mixins } from 'vue-property-decorator'
-import { Banner } from '../models'
+import { Banner, SortUpdate } from '../models'
 import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
@@ -23,7 +24,7 @@ import draggable from 'vuedraggable'
 
 const BannersMapper = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['activeAmount', 'hashes']),
+    ...bannersMapper.mapState(['activeAmount', 'hashes', 'list']),
     ...bannersMapper.mapGetters(['listActive', 'listInactive', 'listDelayed'])
   },
   methods: {
@@ -54,6 +55,7 @@ export default class ListBanners extends Mixins(BannersMapper) {
   // @ts-ignore
   get activeHashIndex() { return this.activeHash && this.hashes.indexOf(this.activeHash.slice(1)) || 0 }
   get activeList() { return this.tabs[this.activeHashIndex].list}
+  get activeDraggableList() { return this.activeHashIndex === 0 ? this.draggableList : this.activeList }
   get sortItems() { return this.tabs.map(item => item.sort) }
   get listActiveComposed() {
     const count = this.activeAmount.value
@@ -69,17 +71,32 @@ export default class ListBanners extends Mixins(BannersMapper) {
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
-  @Watch('activeList')
-  async onActiveListChange() {
-    await this.$nextTick()
+  @Watch('list', { deep: true, immediate: true })
+  onListChange() {
     this.draggableList = this.activeList
   }
+
   async mounted() {
     await this.$nextTick()
     this.draggableList = this.activeList
     this.animateOneMoreTime()
   }
 
+  animateOneMoreTime() {
+    this.$emit('animateOneMore')
+  }
+  // DRAG HANDLERS
+  onDragEnd(evt) {
+    const index = evt.newIndex
+    const movedBanner = this.draggableList[index]
+
+    if (!movedBanner) return
+
+    const payload: SortUpdate = { id: movedBanner.id, sort: index }
+
+    this.$emit('updateSort', payload)
+  }
+  // CLICK HANDLERS
   handleSelect(index) {
     this.$router.push({path: this.$route.path, hash: `#${this.hashes[index - 1]}` }).catch(err => {})
   }
@@ -97,11 +114,9 @@ export default class ListBanners extends Mixins(BannersMapper) {
       this.goToPageCreate()
     }
   }
+  // NAVIGATION METHODS
   goToPageCreate() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
   goToPageEdit(id: Banner['id']) { this.$router.push({ path: `/${this.moduleLink}/edit/${id}` }).catch(err => {}) }
-  animateOneMoreTime() {
-    this.$emit('animateOneMore')
-  }
 }
 </script>
 
@@ -147,4 +162,6 @@ export default class ListBanners extends Mixins(BannersMapper) {
       opacity 0
       font-size 0
       pointer-events none
+    &_draggable
+      cursor grab
 </style>
