@@ -103,12 +103,12 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
   }
+
   async mounted() {
     if (this.isLtMd) return
     await this.$nextTick()
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
-    console.log(this.horizontalOverscroll)
   }
   beforeDestroy() {
     if (this.isHorizontalOverscroll) this.destroyTableScroll()
