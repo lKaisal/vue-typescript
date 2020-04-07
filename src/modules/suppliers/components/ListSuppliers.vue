@@ -108,6 +108,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     await this.$nextTick()
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
+    console.log(this.horizontalOverscroll)
   }
   beforeDestroy() {
     if (this.isHorizontalOverscroll) this.destroyTableScroll()
@@ -206,6 +207,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
   &__row
     display flex
+    flex-grow 1
     margin-top 10px
 
   &__table
@@ -272,6 +274,8 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
         color $cBrand
 
   &__item
+    display flex
+    flex-grow 1
     background-color white
     &:nth-of-type(2n + 1)
       background-color $cDisabled

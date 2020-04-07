@@ -4,7 +4,7 @@
   +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(v-if="searchIsInited" :list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
+      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
         @searchFinished="handleSearchFinished" class="page-main__search")
       //- FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
@@ -74,7 +74,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   currentPage: number = 1
   searchFields: SearchField[] = [
     { field: 'supplierId', title: 'SupplierId' },
-    { field: 'supplierName', title: 'Имя поставщика' },
+    { field: 'supplierName', title: 'Название поставщика' },
     { field: 'userId', title: 'UserId' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'inn', title: 'ИНН' },
@@ -82,7 +82,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   ]
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
-  searchIsInited: boolean = false
 
   get isXs() { return this.breakpoint === 'xs' }
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
@@ -106,11 +105,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get currentList() { return this.listByPages && this.listByPages[this.currentPage - 1] }
   get pagPagerCount() { return this.isXs ? 5 : 7 }
 
-  @Watch('list', {deep:true})
-  onListChange() {
-    this.searchIsInited = true
-    console.log('list upd ' + this.list.data.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
-  }
   created() {
     this.emitLoadList()
   }
