@@ -37,6 +37,7 @@
     "vue-router": "^3.0.1",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",
+    "vuedraggable": "^2.23.2",
     "vuex": "^2.5.0",
     "vuex-class": "^0.3.2",
     "vuex-smart-module": "^0.3.2",

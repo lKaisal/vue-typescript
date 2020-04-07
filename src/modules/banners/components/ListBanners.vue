@@ -6,10 +6,10 @@
       +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleSelect")
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item" :class="{ 'is-disabled': !tabs[index].list.length }")
       transition(mode="out-in" @enter="animateOneMoreTime")
-        +e.items(:key="activeHashIndex")
-          ItemBanner(v-for="(item, index) in activeList" :key="index" :banner="item"
+        +e.DRAGGABLE.items(v-if="draggableList && draggableList.length" :key="activeHashIndex" v-model="draggableList" draggable=".list-banners__item")
+          ItemBanner(v-for="(item, index) in draggableList" :key="item && item.id || index" :banner="item"
             @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)" @dblclick.prevent.native="onDblClick(item, index + 1)"
-            :class="[{ 'list-banners__item_free': !item }, 'list-banners__item js-voa js-voa-start' ]")
+            :class="[{ 'list-banners__item_free': !item }, 'list-banners__item' ]")
           +e.item._fake(v-for="n in 3")
 </template>
 
@@ -19,6 +19,7 @@ import { Banner } from '../models'
 import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
+import draggable from 'vuedraggable'
 
 const BannersMapper = Vue.extend({
   computed: {
@@ -33,12 +34,14 @@ const BannersMapper = Vue.extend({
 
 @Component({
   components: {
-    ItemBanner
+    ItemBanner,
+    draggable
   }
 })
 
 export default class ListBanners extends Mixins(BannersMapper) {
   observer = null
+  draggableList: Banner[] = null
 
   get tabs() {
     return [
@@ -66,8 +69,14 @@ export default class ListBanners extends Mixins(BannersMapper) {
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
+  @Watch('activeList')
+  async onActiveListChange() {
+    await this.$nextTick()
+    this.draggableList = this.activeList
+  }
   async mounted() {
     await this.$nextTick()
+    this.draggableList = this.activeList
     this.animateOneMoreTime()
   }
 
