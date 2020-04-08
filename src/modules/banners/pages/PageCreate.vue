@@ -37,8 +37,8 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const BannersMappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'pageTypes']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom'])
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'news']),
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom', 'pageTypesList'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
@@ -80,7 +80,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
             if (field.value) return true
             break
           case 'pageType':
-            if (field.value !== this.pageTypes[0]) return true
+            if (field.value !== this.pageTypesList[0]) return true
             break
           case 'sort':
             if (field.value.toString() !== this.activeAmount.value.toString()) return true
@@ -94,7 +94,8 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
   }
 
   // HOOKS
-  created() {
+  async created() {
+    await this.loadAdditionalData()
     this.setFormType('create')
     document.addEventListener('keydown', this.keydownHandler)
     if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data) // if free banner-cell was clicked on list, its position was stored
@@ -109,6 +110,9 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
     this.setBannerCurrentSuccess(null)
   }
 
+  loadAdditionalData() {
+    // if (this.pageTypes && this.pageTypes.length > 1 && this.)
+  }
   // METHODS POPUP CONFLICT
   openPopupConflict() {
     document.body.classList.add('modal-open')

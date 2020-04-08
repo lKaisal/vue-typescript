@@ -2,6 +2,7 @@
   include ../../../tools/bemto.pug
 
   +b.form-pagetype
+    //- pageType
     +e.field.form-field(:class="{ 'is-invalid': isInvalid(pageTypeField), 'is-filled': isFilled, 'is-disabled': isDisabled }")
       +e.label.form-label
         +e.LABEL(for="pageType") Тип страницы
@@ -11,6 +12,18 @@
         +e.EL-INPUT.input.form-input(ref="pageTypeInput" placeholder="Введите тип страницы" v-model="pageType" @blur="onPageTypeInputBlur")
         +e.I.icon-clear.el-icon-close.form-icon-clear(@click="resetPageType")
       +e.error.form-error(v-html="pageTypeField.errorMsg")
+    //- newsId (if pageType === 'news')
+    +e.field._news-id.form-field(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
+      +e.label.form-label
+        +e.LABEL(for="newsId") Id новости
+      +e.EL-INPUT.input.form-input(placeholder="111" type="number" v-model="newsId")
+      +e.error.form-error(v-html="newsIdField.errorMsg")
+    //- appLink (if pageType !== 'news')
+    +e.field._app-link.form-field(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
+      +e.label.form-label
+        +e.LABEL(for="appLink") Ссылка на раздел
+      +e.EL-INPUT.input.form-input(placeholder="/link" v-model="appLink")
+      +e.error.form-error(v-html="appLinkField.errorMsg")
 </template>
 
 <script lang="ts">
@@ -23,8 +36,8 @@ import { ElSelect } from 'element-ui/types/select'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'pageTypes']),
-    ...bannersMapper.mapGetters(['formPageType'])
+    ...bannersMapper.mapState(['form']),
+    ...bannersMapper.mapGetters(['formPageType', 'formNewsId', 'formAppLink', 'pageTypesList'])
   },
   methods: {
     ...bannersMapper.mapActions(['updateField'])
@@ -40,17 +53,23 @@ export default class FormPagetype extends Mappers {
   @Ref() pageTypeSelect: ElSelect
 
   // FORM FIELD
+  get appLinkField() { return this.formAppLink }
+  get newsIdField() { return this.formNewsId }
   get pageTypeField() { return this.formPageType }
 
   // FORM SET/GET FIELDS VALUES
+  get appLink() { return this.appLinkField.value }
+  set appLink(value) { this.updateField({name: 'appLink', value: trim(value)}) }
+  get newsId() { return this.newsIdField.value }
+  set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
   get pageType() { return this.pageTypeField.value }
-  set pageType(value) { this.updateField({name: 'pageType', value: value || ('' && !this.isCustomType && this.pageTypes[0]) }) }
+  set pageType(value) { this.updateField({name: 'pageType', value: value || ('' && !this.isCustomType && this.pageTypesList[0]) }) }
 
   get isFilled() { return this.pageType && !this.isDisabled }
-  get pageTypesMastered() { return [...this.pageTypes, 'Добавить тип страницы'] }
-  get pageTypeIndex() { return this.pageType && this.pageTypes.indexOf(this.pageType.toString()) }
+  get pageTypesMastered() { return [...this.pageTypesList, 'Добавить тип страницы'] }
+  get pageTypeIndex() { return this.pageType && this.pageTypesList.indexOf(this.pageType.toString()) }
   get isNewsType() { return this.pageType === 'news' }
-  get isCustomType() { return typeof this.pageTypeIndex !== 'number' || this.pageTypeIndex === this.pageTypes.length || this.pageTypeIndex < 0 }
+  get isCustomType() { return typeof this.pageTypeIndex !== 'number' || this.pageTypeIndex === this.pageTypesList.length || this.pageTypeIndex < 0 }
 
   // METHODS
   isInvalid(field: FormField) {
@@ -61,7 +80,7 @@ export default class FormPagetype extends Mappers {
     this.updateField({name: 'pageType', value })
   }
   resetPageType() {
-    this.updatePageType(this.pageTypes[0])
+    this.updatePageType(this.pageTypesList[0])
   }
   async onPageTypeSelectChange() {
     if (this.isCustomType) {

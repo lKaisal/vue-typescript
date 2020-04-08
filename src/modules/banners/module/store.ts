@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData } from '../models'
+import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData,News } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
@@ -43,7 +43,8 @@ class BannersState {
   isLoading: boolean = false // deleteBanner, deactivateBanner
   loadingError: string = null
   list: { data: Banner[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
-  pageTypes: string[] = ['news']
+  news: { data: any[], error: string, isLoading: boolean, loaded: boolean } = { data: [], error: null, isLoading: false, loaded: false }
+  pageTypes: { data: string[], error: string, isLoading: boolean, loaded: boolean }  = { data: ['news'], error: null, isLoading: false, loaded: false }
 }
 
 class BannersGetters extends Getters<BannersState> {
@@ -116,6 +117,9 @@ class BannersGetters extends Getters<BannersState> {
     else if (banner.delayStart) return this.state.hashes[1]
     else return this.state.hashes[2]
   }
+  // FORM ADDITIONAL DATA LISTS
+  get pageTypesList() { return this.state.pageTypes.data }
+  get newsList() { return this.state.news.data }
   // FORM GETTERS
   get formActiveFrom() { return this.state.form.data.find(field => field.name === 'activeFrom') }
   get formActiveTo() { return this.state.form.data.find(field => field.name === 'activeTo') }
@@ -232,7 +236,7 @@ class BannersMutations extends Mutations<BannersState> {
     const fields = this.state.form.data
 
     fields.forEach(field => {
-      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount.value : (field.name === 'pageType' ? this.state.pageTypes[0] : null))
+      field.value = field.name === 'isActive' || (field.name === 'sort' ? this.state.activeAmount.value : (field.name === 'pageType' ? this.state.pageTypes.data[0] : null))
       field.isValid = field.name === 'sort' || field.name === 'pageType'
       field.validationRequired = field.name === 'file' || field.name === 'newsId' || field.name === 'title'
       field.errorType = !field.value && field.validationRequired && 'empty' || 'default'
@@ -257,20 +261,59 @@ class BannersMutations extends Mutations<BannersState> {
     payload.field[payload.prop] = payload.value
   }
   // PAGETYPES
+  startPageTypesLoading() {
+    this.state.pageTypes.isLoading = true
+    this.state.pageTypes.error = null
+    this.state.pageTypes.loaded = false
+  }
+  setPageTypesLoadingSuccess() {
+    this.state.pageTypes.isLoading = false
+    this.state.pageTypes.error = null
+    this.state.pageTypes.loaded = true
+  }
+  setPageTypesLoadingFail(err) {
+    this.state.pageTypes.isLoading = false
+    this.state.pageTypes.error = err
+    this.state.pageTypes.loaded = false
+  }
   addPageType(payload: Banner['pageType']) {
-    this.state.pageTypes.push(payload)
-    this.state.pageTypes.sort()
+    this.state.pageTypes.data.push(payload)
+    this.state.pageTypes.data.sort()
   }
   setPageTypesList(payload: {pageType: Banner['pageType']}[]) {
     const dataMastered = payload.map(el => el.pageType).sort()
-    this.state.pageTypes = dataMastered
+    this.state.pageTypes.data = dataMastered
+  }
+  // NEWS LIST
+  startNewsListLoading() {
+    this.state.news.isLoading = true
+    this.state.news.error = null
+    this.state.news.loaded = false
+  }
+  setNewsListLoadingSuccess(payload: News[]) {
+    this.state.news.isLoading = false
+    this.state.news.error = null
+    this.state.news.loaded = true
+  }
+  setNewsListLoadingFail(err) {
+    this.state.news.isLoading = false
+    this.state.news.error = err
+    this.state.news.loaded = false
   }
 }
 
 class BannersActions extends Actions<BannersState, BannersGetters, BannersMutations, BannersActions> {
   async loadGlobalData() {
     return new Promise((resolve, reject) => {
-      const promisesArr = [this.dispatch('getList', null), this.dispatch('getActiveAmount', null), this.dispatch('getPageTypesList', null)]
+      const promisesArr = [this.dispatch('getList', null), this.dispatch('getActiveAmount', null)]
+      Promise.all(promisesArr)
+        .then(() => resolve())
+        .catch((err) => reject(err))
+    })
+  }
+  async loadAdditionalFormData() {
+    return new Promise((resolve, reject) => {
+      const promisesArr = [this.dispatch('getPageTypesList', null), this.dispatch('getNewsList', null)]
       Promise.all(promisesArr)
         .then(() => resolve())
         .catch((err) => reject(err))
@@ -278,7 +321,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   }
   async getList() {
     return new Promise((resolve, reject) => {
-      this.commit('startListLoading')
+      this.commit('startListLoading', null)
 
       axios.get('/api/v1/banners-list')
         .then((res: AxiosResponse<any>) => {
@@ -384,11 +427,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Delete banner by bannerId */
   deleteBanner(id: Banner['id']) {
     return new Promise((resolve, reject) => {
-      this.commit('startLoading')
+      this.commit('startLoading', null)
       axios.delete(`/api/v1/banner/${id}`)
         .then(() => {
           if (isDev) console.log('Success: delete banner id=' + id)
-          this.commit('setLoadingSuccess')
+          this.commit('setLoadingSuccess', null)
           resolve()
         })
         .catch((error: AxiosError<any>) => {
@@ -404,7 +447,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Get single banner data by bannerId */
   getBannerById(id: Banner['id']) {
     return new Promise((resolve, reject) => {
-      this.commit('startBannerCurrentLoading')
+      this.commit('startBannerCurrentLoading', null)
 
       axios.get(`/api/v1/banner/${id}`)
         .then((res: AxiosResponse<any>) => {
@@ -524,7 +567,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break
         case 'pageType':
-          const pageTypes = this.state.pageTypes
+          const pageTypes = this.getters.pageTypesList
           const value = data.pageType
           const indexOfReceived = pageTypes.indexOf(value)
           if (indexOfReceived < 0) this.commit('addPageType', value)
@@ -543,11 +586,11 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Deactivate banner by Id */
   deactivateBanner(id: Banner['id']) {
     return new Promise((resolve, reject) => {
-      this.commit('startLoading')
+      this.commit('startLoading', null)
       axios.post(`/api/v1/inactivate/${id}`)
         .then(() => {
           if (isDev) console.log('Success: deactivate banner id=' + id)
-          this.commit('setLoadingSuccess')
+          this.commit('setLoadingSuccess', null)
           resolve()
         })
         .catch((err: AxiosError) => {
@@ -563,7 +606,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Get active banners amount */
   async getActiveAmount() {
     return new Promise((resolve, reject) => {
-      this.commit('startActiveAmountLoading')
+      this.commit('startActiveAmountLoading', null)
 
       axios.get('/api/v1/active-count')
         .then((res: AxiosResponse<any>) => {
@@ -585,7 +628,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Change active banners amount */
   updateActiveAmount(payload: number) {
     return new Promise(async (resolve, reject) => {
-      this.commit('startActiveAmountLoading')
+      this.commit('startActiveAmountLoading', null)
 
       axios.post(`/api/v1/active-count/${payload}`)
         .then((res: AxiosResponse<any>) => {
@@ -606,15 +649,39 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Get bannes pageTypes list */
   getPageTypesList() {
     return new Promise(async (resolve, reject) => {
-      this.commit('startLoading')
+      this.commit('startLoading', null)
 
       axios.get('/api/v1/page-types')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setPageTypesList', res)
-          this.commit('setLoadingSuccess')
+          this.commit('setLoadingSuccess', null)
           if (isDev) console.log('Success: get pageTypes')
+          resolve()
+        })
+        .catch((error: AxiosError) => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message
+          this.commit('setLoadingFail', errMsg)
+          reject()
+        })
+    })
+  }
+  /** Get news list */
+  getNewsList() {
+    return new Promise(async (resolve, reject) => {
+      this.commit('startLoading')
+
+      axios.get('/api/v1/news')
+        .then((res: AxiosResponse<any>) => {
+          while (!Array.isArray(res)) res = res.data
+
+          // this.commit('setNewsList', res)
+          this.commit('setLoadingSuccess', null)
+          if (isDev) console.log('Success: get NewsList')
           resolve()
         })
         .catch((error: AxiosError) => {

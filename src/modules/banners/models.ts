@@ -30,6 +30,11 @@ type BannerCurrent = {
   isLoading: boolean
 }
 
+type News = {
+  header: string
+  id: Banner['newsId']
+}
+
 type Form = {
   data: FormField[],
   error: string,
@@ -80,4 +85,5 @@ type RequestStatuses = {
   other: 'beforeDelete'
 }
 
-export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, Form, FormType, FormField, FormError, RequestStatus, RequestStatuses, RequestType }
+export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, News, Form, FormType, FormField, FormError,
+  RequestStatus, RequestStatuses, RequestType }
