@@ -43,13 +43,15 @@ class BannersState {
   isLoading: boolean = false // deleteBanner, deactivateBanner
   loadingError: string = null
   list: { data: Banner[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
-  news: { data: any[], error: string, isLoading: boolean, loaded: boolean } = { data: [], error: null, isLoading: false, loaded: false }
-  pageTypes: { data: string[], error: string, isLoading: boolean, loaded: boolean }  = { data: ['news'], error: null, isLoading: false, loaded: false }
+  news: { data: any[], error: string, isLoading: boolean } = { data: [], error: null, isLoading: false }
+  pageTypes: { data: string[], error: string, isLoading: boolean }  = { data: ['news'], error: null, isLoading: false }
 }
 
 class BannersGetters extends Getters<BannersState> {
-  get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.bannerCurrent.isLoading || this.state.form.isLoading || this.state.list.isLoading }
-  get loadingError() { return this.state.loadingError || this.state.activeAmount.error || this.state.bannerCurrent.error || this.state.form.error || this.state.list.error }
+  get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.bannerCurrent.isLoading || this.state.form.isLoading ||
+    this.state.list.isLoading || this.state.pageTypes.isLoading || this.state.news.isLoading }
+  get loadingError() { return this.state.loadingError || this.state.activeAmount.error || this.state.bannerCurrent.error || this.state.form.error ||
+    this.state.list.error || this.state.pageTypes.error || this.state.news.error }
   // LIST GETTERS
   get listMastered() {
     if (!this.state.list.data) return
@@ -256,49 +258,44 @@ class BannersMutations extends Mutations<BannersState> {
     }
   }
   // FORM FIELDS MUTATIONS
-  setField(payload: {field: FormField, prop: keyof FormField, value: any}) {
-    // @ts-ignore
-    payload.field[payload.prop] = payload.value
+  setField(payload: {field: FormField, prop: keyof FormField, value: FormField[keyof FormField]}) {
+    let fieldProp = payload.field[payload.prop]
+    fieldProp = payload.value
   }
-  // PAGETYPES
+  // PAGE TYPES
   startPageTypesLoading() {
     this.state.pageTypes.isLoading = true
     this.state.pageTypes.error = null
-    this.state.pageTypes.loaded = false
   }
-  setPageTypesLoadingSuccess() {
+  setPageTypesLoadingSuccess(payload: {pageType: Banner['pageType']}[]) {
     this.state.pageTypes.isLoading = false
     this.state.pageTypes.error = null
-    this.state.pageTypes.loaded = true
+
+    const dataMastered = payload.map(el => el.pageType).sort()
+    this.state.pageTypes.data = dataMastered
   }
   setPageTypesLoadingFail(err) {
     this.state.pageTypes.isLoading = false
     this.state.pageTypes.error = err
-    this.state.pageTypes.loaded = false
   }
+  /** Add new pageType which does not exist */
   addPageType(payload: Banner['pageType']) {
     this.state.pageTypes.data.push(payload)
     this.state.pageTypes.data.sort()
-  }
-  setPageTypesList(payload: {pageType: Banner['pageType']}[]) {
-    const dataMastered = payload.map(el => el.pageType).sort()
-    this.state.pageTypes.data = dataMastered
   }
   // NEWS LIST
   startNewsListLoading() {
     this.state.news.isLoading = true
     this.state.news.error = null
-    this.state.news.loaded = false
   }
   setNewsListLoadingSuccess(payload: News[]) {
+    this.state.news.data = payload
     this.state.news.isLoading = false
     this.state.news.error = null
-    this.state.news.loaded = true
   }
   setNewsListLoadingFail(err) {
     this.state.news.isLoading = false
     this.state.news.error = err
-    this.state.news.loaded = false
   }
 }
 
@@ -646,17 +643,16 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Get bannes pageTypes list */
+  /** Get banners pageTypes list */
   getPageTypesList() {
     return new Promise(async (resolve, reject) => {
-      this.commit('startLoading', null)
+      this.commit('startPageTypesLoading', null)
 
       axios.get('/api/v1/page-types')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data
 
-          this.commit('setPageTypesList', res)
-          this.commit('setLoadingSuccess', null)
+          this.commit('setPageTypesLoadingSuccess', res)
           if (isDev) console.log('Success: get pageTypes')
           resolve()
         })
@@ -665,7 +661,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           else console.log('error')
 
           const errMsg = error && error.response && error.response.data && error.response.data.message
-          this.commit('setLoadingFail', errMsg)
+          this.commit('setPageTypesLoadingFail', errMsg)
           reject()
         })
     })
@@ -673,14 +669,13 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Get news list */
   getNewsList() {
     return new Promise(async (resolve, reject) => {
-      this.commit('startLoading')
+      this.commit('startNewsListLoading')
 
       axios.get('/api/v1/news')
         .then((res: AxiosResponse<any>) => {
           while (!Array.isArray(res)) res = res.data
 
-          // this.commit('setNewsList', res)
-          this.commit('setLoadingSuccess', null)
+          this.commit('setNewsListLoadingSuccess', res)
           if (isDev) console.log('Success: get NewsList')
           resolve()
         })
@@ -689,7 +684,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           else console.log('error')
 
           const errMsg = error && error.response && error.response.data && error.response.data.message
-          this.commit('setLoadingFail', errMsg)
+          this.commit('setNewsListLoadingFail', errMsg)
           reject()
         })
     })

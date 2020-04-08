@@ -37,12 +37,12 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const BannersMappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'news']),
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'news', 'pageTypes']),
     ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom', 'pageTypesList'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['createBanner', 'deactivateBanner', 'updateFormByBannerData'])
+    ...bannersMapper.mapActions(['createBanner', 'deactivateBanner', 'updateFormByBannerData', 'loadAdditionalFormData'])
   }
 })
 @Component({
@@ -95,10 +95,12 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
 
   // HOOKS
   async created() {
-    await this.loadAdditionalData()
+    this.loadAdditionalData()
     this.setFormType('create')
     document.addEventListener('keydown', this.keydownHandler)
-    if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data) // if free banner-cell was clicked on list, its position was stored
+
+    // if free banner-cell was clicked on list, its position was stored
+    if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data)
   }
   async mounted() {
     await this.$nextTick()
@@ -111,7 +113,23 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
   }
 
   loadAdditionalData() {
-    // if (this.pageTypes && this.pageTypes.length > 1 && this.)
+    return new Promise((resolve, reject) => {
+      if (this.msgBoxIsShown) this.closeMsgBox()
+
+      this.loadAdditionalFormData()
+        .then(() => {
+          resolve()
+        })
+        .catch((err) => {
+          if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+          else {
+            this.requestStatus = 'failLoadAdditionalFormData'
+            this.secondBtn = { type: 'success', isPlain: true }
+            this.openMsgBox()
+          }
+          reject()
+        })
+    })
   }
   // METHODS POPUP CONFLICT
   openPopupConflict() {
@@ -139,22 +157,23 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
       case 'failDeactivate':
         this.deactivateBannerConflict()
         break
+      case 'failLoadAdditionalFormData':
+        this.loadAdditionalData()
+        break
       default:
         this.submitForm()
         break
     }
   }
   onSecondBtnClick() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
-      case ('successCreate'):
+      case 'successCreate':
+      case 'failLoadAdditionalFormData':
         this.goToPageMain()
         break
       case 'failDeactivate':
-        this.closeMsgBox()
         this.closePopupConflict()
-        break
-      default:
-        this.closeMsgBox()
         break
     }
   }

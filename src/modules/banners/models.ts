@@ -81,7 +81,7 @@ type RequestType = 'success' | 'fail' | 'other'
 
 type RequestStatuses = {
   success: 'successCreate' | 'successEdit' | 'successDelete'
-  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount'
+  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount' | 'failLoadAdditionalFormData'
   other: 'beforeDelete'
 }
 

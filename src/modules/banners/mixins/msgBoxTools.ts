@@ -20,7 +20,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!', 'other': null }
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ 'successCreate', 'successEdit', 'successDelete' ],
-    fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount' ],
+    fail: [ 'failFetchList', 'failFetchBanner', 'failCreate', 'failEdit', 'failDelete', 'failDeactivate', 'failSetAmount', 'failLoadAdditionalFormData' ],
     other: [ 'beforeDelete' ]
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
@@ -34,6 +34,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
     failDelete: { firstBtn: 'Повторить попытку', secondBtn: 'Отменить' },
     failDeactivate: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
     failSetAmount: { firstBtn: 'Повторить попытку', secondBtn: 'Отмена' },
+    failLoadAdditionalFormData: { firstBtn: 'Повторить попытку', secondBtn: 'Вернуться к списку' },
     beforeDelete: { firstBtn: 'Подтвердить', secondBtn: 'Отмена' }
   }
   msgBoxOtherTitles: { [key in RequestStatuses['other']]: string } = { beforeDelete: 'Отправить в архив?' }

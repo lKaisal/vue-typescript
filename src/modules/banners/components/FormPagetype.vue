@@ -13,13 +13,13 @@
         +e.I.icon-clear.el-icon-close.form-icon-clear(@click="resetPageType")
       +e.error.form-error(v-html="pageTypeField.errorMsg")
     //- newsId (if pageType === 'news')
-    +e.field._news-id.form-field(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
+    +e.field._news-id.form-field(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId && !isDisabled, 'is-disabled': isDisabled }")
       +e.label.form-label
         +e.LABEL(for="newsId") Id новости
       +e.EL-INPUT.input.form-input(placeholder="111" type="number" v-model="newsId")
       +e.error.form-error(v-html="newsIdField.errorMsg")
     //- appLink (if pageType !== 'news')
-    +e.field._app-link.form-field(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
+    +e.field._app-link.form-field(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink && !isDisabled, 'is-disabled': isDisabled }")
       +e.label.form-label
         +e.LABEL(for="appLink") Ссылка на раздел
       +e.EL-INPUT.input.form-input(placeholder="/link" v-model="appLink")
