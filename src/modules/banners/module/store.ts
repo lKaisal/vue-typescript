@@ -259,8 +259,9 @@ class BannersMutations extends Mutations<BannersState> {
   }
   // FORM FIELDS MUTATIONS
   setField(payload: {field: FormField, prop: keyof FormField, value: FormField[keyof FormField]}) {
-    let fieldProp = payload.field[payload.prop]
-    fieldProp = payload.value
+    // @ts-ignore
+    payload.field[payload.prop] = payload.value
+
   }
   // PAGE TYPES
   startPageTypesLoading() {
@@ -550,6 +551,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         this.commit('setField', {field, prop: 'value', value: sortValue})
         break
     }
+    // console.log(field.name + ': ' + value)
+    // console.log(this.state.form.data)
+    // debugger
 
     const errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
     this.commit('setField', {field, prop: 'errorMsg', value: errorMsg})
@@ -557,6 +561,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   /** Update form by existing banner data */
   updateFormByBannerData(data: Banner) {
     const fields = this.state.form.data
+    let value = null
 
     fields.forEach(field => {
       switch (field.name) {
@@ -565,17 +570,19 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           break
         case 'pageType':
           const pageTypes = this.getters.pageTypesList
-          const value = data.pageType
+          value = data.pageType
           const indexOfReceived = pageTypes.indexOf(value)
           if (indexOfReceived < 0) this.commit('addPageType', value)
 
           this.dispatch('updateField', { name: field.name, value })
           break
         case 'sort':
-          this.dispatch('updateField', { name: field.name, value: Math.abs(data.position).toString() })
+          value = Math.abs(data.position).toString()
+          this.dispatch('updateField', { name: field.name, value })
           break
         default:
-          this.dispatch('updateField', { name: field.name, value: data[field.name] })
+          value = data[field.name]
+          this.dispatch('updateField', { name: field.name, value })
           break
       }
     })

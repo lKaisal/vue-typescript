@@ -49,7 +49,7 @@ const Mappers = Vue.extend({
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'deactivateBanner'])
+    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'deactivateBanner', 'loadAdditionalFormData'])
   }
 })
 
@@ -109,7 +109,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   }
 
   // HOOKS
-  created() {
+  async created() {
+    this.loadAdditionalData()
     this.setFormType('edit')
     this.updateBannerData()
     document.addEventListener('keydown', this.keydownHandler)
@@ -125,6 +126,26 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     this.setBannerCurrentSuccess(null)
   }
 
+  // METHODS
+  loadAdditionalData() {
+    return new Promise((resolve, reject) => {
+      if (this.msgBoxIsShown) this.closeMsgBox()
+
+      this.loadAdditionalFormData()
+        .then(() => {
+          resolve()
+        })
+        .catch((err) => {
+          if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+          else {
+            this.requestStatus = 'failLoadAdditionalFormData'
+            this.secondBtn = { type: 'success', isPlain: true }
+            this.openMsgBox()
+          }
+          reject()
+        })
+    })
+  }
   keydownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
       // if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
@@ -241,7 +262,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     } else {
       this.setBannerCurrentSuccess(banner)
       this.updateFormByBannerData(banner)
-      // this.closeMsgBox()
     }
   }
   submitForm() {
