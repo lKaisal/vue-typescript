@@ -5,7 +5,8 @@
     transition(mode="out-in")
       router-view(v-if="list.data && list.data.length" @updateList="loadData" @goToPageAuth="goToPageAuth" class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp" @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
+      MessageBox(v-show="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"
+        @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
         class="module-banners__msg-box modal modal-msg")
 </template>
 

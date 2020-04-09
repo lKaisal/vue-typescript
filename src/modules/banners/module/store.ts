@@ -120,6 +120,7 @@ class BannersGetters extends Getters<BannersState> {
     else return this.state.hashes[2]
   }
   // FORM ADDITIONAL DATA LISTS
+  get formAdditionalDataLoaded() { return this.getters.pageTypesList && this.getters.pageTypesList.length && this.getters.newsList && this.getters.newsList.length }
   get pageTypesList() { return this.state.pageTypes.data }
   get newsList() { return this.state.news.data }
   // FORM GETTERS
@@ -552,9 +553,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         this.commit('setField', {field, prop: 'value', value: sortValue})
         break
     }
-    // console.log(field.name + ': ' + value)
-    // console.log(this.state.form.data)
-    // debugger
 
     const errorMsg = field.errorType && this.state.form.errors.find(f => f.type === field.errorType).msg
     this.commit('setField', {field, prop: 'errorMsg', value: errorMsg})
@@ -569,6 +567,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         case 'file':
           this.dispatch('updateField', { name: field.name, value: data.bannerImageUrl })
           break
+
         case 'pageType':
           const pageTypes = this.getters.pageTypesList
           value = data.pageType
@@ -577,10 +576,12 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
 
           this.dispatch('updateField', { name: field.name, value })
           break
+
         case 'sort':
           value = Math.abs(data.position).toString()
           this.dispatch('updateField', { name: field.name, value })
           break
+
         default:
           value = data[field.name]
           this.dispatch('updateField', { name: field.name, value })

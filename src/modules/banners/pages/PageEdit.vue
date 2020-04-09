@@ -2,8 +2,8 @@
   include ../../../tools/bemto.pug
 
   +b.page-edit.page
-    transition
-      +e.container.js-voa.js-voa-start(v-if="banner" v-click-outside="onClickOutside")
+    transition(appear)
+      +e.container.js-voa(v-if="banner && formAdditionalDataLoaded" v-click-outside="onClickOutside")
         +e.row-back(key="rowBack" @click="goToPageMain")
           i(class="el-icon-back page-edit__icon-back")
           +e.text-back Вернуться к списку
@@ -45,7 +45,7 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'bannerCurrent', 'pageTypes']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus', 'formAdditionalDataLoaded'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
@@ -110,8 +110,8 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
 
   // HOOKS
   async created() {
-    this.loadAdditionalData()
     this.setFormType('edit')
+    if (!this.formAdditionalDataLoaded) await this.loadAdditionalData()
     this.updateBannerData()
     document.addEventListener('keydown', this.keydownHandler)
   }

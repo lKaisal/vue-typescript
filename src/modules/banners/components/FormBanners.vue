@@ -24,7 +24,7 @@
           +e.EL-INPUT.input.form-input(placeholder="Title" v-model="title")
           +e.error.form-error(v-html="titleField.errorMsg")
         //- pageType
-        FormPagetype(:isDisabled="allFieldsDisabled")
+        FormPagetype(:key="form.isLoading" :isDisabled="allFieldsDisabled")
         //- activeFrom / activeTo
         FormPickr(:isDisabled="activeFromToDisabled" class="form-banners__pickr")
         //- sort

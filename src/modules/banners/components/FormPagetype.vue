@@ -89,6 +89,7 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
 
   // FORM TYPE
   get isFormCreate() { return this.form.type === 'create' }
+  get isFormEdit() { return this.form.type === 'edit' }
   // PAGE TYPE
   get pageTypesMastered() { return [...this.pageTypesList, 'Добавить тип страницы'] }
   get pageTypeIndex() { return this.pageType && this.pageTypesList.indexOf(this.pageType.toString()) }
@@ -96,19 +97,27 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
   get isNewsType() { return this.pageType === 'news' }
   get isCustomType() { return typeof this.pageTypeIndex !== 'number' || this.pageTypeIndex === this.pageTypesList.length || this.pageTypeIndex < 0 }
   // NEWS ID
+  get newsSelected(): News { return this.newsList && this.newsList.find(news => Number(news.id) === Number(this.newsId)) }
   get newsIdIsFilled() { return this.newsId && !this.isDisabled }
   // APP LINK
   get appLinkIsFilled() { return this.appLink && !this.isDisabled }
+  get newsIdSelectedLabel() { return this.newsIdSelect.$data.selected.label }
 
   @Watch('breakpoint')
   async onBreakpointChange() {
     await this.$nextTick()
     this.getSelectWidth()
   }
+  @Watch('newsId')
+  async onNewsIdChange(val) {
+    await this.$nextTick()
+    if (!this.newsIdSelectedLabel) this.newsId = this.newsSelected.id
+  }
 
   // HOOKS
   created() {
     if (this.isFormCreate) this.updateField({ name: 'pageType', value: this.pageTypesList[0] })
+    else if (this.isNewsType && this.newsSelected) this.newsId = this.newsSelected.id
   }
   async mounted() {
     await this.$nextTick()
@@ -117,7 +126,7 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
 
   // METHODS
   getSelectWidth() {
-    const selectEl = this.newsIdSelect.$el.firstElementChild as HTMLElement
+    const selectEl = this.pageTypeSelect.$el.firstElementChild as HTMLElement
     this.optionsWidth = Math.floor(selectEl.offsetWidth)
   }
   isInvalid(field: FormField) {

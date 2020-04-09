@@ -38,7 +38,7 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 const BannersMappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'news', 'pageTypes']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom', 'pageTypesList'])
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom', 'pageTypesList', 'formAdditionalDataLoaded'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
@@ -95,7 +95,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
 
   // HOOKS
   async created() {
-    this.loadAdditionalData()
+    if (!this.formAdditionalDataLoaded) this.loadAdditionalData()
     this.setFormType('create')
     document.addEventListener('keydown', this.keydownHandler)
 
