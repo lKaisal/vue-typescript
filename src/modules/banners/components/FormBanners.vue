@@ -37,7 +37,6 @@
 
 <script lang="ts">
 import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
-import trim from 'validator/lib/trim'
 import { ElInput } from 'element-ui/types/input'
 import { MsgBoxContent } from '@/models'
 import { Banner, BannerForm, FormField } from '../models'
@@ -85,7 +84,7 @@ export default class FormBanners extends Mappers {
   get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value : null }
   set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value}) : null }
   get title() { return this.titleField.value }
-  set title(value) { this.updateField({name: 'title', value: trim(value) }) }
+  set title(value) { this.updateField({name: 'title', value: value.toString().trim() }) }
 
   // BANNER STATUS
   get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }

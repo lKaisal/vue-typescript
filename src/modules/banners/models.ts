@@ -31,6 +31,7 @@ type BannerCurrent = {
 }
 
 type News = {
+  created: string
   header: string
   id: Banner['newsId']
 }

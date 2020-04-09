@@ -19,10 +19,13 @@
     +e.field._news-id.form-field(v-if="isNewsType" key="newsId"
       :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsIdIsFilled, 'is-disabled': isDisabled }")
       +e.label.form-label
-        +e.LABEL(for="newsId") Id новости
-      +e.EL-SELECT.select.form-select(ref="newsIdSelect" v-model="newsId" :disabled="isDisabled" placeholder="Найти новость" no-match-text="Новость не найдена"
-        :popper-class="newsIdSelectDropdownClass" filterable @visible-change="onNewsIdVisibleChange")
-        +e.EL-OPTION.option.form-option(v-for="(news, index) in newsList" :key="index" :label="news.header" :value="news.id.toString()")
+        +e.LABEL(for="newsId") Заголовок новости
+      +e.EL-SELECT.select.form-select(ref="newsIdSelect" v-model="newsId" :disabled="isDisabled" placeholder="Найти новость"
+        no-match-text="Новость не найдена" :popper-class="newsIdSelectDropdownClass" filterable @visible-change="onNewsIdVisibleChange")
+        +e.EL-OPTION.option.form-option(v-for="(news, index) in newsList" :label="news.header" :key="index"
+          :value="news.id.toString()")
+          SPAN(style="margin-right: 5px; color: #909399; font-size: 12px;") {{ news.created }}
+          SPAN(style="") {{ news.header }}
       +e.error.form-error(v-html="newsIdField.errorMsg")
 
     //- appLink (if pageType !== 'news')
@@ -36,13 +39,12 @@
 
 <script lang="ts">
 import { Vue, Component, Ref, Prop, Mixins, Watch } from 'vue-property-decorator'
-import trim from 'validator/lib/trim'
-import { ElInput } from 'element-ui/types/input'
-import { Banner, BannerForm, FormField } from '../models'
-import { bannersMapper } from '../module/store'
 import { ElSelect } from 'element-ui/types/select'
 import sleep from '@/mixins/sleep'
 import { uiMapper } from '@/modules/ui/module/store'
+import { ElInput } from 'element-ui/types/input'
+import { Banner, BannerForm, FormField, News } from '../models'
+import { bannersMapper } from '../module/store'
 
 const BannersMappers = Vue.extend({
   computed: {
@@ -69,8 +71,8 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
   @Ref() newsIdSelect: ElSelect
 
   optionsWidth: number = null
-  pageTypeSelectDropdownClass = 'page-type-select-dropdown'
-  newsIdSelectDropdownClass = 'newsIdSelectDropdownClass'
+  pageTypeSelectDropdownClass: string = 'page-type-select-dropdown'
+  newsIdSelectDropdownClass: string = 'news-id-select-dropdown'
 
   // FORM FIELD
   get appLinkField() { return this.formAppLink }
@@ -79,9 +81,9 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
 
   // FORM SET/GET FIELDS VALUES
   get appLink() { return this.appLinkField.value }
-  set appLink(value) { this.updateField({name: 'appLink', value: trim(value)}) }
+  set appLink(value) { this.updateField({name: 'appLink', value: value.toString().trim()}) }
   get newsId() { return this.newsIdField.value }
-  set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
+  set newsId(value) { this.updateField({name: 'newsId', value: value.toString().trim()}) }
   get pageType() { return this.pageTypeField.value }
   set pageType(value) { this.updateField({name: 'pageType', value: value || ('' && !this.isCustomType && this.pageTypesList[0]) }) }
 
