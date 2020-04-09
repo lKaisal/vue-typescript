@@ -173,6 +173,7 @@ class BannersGetters extends Getters<BannersState> {
 }
 
 class BannersMutations extends Mutations<BannersState> {
+  // GENERAL LOADING
   startLoading() {
     this.state.isLoading = true
     this.state.loadingError = null
@@ -185,7 +186,7 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.isLoading = false
     this.state.loadingError = err
   }
-  // BANNERS LIST
+  // BANNERS LIST LOADING
   startListLoading() {
     this.state.list.isLoading = true
     this.state.list.error = null
@@ -200,7 +201,7 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.list.error = err
     this.state.list.isLoading = false
   }
-  // BANNER CURRENT
+  // BANNER CURRENT LOADING
   startBannerCurrentLoading() {
     this.state.bannerCurrent.isLoading = true
     this.state.bannerCurrent.error = null
@@ -215,7 +216,7 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.bannerCurrent.error = err
     this.state.bannerCurrent.isLoading = false
   }
-  // ACTIVE AMOUNT
+  // ACTIVE AMOUNT LOADING
   startActiveAmountLoading() {
     this.state.activeAmount.isLoading = true
     this.state.activeAmount.error = null
@@ -263,7 +264,7 @@ class BannersMutations extends Mutations<BannersState> {
     payload.field[payload.prop] = payload.value
 
   }
-  // PAGE TYPES
+  // PAGE TYPES LOADING & MODIFYING
   startPageTypesLoading() {
     this.state.pageTypes.isLoading = true
     this.state.pageTypes.error = null
@@ -284,7 +285,7 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.pageTypes.data.push(payload)
     this.state.pageTypes.data.sort()
   }
-  // NEWS LIST
+  // NEWS LIST LOADING
   startNewsListLoading() {
     this.state.news.isLoading = true
     this.state.news.error = null

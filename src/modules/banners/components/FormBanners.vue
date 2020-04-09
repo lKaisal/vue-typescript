@@ -110,7 +110,9 @@ export default class FormBanners extends Mappers {
 
   // HOOKS
   created() {
-    if (this.isFormCreate) this.updateField({ name: 'isActive', value: true })
+    if (this.isFormCreate) {
+      this.updateField({ name: 'isActive', value: true })
+    }
   }
   beforeDestroy() {
     this.setValidationIsShown(false)
