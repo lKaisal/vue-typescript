@@ -7,7 +7,7 @@
       +e.label.form-label
         +e.LABEL(for="pageType") Тип страницы
       +e.EL-SELECT.select.form-select(v-show="!isCustomType" ref="pageTypeSelect" v-model="pageType" :disabled="isDisabled" placeholder="Введите тип страницы"
-        popper-class="page-type-select-dropdown" @change="onPageTypeSelectChange" @visible-change="onPageTypeVisibleChange")
+        :popper-class="pageTypeSelectDropdownClass" @change="onPageTypeSelectChange" @visible-change="onPageTypeVisibleChange")
         +e.EL-OPTION.option.form-option(v-for="(type, index) in pageTypesMastered" :key="index" :label="type" :value="type"
           :class="{ 'is-custom': index === pageTypesMastered.length - 1 }")
       +e.input-wrapper.form-input-wrapper.is-custom(v-show="isCustomType")
@@ -20,9 +20,9 @@
       :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsIdIsFilled, 'is-disabled': isDisabled }")
       +e.label.form-label
         +e.LABEL(for="newsId") Id новости
-      +e.EL-SELECT.select.form-select(ref="newsIdSelect" v-model="newsId" :disabled="isDisabled" placeholder="Найти новость" no-match-text="Не найдено"
-        popper-class="news-id-select-dropdown" @visible-change="onNewsIdVisibleChange")
-        +e.EL-OPTION.option.form-option(v-for="(news, index) in newsList.slice(0,6)" :key="index" :label="news.header" :value="news.id.toString()")
+      +e.EL-SELECT.select.form-select(ref="newsIdSelect" v-model="newsId" :disabled="isDisabled" placeholder="Найти новость" no-match-text="Новость не найдена"
+        :popper-class="newsIdSelectDropdownClass" filterable @visible-change="onNewsIdVisibleChange")
+        +e.EL-OPTION.option.form-option(v-for="(news, index) in newsList" :key="index" :label="news.header" :value="news.id.toString()")
       +e.error.form-error(v-html="newsIdField.errorMsg")
 
     //- appLink (if pageType !== 'news')
@@ -35,15 +35,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Ref, Prop } from 'vue-property-decorator'
+import { Vue, Component, Ref, Prop, Mixins, Watch } from 'vue-property-decorator'
 import trim from 'validator/lib/trim'
 import { ElInput } from 'element-ui/types/input'
 import { Banner, BannerForm, FormField } from '../models'
 import { bannersMapper } from '../module/store'
 import { ElSelect } from 'element-ui/types/select'
 import sleep from '@/mixins/sleep'
+import { uiMapper } from '@/modules/ui/module/store'
 
-const Mappers = Vue.extend({
+const BannersMappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form']),
     ...bannersMapper.mapGetters(['formPageType', 'formNewsId', 'formAppLink', 'pageTypesList', 'newsList'])
@@ -52,17 +53,24 @@ const Mappers = Vue.extend({
     ...bannersMapper.mapActions(['updateField'])
   }
 })
+const UiMappers = Vue.extend({
+  computed: {
+    ...uiMapper.mapState(['breakpoint'])
+  },
+})
 
 @Component({
 })
 
-export default class FormPagetype extends Mappers {
+export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
   @Prop() isDisabled: boolean
   @Ref() pageTypeInput: ElInput
   @Ref() pageTypeSelect: ElSelect
   @Ref() newsIdSelect: ElSelect
 
   optionsWidth: number = null
+  pageTypeSelectDropdownClass = 'page-type-select-dropdown'
+  newsIdSelectDropdownClass = 'newsIdSelectDropdownClass'
 
   // FORM FIELD
   get appLinkField() { return this.formAppLink }
@@ -90,10 +98,16 @@ export default class FormPagetype extends Mappers {
   // APP LINK
   get appLinkIsFilled() { return this.appLink && !this.isDisabled }
 
+  @Watch('breakpoint')
+  async onBreakpointChange() {
+    await this.$nextTick()
+    this.getSelectWidth()
+  }
+
+  // HOOKS
   created() {
     if (this.isFormCreate) this.updateField({ name: 'pageType', value: this.pageTypesList[0] })
   }
-
   async mounted() {
     await this.$nextTick()
     this.getSelectWidth()
@@ -106,6 +120,11 @@ export default class FormPagetype extends Mappers {
   }
   isInvalid(field: FormField) {
     return this.form.validationIsShown && field.validationRequired && !field.isValid
+  }
+  // Selectors
+  async onSelectVisibleChange(dropdownClass) {
+    const dropdown = document.querySelector(dropdownClass) as HTMLElement
+    dropdown.style.maxWidth = this.optionsWidth.toString() + 'px'
   }
   // PageType fields
   updatePageType(value) {
@@ -125,14 +144,11 @@ export default class FormPagetype extends Mappers {
     if (!this.pageType) this.resetPageType()
   }
   onPageTypeVisibleChange(isVisible) {
-    if (isVisible) this.onSelectVisibleChange('.page-type-select-dropdown')
+    if (isVisible) this.onSelectVisibleChange(`.${this.pageTypeSelectDropdownClass}`)
   }
-  async onSelectVisibleChange(dropdownClass) {
-    const dropdown = document.querySelector(dropdownClass) as HTMLElement
-    dropdown.style.maxWidth = this.optionsWidth.toString() + 'px'
-  }
+  // NewsId fields
   onNewsIdVisibleChange(isVisible) {
-    if (isVisible) this.onSelectVisibleChange('.news-id-select-dropdown')
+    if (isVisible) this.onSelectVisibleChange(`.${this.newsIdSelectDropdownClass}`)
   }
 }
 </script>
