@@ -92,5 +92,5 @@ type RequestStatuses = {
   other: 'beforeDelete'
 }
 
-export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, News, Form, FormType, FormField, FormError,
+export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, SortUpdate, News, Form, FormType, FormField, FormError,
   RequestStatus, RequestStatuses, RequestType }
