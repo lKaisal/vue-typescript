@@ -4,7 +4,8 @@
   +b.list-banners
     +e.container
       +e.EL-MENU.sort(:default-active="(activeHashIndex + 1).toString()" mode="horizontal" @select="handleSelect")
-        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item" :class="{ 'is-disabled': !tabs[index].list.length }")
+        +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item"
+          :class="{ 'is-disabled': !tabs[index].list.length }")
       transition(mode="out-in" @enter="animateOneMoreTime")
         +e.items(v-if="activeDraggableList && activeDraggableList.length" :is="activeHashIndex === 0 ? 'draggable' : 'div'" :key="activeHashIndex"
           v-model="draggableList" @end="onDragEnd" draggable=".list-banners__item")
@@ -72,7 +73,7 @@ export default class ListBanners extends Mixins(BannersMapper) {
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
   @Watch('list', { deep: true, immediate: true })
-  onListChange() {
+  onListChange(val) {
     this.draggableList = this.activeList
   }
 
@@ -87,12 +88,13 @@ export default class ListBanners extends Mixins(BannersMapper) {
   }
   // DRAG HANDLERS
   onDragEnd(evt) {
-    const index = evt.newIndex
-    const movedBanner = this.draggableList[index]
+    const oldIndex = evt.oldIndex + 1
+    const newIndex = evt.newIndex + 1
+    const movedBanner = this.draggableList[newIndex]
 
     if (!movedBanner) return
 
-    const payload: SortUpdate = { id: movedBanner.id, sort: index }
+    const payload: SortUpdate = { id: movedBanner.id, 'oldPosition': oldIndex, 'position': newIndex }
 
     this.$emit('updateSort', payload)
   }

@@ -26,7 +26,8 @@ type Banner = {
 
 type SortUpdate = {
   id: Banner['id']
-  sort: Banner['sort']
+  oldPosition: Banner['sort']
+  position: Banner['sort']
   loadingIsShown?: boolean
 }
 

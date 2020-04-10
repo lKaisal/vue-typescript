@@ -99,7 +99,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
   }
   async onMsgBoxClose() {
     this.closeMsgBox()
-    if (this.sorting.error) this.updateList()
+    if (this.sorting.error) this.updateList(true)
   }
   // CLICK HANDLERS
   onCreateClick() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
@@ -121,7 +121,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
         this.updateAmount(this.amountForUpdate)
         break
       case 'failSortUpdate':
-        this.updateList()
+        this.updateList(true)
         break
     }
   }
@@ -146,8 +146,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     document.body.classList.remove('modal-open')
   }
   // emit methods
-  updateList() {
-    this.$emit('updateList')
+  updateList(loadingIsShown: boolean) {
+    this.$emit('updateList', loadingIsShown)
   }
   updateData() {
     this.$emit('updateData')
@@ -160,14 +160,14 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
         this.requestStatus = 'successDelete'
         this.openMsgBox()
         this.deleteId = null
-        this.updateList()
+        this.updateList(true)
         await sleep(3000)
         this.closeMsgBox()
       })
       .catch(() => {
         this.secondBtn = { type: 'danger', isPlain: true }
         this.requestStatus = 'failDelete'
-        this.updateList()
+        this.updateList(false)
         this.openMsgBox()
       })
   }
@@ -177,6 +177,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     this.updateBannerSort(this.sortUpdate)
       .then(() => {
         this.sortUpdate = null
+        this.updateList(false)
       })
       .catch(() => {
         this.secondBtn = { type: 'success', isPlain: true }

@@ -381,7 +381,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
       this.commit('startPhoneAuthDelete')
 
       axios.delete(`/api/v1/phone-auth/${userId}`)
-        .then((res) => {
+        .then(() => {
           if (isDev) console.log('Success: delete phoneAuth, userId: ' + userId)
           this.commit('setPhoneAuthDeleteSuccess')
           resolve()

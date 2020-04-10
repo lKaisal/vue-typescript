@@ -61,12 +61,12 @@ export default class ModuleBanners extends Mixins(BannersMappers, MsgBoxTools, M
         }
       })
   }
-  loadList() {
+  loadList(loadingIsShown) {
     if (this.list.isLoading) return
 
     if (this.msgBoxIsShown) this.closeMsgBox()
 
-    this.getList()
+    this.getList(loadingIsShown)
       .catch((err) => {
         if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
         else {

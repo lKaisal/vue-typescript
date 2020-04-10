@@ -338,9 +338,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .catch((err) => reject(err))
     })
   }
-  async getList() {
+  async getList(loadingIsShown: boolean) {
     return new Promise((resolve, reject) => {
-      this.commit('startListLoading', null)
+      if (loadingIsShown) this.commit('startListLoading', null)
 
       axios.get('/api/v1/banners-list')
         .then((res: AxiosResponse<any>) => {
@@ -508,24 +508,21 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   }
   updateBannerSort(payload: SortUpdate) {
     return new Promise((resolve, reject) => {
-      console.log(payload)
       if (payload.loadingIsShown) this.commit('startSortUpdate')
-      // axios.put('')
-      sleep(1000)
+      console.log(payload)
+
+      axios.post('/api/v1/drag-n-drop', payload)
         .then(() => {
-          if (isDev) console.log('Success: move banner id=' + payload.id + ' to position ' + payload.sort)
+          if (isDev) console.log('Success: move banner id=' + payload.id + ' from position ' + payload.oldPosition + ' to ' + payload.position)
           this.commit('setSortUpdateSuccess')
           resolve()
         })
         .catch((err: AxiosError) => {
-          // const err = 'Fail: move banner id=' + payload.id + ' to position ' + payload.sort
-          // console.log(err)
           if (isDev && err && err.response) console.log(err.response)
           else console.log('error')
 
           const errMsg = err && err.response && err.response.data && err.response.data.message
           this.commit('setSortUpdateFail', errMsg)
-          // this.commit('setSortUpdateFail', err)
           reject()
         })
     })
