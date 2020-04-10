@@ -7,12 +7,14 @@
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item"
           :class="{ 'is-disabled': !tabs[index].list.length }")
       transition(mode="out-in" @enter="animateOneMoreTime")
-        +e.items(v-if="activeDraggableList && activeDraggableList.length" :is="activeHashIndex === 0 ? 'draggable' : 'div'" :key="activeHashIndex"
-          v-model="draggableList" @end="onDragEnd" draggable=".list-banners__item")
-          ItemBanner(v-for="(item, index) in activeDraggableList" :key="item && item.id || index" :banner="item"
-            @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)" @dblclick.prevent.native="onDblClick(item, index + 1)"
-            :class="[{ 'list-banners__item_free': !item, 'list-banners__item_draggable': activeHashIndex === 0 }, 'list-banners__item' ]")
-          +e.item._fake(v-for="n in 3")
+        +e.draggable(:is="activeHashIndex === 0 && !isTouchDevice ? 'draggable' : 'div'" :key="draggableList.length" v-model="draggableList" @end="onDragEnd"
+          draggable=".list-banners__item" v-bind="dragOptions")
+          +e.items(v-if="activeDraggableList && activeDraggableList.length" :is="activeHashIndex === 0 ? 'transition-group' : 'div'" :key="activeHashIndex")
+              ItemBanner(v-for="(item, index) in activeDraggableList" :key="index + 1" :banner="item"
+                @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)"
+                @dblclick.prevent.native="onDblClick(item, index + 1)"
+                :class="[{ 'list-banners__item_free': !item, 'list-banners__item_draggable': activeHashIndex === 0 }, 'list-banners__item' ]")
+              +e.item._fake(v-for="n in 3" :key="'fake' + n")
 </template>
 
 <script lang="ts">
@@ -22,6 +24,7 @@ import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import draggable from 'vuedraggable'
+import { uiMapper } from '../../ui/module/store'
 
 const BannersMapper = Vue.extend({
   computed: {
@@ -33,6 +36,11 @@ const BannersMapper = Vue.extend({
     ...bannersMapper.mapActions(['updateField'])
   }
 })
+const UiMappers = Vue.extend({
+  computed: {
+    ...uiMapper.mapGetters(['isTouchDevice'])
+  }
+})
 
 @Component({
   components: {
@@ -41,7 +49,7 @@ const BannersMapper = Vue.extend({
   }
 })
 
-export default class ListBanners extends Mixins(BannersMapper) {
+export default class ListBanners extends Mixins(BannersMapper, UiMappers) {
   observer = null
   draggableList: Banner[] = null
 
@@ -71,10 +79,17 @@ export default class ListBanners extends Mixins(BannersMapper) {
     return composed
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get dragOptions() {
+      return {
+        animation: 200,
+        // group: "description",
+        // disabled: false,
+        ghostClass: "ghost"
+      };
+    }
 
-  @Watch('listActive', {immediate: true })
+  @Watch('listActiveComposed', {immediate: true, deep: true })
   onListChange(val) {
-    console.log(val)
     this.draggableList = this.listActiveComposed
   }
 
@@ -151,6 +166,8 @@ export default class ListBanners extends Mixins(BannersMapper) {
     flex-direction column
     align-items center
     max-width 650px
+    // transition()
+    // transition-duration $tMedium
     +xl()
       margin-bottom 75px
     +lt-xl()
@@ -165,5 +182,16 @@ export default class ListBanners extends Mixins(BannersMapper) {
       font-size 0
       pointer-events none
     &_draggable
-      cursor grab
+      html.desktop &
+        cursor move
+    &.v-move
+      // transition(transform)
+      // transition-duration .5s
+
+  .ghost
+    // opacity 0
+    // display none
+    opacity: 1
+    // background: #c8ebfb;
+    // debug()
 </style>

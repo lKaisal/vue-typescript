@@ -3,7 +3,7 @@
 
   +b.item-banner
     +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false"
-      :class="{ 'is-hovered': cardIsHovered && editIconsShown }")
+      :class="{ 'is-hovered': cardIsHovered && editIconsShown, 'is-large-padding-top': isTouchDevice }")
       transition
         +e.icons(v-show="editIconsShown && (cardIsHovered || isTouchDevice)" :class="{ 'is-small': isTouchDevice }")
           +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Mixins } from 'vue-property-decorator'
+import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
@@ -78,7 +78,16 @@ export default class ItemBanners extends Mixins(UiMappers) {
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
-  mounted() {
+  @Watch('imgLoaded', { immediate: true })
+  onImgLoaded(val) {
+    if (!this.banner) return
+    console.log('imgLoaded of ' + this.banner.id + ': ' + val)
+  }
+
+  async mounted() {
+    await this.$nextTick()
+    this.count = 0
+    this.imgLoaded = false
     this.initObserver()
   }
 
@@ -87,20 +96,28 @@ export default class ItemBanners extends Mixins(UiMappers) {
   onDeleteClick() { this.$emit('deleteClicked') }
   onCreateClick() { this.$emit('createClicked') }
   preloadImage() {
-    if (!this.banner || this.count > 3) return
+    if (!this.banner) return
+    console.log('start preload: ' + this.banner.id)
 
     preloadImages(this.banner.bannerImageUrl)
       .then(async () => {
+        console.log('preload success: ' + this.banner.id)
         this.imgLoaded = true
       })
-      .catch(() => this.preloadImage())
-      .finally(() => this.count++)
+      .catch(() => {
+        this.preloadImage()
+        console.log('preload fail: ' + this.banner.id)
+      })
+      .finally(() => {
+        this.count++
+        console.log(this.imgLoaded)
+      })
   }
   initObserver() {
     const targets = this.$el
     const options = {
       targets,
-      offset: 50,
+      offset: 0,
       ifIntoView: () => this.preloadImage()
     }
 
@@ -127,7 +144,12 @@ export default class ItemBanners extends Mixins(UiMappers) {
     background-color white
     transition(border-color)
     overflow hidden
+    html.mobile &
+    html.tablet &
+      padding-top 63px
     &.is-hovered
+      border-color $cBrand
+    .sortable-chosen &
       border-color $cBrand
 
   &__icons
@@ -147,11 +169,9 @@ export default class ItemBanners extends Mixins(UiMappers) {
     justify-content center
     transition(opacity\, transform)
     &.v-enter
-      opacity 0
-      // transform translateX(-100%)
     &.v-leave-to
+    .sortable-chosen &
       opacity 0
-      // transform translateX(100%)
     &.v-enter-active
     &.v-leave-active
       pointer-events none

@@ -21,7 +21,7 @@ type Banner = {
   position: number,
   sort: number,
   title: string,
-  updatedAt: string
+  updatedAt: string,
 }
 
 type SortUpdate = {
