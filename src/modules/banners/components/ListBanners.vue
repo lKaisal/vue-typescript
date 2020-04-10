@@ -72,14 +72,15 @@ export default class ListBanners extends Mixins(BannersMapper) {
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
-  @Watch('list', { deep: true, immediate: true })
+  @Watch('listActive', {immediate: true })
   onListChange(val) {
-    this.draggableList = this.activeList
+    console.log(val)
+    this.draggableList = this.listActiveComposed
   }
 
   async mounted() {
     await this.$nextTick()
-    this.draggableList = this.activeList
+    this.draggableList = this.listActiveComposed
     this.animateOneMoreTime()
   }
 
@@ -88,13 +89,12 @@ export default class ListBanners extends Mixins(BannersMapper) {
   }
   // DRAG HANDLERS
   onDragEnd(evt) {
-    const oldIndex = evt.oldIndex + 1
-    const newIndex = evt.newIndex + 1
-    const movedBanner = this.draggableList[newIndex]
+    const oldPosition = evt.oldIndex + 1
+    const position = evt.newIndex + 1
+    const movedBanner = this.draggableList[position - 1]
+    const id = movedBanner ? movedBanner.id : 0
 
-    if (!movedBanner) return
-
-    const payload: SortUpdate = { id: movedBanner.id, 'oldPosition': oldIndex, 'position': newIndex }
+    const payload: SortUpdate = { id, oldPosition, position }
 
     this.$emit('updateSort', payload)
   }

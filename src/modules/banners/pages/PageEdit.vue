@@ -44,7 +44,7 @@ Component.registerHooks([
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'bannerCurrent', 'pageTypes']),
+    ...bannersMapper.mapState(['form', 'bannerCurrent', 'pageTypes', 'list']),
     ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus', 'formAdditionalDataLoaded'])
   },
   methods: {
@@ -100,12 +100,17 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
-  @Watch('banner', {immediate: true})
+  @Watch('banner', { immediate: true })
   async onBannerChange(val) {
     if (val) {
       await this.$nextTick()
       animateIfVisible()
     }
+  }
+  @Watch('list', { deep: true, immediate: true })
+  onListChange(val) {
+    console.log('list changed ' + val)
+    this.updateBannerData()
   }
 
   // HOOKS
@@ -256,7 +261,7 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   }
   submitForm() {
     this.editBanner(this.banner.id)
-      .then(async (res) => {
+      .then(async () => {
         this.requestStatus = 'successEdit'
         this.secondBtn = { type: 'success', isPlain: true }
         this.openMsgBox()

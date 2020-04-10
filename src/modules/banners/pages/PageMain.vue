@@ -177,7 +177,6 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     this.updateBannerSort(this.sortUpdate)
       .then(() => {
         this.sortUpdate = null
-        this.updateList(false)
       })
       .catch(() => {
         this.secondBtn = { type: 'success', isPlain: true }

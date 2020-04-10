@@ -324,7 +324,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   // FETCH DATA ACTIONS
   async loadGlobalData() {
     return new Promise((resolve, reject) => {
-      const promisesArr = [this.dispatch('getList', null), this.dispatch('getActiveAmount', null)]
+      const promisesArr = [this.dispatch('getList', true), this.dispatch('getActiveAmount', null)]
       Promise.all(promisesArr)
         .then(() => resolve())
         .catch((err) => reject(err))
@@ -515,6 +515,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .then(() => {
           if (isDev) console.log('Success: move banner id=' + payload.id + ' from position ' + payload.oldPosition + ' to ' + payload.position)
           this.commit('setSortUpdateSuccess')
+          this.dispatch('getList', false)
           resolve()
         })
         .catch((err: AxiosError) => {
