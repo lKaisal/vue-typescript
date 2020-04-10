@@ -543,6 +543,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           this.commit('setField', {field: appLink, prop: 'validationRequired', value: true})
           this.dispatch('updateField', ({name: 'appLink', value: appLink.value}))
           this.commit('setField', {field: newsId, prop: 'validationRequired', value: false})
+          this.dispatch('updateField', ({name: 'newsId', value: null}))
         }
         break
 

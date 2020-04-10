@@ -16,7 +16,7 @@
       +e.error.form-error(v-html="pageTypeField.errorMsg")
 
     //- newsId (if pageType === 'news')
-    +e.field._news-id.form-field(v-if="isNewsType" key="newsId"
+    +e.field._news-id.form-field(v-if="isNewsType" :key="'newsId' + pageType"
       :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsIdIsFilled, 'is-disabled': isDisabled }")
       +e.label.form-label
         +e.LABEL(for="newsId") Заголовок новости
@@ -99,9 +99,9 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
   // NEWS ID
   get newsSelected(): News { return this.newsList && this.newsList.find(news => Number(news.id) === Number(this.newsId)) }
   get newsIdIsFilled() { return this.newsId && !this.isDisabled }
+  get newsIdSelectedLabel() { return this.isNewsType && this.newsIdSelect.$data.selected.label }
   // APP LINK
   get appLinkIsFilled() { return this.appLink && !this.isDisabled }
-  get newsIdSelectedLabel() { return this.newsIdSelect.$data.selected.label }
 
   @Watch('breakpoint')
   async onBreakpointChange() {
@@ -111,7 +111,7 @@ export default class FormPagetype extends Mixins(BannersMappers, UiMappers) {
   @Watch('newsId')
   async onNewsIdChange(val) {
     await this.$nextTick()
-    if (!this.newsIdSelectedLabel) this.newsId = this.newsSelected.id
+    if (!this.newsIdSelectedLabel) this.newsId = this.newsSelected ? this.newsSelected.id : ''
   }
 
   // HOOKS
