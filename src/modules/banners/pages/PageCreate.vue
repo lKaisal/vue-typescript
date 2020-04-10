@@ -37,12 +37,12 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const BannersMappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'pageTypes']),
-    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom'])
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'news', 'pageTypes']),
+    ...bannersMapper.mapGetters(['listActive', 'formSort', 'formIsValid', 'formActiveFrom', 'pageTypesList', 'formAdditionalDataLoaded'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['createBanner', 'deactivateBanner', 'updateFormByBannerData'])
+    ...bannersMapper.mapActions(['createBanner', 'deactivateBanner', 'updateFormByBannerData', 'loadAdditionalFormData'])
   }
 })
 @Component({
@@ -80,7 +80,7 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
             if (field.value) return true
             break
           case 'pageType':
-            if (field.value !== this.pageTypes[0]) return true
+            if (field.value !== this.pageTypesList[0]) return true
             break
           case 'sort':
             if (field.value.toString() !== this.activeAmount.value.toString()) return true
@@ -94,10 +94,13 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
   }
 
   // HOOKS
-  created() {
+  async created() {
+    if (!this.formAdditionalDataLoaded) this.loadAdditionalData()
     this.setFormType('create')
     document.addEventListener('keydown', this.keydownHandler)
-    if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data) // if free banner-cell was clicked on list, its position was stored
+
+    // if free banner-cell was clicked on list, its position was stored
+    if (this.bannerCurrent.data) this.updateFormByBannerData(this.bannerCurrent.data)
   }
   async mounted() {
     await this.$nextTick()
@@ -109,6 +112,25 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
     this.setBannerCurrentSuccess(null)
   }
 
+  loadAdditionalData() {
+    return new Promise((resolve, reject) => {
+      if (this.msgBoxIsShown) this.closeMsgBox()
+
+      this.loadAdditionalFormData()
+        .then(() => {
+          resolve()
+        })
+        .catch((err) => {
+          if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+          else {
+            this.requestStatus = 'failLoadAdditionalFormData'
+            this.secondBtn = { type: 'success', isPlain: true }
+            this.openMsgBox()
+          }
+          reject()
+        })
+    })
+  }
   // METHODS POPUP CONFLICT
   openPopupConflict() {
     document.body.classList.add('modal-open')
@@ -135,22 +157,23 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
       case 'failDeactivate':
         this.deactivateBannerConflict()
         break
+      case 'failLoadAdditionalFormData':
+        this.loadAdditionalData()
+        break
       default:
         this.submitForm()
         break
     }
   }
   onSecondBtnClick() {
+    this.closeMsgBox()
     switch (this.requestStatus) {
-      case ('successCreate'):
+      case 'successCreate':
+      case 'failLoadAdditionalFormData':
         this.goToPageMain()
         break
       case 'failDeactivate':
-        this.closeMsgBox()
         this.closePopupConflict()
-        break
-      default:
-        this.closeMsgBox()
         break
     }
   }

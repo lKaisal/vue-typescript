@@ -1,10 +1,12 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-main.page
-    +e.container(v-if="list.data && list.data.length")
+  +b.page-main.page(v-loading.fullscreen.lock="isLoading")
+    +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
+      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
+        @searchFinished="handleSearchFinished" class="page-main__search")
+      //- FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
@@ -14,21 +16,22 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
-import { MsgBoxContent, Button, SearchField } from '@/models'
-import { suppliersMapper } from '../module/store'
-import sleep from '@/mixins/sleep'
+import { MsgBoxContent, Button, SearchField, FilterItem } from '@/models'
+import { uiMapper } from '@/modules/ui/module/store'
+import { authMapper } from '@/modules/auth/module/store'
 import ButtonApp from '@/components/ButtonApp.vue'
 import MessageBox from '@/components/MessageBox.vue'
 import PaginationApp from '@/components/PaginationApp.vue'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
-import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
+import sleep from '@/mixins/sleep'
+import SearchApp from '@/components/SearchApp.vue'
+import FilterSuppliers from '../components/filter/FilterSuppliers.vue'
+import { suppliersMapper } from '../module/store'
 import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
 import CardSupplier from '../components/CardSupplier.vue'
-import SearchApp from '@/components/SearchApp.vue'
-import { uiMapper } from '@/modules/ui/module/store'
-import { authMapper } from '@/modules/auth/module/store'
+import MsgBoxTools from '../mixins/MsgBoxTools'
 
 const UiMappers = Vue.extend({
   computed: {
@@ -38,10 +41,10 @@ const UiMappers = Vue.extend({
 const SuppliersMappers = Vue.extend({
   computed: {
     ...suppliersMapper.mapState(['list', 'listFiltered']),
-    ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
+    ...suppliersMapper.mapGetters(['isLoading', 'listSorted', 'listSortedAndFiltered'])
   },
   methods: {
-    ...suppliersMapper.mapMutations(['setListFiltered']),
+    ...suppliersMapper.mapMutations(['setListSearched']),
     ...suppliersMapper.mapActions(['editPhone'])
   }
 })
@@ -58,7 +61,8 @@ const AuthMappers = Vue.extend({
     ListSuppliers,
     PaginationApp,
     CardSupplier,
-    SearchApp
+    SearchApp,
+    FilterSuppliers
   },
   mixins: [
     MsgBoxTools
@@ -68,10 +72,9 @@ const AuthMappers = Vue.extend({
 export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMappers, SuppliersMappers, AuthMappers) {
   pageSize: number = 10
   currentPage: number = 1
-  // popupId: number = null
   searchFields: SearchField[] = [
     { field: 'supplierId', title: 'SupplierId' },
-    { field: 'supplierName', title: 'Имя поставщика' },
+    { field: 'supplierName', title: 'Название поставщика' },
     { field: 'userId', title: 'UserId' },
     { field: 'userName', title: 'Имя пользователя' },
     { field: 'inn', title: 'ИНН' },
@@ -84,16 +87,16 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
   get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
-  // list getters
-  get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
+  // LIST GETTERS
+  get pagesAmount() { return this.listSortedAndFiltered && this.listSortedAndFiltered.length / this.pageSize }
   get listByPages() {
-    if (!this.listSorted) return
+    if (!this.listSortedAndFiltered) return
 
     const arr = []
     for (let i = 0; i < this.pagesAmount; i ++) {
       const start = i * this.pageSize
       const end = start + this.pageSize
-      const part = this.listSorted.slice(start, end)
+      const part = this.listSortedAndFiltered.slice(start, end)
       arr.push(part)
     }
 
@@ -111,10 +114,10 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   }
   // SEARCH handlers
   handleSearchProgress(res) {
-    this.setListFiltered(res)
+    this.setListSearched(res)
   }
   handleSearchFinished() {
-    this.setListFiltered(null)
+    this.setListSearched(null)
   }
   // PAGINATION click handlers
   onCurrentChange(n) {

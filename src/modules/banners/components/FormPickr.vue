@@ -22,7 +22,6 @@
 
 <script lang="ts">
 import { Vue, Component, Ref, Prop } from 'vue-property-decorator'
-import trim from 'validator/lib/trim'
 import { ElInput } from 'element-ui/types/input'
 import { Banner, BannerForm, FormField } from '../models'
 import { bannersMapper } from '../module/store'

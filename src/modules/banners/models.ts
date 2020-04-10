@@ -36,6 +36,12 @@ type BannerCurrent = {
   isLoading: boolean
 }
 
+type News = {
+  created: string
+  header: string
+  id: Banner['newsId']
+}
+
 type Form = {
   data: FormField[],
   error: string,
@@ -82,8 +88,9 @@ type RequestType = 'success' | 'fail' | 'other'
 
 type RequestStatuses = {
   success: 'successCreate' | 'successEdit' | 'successDelete'
-  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount' | 'failSortUpdate'
+  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount' | 'failSortUpdate' | 'failLoadAdditionalFormData'
   other: 'beforeDelete'
 }
 
-export { Banner, BannersState, SortUpdate, BannerForm, BannerFormData, BannerCurrent, Form, FormType, FormField, FormError, RequestStatus, RequestStatuses, RequestType }
+export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, News, Form, FormType, FormField, FormError,
+  RequestStatus, RequestStatuses, RequestType }

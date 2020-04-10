@@ -1,11 +1,12 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-suppliers.page(v-loading.fullscreen.lock="isLoading")
+  +b.module-suppliers.page
     transition(mode="out-in")
       router-view(@loadList="updateList" class="module-suppliers__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent" @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
+      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :secondBtn="secondBtn" :content="msgBoxContent"
+        @close="goToPageApp" @updateList="updateList()" @firstBtnClicked="onFirstBtnClick()"
         @secondBtnClicked="goToPageApp()" class="module-suppliers__msg-box modal modal-msg")
 </template>
 
@@ -55,6 +56,7 @@ export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMapper
   }
 
   created() {
+    console.log('module created ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
     this.updateList()
   }
 
@@ -72,6 +74,9 @@ export default class ModuleSuppliers extends Mixins(SuppliersMappers, AuthMapper
     if (this.list.isLoading) return
 
     this.getList()
+      .then(() => {
+        console.log('list data loaded ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
+      })
       .catch((err) => {
         if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
         else {

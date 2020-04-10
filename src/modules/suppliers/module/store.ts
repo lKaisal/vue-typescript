@@ -1,8 +1,7 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields } from '../models'
+import { Supplier, ListSort, EditPayload, Country, EditResponse, SmsFields, FilterItem } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import sleep from '@/mixins/sleep'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -16,10 +15,12 @@ class SuppliersState {
     { name: 'Ukraine', code: 'UA', phoneCode: 380, mask: '99 999 99 99' },
     { name: 'Armenia', code: 'AM', phoneCode: 374, mask: '99 99 99 99' },
   ]
-  edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
+  // LIST STATE
   list: { data: Supplier[], error: string, isLoading: boolean } =  { data: null, error: null, isLoading: false }
   listFiltered: Supplier[] = null
   listSort: ListSort = { by: 'createdAt', direction: 'desc' }
+  // PHONE & IDENTITY STATE
+  edit: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   identity: { data: SmsFields, error: string, isLoading: boolean} = {
     data: null,
     error: null,
@@ -27,11 +28,15 @@ class SuppliersState {
   }
   smsReset: { error: string, isLoading: boolean, field: keyof SmsFields } = { error: null, isLoading: false, field: null }
   phoneAuthDelete: { error: string, isLoading: boolean } = { error: null, isLoading: false }
+  // FILTER STATE
+  filter: FilterItem[] = []
 }
 
 class SuppliersGetters extends Getters<SuppliersState> {
-  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading || this.state.phoneAuthDelete.isLoading }
-  get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error || this.state.smsReset.error || this.state.phoneAuthDelete.error }
+  get isLoading() { return this.state.list.isLoading || this.state.edit.isLoading || this.state.identity.isLoading || this.state.smsReset.isLoading ||
+    this.state.phoneAuthDelete.isLoading }
+  get loadingError() { return this.state.list.error || this.state.edit.error || this.state.identity.error || this.state.smsReset.error ||
+    this.state.phoneAuthDelete.error }
   get supplierByUserId() {
     return (userId: Supplier['userId']) => this.state.list.data.find(s => s.userId === userId)
   }
@@ -72,6 +77,84 @@ class SuppliersGetters extends Getters<SuppliersState> {
 
     return sorted
   }
+  get listSortedAndFiltered() {
+    const list = [...this.getters.listSorted]
+
+    if (!list) return
+
+    const filters = this.state.filter
+
+    const res = list.filter(supplier => {
+      return filters.every(filter => {
+        if (!filter.valuesSelected.length) return true
+
+        const field = filter.field
+        const supplierField = supplier[field]
+        return  filter.valuesSelected.includes(supplierField)
+      })
+    })
+
+    return res
+  }
+  listSortedAndFilteredExceptField() {
+    return (fieldIndex: number) => {
+      const list = [...this.getters.listSorted]
+
+      if (!list) return
+
+      const filters = [...this.state.filter]
+      filters.splice(fieldIndex, 1)
+
+      const res = list.filter(supplier => {
+        return filters.every(filter => {
+          if (!filter.valuesSelected.length) return true
+
+          const field = filter.field
+          const supplierField = supplier[field]
+          const res = filter.valuesSelected.includes(supplierField)
+
+          return res
+        })
+      })
+
+      return res
+    }
+  }
+  get uniqueFields() {
+    return (field: keyof Supplier) => {
+      const set: Set<Supplier[keyof Supplier]> = new Set()
+      for (const el of this.getters.listSorted) {
+        set.add(el[field])
+      }
+
+      const res = Array.from(set).sort((a, b) => {
+        if (typeof a === 'boolean') {
+          if (a === true) return -1
+          else if (a === false) return 1
+          else return 0
+        }
+        else {
+          if (a > b) return 1
+          else if (a < b) return -1
+          else return 0
+        }
+      })
+
+      return res
+    }
+  }
+  get availableFields() {
+    return (field: keyof Supplier) => {
+      const unique = [...this.getters.uniqueFields(field)]
+      const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
+
+      return unique.map(val => {
+        return this.getters.listSortedAndFilteredExceptField()(indexOfField).some(supplier => {
+          return supplier[field] === val
+        })
+      })
+    }
+  }
 }
 
 class SuppliersMutations extends Mutations<SuppliersState> {
@@ -80,7 +163,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
   }
-  setListFiltered(payload) {
+  setListSearched(payload) {
     this.state.listFiltered = payload
   } 
   // Mutations List loading
@@ -92,6 +175,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.list.data = payload
     this.state.list.isLoading = false
     this.state.list.error = null
+    console.log('set list loading success ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
   }
   setListLoadingFail(err) {
     this.state.list.data = null
@@ -156,7 +240,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.phoneAuthDelete.isLoading = false
     this.state.phoneAuthDelete.error = err
   }
-  // Mutations Update
+  // Mutations Update list partial data
   updateSupplier(payload: EditResponse) {
     const supplier = this.state.list.data.find(s => s.userId === payload.userId)
     supplier.phone = payload.phone
@@ -166,9 +250,32 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     const keys = Object.keys(payload)
     keys.forEach(key => this.state.identity.data[key] = payload[key])
   }
+  // Mutations Filter
+  addFilterFields(filters: FilterItem[]) {
+    this.state.filter = []
+    for (const filter of filters) {
+      this.state.filter.push(filter)
+    }
+  }
+  updateFilterSelected(payload: {field: FilterItem['field'], value: (FilterItem['valuesSelected'])[0]}) {
+    const filterField = this.state.filter.find(f => f.field === payload.field)
+    const valuesSelected = filterField.valuesSelected
+    const indexInSelected = valuesSelected.indexOf(payload.value)
+
+    if (indexInSelected < 0) {
+      valuesSelected.push(payload.value)
+    } else {
+      valuesSelected.splice(indexInSelected, 1)
+    }
+  }
+  clearFilterSelected(field: FilterItem['field']) {
+    const filterField = this.state.filter.find(f => f.field === field)
+    filterField.valuesSelected = []
+  }
 }
 
 class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, SuppliersMutations, SuppliersActions> {
+  // LIST ACTIONS
   async getList() {
     return new Promise((resolve, reject) => {
       this.commit('startListLoading')
@@ -179,6 +286,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
 
           this.commit('setListLoadingSuccess', res)
           if (isDev) console.log('Success: load list')
+          console.log('list load resolve ' + res.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
           resolve()
         })
         .catch(error => {
@@ -192,6 +300,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
         })
     })
   }
+  // PHONE & IDENTITY ACTIONS
   async getIdentity(userId: Supplier['userId']) {
     return new Promise(async (resolve, reject) => {
       this.commit('startIdentityLoading')

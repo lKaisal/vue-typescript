@@ -24,19 +24,7 @@
           +e.EL-INPUT.input.form-input(placeholder="Title" v-model="title")
           +e.error.form-error(v-html="titleField.errorMsg")
         //- pageType
-        FormPagetype(:isDisabled="allFieldsDisabled")
-        //- newsId (if pageType === 'news')
-        +e.field._news-id.form-field(v-if="isNewsType" key="newsId" :class="{ 'is-invalid': isInvalid(newsIdField), 'is-filled': newsId && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
-          +e.label.form-label
-            +e.LABEL(for="newsId") Id новости
-          +e.EL-INPUT.input.form-input(placeholder="111" type="number" v-model="newsId")
-          +e.error.form-error(v-html="newsIdField.errorMsg")
-        //- appLink (if pageType !== 'news')
-        +e.field._app-link.form-field(v-else key="appLink" :class="{ 'is-invalid': isInvalid(appLinkField), 'is-filled': appLink && !allFieldsDisabled, 'is-disabled': allFieldsDisabled }")
-          +e.label.form-label
-            +e.LABEL(for="appLink") Ссылка на раздел
-          +e.EL-INPUT.input.form-input(placeholder="/link" v-model="appLink")
-          +e.error.form-error(v-html="appLinkField.errorMsg")
+        FormPagetype(:key="form.isLoading" :isDisabled="allFieldsDisabled")
         //- activeFrom / activeTo
         FormPickr(:isDisabled="activeFromToDisabled" class="form-banners__pickr")
         //- sort
@@ -49,7 +37,6 @@
 
 <script lang="ts">
 import { Vue, Component, Ref, Watch } from 'vue-property-decorator'
-import trim from 'validator/lib/trim'
 import { ElInput } from 'element-ui/types/input'
 import { MsgBoxContent } from '@/models'
 import { Banner, BannerForm, FormField } from '../models'
@@ -61,9 +48,9 @@ import FormPickr from '../components/FormPickr.vue'
 
 const Mappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent', 'pageTypes']),
+    ...bannersMapper.mapState(['form', 'activeAmount', 'bannerCurrent']),
     ...bannersMapper.mapGetters(['listActive', 'listDelayed', 'formSort', 'formActiveFrom', 'formActiveTo', 'formAppLink', 'formIsActive', 'formFile', 'formNewsId',
-                                 'formPageType', 'formTitle', 'bannerCurrentStatus'])
+                                 'formPageType', 'formTitle', 'bannerCurrentStatus', 'pageTypesList'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setValidationIsShown']),
@@ -92,18 +79,12 @@ export default class FormBanners extends Mappers {
   get titleField() { return this.formTitle }
 
   // FORM SET/GET FIELDS VALUES
-  get appLink() { return this.appLinkField.value }
-  set appLink(value) { this.updateField({name: 'appLink', value: trim(value)}) }
   get isActive() { return this.isActiveField.value }
   set isActive(value) { this.updateField({name: 'isActive', value}) }
-  get newsId() { return this.newsIdField.value }
-  set newsId(value) { this.updateField({name: 'newsId', value: trim(value)}) }
-  get pageType() { return this.pageTypeField.value }
-  set pageType(value) { this.updateField({name: 'pageType', value: value || ('' && !this.isCustomType && this.pageTypes[0]) }) }
   get sortBy() { return this.isActive || this.isDelayedBanner ? this.sortField.value : null }
   set sortBy(value) { this.isActive || this.isDelayedBanner ? this.updateField({name: 'sort', value: value}) : null }
   get title() { return this.titleField.value }
-  set title(value) { this.updateField({name: 'title', value: trim(value) }) }
+  set title(value) { this.updateField({name: 'title', value: value.toString().trim() }) }
 
   // BANNER STATUS
   get isDelayedBanner() { return this.bannerCurrentStatus && this.bannerCurrentStatus === 'delayed' }
@@ -118,11 +99,6 @@ export default class FormBanners extends Mappers {
   get activeFromToDisabled() { return (this.isDelayedBanner && this.formIsActive.value) || this.sortIsDisabled || this.allFieldsDisabled }
   // FORD ADDITIONAL DATA
   get isActiveLabel() { return this.isFormEdit && this.isDelayedBanner ? 'Активировать сейчас' : 'Активировать' }
-  // PAGE TYPE
-  get pageTypesMastered() { return [...this.pageTypes, 'Добавить тип страницы'] }
-  get pageTypeIndex() { return this.pageType && this.pageTypes.indexOf(this.pageType.toString()) }
-  get isNewsType() { return this.pageType === 'news' }
-  get isCustomType() { return typeof this.pageTypeIndex !== 'number' || this.pageTypeIndex === this.pageTypes.length || this.pageTypeIndex < 0 }
   // ACTIVE AMOUNT
   get activeAmountValue() { return this.activeAmount.value }
 
@@ -133,7 +109,9 @@ export default class FormBanners extends Mappers {
 
   // HOOKS
   created() {
-    if (this.isFormCreate) this.updateField({ name: 'isActive', value: true })
+    if (this.isFormCreate) {
+      this.updateField({ name: 'isActive', value: true })
+    }
   }
   beforeDestroy() {
     this.setValidationIsShown(false)

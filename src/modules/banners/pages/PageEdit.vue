@@ -2,8 +2,8 @@
   include ../../../tools/bemto.pug
 
   +b.page-edit.page
-    transition
-      +e.container.js-voa.js-voa-start(v-if="banner" v-click-outside="onClickOutside")
+    transition(appear)
+      +e.container.js-voa(v-if="banner && formAdditionalDataLoaded" v-click-outside="onClickOutside")
         +e.row-back(key="rowBack" @click="goToPageMain")
           i(class="el-icon-back page-edit__icon-back")
           +e.text-back Вернуться к списку
@@ -45,11 +45,11 @@ Component.registerHooks([
 const Mappers = Vue.extend({
   computed: {
     ...bannersMapper.mapState(['form', 'bannerCurrent', 'pageTypes']),
-    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus'])
+    ...bannersMapper.mapGetters(['bannerById', 'formIsValid', 'listActive', 'formSort', 'formActiveFrom', 'formIsActive', 'bannerCurrentStatus', 'formAdditionalDataLoaded'])
   },
   methods: {
     ...bannersMapper.mapMutations(['setFormType', 'clearForm', 'setBannerCurrentSuccess', 'setValidationIsShown']),
-    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'deactivateBanner'])
+    ...bannersMapper.mapActions(['editBanner', 'deleteBanner', 'updateFormByBannerData', 'getBannerById', 'deactivateBanner', 'loadAdditionalFormData'])
   }
 })
 
@@ -109,8 +109,9 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   }
 
   // HOOKS
-  created() {
+  async created() {
     this.setFormType('edit')
+    if (!this.formAdditionalDataLoaded) await this.loadAdditionalData()
     this.updateBannerData()
     document.addEventListener('keydown', this.keydownHandler)
   }
@@ -125,6 +126,26 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     this.setBannerCurrentSuccess(null)
   }
 
+  // METHODS
+  loadAdditionalData() {
+    return new Promise((resolve, reject) => {
+      if (this.msgBoxIsShown) this.closeMsgBox()
+
+      this.loadAdditionalFormData()
+        .then(() => {
+          resolve()
+        })
+        .catch((err) => {
+          if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
+          else {
+            this.requestStatus = 'failLoadAdditionalFormData'
+            this.secondBtn = { type: 'success', isPlain: true }
+            this.openMsgBox()
+          }
+          reject()
+        })
+    })
+  }
   keydownHandler(evt: KeyboardEvent) {
     if (evt.key === 'Escape') {
       // if (!this.msgBoxIsShown && !this.popupFormIsShown) this.goToPageMain()
@@ -231,7 +252,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
     } else {
       this.setBannerCurrentSuccess(banner)
       this.updateFormByBannerData(banner)
-      // this.closeMsgBox()
     }
   }
   submitForm() {
