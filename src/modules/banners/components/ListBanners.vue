@@ -14,7 +14,7 @@
                 @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)"
                 @dblclick.prevent.native="onDblClick(item, index + 1)"
                 :class="[{ 'list-banners__item_free': !item, 'list-banners__item_draggable': activeHashIndex === 0 }, 'list-banners__item' ]")
-              +e.item._fake(v-for="n in 3" :key="'fake' + n")
+              +e.item._fake(v-for="n in 5" :key="'fake' + n")
 </template>
 
 <script lang="ts">
@@ -104,8 +104,13 @@ export default class ListBanners extends Mixins(BannersMapper, UiMappers) {
   }
   // DRAG HANDLERS
   onDragEnd(evt) {
-    const oldPosition = evt.oldIndex + 1
-    const position = evt.newIndex + 1
+    console.log(evt.oldIndex + 1, evt.newIndex + 1)
+    const oldPosition = evt.oldIndex + 1 < 1 ? 1 : (evt.oldIndex + 1 > this.activeList.length ? this.activeList.length : evt.oldIndex + 1 )
+    const position = evt.newIndex + 1 > this.activeList.length ? this.activeList.length : evt.newIndex + 1
+
+    if (oldPosition === position) return
+    console.log(oldPosition, position)
+
     const movedBanner = this.draggableList[position - 1]
     const id = movedBanner ? movedBanner.id : 0
 
