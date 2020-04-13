@@ -7,14 +7,13 @@
         +e.EL-MENU-ITEM.sort-item(v-for="(item, index) in sortItems" :key="index" :index="(index + 1).toString()" v-html="item"
           :class="{ 'is-disabled': !tabs[index].list.length }")
       transition(mode="out-in" @enter="animateOneMoreTime")
-        +e.draggable(:is="activeHashIndex === 0 && !isTouchDevice ? 'draggable' : 'div'" :key="draggableList.length" v-model="draggableList" @end="onDragEnd"
-          draggable=".list-banners__item" v-bind="dragOptions")
-          +e.items(v-if="activeDraggableList && activeDraggableList.length" :is="activeHashIndex === 0 ? 'transition-group' : 'div'" :key="activeHashIndex")
-              ItemBanner(v-for="(item, index) in activeDraggableList" :key="index + 1" :banner="item"
-                @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)"
-                @dblclick.prevent.native="onDblClick(item, index + 1)"
-                :class="[{ 'list-banners__item_free': !item, 'list-banners__item_draggable': activeHashIndex === 0 }, 'list-banners__item' ]")
-              +e.item._fake(v-for="n in 5" :key="'fake' + n")
+        +e.items(v-if="activeDraggableList && activeDraggableList.length" :is="activeHashIndex === 0 && !isTouchDevice ? 'draggable' : 'div'"
+          :key="activeHashIndex" v-model="draggableList" @end="onDragEnd" draggable=".list-banners__item" v-bind="dragOptions")
+          ItemBanner(v-for="(item, index) in activeDraggableList" :key="item && item.id || index" :banner="item"
+            @editClicked="goToPageEdit(item.id)" @deleteClicked="onDeleteClick(item.id)" @createClicked="onCreateClick(index + 1)"
+            @dblclick.prevent.native="onDblClick(item, index + 1)"
+            :class="[{ 'list-banners__item_free': !item, 'list-banners__item_draggable': activeHashIndex === 0 }, 'list-banners__item' ]")
+          +e.item._fake(v-for="n in 5" :key="'fake' + n")
 </template>
 
 <script lang="ts">
@@ -82,8 +81,6 @@ export default class ListBanners extends Mixins(BannersMapper, UiMappers) {
   get dragOptions() {
       return {
         animation: 200,
-        // group: "description",
-        // disabled: false,
         ghostClass: "ghost"
       };
     }
@@ -104,15 +101,13 @@ export default class ListBanners extends Mixins(BannersMapper, UiMappers) {
   }
   // DRAG HANDLERS
   onDragEnd(evt) {
-    console.log(evt.oldIndex + 1, evt.newIndex + 1)
     const oldPosition = evt.oldIndex + 1 < 1 ? 1 : (evt.oldIndex + 1 > this.activeList.length ? this.activeList.length : evt.oldIndex + 1 )
     const position = evt.newIndex + 1 > this.activeList.length ? this.activeList.length : evt.newIndex + 1
 
     if (oldPosition === position) return
-    console.log(oldPosition, position)
 
     const movedBanner = this.draggableList[position - 1]
-    const id = movedBanner ? movedBanner.id : 0
+    const id = movedBanner && movedBanner.bannerImageUrl ? movedBanner.id : 0
 
     const payload: SortUpdate = { id, oldPosition, position }
 
@@ -171,8 +166,6 @@ export default class ListBanners extends Mixins(BannersMapper, UiMappers) {
     flex-direction column
     align-items center
     max-width 650px
-    // transition()
-    // transition-duration $tMedium
     +xl()
       margin-bottom 75px
     +lt-xl()
@@ -189,14 +182,8 @@ export default class ListBanners extends Mixins(BannersMapper, UiMappers) {
     &_draggable
       html.desktop &
         cursor move
-    &.v-move
-      // transition(transform)
-      // transition-duration .5s
 
   .ghost
-    // opacity 0
-    // display none
-    opacity: 1
-    // background: #c8ebfb;
-    // debug()
+    opacity 1
+    border-color $cBrand
 </style>

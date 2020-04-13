@@ -509,7 +509,6 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
   updateBannerSort(payload: SortUpdate) {
     return new Promise((resolve, reject) => {
       if (payload.loadingIsShown) this.commit('startSortUpdate')
-      console.log(payload)
 
       axios.post('/api/v1/drag-n-drop', payload)
         .then(() => {

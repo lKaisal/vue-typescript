@@ -65,6 +65,7 @@ export default class ItemBanners extends Mixins(UiMappers) {
   observer = null
   count: number = 0
 
+  get isDev() { return process && process.env && process.env.NODE_ENV === 'development' }
   get isActive() { return this.banner.isActive }
   get activeFromToText() {
     if (this.isActive) {
@@ -78,17 +79,9 @@ export default class ItemBanners extends Mixins(UiMappers) {
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
-  @Watch('imgLoaded', { immediate: true })
-  onImgLoaded(val) {
-    if (!this.banner) return
-    console.log('imgLoaded of ' + this.banner.id + ': ' + val)
-  }
-
   async mounted() {
     await this.$nextTick()
-    this.count = 0
-    this.imgLoaded = false
-    this.initObserver()
+    if (this.banner && this.banner.bannerImageUrl) this.initObserver()
   }
 
   goToPageCreate() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
@@ -96,28 +89,28 @@ export default class ItemBanners extends Mixins(UiMappers) {
   onDeleteClick() { this.$emit('deleteClicked') }
   onCreateClick() { this.$emit('createClicked') }
   preloadImage() {
-    if (!this.banner) return
-    console.log('start preload: ' + this.banner.id)
+    if (!this.banner || !this.banner.bannerImageUrl || this.count > 3) return
+
+    if (this.isDev) console.log('start img preload: ' + this.banner.id)
 
     preloadImages(this.banner.bannerImageUrl)
       .then(async () => {
-        console.log('preload success: ' + this.banner.id)
+        if (this.isDev) console.log('img preload success: ' + this.banner.id)
         this.imgLoaded = true
       })
       .catch(() => {
         this.preloadImage()
-        console.log('preload fail: ' + this.banner.id)
+        if (this.isDev) console.log('img preload fail: ' + this.banner.id)
       })
       .finally(() => {
         this.count++
-        console.log(this.imgLoaded)
       })
   }
   initObserver() {
     const targets = this.$el
     const options = {
       targets,
-      offset: 0,
+      offset: 50,
       ifIntoView: () => this.preloadImage()
     }
 
@@ -133,9 +126,6 @@ export default class ItemBanners extends Mixins(UiMappers) {
 
   &__container
     position relative
-    // display flex
-    // justify-content center
-    // flex-wrap wrap
     width 100%
     height 100%
     padding 50px 50px 50px
