@@ -7,7 +7,8 @@
         //- table head
         +e.row.table-row(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef"
-            :class="{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }")
+            :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium,
+              'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
             +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="field.isSortable")
@@ -225,20 +226,6 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     fontMedium()
     &:first-letter
       text-transform uppercase
-    &.col-2:nth-of-type(2)
-      flex-grow 1
-    &:first-child
-    &:nth-child(2)
-    &:last-child
-      z-index 1
-      position sticky
-      background-color white
-    &:first-child
-      left 0
-    &:nth-child(2)
-      left 120px
-    &:last-child
-      right 0
 
   &__title-wrapper
     display flex
@@ -276,7 +263,4 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   &__item
     display flex
     flex-grow 1
-    background-color white
-    &:nth-of-type(2n + 1)
-      background-color $cDisabled
 </style>

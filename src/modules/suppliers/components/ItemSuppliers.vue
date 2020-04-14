@@ -4,7 +4,8 @@
   +b.item-suppliers
     +e.info
       +e.cell.table-cell(v-for="(field, index) in fields"
-        :class="{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }")
+        :class=`[{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge,
+          'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
         +e.cell-title(v-if="titleIsShown && field.title" v-html="`${field.title}:&ensp;`")
         +e.cell-text(v-if="field.field" v-html="getFieldContent(field)")
         ButtonApp(v-else :isLow="true" :isPlain="true" :fontSize="12" text="Открыть" @clicked="onBtnClick" class="item-suppliers__btn")
@@ -66,20 +67,6 @@ export default class ItemSuppliers extends Vue {
       align-items flex-start
       flex-wrap wrap
       border-bottom none
-    &:first-child
-    &:nth-child(2)
-    &:last-child
-      z-index 1
-      position sticky
-      background-color white
-    &:first-child
-      left 0
-    &:nth-child(2)
-      left 120px
-    &:last-child
-      right 0
-    .list-suppliers__item:nth-of-type(2n + 1) &
-      background-color $cDisabled
 
   &__cell-title
     white-space nowrap
