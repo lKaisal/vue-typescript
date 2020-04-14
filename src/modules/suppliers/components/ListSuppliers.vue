@@ -6,7 +6,7 @@
       +e.table(ref="tableRef" :class="{ 'is-horiz-scrolled': horizontalOverscroll }")
         //- table head
         +e.row.table-row(v-if="!isLtMd")
-          +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef"
+          +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef" :style="setCellStyle(index)"
             :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium,
               'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
             +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
@@ -15,8 +15,8 @@
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields"
-          @clicked="onItemClick(item)"
+        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="maxWidths"
+          @clicked="onItemClick(item)" ref="itemRef"
           class="list-suppliers__item table-row")
 </template>
 
@@ -31,6 +31,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { mapState } from 'vuex'
 import { uiMapper } from '@/modules/ui/module/store'
+import sleep from '@/mixins/sleep'
 
 const UiMappers = Vue.extend({
   computed: {
@@ -59,6 +60,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   @Prop() list: Supplier[]
   @Ref() tableRef!: HTMLElement
   @Ref() titleRef!: HTMLElement[]
+  @Ref() itemRef!: ItemSuppliers[]
   breakpoint!: string
   horizontalOverscroll: number = 0
   mouseIsDown: boolean = false
@@ -66,20 +68,40 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   scrollLeft: number = null
   isStickyLeft: boolean = false
   isStickyRight: boolean = false
+  maxWidths: number[] = []
 
+  get maxWidthsSum() { return this.maxWidths.reduce((acc, curr) => acc += curr) }
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
-    { field: 'createdAt', title: 'Дата регистрации', isSortable: true, isMedium: true, isCentered: true },
+    { field: 'supplierId', title: 'SupplierID', width: null, isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: 'supplierName', title: 'Название поставщика', width: null, isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
+    { field: 'createdAt', title: 'Дата регистрации', width: null, isSortable: true, isMedium: true, isCentered: true },
     // { field: 'createdAt', title: 'Дата последней активности*', isSortable: true, isMedium: true, isCentered: true },
-    { field: 'contractType', title: 'Тип договора', isSortable: true, isMedium: true, isCentered: true },
-    { field: 'userId', title: 'UserID', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'userName', title: 'Имя пользователя', isSortable: true, isMedium: true, isCentered: !this.isLtMd },
-    { field: 'inn', title: 'ИНН', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
-    { field: 'phone', title: 'Телефон', isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
-    { field: 'confirmed', title: 'Статус пользователя', isSortable: false, isSmall: !this.isLtMd, isCentered: !this.isLtMd },
-    { field: null, title: !this.isLtMd && 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd, isSticky: this.isStickyRight }, // btn column
+    { field: 'contractType', title: 'Тип договора', width: null, isSortable: true, isMedium: true, isCentered: true },
+    { field: 'userId', title: 'UserID', width: null, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'userName', title: 'Имя пользователя', isSortable: true, width: null, isMedium: true, isCentered: !this.isLtMd },
+    { field: 'inn', title: 'ИНН', width: null, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd },
+    { field: 'phone', title: 'Телефон', width: null, isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: 'confirmed', title: 'Статус пользователя', width: null, isSortable: false, isSmall: !this.isLtMd, isCentered: !this.isLtMd },
+    { field: null, title: !this.isLtMd && 'Открыть', width: null, isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: !this.isLtMd, isSticky: this.isStickyRight }, // btn column
   ]}
+  /** returns an Array (value, index) where
+   * value = index of longestCell of each field, index = index of ield in fieldsList
+  */
+  get longestFields() {
+    return [...this.fields].map((field, fieldIndex) => {
+      const values = this.list.map(item => item[field.field])
+
+      let maxIndex = 0
+      values.forEach((value, valueIndex) => {
+        if (typeof value === 'boolean' || !value) return
+
+        const currentLength = value.toString().length
+        if (currentLength > values[maxIndex].toString().length) maxIndex = valueIndex
+      })
+
+      return maxIndex
+    })
+  }
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
   get isXl() { return this.breakpoint === 'xl' }
@@ -104,10 +126,31 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
   }
+  @Watch('list', { immediate: true })
+  async onListChange() {
+    console.log('list update')
+    await this.$nextTick()
+    this.updateFieldsWidth()
 
+    this.destroyTableScroll()
+    this.isStickyLeft = false
+    this.isStickyRight = false
+
+    if (this.isLtMd) return
+    // await sleep(3000)
+
+    await this.$nextTick()
+    this.checkTableOverscroll()
+    if (this.isHorizontalOverscroll) this.initHorizontalScroll()
+  }
+
+  // HOOKS
   async mounted() {
     if (this.isLtMd) return
     await this.$nextTick()
+    this.updateFieldsWidth()
+    await this.$nextTick()
+    // await sleep(3000)
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
   }
@@ -115,8 +158,44 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     if (this.isHorizontalOverscroll) this.destroyTableScroll()
   }
 
+  //METHODS
+  setCellStyle(index) {
+    const width = this.maxWidths[index]
+
+    if (index === 1) return `left: ${this.maxWidths[0]}px;`
+    else return `min-width: ${width}px;`
+  }
+  updateFieldsWidth() {
+    if (!this.tableRef || !this.itemRef) return
+
+    // calculate maxWidths
+    this.maxWidths = []
+
+    const tableWidth = this.tableRef.offsetWidth
+    const itemsRefs = Array.from(this.itemRef)
+    this.longestFields.forEach((longestCellIndex, fieldIndex) => {
+      if (fieldIndex === 1) {
+        this.maxWidths.push(null)
+        return
+      }
+
+      const cells = Array.from(itemsRefs[longestCellIndex].$el.querySelectorAll('.table-cell'))
+      const cell = cells[fieldIndex] as HTMLElement
+      cell.style.width = 'auto'
+      cell.style.flex = '1 0 auto'
+      console.log(cell, cell.offsetWidth + 5)
+      const maxWidth = Math.ceil(cell.offsetWidth) + 5
+      this.maxWidths.push(maxWidth)
+      cell.style.width = null
+      cell.style.flex = null
+    })
+
+    console.log(this.maxWidths)
+  }
   // HORIZONTAL SCROLL METHODS
   updateSticky() {
+    if (!this.tableRef) return
+
     this.isStickyLeft = Math.floor(this.tableRef.scrollLeft) > 0
     this.isStickyRight = Math.ceil(this.tableRef.scrollLeft) < this.horizontalOverscroll
   }
@@ -127,6 +206,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     let cellsWidth = 0
     this.titleRef.forEach((el) => cellsWidth += el.offsetWidth)
     this.horizontalOverscroll = cellsWidth - tableWidth
+    console.log(this.horizontalOverscroll)
   }
   destroyTableScroll() {
     if (!this.tableRef) return

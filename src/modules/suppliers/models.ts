@@ -33,6 +33,7 @@ type TableField = {
   field: keyof Supplier,
   fields?: undefined,
   title: string,
+  width?: number,
   isSortable?: boolean,
   isSmall?: boolean,
   isMedium?: boolean,
@@ -42,7 +43,7 @@ type TableField = {
   isCentered?: boolean,
   isVariable?: boolean,
   variableText?: string,
-  isSticky?: boolean
+  isSticky?: boolean,
 }
 
 type SmsTableField = {
