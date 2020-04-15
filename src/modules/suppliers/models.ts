@@ -33,7 +33,7 @@ type TableField = {
   field: keyof Supplier,
   fields?: undefined,
   title: string,
-  width?: number,
+  isWidthCalculable?: boolean,
   isSortable?: boolean,
   isSmall?: boolean,
   isMedium?: boolean,

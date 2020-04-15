@@ -8,7 +8,7 @@
         @searchFinished="handleSearchFinished" class="page-main__search")
       //- FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
-        ListSuppliers(:list="currentList" :key="currentPage" @itemClicked="goToPageSupplier" class="page-main__list")
+        ListSuppliers(:list="currentList" :key="currentPage + currentList.length" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
         class="page-main__pag")

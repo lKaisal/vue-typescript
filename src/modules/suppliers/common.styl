@@ -18,6 +18,10 @@
   padding-top 0px
   padding-bottom 0px
   +lt-md()
+    &:nth-of-type(2n)
+      background-color white
+    &:nth-of-type(2n + 1)
+      background-color $cDisabled
     padding-top 10px
     padding-bottom 10px
     border 1px solid $cLighterBorder
@@ -31,18 +35,17 @@
       display none
 
 .table-cell
-  .table-row:nth-of-type(2n) &
-    background-color white
-  .table-row:nth-of-type(2n + 1) &
-    background-color $cDisabled
-  .table-row:first-child &
-    background-color white
   +lt-md()
     width 100%
     justify-content flex-start
     text-align left
   +gt-md()
-    background-color white
+    .table-row:nth-of-type(2n) &
+      background-color white
+    .table-row:nth-of-type(2n + 1) &
+      background-color $cDisabled
+    .table-row:first-child &
+      background-color white
     &.col-3
       min-width 250px
     &.col-2
