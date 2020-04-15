@@ -126,10 +126,10 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
         const value = this.supplier[field.field]
         const isPhone = field.field === 'phone'
         const isStatus = field.field === 'confirmed'
-        const isCreatedAt = field.field === 'createdAt' && field.title === 'Дата регистрации'
+        const isCreatedAt = field.field === 'createdAt'
 
         if (isPhone) return `+${value}`
-        else if (isCreatedAt) return value.toString().split(' ')[0]
+        // else if (isCreatedAt) return value.toString().split(' ')[0]
         else if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
         else return value
       }

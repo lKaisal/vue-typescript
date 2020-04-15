@@ -3,7 +3,7 @@
 
   +b.list-suppliers
     +e.container
-      +e.table(ref="tableRef" :class="{ 'is-horiz-scrolled': horizontalOverscroll }")
+      +e.table(ref="tableRef" :class="{ 'is-horiz-scrolled': isHorizontalOverscroll }")
         //- table head
         +e.row.table-row(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef" :style="setCellStyle(index)"
@@ -205,7 +205,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
       const cell = cells[fieldIndex] as HTMLElement
       cell.style.width = 'auto'
       cell.style.flex = '1 0 auto'
-      const maxWidth = Math.ceil(cell.offsetWidth) + 5
+      const maxWidth = Math.ceil(cell.offsetWidth) + 10
       this.maxWidths.push(maxWidth)
       cell.style.width = null
       cell.style.flex = null

@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../tools/bemto.pug
 
-  +b.module-suppliers.page
+  +b.module-suppliers.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
       router-view(@loadList="updateList" class="module-suppliers__page page")
     transition

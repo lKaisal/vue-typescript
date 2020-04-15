@@ -110,6 +110,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   }
 
   emitLoadList() {
+    this.handleSearchFinished()
     this.$emit('loadList')
   }
   // SEARCH handlers
