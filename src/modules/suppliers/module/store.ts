@@ -122,10 +122,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
   }
   get uniqueFields() {
     return (field: keyof Supplier) => {
-      const set: Set<Supplier[keyof Supplier]> = new Set()
-      for (const el of this.getters.listSorted) {
-        set.add(el[field])
-      }
+      const set: Set<Supplier[keyof Supplier]> = new Set(this.getters.listSorted.map(el => el[field]))
 
       const res = Array.from(set).sort((a, b) => {
         if (typeof a === 'boolean') {

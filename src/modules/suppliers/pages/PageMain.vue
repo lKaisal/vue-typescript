@@ -6,7 +6,7 @@
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
       SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
         @searchFinished="handleSearchFinished" class="page-main__search")
-      //- FilterSuppliers(class="page-main__filter")
+      FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" :key="currentPage + currentList.length" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
