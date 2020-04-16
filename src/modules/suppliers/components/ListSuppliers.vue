@@ -15,7 +15,7 @@
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index + maxWidthsSum" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="maxWidths"
+        ItemSuppliers(v-for="(item, index) in list" :key="index + minWidthsCoeff" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="minWidths"
           @clicked="onItemClick(item)" ref="itemRef"
           class="list-suppliers__item table-row")
 </template>
@@ -63,7 +63,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   @Ref() itemRef!: ItemSuppliers[]
   breakpoint!: string
   // columns width variables
-  maxWidths: number[] = []
+  minWidths: number[] = []
   cells: (HTMLElement[])[] = []
   // horizScroll variables
   horizontalOverscroll: number = 0
@@ -77,7 +77,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'supplierId', title: 'SupplierID', isWidthCalculable: true, isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: true },
     { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
     { field: 'createdAt', title: 'Дата регистрации', isWidthCalculable: true, isSortable: true, isMedium: true, isCentered: true },
-    { field: 'contractType', title: 'Тип договора', isWidthCalculable: true, isSortable: true, isMedium: true, isCentered: true },
+    { field: 'contractsNames', title: 'Тип договора', isSortable: true, isLarge: true, isCentered: true },
     { field: 'userId', title: 'UserID', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
     { field: 'userName', title: 'Имя пользователя', isSortable: true, isWidthCalculable: true, isMedium: true, isCentered: true },
     { field: 'inn', title: 'ИНН', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
@@ -87,8 +87,9 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   ]}
   get isHorizontalOverscroll() { return this.horizontalOverscroll > 20 && !this.isLtMd }
   // COLUMNS WIDTHS GETTERS
+  get minWidthsCoeff() { return this.minWidths.length && this.minWidths.reduce((acc, curr, index) => acc += curr * index) }
   /** returns an Array (value, index) where
-   * value = index of longestCell of each field, index = index of ield in fieldsList
+   * value = index of longestCell of each field, index = index of field in fieldsList
   */
   get longestFields() {
     return [...this.fields].map((field, fieldIndex) => {
@@ -110,7 +111,6 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
       return maxIndex
     })
   }
-  get maxWidthsSum() { return this.maxWidths.length && this.maxWidths.reduce((acc, curr) => acc += curr) }
   // BREAKPOINTS GETTERS
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -159,6 +159,9 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   async mounted() {
     if (this.isLtMd) return
 
+    this.destroyTableScroll()
+    this.clearFieldsWidth()
+
     await this.$nextTick()
     this.updateFieldsWidth()
 
@@ -172,26 +175,28 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
 
   // COLUMNS WIDTH METHODS
   setCellStyle(index) {
-    const width = this.maxWidths[index]
+    const width = this.minWidths[index]
 
-    if (index === 1) return `left: ${this.maxWidths[0]}px;`
+    if (index === 1) return `left: ${this.minWidths[0]}px;`
     else return `min-width: ${width}px;`
   }
   clearFieldsWidth() {
-    this.maxWidths = []
+    this.minWidths = []
     this.cells = []
   }
   updateFieldsWidth() {
     if (!this.tableRef || !this.itemRef) return
 
-    // calculate maxWidths
+    // calculate minWidths
     const tableWidth = this.tableRef.offsetWidth
     const itemsRefs = Array.from(this.itemRef)
+    this.minWidths = []
+    this.cells = []
     this.longestFields.forEach((longestCellIndex, fieldIndex) => {
 
       // case: !field.isWidthCalculable
       if (typeof longestCellIndex !== 'number') {
-        this.maxWidths.push(null)
+        this.minWidths.push(null)
         return
       }
 
@@ -208,8 +213,8 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
       // cell.style.width = 'auto'
       // cell.style.minWidth = 'none'
       // cell.style.flex = '1 0 auto'
-      const maxWidth = Math.ceil(cell.offsetWidth) + 10
-      this.maxWidths.push(maxWidth)
+      const minWidth = Math.ceil(cell.offsetWidth) + 10
+      this.minWidths.push(minWidth)
       cell.setAttribute('style', '')
     })
   }

@@ -12,7 +12,8 @@ type SmsFields = {
 
 type Supplier = {
   confirmed: boolean
-  contractType: string
+  contracts: number[] // массив id контрактов
+  contractsNames: string[]
   createdAt: string
   email: string
   inn: string

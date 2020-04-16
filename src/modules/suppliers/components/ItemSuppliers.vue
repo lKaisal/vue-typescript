@@ -38,8 +38,11 @@ export default class ItemSuppliers extends Vue {
     const value = this.supplier[field.field]
     const isConfirmed = field.field === 'confirmed'
     const isPhone = field.field === 'phone'
+    const contracts = field.field === 'contractsNames'
 
     if (isConfirmed) return value ? 'Подтвержден' : 'Не подтвержден'
+    // @ts-ignore
+    else if (contracts) return [...value].sort().join(' / ')
     else return isPhone ? `+${value}` : value
   }
   setCellStyle(index) {
@@ -48,7 +51,7 @@ export default class ItemSuppliers extends Vue {
     const width = this.widths[index]
 
     if (index === 1) return `left: ${this.widths[0]}px;`
-    else if (width) return `min-width: ${width}px;`
+    if (width) return `min-width: ${width}px;`
   }
 }
 </script>
