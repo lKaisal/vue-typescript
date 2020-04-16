@@ -46,7 +46,6 @@ export default class ItemSuppliers extends Vue {
     if (!this.widths.length) return
 
     const width = this.widths[index]
-    console.log(index, width, this.fields[index], this.$el)
 
     if (index === 1) return `left: ${this.widths[0]}px;`
     else if (width) return `min-width: ${width}px;`

@@ -2,7 +2,7 @@
   include ../../../../tools/bemto.pug
 
   +b.item-filter
-    +e.container(:class="{ 'is-expanded': subitemsAreShown }")
+    +e.container(v-click-outside="onClickOutside" :class="{ 'is-expanded': subitemsAreShown }")
       +e.row
         +e.title(@click="toggleSubitems")
           +e.title-content(v-html="item.title")
@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
+import vClickOutside from 'v-click-outside'
 import { FilterItem } from '../../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import { suppliersMapper } from '../../module/store'
@@ -37,6 +38,9 @@ const SuppliersMappers = Vue.extend({
 })
 
 @Component({
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: {
     ButtonApp
   }
@@ -65,6 +69,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
   }
   resetFilter() {
     this.clearFilterSelected(this.item.field)
+  }
+  onClickOutside() {
+    if (this.subitemsAreShown) this.subitemsAreShown = false
   }
 }
 </script>
