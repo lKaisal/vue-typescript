@@ -4,7 +4,7 @@
   +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
+      //- SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
         @searchFinished="handleSearchFinished" class="page-main__search")
       FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")

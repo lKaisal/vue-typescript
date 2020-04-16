@@ -3,7 +3,7 @@
 
   +b.item-suppliers
     +e.info
-      +e.cell.table-cell(v-for="(field, index) in fields" :style="setCellStyle(index)"
+      +e.cell.table-cell(v-for="(field, index) in fields" :key="index" :style="setCellStyle(index)"
         :class=`[{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge,
           'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
         +e.cell-title(v-if="titleIsShown && field.title" v-html="`${field.title}:&ensp;`")
@@ -43,10 +43,13 @@ export default class ItemSuppliers extends Vue {
     else return isPhone ? `+${value}` : value
   }
   setCellStyle(index) {
+    if (!this.widths.length) return
+
     const width = this.widths[index]
+    console.log(index, width, this.fields[index], this.$el)
 
     if (index === 1) return `left: ${this.widths[0]}px;`
-    else return `min-width: ${width}px;`
+    else if (width) return `min-width: ${width}px;`
   }
 }
 </script>

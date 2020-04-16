@@ -15,7 +15,7 @@
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="maxWidths"
+        ItemSuppliers(v-for="(item, index) in list" :key="index + maxWidthsSum" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="maxWidths"
           @clicked="onItemClick(item)" ref="itemRef"
           class="list-suppliers__item table-row")
 </template>
@@ -188,6 +188,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     const tableWidth = this.tableRef.offsetWidth
     const itemsRefs = Array.from(this.itemRef)
     this.longestFields.forEach((longestCellIndex, fieldIndex) => {
+
       // case: !field.isWidthCalculable
       if (typeof longestCellIndex !== 'number') {
         this.maxWidths.push(null)
@@ -203,12 +204,13 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
       }
 
       const cell = cells[fieldIndex] as HTMLElement
-      cell.style.width = 'auto'
-      cell.style.flex = '1 0 auto'
+      cell.setAttribute('style', 'width: auto; min-width: none; flex: 1 0 auto;')
+      // cell.style.width = 'auto'
+      // cell.style.minWidth = 'none'
+      // cell.style.flex = '1 0 auto'
       const maxWidth = Math.ceil(cell.offsetWidth) + 10
       this.maxWidths.push(maxWidth)
-      cell.style.width = null
-      cell.style.flex = null
+      cell.setAttribute('style', '')
     })
   }
   // HORIZONTAL SCROLL METHODS

@@ -58,7 +58,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     this.subitemsAreShown = !this.subitemsAreShown
   }
   onSubitemClick(value) {
-    this.updateFilterSelected({field: this.item.field, value: value})
+    this.updateFilterSelected({field: this.item.field, value})
   }
   getSubitemIsActive(value) {
     return this.item.valuesSelected && this.item.valuesSelected.indexOf(value) >= 0
