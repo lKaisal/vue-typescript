@@ -3,7 +3,7 @@
 
   +b.filter-app
     +e.container
-      ItemFilter(v-for="(item, index) in filterItems" :key="index" :item="item")
+      ItemFilter(v-for="(item, index) in filterItems" :key="index" :item="item" class="filter-app__item")
 </template>
 
 <script lang="ts">
@@ -56,15 +56,10 @@ export default class FilterSuppliers extends Mixins(SuppliersMappers) {
 
 .filter-app
 
-  &__row
+  &__container
     display flex
-    +xs()
-      flex-wrap wrap
+    flex-wrap wrap
 
-  &__title
-    display flex
-    align-items center
-    margin-bottom 7px
-    fontMedium()
-
+  &__item
+    margin-right 35px
 </style>

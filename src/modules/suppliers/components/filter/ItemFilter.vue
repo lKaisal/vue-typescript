@@ -2,11 +2,11 @@
   include ../../../../tools/bemto.pug
 
   +b.item-filter
-    +e.container
+    +e.container(:class="{ 'is-active': subitemsAreShown }")
       +e.row
         +e.title(@click="toggleSubitems")
           +e.title-content(v-html="item.title")
-          +e.I.title-icon(:class="this.currentIcon")
+          +e.I.title-icon.el-icon-arrow-down
         +e.reset(:class="{ 'is-inactive': !smthIsSelected }" @click="resetFilter")
           +e.reset-content Сбросить
       transition
@@ -70,6 +70,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
 
 .item-filter
 
+  &__container
+    position relative
+
   &__row
     display flex
     align-items center
@@ -80,6 +83,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     margin -5px
     display flex
     align-items center
+    font-size 14px
     fontMedium()
     cursor pointer
     transition(opacity)
@@ -88,11 +92,14 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
 
   &__title-icon
     margin-left 5px
+    transition(transform)
+    .is-active &
+      transform rotateZ(180deg)
 
   &__reset
     padding 5px
     margin -5px
-    margin-left 15px
+    margin-left 5px
     color $cBrand
     font-size 12px
     cursor pointer
@@ -104,6 +111,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
       pointer-events none
 
   &__subitems
+    position absolute
+    top 100%
+    left 0
     display flex
     flex-wrap wrap
 
