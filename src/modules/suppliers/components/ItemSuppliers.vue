@@ -52,6 +52,7 @@ export default class ItemSuppliers extends Vue {
 
     if (index === 1) return `left: ${this.widths[0]}px;`
     if (width) return `min-width: ${width}px;`
+    // if (width) return `min-width: ${width}px; background-color: rgba(256, 0, 0, .3);`
   }
 }
 </script>

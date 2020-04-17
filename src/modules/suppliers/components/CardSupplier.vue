@@ -5,7 +5,7 @@
     +e.H1.title.page-title Информация о пользователе
     +e.info-block
       +e.info
-        //- +e.field._title
+        +e.field._title
           +e.field-title(v-html="`${supplierName.title}`")
           +e.field-content(v-html="supplier[supplierName.field]")
         +e.row
@@ -57,8 +57,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
   subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией']
   generalFields: TableField[] = [
-    { field: 'supplierName', title: 'Название поставщика' },
+    // { field: 'supplierName', title: 'Название поставщика' },
     { field: 'createdAt', title: 'Дата регистрации' },
+    { field: 'contractsNames', title: 'Тип договора' },
     // { field: 'confirmed', title: 'Статус пользователя' },
     { field: 'supplierId', title: 'SupplierID' },
     { field: 'userName', title: 'Имя пользователя' },
@@ -127,9 +128,12 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
         const isPhone = field.field === 'phone'
         const isStatus = field.field === 'confirmed'
         const isCreatedAt = field.field === 'createdAt'
+        const contracts = field.field === 'contractsNames'
 
         if (isPhone) return `+${value}`
         // else if (isCreatedAt) return value.toString().split(' ')[0]
+        // @ts-ignore
+        else if (contracts) return [...value].sort().join(' / ')
         else if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
         else return value
       }
@@ -245,6 +249,9 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
     +xs()
       margin-bottom 15px
     &_title
+      +gt-md()
+        padding-right 25px
+        padding-left 25px
       +gt-sm()
         margin-bottom 25px !important
 

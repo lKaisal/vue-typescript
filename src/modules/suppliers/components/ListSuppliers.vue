@@ -15,7 +15,7 @@
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
                 +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
         //- table body
-        ItemSuppliers(v-for="(item, index) in list" :key="index + minWidthsCoeff" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="minWidths"
+        ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="minWidths"
           @clicked="onItemClick(item)" ref="itemRef"
           class="list-suppliers__item table-row")
 </template>
