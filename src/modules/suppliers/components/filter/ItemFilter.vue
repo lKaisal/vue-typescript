@@ -12,13 +12,12 @@
               +e.reset-content Сбросить
       transition
         +e.subitems(v-if="subitemsAreShown")
-          +e.subitem(v-for="(value, index) in availableValues")
-            +e.checkbox.checkbox(@click="onSubitemClick(value)" :class="{ 'is-active': getSubitemIsActive(value) }")
-              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
-                +e.I.checkbox-icon.el-icon-check.checkbox-icon
-              +e.checkbox-label(v-html="value")
-          //- +e.reset(:class="{ 'is-inactive': !smthIsSelected }" @click="resetFilter")
-            +e.reset-content Сбросить
+          +e.subitems-column(v-for="(col, colIndex) in subitemsColumns")
+            +e.subitem(v-for="(value, valueIndex) in availableValues.slice(colIndex * colSize, colIndex * colSize + colSize)")
+              +e.checkbox.checkbox(@click="onSubitemClick(value)" :class="{ 'is-active': getSubitemIsActive(value) }")
+                +e.checkbox-icon-wrapper.checkbox-icon-wrapper
+                  +e.I.checkbox-icon.el-icon-check.checkbox-icon
+                +e.checkbox-label(v-html="value")
 </template>
 
 <script lang="ts">
@@ -52,7 +51,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
   subitemsAreShown: boolean = false
   iconInactive: string = 'el-icon-arrow-right'
   iconActive: string = 'el-icon-arrow-down'
+  colSize: number = 5
 
+  get subitemsColumns() { return Math.ceil(this.item.valuesTotal.length / this.colSize) }
   get smthIsSelected() { return this.item.valuesSelected.length }
   get currentIcon() { return this.subitemsAreShown ? this.iconActive : this.iconInactive }
   get available() { return this.availableFields(this.item.field) }
@@ -142,10 +143,14 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     left 0
     min-width 100%
     padding 16px 16px 17px
-    // display flex
+    display flex
     // flex-wrap wrap
     background-color white
     box-shadow 0px 16px 30px 0px rgba(204,204,204,0.5)
+
+  &__subitems-column
+    &:not(:last-child)
+      margin-right 5px
 
   &__subitem
     margin-bottom 15px
@@ -159,4 +164,6 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
 
   &__checkbox-label
     margin-left 5px
+    white-space nowrap
+    font-size 13px
 </style>

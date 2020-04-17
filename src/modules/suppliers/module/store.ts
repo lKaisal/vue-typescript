@@ -44,6 +44,13 @@ class SuppliersGetters extends Getters<SuppliersState> {
     if (!this.state.list.data || !this.state.list.data.length) return
 
     const list = this.state.listFiltered ? [...this.state.listFiltered] : [...this.state.list.data]
+    list.forEach(supplier => {
+      const contracts = supplier.contractsNames
+      contracts.forEach((contract, index) => {
+        if (!contract) contracts[index] = 'не&nbsp;указан'
+        else if (contract.includes(' ')) contracts[index] = contract.replace(/\s/g, '&nbsp;')
+      })
+    })
 
     const sortBy = this.state.listSort.by
     const sortDirection = this.state.listSort.direction
@@ -96,7 +103,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
 
     return res
   }
-  listSortedAndFilteredExceptField() {
+  get listSortedAndFilteredExceptField() {
     return (fieldIndex: number) => {
       const list = [...this.getters.listSorted]
 
@@ -122,7 +129,12 @@ class SuppliersGetters extends Getters<SuppliersState> {
   }
   get uniqueFields() {
     return (field: keyof Supplier) => {
-      const set: Set<Supplier[keyof Supplier]> = new Set(this.getters.listSorted.map(el => el[field]))
+      const set: Set<Supplier[keyof Supplier]> = new Set()
+      for (const el of this.getters.listSorted) {
+        // @ts-ignore
+        if (Array.isArray(el[field])) for (const f of el[field]) set.add(f)
+        else set.add(el[field])
+      }
 
       const res = Array.from(set).sort((a, b) => {
         if (typeof a === 'boolean') {
@@ -141,16 +153,17 @@ class SuppliersGetters extends Getters<SuppliersState> {
     }
   }
   get availableFields() {
-    return (field: keyof Supplier) => {
-      const unique = [...this.getters.uniqueFields(field)]
-      const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
+    return this.getters.uniqueFields
+    // return (field: keyof Supplier) => {
+    //   const unique = [...this.getters.uniqueFields(field)]
+    //   const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
 
-      return unique.map(val => {
-        return this.getters.listSortedAndFilteredExceptField()(indexOfField).some(supplier => {
-          return supplier[field] === val
-        })
-      })
-    }
+    //   return unique.map(val => {
+    //     return this.getters.listSortedAndFilteredExceptField()(indexOfField).some(supplier => {
+    //       return supplier[field] === val
+    //     })
+    //   })
+    // }
   }
 }
 

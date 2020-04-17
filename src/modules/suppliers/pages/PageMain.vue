@@ -88,6 +88,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
   get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
   // LIST GETTERS
+  get emptyContracts() { return this.list && this.list.data.filter(s => s.contractsNames.includes('')) }
   get pagesAmount() { return this.listSortedAndFiltered && this.listSortedAndFiltered.length / this.pageSize }
   get listByPages() {
     if (!this.listSortedAndFiltered) return

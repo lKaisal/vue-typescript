@@ -30,12 +30,12 @@ const SuppliersMappers = Vue.extend({
 })
 
 export default class FilterSuppliers extends Mixins(SuppliersMappers) {
-  get contractTypes() { return this.uniqueFields('contractsNames') }
+  get contractsNames() { return this.uniqueFields('contractsNames') }
   get confirmedFields() { return this.uniqueFields('confirmed') }
   get phoneAuthIds() { return this.uniqueFields('userId').slice(0, 10) }
   get filterItems(): FilterItem[] { return [
-    // { 'field': 'contractType', 'title': 'Тип договора', valuesTotal: this.contractTypes, valuesSelected: [] },
-    { 'field': 'confirmed', 'title': 'Номер подтвержден', valuesTotal: this.confirmedFields, valuesSelected: [] },
+    { 'field': 'contractsNames', 'title': 'Тип договора', valuesTotal: this.contractsNames, valuesSelected: [] },
+    // { 'field': 'confirmed', 'title': 'Номер подтвержден', valuesTotal: this.confirmedFields, valuesSelected: [] },
     // { 'field': 'userId', 'title': 'UserId', valuesTotal: this.phoneAuthIds, valuesSelected: [] }
   ]}
 
