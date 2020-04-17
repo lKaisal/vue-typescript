@@ -97,7 +97,8 @@ class SuppliersGetters extends Getters<SuppliersState> {
 
         const field = filter.field
         const supplierField = supplier[field]
-        return  filter.valuesSelected.includes(supplierField)
+        // @ts-ignore
+        return Array.isArray(supplierField) ? filter.valuesSelected.find(val => supplierField.includes(val)) : filter.valuesSelected.includes(supplierField)
       })
     })
 

@@ -92,6 +92,8 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
    * value = index of longestCell of each field, index = index of field in fieldsList
   */
   get longestFields() {
+    if (!this.list || !this.list.length) return
+
     return [...this.fields].map((field, fieldIndex) => {
       const values = this.list.map(item => item[field.field])
 
@@ -185,7 +187,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     this.cells = []
   }
   updateFieldsWidth() {
-    if (!this.tableRef || !this.itemRef) return
+    if (!this.tableRef || !this.itemRef || !this.longestFields || !this.longestFields.length) return
 
     // calculate minWidths
     const tableWidth = this.tableRef.offsetWidth
