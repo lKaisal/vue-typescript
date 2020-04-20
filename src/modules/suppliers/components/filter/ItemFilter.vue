@@ -2,12 +2,13 @@
   include ../../../../tools/bemto.pug
 
   +b.item-filter
-    +e.container(v-click-outside="onClickOutside" :class="{ 'is-expanded': subitemsAreShown }")
+    +e.container(v-click-outside="onClickOutside" :class="{ 'is-expanded': subitemsAreShown, 'is-selected': smthIsSelected && !subitemsAreShown }")
       +e.row
         +e.title(@click="toggleSubitems")
           +e.title-content(v-html="item.title")
           +e.I.title-icon.el-icon-arrow-down
-        transition
+          +e.I.reset-icon.el-icon-circle-close(:class="{ 'is-inactive': !smthIsSelected }" @click.stop="resetFilter")
+        //- transition
           +e.reset(:class="[{ 'is-inactive': !smthIsSelected }, 'in-title']" @click="resetFilter")
               +e.reset-content Сбросить
       transition
@@ -84,25 +85,35 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
 
   &__container
     position relative
+    border 1px solid $cBaseBorder
+    border-color transparent $cBaseBorder $cBaseBorder transparent
+    transition(border-color)
+    transform translateY(-1px)
+    &.is-selected
+      border-color $cBrand $cBrand $cBrand transparent
 
   &__row
     // display flex
     // align-items center
-    margin-bottom 15px
+    // margin-bottom 15px
 
   &__title
-    padding 16px
+    padding-right 15px
+    padding-left 15px
+    width-between-property 'padding-top' 1001 16 1440 18 true true
+    width-between-property 'padding-bottom' 1001 16 1440 18 true true
     // margin -5px
     display flex
     align-items center
     background-color white
-    font-size 14px
+    width-between-property 'font-size' 1001 12 1440 14 true true
     fontMedium()
+    color $cRegularText
     cursor pointer
     transition(opacity)
     .item-filter__container:not(.is-expanded) &
       &:hover
-        opacity .75
+        // opacity .75
     .is-expanded &
       box-shadow 0px 10px 30px 0px rgba(204,204,204,0.5)
 
@@ -111,6 +122,19 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     transition(transform)
     .is-expanded &
       transform rotateZ(180deg)
+
+  &__reset-icon
+    margin-left 5px
+    font-size 14px
+    color $cPlaceholderText
+    color $cBrand
+    transition(color\, opacity)
+    transition-duration $tFast
+    &:hover
+      color $cPlaceholderHover
+    &.is-inactive
+      opacity 0
+      pointer-events none
 
   &__reset
     z-index 10
@@ -126,9 +150,9 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
       opacity .75
     &.in-title
       position absolute
-      bottom -2.5px
-      left 16px
-      font-size 13px
+      bottom 4px
+      left 15px
+      font-size 12px
     &.is-inactive
       opacity 0
       pointer-events none

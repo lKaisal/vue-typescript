@@ -3,10 +3,10 @@
 
   +b.search-app
     +e.row
-      +e.EL-INPUT.input(v-model="searchText" clearable placeholder="Поиск" :class="{ 'is-filled': searchText }"  @input="onSearchTextChange"
-        @change="onSearchTextChange")
+      +e.EL-INPUT.input(v-model="searchText" clearable placeholder="Поиск" @input="onSearchTextChange"
+        @change="onSearchTextChange" :class="{ 'is-filled': searchText }")
         +e.I.icon.el-icon-search.el-input__icon(v-if="!searchText" slot="suffix")
-      +e.EL-SELECT.select(v-model="activeField" :disabled="!searchText" clearable placeholder="Поиск по полю" :class="{ 'is-filled': activeField }"
+      +e.EL-SELECT.select(v-model="activeField" clearable placeholder="Поиск по полю" :class="{ 'is-filled': activeField }"
         @change="onActiveFieldChange")
         +e.EL-OPTION(v-for="(field, index) in fields" :key="index" :label="field.title" :value="field.field")
 </template>
@@ -53,7 +53,14 @@ export default class SearchApp extends Vue {
     await this.$nextTick()
     this.searchThroughList()
   }
-  searchThroughList() {
+  async searchThroughList() {
+    if (!this.searchText) {
+      this.$emit('searchFinished')
+      await this.$nextTick()
+      this.searchedList = this.listInitial
+
+      return
+    }
     const textFormatted = this.searchText.toString().trim().toLowerCase()
 
     const findText = (supplierValue) => {
@@ -63,8 +70,8 @@ export default class SearchApp extends Vue {
     }
 
     this.searchedList = this.listInitial.filter(supplier => {
-      if (this.activeField) return findText(supplier[this.activeField])
-      else return this.fields.some((field, index) => findText(supplier[field.field]))
+      if (this.activeField && this.searchText) return findText(supplier[this.activeField])
+      else if (this.searchText) return this.fields.some((field, index) => findText(supplier[field.field]))
     })
 
     this.$emit('searchProgress', this.searchedList)
@@ -85,19 +92,24 @@ export default class SearchApp extends Vue {
   &__select
     grid-size(4, 1, 1.1, 1.1, 1.25)
     min-width 175px
+    >>> input
+      border-left 0px
 
   &__input
     grid-size(4, 1.5, 2, 2, 2.4)
     min-width 200px
     +gt-sm()
-      margin-right 10px
+      // margin-right 10px
     +xs()
       margin-bottom 10px
+    >>> input
+      border-left 0px
 
   &__select
   &__input
     max-width 400px
     >>> input
+      border-radius 0
       fontMedium()
       transition(border-color)
       width-between-property 'font-size' 1001 12 1440 14 true true

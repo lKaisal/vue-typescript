@@ -4,7 +4,8 @@
   +b.page-main.page
     +e.container(v-if="list.data && list.data.length")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(:list="listSortedAndFiltered" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress" @searchFinished="handleSearchFinished" class="page-main__search")
+      SearchApp(:list="listSortedAndFiltered" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
+        @searchFinished="handleSearchFinished" class="page-main__search")
       FilterSuppliers(class="page-main__filter")
       ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
@@ -146,9 +147,17 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
 
   &__search
     +gt-md()
-      margin-bottom 20px
+      // margin-bottom 20px
     +lt-md()
       order 0
+      // margin-bottom 30px
+
+  &__filter
+    z-index 5
+    +gt-md()
+      margin-bottom 20px
+    +lt-md()
+      order 1
       margin-bottom 30px
 
   &__list
