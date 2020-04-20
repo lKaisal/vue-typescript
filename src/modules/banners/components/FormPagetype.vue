@@ -41,7 +41,7 @@
 import { Vue, Component, Ref, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { ElSelect } from 'element-ui/types/select'
 import sleep from '@/mixins/sleep'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 import { ElInput } from 'element-ui/types/input'
 import { Banner, BannerForm, FormField, News } from '../models'
 import { bannersMapper } from '../module/store'

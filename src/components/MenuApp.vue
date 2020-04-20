@@ -20,14 +20,14 @@
 
 <script lang="ts">
 import { Vue, Component, Watch, Prop, Mixins } from 'vue-property-decorator'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import Router from '@/services/router'
 import LogOut from '@/components/LogOut.vue'
-import vClickOutside from 'v-click-outside'
-import { mapState, mapMutations, mapGetters } from 'vuex'
-import LocalStorageService from '../services/LocalStorageService'
 import { MenuItem } from '@/models'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 import { authMapper } from '@/modules/auth/module/store'
+import vClickOutside from 'v-click-outside'
+import LocalStorageService from '../services/LocalStorageService'
 
 const UiMappers = Vue.extend({
   computed: {

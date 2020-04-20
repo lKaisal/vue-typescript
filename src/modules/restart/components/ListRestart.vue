@@ -38,7 +38,7 @@ import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { TableField } from '../models'
 import { mapState } from 'vuex'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 
 const UiMappers = Vue.extend({
   computed: {

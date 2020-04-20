@@ -4,7 +4,7 @@
   +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(:list="listSorted" :fields="searchFields" :uniqueFieldIndex="2" @searchProgress="handleSearchProgress"
+      SearchApp(:list="listSorted" :fields="searchFields" :uniqueField="searchFields[2]" @searchProgress="handleSearchProgress"
         @searchFinished="handleSearchFinished" class="page-main__search")
       FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import { MsgBoxContent, Button, SearchField, FilterItem } from '@/models'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 import { authMapper } from '@/modules/auth/module/store'
 import ButtonApp from '@/components/ButtonApp.vue'
 import MessageBox from '@/components/MessageBox.vue'
@@ -116,10 +116,10 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   }
   // SEARCH handlers
   handleSearchProgress(res) {
-    this.setListSearched(res)
+    // this.setListSearched(res)
   }
   handleSearchFinished() {
-    this.setListSearched(null)
+    // this.setListSearched(null)
   }
   // PAGINATION click handlers
   onCurrentChange(n) {

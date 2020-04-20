@@ -30,7 +30,7 @@ import sleep from '@/mixins/sleep'
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 import { CurrentDevice } from '@/models'
 import Router from '@/services/router'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 import { authMapper } from './modules/auth/module/store'
 import axios from 'axios'
 
@@ -105,7 +105,7 @@ export default class App extends Mixins(UiMappers, AuthMappers) {
           .then(() => this.initializeModules())
           .catch(() => this.goToPageAuth())
       }
-  
+
       this.setCurrentDevice(device)
       window.addEventListener('resize', () => this.windowResizeHandler(grid))
       this.windowResizeHandler(grid)

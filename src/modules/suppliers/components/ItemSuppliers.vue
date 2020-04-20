@@ -42,13 +42,13 @@ export default class ItemSuppliers extends Vue {
 
     if (isConfirmed) return value ? 'Подтвержден' : 'Не подтвержден'
     // @ts-ignore
-    else if (contracts) return [...value].sort().join(' / ')
+    else if (contracts) return value && value.length && [...value].sort().join(' / ')
     else return isPhone ? `+${value}` : value
   }
   setCellStyle(index) {
     if (!this.widths.length) return
 
-    const width = this.widths[index]
+    const width = this.widths && this.widths[index]
 
     if (index === 1) return `left: ${this.widths[0]}px;`
     if (width) return `min-width: ${width}px;`

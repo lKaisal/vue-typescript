@@ -41,7 +41,7 @@ import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
 import { VisibilityObserver, VisibilityObserverOptions } from '@/mixins/VisibilityObserver'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 
 const UiMappers = Vue.extend({
   computed: {

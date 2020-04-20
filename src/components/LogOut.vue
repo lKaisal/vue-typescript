@@ -12,7 +12,7 @@
 import { Vue, Component, Mixins, Watch, Prop } from 'vue-property-decorator'
 import IconSvg from '@/components/IconSvg.vue'
 import LocalStorageService from '@/services/LocalStorageService'
-import Store from '@/services/store'
+import Store from '@/services/store/store'
 import { mapActions, mapGetters } from 'vuex'
 
 @Component({

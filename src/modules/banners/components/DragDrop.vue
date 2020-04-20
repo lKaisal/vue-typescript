@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Vue, Component, Ref, Watch, Mixins } from 'vue-property-decorator'
 import { bannersMapper } from '../module/store'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 import preloadImages from '@/mixins/preloadImages'
 
 const BannersMapper = Vue.extend({

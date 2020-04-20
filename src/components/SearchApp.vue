@@ -15,55 +15,72 @@
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 // import * as JsSearch from 'js-search'
 import { SearchField } from '@/models'
+import { searchMapper } from '@/services/store/modules/search/store'
+
+const SearchMappers = Vue.extend({
+  computed: {
+    ...searchMapper.mapGetters(['searchListFinal', 'uniqueFieldsResult'])
+  },
+  methods: {
+    ...searchMapper.mapMutations(['setSearchText', 'setSearchField', 'setUniqueField', 'initSearch'])
+  }
+})
 
 @Component({
   components: {
   }
 })
 
-export default class SearchApp extends Vue {
+export default class SearchApp extends SearchMappers {
   @Prop() list: Object[]
   @Prop() fields: SearchField[]
-  searchedList: Object[] = null
-  listInitial: Object[] = null
+  @Prop() uniqueField: SearchField
+  // searchedList: Object[] = null
+  // listInitial: Object[] = null
   activeField: string = null // EL-SELECT
   searchText: string = null // EL-INPUT
 
   created() {
-    this.initSearch()
+    this.initSearchApp()
   }
-  async initSearch() {
-    this.searchedList = [...this.list]
-    this.listInitial = [...this.list]
+  async initSearchApp() {
+    this.initSearch({ 'list': this.list, 'fields': this.fields.map(f => f.field), 'unique': this.uniqueField.field })
+    // this.searchedList = [...this.list]
+    // this.listInitial = [...this.list]
   }
   async onSearchTextChange() {
-    if (!this.searchText) {
-      this.activeField = null
-      this.$emit('searchFinished')
-      await this.$nextTick()
-      this.searchedList = this.listInitial
-    } else {
-      this.searchThroughList()
-    }
+    await this.$nextTick()
+    this.setSearchText(this.searchText)
+    // if (!this.searchText) {
+    //   this.activeField = null
+    //   this.$emit('searchFinished')
+    //   await this.$nextTick()
+    //   this.searchedList = this.listInitial
+    // } else {
+    //   await this.$nextTick()
+    //   this.searchThroughList()
+    // }
   }
   async onActiveFieldChange() {
-    this.searchThroughList()
+    await this.$nextTick()
+    this.setSearchField(this.activeField)
+    // this.searchThroughList()
   }
   searchThroughList() {
-    const textFormatted = this.searchText.toString().trim().toLowerCase()
+    // const textFormatted = this.searchText.toString().trim().toLowerCase()
 
-    const findText = (supplierValue) => {
-      const supplierValueFormatted = supplierValue.toString().trim().toLowerCase()
+    // const findText = (supplierValue) => {
+    //   const supplierValueFormatted = supplierValue.toString().trim().toLowerCase()
 
-      return supplierValueFormatted.includes(textFormatted)
-    }
+    //   return supplierValueFormatted.includes(textFormatted)
+    // }
 
-    this.searchedList = this.listInitial.filter(supplier => {
-      if (this.activeField) return findText(supplier[this.activeField])
-      else return this.fields.some((field, index) => findText(supplier[field.field]))
-    })
+    // this.searchedList = this.listInitial.filter(supplier => {
+    //   if (this.activeField) return findText(supplier[this.activeField])
+    //   else return this.fields.some((field, index) => findText(supplier[field.field]))
+    // })
 
-    this.$emit('searchProgress', this.searchedList)
+    // this.$emit('searchProgress', this.searchedList)
   }
 }
 </script>

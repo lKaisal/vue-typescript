@@ -23,7 +23,7 @@ import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { featuresMapper } from '../module/store'
 import { Section, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 
 const UiMappers = Vue.extend({
   computed: {

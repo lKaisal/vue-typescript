@@ -30,7 +30,7 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
 import MessageBox from '@/components/MessageBox.vue'
 import { mapState } from 'vuex'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 import sleep from '@/mixins/sleep'
 
 const UiMappers = Vue.extend({

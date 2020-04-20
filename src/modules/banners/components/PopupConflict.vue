@@ -20,7 +20,7 @@ import ItemBanner from '../components/ItemBanner.vue'
 import { Banner } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
-import { uiMapper } from '@/modules/ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 
 const UiMappers = Vue.extend({
   computed: {
