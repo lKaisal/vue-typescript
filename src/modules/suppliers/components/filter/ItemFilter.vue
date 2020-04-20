@@ -13,7 +13,7 @@
       transition
         +e.subitems(v-if="subitemsAreShown")
           +e.subitems-column(v-for="(col, colIndex) in subitemsColumns")
-            +e.subitem(v-for="(value, valueIndex) in availableValues.slice(colIndex * colSize, colIndex * colSize + colSize)")
+            +e.subitem(v-for="(value, valueIndex) in available.slice(colIndex * colSize, colIndex * colSize + colSize)")
               +e.checkbox.checkbox(@click="onSubitemClick(value)" :class="{ 'is-active': getSubitemIsActive(value) }")
                 +e.checkbox-icon-wrapper.checkbox-icon-wrapper
                   +e.I.checkbox-icon.el-icon-check.checkbox-icon
@@ -141,7 +141,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     position absolute
     top 100%
     left 0
-    min-width 100%
+    min-width 150%
     padding 16px 16px 17px
     display flex
     // flex-wrap wrap
@@ -150,12 +150,12 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
 
   &__subitems-column
     &:not(:last-child)
-      margin-right 5px
+      margin-right 20px
 
   &__subitem
     margin-bottom 15px
     &:not(:last-child)
-      margin-right 15px
+      // margin-right 15px
     &.is-disabled
       opacity .5
 
