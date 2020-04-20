@@ -15,43 +15,59 @@
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 // import * as JsSearch from 'js-search'
 import { SearchField } from '@/models'
-import { searchMapper } from '@/services/store/modules/search/store'
-
-const SearchMappers = Vue.extend({
-  methods: {
-    ...searchMapper.mapMutations(['setSearchText', 'setSearchField', 'setUniqueField', 'initSearch', 'clearSearch'])
-  }
-})
 
 @Component({
   components: {
   }
 })
 
-export default class SearchApp extends SearchMappers {
+export default class SearchApp extends Vue {
   @Prop() list: Object[]
   @Prop() fields: SearchField[]
-  @Prop() uniqueField: SearchField
+  searchedList: Object[] = null
+  listInitial: Object[] = null
   activeField: string = null // EL-SELECT
   searchText: string = null // EL-INPUT
 
   created() {
-    this.initSearchApp()
-  }
-  beforeDesctory() {
-    this.clearSearch()
+    this.initSearch()
   }
 
-  async initSearchApp() {
-    this.initSearch({ 'list': this.list, 'fields': this.fields.map(f => f.field), 'unique': this.uniqueField.field })
+  async initSearch() {
+    this.searchedList = [...this.list]
+    this.listInitial = [...this.list]
   }
   async onSearchTextChange() {
-    await this.$nextTick()
-    this.setSearchText(this.searchText)
+    if (!this.searchText) {
+      this.activeField = null
+      await this.$nextTick()
+      this.$emit('searchFinished')
+      await this.$nextTick()
+      this.searchedList = this.listInitial
+    } else {
+      await this.$nextTick()
+      this.searchThroughList()
+    }
   }
   async onActiveFieldChange() {
     await this.$nextTick()
-    this.setSearchField(this.activeField)
+    this.searchThroughList()
+  }
+  searchThroughList() {
+    const textFormatted = this.searchText.toString().trim().toLowerCase()
+
+    const findText = (supplierValue) => {
+      const supplierValueFormatted = supplierValue.toString().trim().toLowerCase()
+
+      return supplierValueFormatted.includes(textFormatted)
+    }
+
+    this.searchedList = this.listInitial.filter(supplier => {
+      if (this.activeField) return findText(supplier[this.activeField])
+      else return this.fields.some((field, index) => findText(supplier[field.field]))
+    })
+
+    this.$emit('searchProgress', this.searchedList)
   }
 }
 </script>

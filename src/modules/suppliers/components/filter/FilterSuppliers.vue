@@ -3,7 +3,7 @@
 
   +b.filter-app
     +e.container
-      ItemFilter(v-for="(item, index) in filterItems" :key="index" :item="item" class="filter-app__item")
+      ItemFilter(v-for="(item, index) in filter" :key="index" :item="item" class="filter-app__item")
 </template>
 
 <script lang="ts">
@@ -15,6 +15,7 @@ import { suppliersMapper } from '../../module/store'
 
 const SuppliersMappers = Vue.extend({
   computed: {
+    ...suppliersMapper.mapState(['filter']),
     ...suppliersMapper.mapGetters(['uniqueFields'])
   },
   methods: {

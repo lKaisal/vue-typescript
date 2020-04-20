@@ -154,18 +154,19 @@ class SuppliersGetters extends Getters<SuppliersState> {
     }
   }
   get availableFields() {
-    if (this.state.filter.length <= 1) return this.getters.uniqueFields
+    return this.getters.uniqueFields
+    // if (this.state.filter.length <= 1) return this.getters.uniqueFields
 
-    return (field: keyof Supplier) => {
-      const unique = [...this.getters.uniqueFields(field)]
-      const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
+    // return (field: keyof Supplier) => {
+    //   const unique = [...this.getters.uniqueFields(field)]
+    //   const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
 
-      return unique.map(val => {
-        return this.getters.listSortedAndFilteredExceptField(indexOfField).some(supplier => {
-          return supplier[field] === val
-        })
-      })
-    }
+    //   return unique.map(val => {
+    //     return this.getters.listSortedAndFilteredExceptField(indexOfField).some(supplier => {
+    //       return supplier[field] === val
+    //     })
+    //   })
+    // }
   }
 }
 
@@ -175,7 +176,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
   }
-  setListSearched(payload) {
+  setListFiltered(payload) {
     this.state.listFiltered = payload
   } 
   // Mutations List loading
