@@ -4,13 +4,13 @@
   +b.page-main.page(v-loading.fullscreen.lock="isLoading")
     +e.container(v-if="list.data && list.data.length && !list.isLoading")
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      SearchApp(:list="listSorted" :fields="searchFields" :uniqueField="searchFields[2]" @searchProgress="handleSearchProgress"
-        @searchFinished="handleSearchFinished" class="page-main__search")
+      SearchApp(:list="listSortedAndFiltered" :fields="searchFields" :uniqueField="searchFields[2]" class="page-main__search")
       FilterSuppliers(class="page-main__filter")
       transition(mode="out-in")
         ListSuppliers(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
       ButtonApp(btnType="primary" :isPlain="true" text="Обновить список" @clicked="emitLoadList" class="page-main__btn")
-      PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount" @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
+      PaginationApp(:total="listSortedAndFiltered && listSortedAndFiltered.length" :pageSize="pageSize" :pagerCount="pagPagerCount"
+        @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange"
         class="page-main__pag")
 </template>
 
@@ -32,6 +32,7 @@ import { EditPayload, Supplier } from '../models'
 import ListSuppliers from '../components/ListSuppliers.vue'
 import CardSupplier from '../components/CardSupplier.vue'
 import MsgBoxTools from '../mixins/MsgBoxTools'
+import { searchMapper } from '@/services/store/modules/search/store'
 
 const UiMappers = Vue.extend({
   computed: {
@@ -40,12 +41,21 @@ const UiMappers = Vue.extend({
 })
 const SuppliersMappers = Vue.extend({
   computed: {
-    ...suppliersMapper.mapState(['list', 'listFiltered']),
-    ...suppliersMapper.mapGetters(['isLoading', 'listSorted', 'listSortedAndFiltered'])
+    ...suppliersMapper.mapState(['list']),
+    ...suppliersMapper.mapGetters(['isLoading', 'listSorted'])
   },
   methods: {
     ...suppliersMapper.mapMutations(['setListSearched']),
     ...suppliersMapper.mapActions(['editPhone'])
+  }
+})
+const SearchMappers = Vue.extend({
+  computed: {
+    ...searchMapper.mapState(['uniqueField']),
+    ...searchMapper.mapGetters(['uniqueFieldsResult', 'resultList'])
+  },
+  methods: {
+    ...searchMapper.mapMutations(['resetSearch'])
   }
 })
 const AuthMappers = Vue.extend({
@@ -64,12 +74,9 @@ const AuthMappers = Vue.extend({
     SearchApp,
     FilterSuppliers
   },
-  mixins: [
-    MsgBoxTools
-  ],
 })
 
-export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMappers, SuppliersMappers, AuthMappers) {
+export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMappers, SuppliersMappers, AuthMappers, SearchMappers) {
   pageSize: number = 10
   currentPage: number = 1
   searchFields: SearchField[] = [
@@ -89,6 +96,11 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
   // LIST GETTERS
   get emptyContracts() { return this.list && this.list.data.filter(s => s.contractsNames.includes('')) }
+  get listSortedAndFiltered() {
+    if (!Array.isArray(this.resultList) || this.resultList.length === this.listSorted.length) return this.listSorted
+    else if (!this.resultList.length) return []
+    else return this.resultList
+  }
   get pagesAmount() { return this.listSortedAndFiltered && this.listSortedAndFiltered.length / this.pageSize }
   get listByPages() {
     if (!this.listSortedAndFiltered) return
@@ -111,15 +123,9 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   }
 
   emitLoadList() {
-    this.handleSearchFinished()
+    // this.handleSearchFinished()
+    // this.resetSearch()
     this.$emit('loadList')
-  }
-  // SEARCH handlers
-  handleSearchProgress(res) {
-    // this.setListSearched(res)
-  }
-  handleSearchFinished() {
-    // this.setListSearched(null)
   }
   // PAGINATION click handlers
   onCurrentChange(n) {

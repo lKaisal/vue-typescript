@@ -18,11 +18,8 @@ import { SearchField } from '@/models'
 import { searchMapper } from '@/services/store/modules/search/store'
 
 const SearchMappers = Vue.extend({
-  computed: {
-    ...searchMapper.mapGetters(['searchListFinal', 'uniqueFieldsResult'])
-  },
   methods: {
-    ...searchMapper.mapMutations(['setSearchText', 'setSearchField', 'setUniqueField', 'initSearch'])
+    ...searchMapper.mapMutations(['setSearchText', 'setSearchField', 'setUniqueField', 'initSearch', 'clearSearch'])
   }
 })
 
@@ -35,52 +32,26 @@ export default class SearchApp extends SearchMappers {
   @Prop() list: Object[]
   @Prop() fields: SearchField[]
   @Prop() uniqueField: SearchField
-  // searchedList: Object[] = null
-  // listInitial: Object[] = null
   activeField: string = null // EL-SELECT
   searchText: string = null // EL-INPUT
 
   created() {
     this.initSearchApp()
   }
+  beforeDesctory() {
+    this.clearSearch()
+  }
+
   async initSearchApp() {
     this.initSearch({ 'list': this.list, 'fields': this.fields.map(f => f.field), 'unique': this.uniqueField.field })
-    // this.searchedList = [...this.list]
-    // this.listInitial = [...this.list]
   }
   async onSearchTextChange() {
     await this.$nextTick()
     this.setSearchText(this.searchText)
-    // if (!this.searchText) {
-    //   this.activeField = null
-    //   this.$emit('searchFinished')
-    //   await this.$nextTick()
-    //   this.searchedList = this.listInitial
-    // } else {
-    //   await this.$nextTick()
-    //   this.searchThroughList()
-    // }
   }
   async onActiveFieldChange() {
     await this.$nextTick()
     this.setSearchField(this.activeField)
-    // this.searchThroughList()
-  }
-  searchThroughList() {
-    // const textFormatted = this.searchText.toString().trim().toLowerCase()
-
-    // const findText = (supplierValue) => {
-    //   const supplierValueFormatted = supplierValue.toString().trim().toLowerCase()
-
-    //   return supplierValueFormatted.includes(textFormatted)
-    // }
-
-    // this.searchedList = this.listInitial.filter(supplier => {
-    //   if (this.activeField) return findText(supplier[this.activeField])
-    //   else return this.fields.some((field, index) => findText(supplier[field.field]))
-    // })
-
-    // this.$emit('searchProgress', this.searchedList)
   }
 }
 </script>

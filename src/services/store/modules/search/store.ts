@@ -21,9 +21,9 @@ class SearchGetters extends Getters<SearchState> {
     return this.getters.allFields.filter(field => !this.getters.searchFields.includes(field))
   }
   get searchListCleared() {
-    const list = [...this.state.searchList]
+    if (!this.state.searchList) return
 
-    if (!list) return
+    const list = [...this.state.searchList]
 
     const searchFields = this.getters.searchFields
     const notSearchFields = this.getters.notSearchFields
@@ -41,13 +41,18 @@ class SearchGetters extends Getters<SearchState> {
     else return list
   }
   get resultList() {
+    if (!this.state.searchList) return
+
     const text = this.state.searchText
-    const list = [...this.getters.searchListCleared]
+    const list = [...this.state.searchList]
+    const searchFields = this.getters.searchFields
 
     if (!text) return list
 
     return list.filter((fields, index) => {
       for (const key in fields) {
+        if (!searchFields.includes(key)) continue
+
         const value = fields[key].toString().trim().toLowerCase()
 
         if (value.includes(text)) return true
@@ -67,6 +72,17 @@ class SearchMutations extends Mutations<SearchState> {
     this.state.searchList = list
     if (fields) this.state.fields = fields
     if (unique) this.state.uniqueField = unique
+  }
+  resetSearch() {
+    this.state.searchField = null
+    this.state.searchText = null
+  }
+  clearSearch() {
+    this.state.fields = null
+    this.state.searchField = null
+    this.state.searchList = null
+    this.state.searchText = null
+    this.state.uniqueField = null
   }
   setUniqueField(payload: string) { this.state.uniqueField = payload }
   setSearchText(payload: string) { this.state.searchText = payload.toString().trim().toLowerCase() }
