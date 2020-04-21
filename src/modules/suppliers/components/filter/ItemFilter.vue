@@ -58,7 +58,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
   get smthIsSelected() { return this.item.valuesSelected.length }
   get currentIcon() { return this.subitemsAreShown ? this.iconActive : this.iconInactive }
   get available() { return this.availableFields(this.item.field) }
-  get availableValues() { return this.item.valuesTotal.filter((val, index) => this.available[index]) }
+  // get availableValues() { return this.item.valuesTotal.filter((val, index) => this.available[index]) }
 
   toggleSubitems() {
     this.subitemsAreShown = !this.subitemsAreShown
@@ -135,6 +135,7 @@ export default class ItemFilter extends Mixins(SuppliersMappers) {
     &.is-inactive
       opacity 0
       pointer-events none
+      transition none
 
   &__reset
     z-index 10

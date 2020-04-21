@@ -9,7 +9,7 @@
           +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef" :style="setCellStyle(index)"
             :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium,
               'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
-            +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
+            +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !field.isSortable || !list || !list.length }")
               +e.title-text(v-html="field.title")
               +e.title-sort(v-if="field.isSortable")
                 +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
@@ -77,7 +77,7 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     { field: 'supplierId', title: 'SupplierID', isWidthCalculable: true, isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: true },
     { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
     { field: 'createdAt', title: 'Дата регистрации', isWidthCalculable: true, isSortable: true, isMedium: true, isCentered: true },
-    { field: 'contractsNames', title: 'Тип договора', isSortable: true, isLarge: true, isCentered: true },
+    { field: 'contractsNames', title: 'Тип договора', isLarge: true, isCentered: true },
     { field: 'userId', title: 'UserID', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
     { field: 'userName', title: 'Имя пользователя', isSortable: true, isWidthCalculable: true, isMedium: true, isCentered: true },
     { field: 'inn', title: 'ИНН', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },

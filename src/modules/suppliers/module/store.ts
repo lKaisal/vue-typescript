@@ -128,6 +128,11 @@ class SuppliersGetters extends Getters<SuppliersState> {
       return res
     }
   }
+  get smthIsSelected() {
+    const filters = [...this.state.filter]
+
+    return filters.some(filter => filter.valuesSelected.length)
+  }
   get uniqueFields() {
     return (field: keyof Supplier) => {
       const set: Set<Supplier[keyof Supplier]> = new Set()
@@ -153,20 +158,29 @@ class SuppliersGetters extends Getters<SuppliersState> {
       return res
     }
   }
+  get selectedFields() {
+    return (field: keyof Supplier) => {
+      return this.state.filter.find(item => item.field === field).valuesSelected
+    }
+  }
   get availableFields() {
-    return this.getters.uniqueFields
-    // if (this.state.filter.length <= 1) return this.getters.uniqueFields
-
-    // return (field: keyof Supplier) => {
-    //   const unique = [...this.getters.uniqueFields(field)]
-    //   const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
-
-    //   return unique.map(val => {
-    //     return this.getters.listSortedAndFilteredExceptField(indexOfField).some(supplier => {
-    //       return supplier[field] === val
-    //     })
-    //   })
-    // }
+    return (field: keyof Supplier) => {
+      if (!this.getters.selectedFields(field).length) return this.getters.uniqueFields(field)
+      else if (!this.getters.listSortedAndFiltered.length) return this.getters.selectedFields(field)
+      else return Array.from(new Set([...this.getters.selectedFields(field), ...this.getters.uniqueFields(field)].sort()))
+      // if (this.state.filter.length <= 1) return this.getters.uniqueFields
+  
+      // return (field: keyof Supplier) => {
+      //   const unique = [...this.getters.uniqueFields(field)]
+      //   const indexOfField = this.state.filter.map(f => f.field).indexOf(field)
+  
+      //   return unique.map(val => {
+      //     return this.getters.listSortedAndFilteredExceptField(indexOfField).some(supplier => {
+      //       return supplier[field] === val
+      //     })
+      //   })
+      // }
+    }
   }
 }
 

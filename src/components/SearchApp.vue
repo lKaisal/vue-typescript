@@ -15,6 +15,7 @@
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 // import * as JsSearch from 'js-search'
 import { SearchField } from '@/models'
+import sleep from '@/mixins/sleep'
 
 @Component({
   components: {
@@ -33,6 +34,17 @@ export default class SearchApp extends Vue {
     this.initSearch()
   }
 
+  // watchListOnce() {
+  //   try {
+  //     var unwatchList = this.$watch('list', (newVal) => {
+  //       console.log('watch list search')
+  //       if (newVal) {
+  //         this.initSearch()
+  //         unwatchList()
+  //       }
+  //     }, {immediate: true})
+  //   } catch(err) {}
+  // }
   async initSearch() {
     this.searchedList = [...this.list]
     this.listInitial = [...this.list]
@@ -41,21 +53,25 @@ export default class SearchApp extends Vue {
     if (!this.searchText) {
       this.activeField = null
       await this.$nextTick()
+      await sleep(0)
       this.$emit('searchFinished')
       await this.$nextTick()
       this.searchedList = this.listInitial
     } else {
       await this.$nextTick()
+      await sleep(0)
       this.searchThroughList()
     }
   }
   async onActiveFieldChange() {
     await this.$nextTick()
+    await sleep(0)
     this.searchThroughList()
   }
   async searchThroughList() {
     if (!this.searchText) {
       this.$emit('searchFinished')
+      await sleep(0)
       await this.$nextTick()
       this.searchedList = this.listInitial
 
