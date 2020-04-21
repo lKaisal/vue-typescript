@@ -5,6 +5,7 @@ import App from './App.vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import VueMeta from 'vue-meta'
+import news from '@/modules/news/module'
 
 Vue.use(ElementUI)
 Vue.use(VueMeta)
@@ -13,8 +14,8 @@ Vue.use(VueMeta)
 // Store.registerModule('ui', ui.store)
 // Router.addRoutes(ui.routes)
 
-/* Initialize Auth Module */
-// Store.dispatch('ui/initializeModule', { module: auth, path: 'auth', title: 'Авторизация SMA' })
+/* Initialize News Module */
+Store.dispatch('initializeModule', { module: news, path: 'news', title: 'Новости' })
 
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);

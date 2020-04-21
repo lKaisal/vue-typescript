@@ -162,6 +162,7 @@ export default class ListFeatures extends Mixins(UiMappers, FeatureMappers, MsgB
   &__title
     fontMedium()
     width-between-property 'font-size' 601 14 1000 16 true true
+    border-bottom 1px solid $cLighterBorder
     &:first-letter
       text-transform uppercase
     &.col-2:nth-of-type(2)
@@ -208,6 +209,7 @@ export default class ListFeatures extends Mixins(UiMappers, FeatureMappers, MsgB
 
   &__item
     background-color white
+    border-bottom 1px solid $cLighterBorder
     .is-long-list &
       &:nth-of-type(2n + 1)
         background-color $cDisabled

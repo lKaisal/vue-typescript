@@ -22,7 +22,7 @@ class RootGetters extends Getters<RootState> {
   $init(store: Store<any>): void {
     this.auth = AuthStore.context(store)
   }
-  get menu() { return this.auth.state.menu }
+  get menu(): MenuItem[] { return this.auth.state.menu }
 }
 
 class RootMutations extends Mutations<RootState> {
