@@ -21,7 +21,14 @@ type Banner = {
   position: number,
   sort: number,
   title: string,
-  updatedAt: string
+  updatedAt: string,
+}
+
+type SortUpdate = {
+  id: Banner['id']
+  oldPosition: Banner['sort']
+  position: Banner['sort']
+  loadingIsShown?: boolean
 }
 
 type BannerCurrent = {
@@ -82,9 +89,9 @@ type RequestType = 'success' | 'fail' | 'other'
 
 type RequestStatuses = {
   success: 'successCreate' | 'successEdit' | 'successDelete'
-  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount' | 'failLoadAdditionalFormData'
+  fail: 'failFetchList' | 'failFetchBanner' | 'failCreate' | 'failEdit' | 'failDelete' | 'failDeactivate' | 'failSetAmount' | 'failSortUpdate' | 'failLoadAdditionalFormData'
   other: 'beforeDelete'
 }
 
-export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, News, Form, FormType, FormField, FormError,
+export { Banner, BannersState, BannerForm, BannerFormData, BannerCurrent, SortUpdate, News, Form, FormType, FormField, FormError,
   RequestStatus, RequestStatuses, RequestType }

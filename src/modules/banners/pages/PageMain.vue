@@ -6,9 +6,11 @@
       +e.title.H1.page-title.js-voa.js-voa-start(v-html="activeSection && activeSection.title")
       ButtonApp(text="Создать баннер" @clicked="onCreateClick" icon="el-icon-plus" class="page-main__btn js-voa js-voa-start")
       ToggleAmount(v-show="activeAmount.value" @editClicked="openPopupAmount" class="page-main__amount js-voa js-voa-start")
-      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @animateOneMore="animateOneMoreTime" @deleteItem="onDeleteClick" class="page-main__list js-voa js-voa-start")
+      ListBanners(v-if="list.data && list.data.length" :key="list.isLoading" @animateOneMore="animateOneMoreTime" @deleteItem="onDeleteClick"
+        @updateSort="updateSort" class="page-main__list js-voa js-voa-start")
     transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="closeMsgBox" @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn"
+      MessageBox(v-show="msgBoxIsShown" key="msgBox" :content="msgBoxContent" @close="onMsgBoxClose" @firstBtnClicked="onFirstBtnClick"
+        @secondBtnClicked="onSecondBtnClicked" :secondBtn="secondBtn"
         class="page-main__msg-box modal modal-msg")
       PopupAmount(v-if="popupAmountIsShown" key="popupAmount" @confirm="updateAmount" @cancel="closePopupAmount" class="page-main__popup-amount modal")
 </template>
@@ -27,14 +29,15 @@ import ToggleAmount from '../components/ToggleAmount.vue'
 import PopupAmount from '../components/PopupAmount.vue'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import { authMapper } from '@/modules/auth/module/store'
+import { Banner, SortUpdate } from '../models'
 
 const BannersMappers = Vue.extend({
   computed: {
-    ...bannersMapper.mapState(['list', 'activeAmount']),
+    ...bannersMapper.mapState(['list', 'activeAmount', 'sorting']),
     ...bannersMapper.mapGetters(['isLoading'])
   },
   methods: {
-    ...bannersMapper.mapActions(['deleteBanner', 'updateActiveAmount'])
+    ...bannersMapper.mapActions(['deleteBanner', 'updateActiveAmount', 'updateBannerSort'])
   }
 })
 const AuthMappers = Vue.extend({
@@ -61,6 +64,7 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
   secondBtn: Button = null
   popupAmountIsShown: boolean = false
   amountForUpdate: number = null
+  sortUpdate: SortUpdate = null
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get activeAmountValue() { return this.activeAmount.value }
@@ -89,6 +93,14 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     animateIfVisible()
   }
 
+  async animateOneMoreTime() {
+    await this.$nextTick()
+    animateIfVisible()
+  }
+  async onMsgBoxClose() {
+    this.closeMsgBox()
+    if (this.sorting.error) this.updateList(true)
+  }
   // CLICK HANDLERS
   onCreateClick() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
   onDeleteClick(id) {
@@ -107,6 +119,10 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
         break
       case 'failSetAmount':
         this.updateAmount(this.amountForUpdate)
+        break
+      case 'failSortUpdate':
+        this.updateList(true)
+        break
     }
   }
   onSecondBtnClicked() {
@@ -114,6 +130,11 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     switch (this.requestStatus) {
       case 'failSetAmount':
         this.closePopupAmount()
+        break
+      case 'failSortUpdate':
+        this.sortUpdate['loadingIsShown'] = true
+        this.updateSort()
+        break
     }
   }
   async openPopupAmount() {
@@ -124,6 +145,13 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     this.popupAmountIsShown = false
     document.body.classList.remove('modal-open')
   }
+  // emit methods
+  updateList(loadingIsShown: boolean) {
+    this.$emit('updateList', loadingIsShown)
+  }
+  updateData() {
+    this.$emit('updateData')
+  }
   // STORE ACTIONS CALL
   deleteItem() {
     this.deleteBanner(this.deleteId)
@@ -132,19 +160,29 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
         this.requestStatus = 'successDelete'
         this.openMsgBox()
         this.deleteId = null
-        this.updateList()
+        this.updateList(true)
         await sleep(3000)
         this.closeMsgBox()
       })
       .catch(() => {
         this.secondBtn = { type: 'danger', isPlain: true }
         this.requestStatus = 'failDelete'
-        this.updateList()
+        this.updateList(false)
         this.openMsgBox()
       })
   }
-  updateList() {
-    this.$emit('updateList')
+  updateSort(payload?: SortUpdate) {
+    if (payload) this.sortUpdate = payload // stored in case of repeated request
+
+    this.updateBannerSort(this.sortUpdate)
+      .then(() => {
+        this.sortUpdate = null
+      })
+      .catch(() => {
+        this.secondBtn = { type: 'success', isPlain: true }
+        this.requestStatus = 'failSortUpdate'
+        this.openMsgBox()
+      })
   }
   updateAmount(amount) {
     if (amount === this.activeAmount.value) {
@@ -158,17 +196,13 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
     this.closePopupAmount()
     this.updateActiveAmount(amount)
       .then(() => {
-          this.updateList()
+          this.updateData()
         })
         .catch(() => {
           this.requestStatus = 'failSetAmount'
           this.secondBtn = { type: 'danger', isPlain: true }
           this.openMsgBox()
       })
-  }
-  async animateOneMoreTime() {
-    await this.$nextTick()
-    animateIfVisible()
   }
 }
 </script>

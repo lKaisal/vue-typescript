@@ -106,11 +106,11 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, UiMapp
   get pagPagerCount() { return this.isXs ? 5 : 7 }
 
   created() {
-    this.emitLoadList()
+    this.emitLoadList(true)
   }
 
-  emitLoadList() {
-    this.$emit('loadList')
+  emitLoadList(loadingIsShown: boolean) {
+    this.$emit('loadList', loadingIsShown)
   }
   // SEARCH handlers
   async handleSearchProgress(res) {

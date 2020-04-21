@@ -3,7 +3,7 @@
 
   +b.item-banner
     +e.container(@mouseenter="cardIsHovered=true" @mouseleave="cardIsHovered=false"
-      :class="{ 'is-hovered': cardIsHovered && editIconsShown }")
+      :class="{ 'is-hovered': cardIsHovered && editIconsShown, 'is-large-padding-top': isTouchDevice }")
       transition
         +e.icons(v-show="editIconsShown && (cardIsHovered || isTouchDevice)" :class="{ 'is-small': isTouchDevice }")
           +e.icon._edit(v-if="banner" @click="onEditClick" @mouseenter="editHovered=true" @mouseleave="editHovered=false" :class="{ 'is-active': !deleteHovered }")
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Mixins } from 'vue-property-decorator'
+import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
 import { Banner } from '../models'
 import preloadImages from '@/mixins/preloadImages'
 import sleep from '@/mixins/sleep'
@@ -65,6 +65,7 @@ export default class ItemBanners extends Mixins(UiMappers) {
   observer = null
   count: number = 0
 
+  get isDev() { return process && process.env && process.env.NODE_ENV === 'development' }
   get isActive() { return this.banner.isActive }
   get activeFromToText() {
     if (this.isActive) {
@@ -78,8 +79,9 @@ export default class ItemBanners extends Mixins(UiMappers) {
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
 
-  mounted() {
-    this.initObserver()
+  async mounted() {
+    await this.$nextTick()
+    if (this.banner && this.banner.bannerImageUrl) this.initObserver()
   }
 
   goToPageCreate() { this.$router.push({ path: `/${this.moduleLink}/create` }) }
@@ -87,14 +89,22 @@ export default class ItemBanners extends Mixins(UiMappers) {
   onDeleteClick() { this.$emit('deleteClicked') }
   onCreateClick() { this.$emit('createClicked') }
   preloadImage() {
-    if (!this.banner || this.count > 3) return
+    if (!this.banner || !this.banner.bannerImageUrl || this.count > 3) return
+
+    if (this.isDev) console.log('start img preload: ' + this.banner.id)
 
     preloadImages(this.banner.bannerImageUrl)
       .then(async () => {
+        if (this.isDev) console.log('img preload success: ' + this.banner.id)
         this.imgLoaded = true
       })
-      .catch(() => this.preloadImage())
-      .finally(() => this.count++)
+      .catch(() => {
+        this.preloadImage()
+        if (this.isDev) console.log('img preload fail: ' + this.banner.id)
+      })
+      .finally(() => {
+        this.count++
+      })
   }
   initObserver() {
     const targets = this.$el
@@ -116,9 +126,6 @@ export default class ItemBanners extends Mixins(UiMappers) {
 
   &__container
     position relative
-    // display flex
-    // justify-content center
-    // flex-wrap wrap
     width 100%
     height 100%
     padding 50px 50px 50px
@@ -127,7 +134,12 @@ export default class ItemBanners extends Mixins(UiMappers) {
     background-color white
     transition(border-color)
     overflow hidden
+    html.mobile &
+    html.tablet &
+      padding-top 63px
     &.is-hovered
+      border-color $cBrand
+    .sortable-chosen &
       border-color $cBrand
 
   &__icons
@@ -147,11 +159,9 @@ export default class ItemBanners extends Mixins(UiMappers) {
     justify-content center
     transition(opacity\, transform)
     &.v-enter
-      opacity 0
-      // transform translateX(-100%)
     &.v-leave-to
+    .sortable-chosen &
       opacity 0
-      // transform translateX(100%)
     &.v-enter-active
     &.v-leave-active
       pointer-events none

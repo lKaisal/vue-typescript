@@ -3,9 +3,10 @@
 
   +b.module-banners.page(v-loading.fullscreen.lock="isLoading")
     transition(mode="out-in")
-      router-view(v-if="list.data && list.data.length" @updateList="loadData" @goToPageAuth="goToPageAuth" class="module-banners__page page")
+      router-view(v-if="list.data && list.data.length" @updateData="loadData" @updateList="loadList" @goToPageAuth="goToPageAuth"
+        class="module-banners__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"
+      MessageBox(v-if="msgBoxIsShown && failedFetchList" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"
         @firstBtnClicked="loadData" @secondBtnClicked="goToPageApp"
         class="module-banners__msg-box modal modal-msg")
 </template>
@@ -54,6 +55,20 @@ export default class ModuleBanners extends Mixins(BannersMappers, MsgBoxTools, M
     this.loadGlobalData()
       .catch((err) => {
         if (err && err.status && err.status.toString().slice(0, 2) == 40) this.goToPageAuth()
+        else {
+          this.requestStatus = 'failFetchList'
+          this.openMsgBox()
+        }
+      })
+  }
+  loadList(loadingIsShown) {
+    if (this.list.isLoading) return
+
+    if (this.msgBoxIsShown) this.closeMsgBox()
+
+    this.getList(loadingIsShown)
+      .catch((err) => {
+        if (err && err.status && err.status.toString().slice(0, 2) == 40) this.$emit('goToPageAuth')
         else {
           this.requestStatus = 'failFetchList'
           this.openMsgBox()

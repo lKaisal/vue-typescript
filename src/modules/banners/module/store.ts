@@ -1,7 +1,8 @@
 import { AxiosResponse, AxiosError } from 'axios'
-import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData,News } from '../models'
+import { Banner, FormField, BannerForm, Form, FormType, BannerCurrent, BannerFormData, News, SortUpdate } from '../models'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
+import sleep from '@/mixins/sleep'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -45,13 +46,14 @@ class BannersState {
   list: { data: Banner[], error: string, isLoading: boolean } = { data: null, error: null, isLoading: false }
   news: { data: any[], error: string, isLoading: boolean } = { data: [], error: null, isLoading: false }
   pageTypes: { data: string[], error: string, isLoading: boolean }  = { data: ['news'], error: null, isLoading: false }
+  sorting: { error: string, isLoading: boolean } = { error: null, isLoading: false }
 }
 
 class BannersGetters extends Getters<BannersState> {
   get isLoading() { return this.state.isLoading || this.state.activeAmount.isLoading || this.state.bannerCurrent.isLoading || this.state.form.isLoading ||
-    this.state.list.isLoading || this.state.pageTypes.isLoading || this.state.news.isLoading }
+    this.state.list.isLoading || this.state.sorting.isLoading || this.state.pageTypes.isLoading || this.state.news.isLoading }
   get loadingError() { return this.state.loadingError || this.state.activeAmount.error || this.state.bannerCurrent.error || this.state.form.error ||
-    this.state.list.error || this.state.pageTypes.error || this.state.news.error }
+    this.state.list.error || this.state.sorting.error || this.state.pageTypes.error || this.state.news.error }
   // LIST GETTERS
   get listMastered() {
     if (!this.state.list.data) return
@@ -119,6 +121,9 @@ class BannersGetters extends Getters<BannersState> {
     else if (banner.delayStart) return this.state.hashes[1]
     else return this.state.hashes[2]
   }
+  get bannerCurrentIsDelayed() {
+    return this.getters.bannerCurrentStatus === 'delayed'
+  }
   // FORM ADDITIONAL DATA LISTS
   get formAdditionalDataLoaded() { return this.getters.pageTypesList && this.getters.pageTypesList.length && this.getters.newsList && this.getters.newsList.length }
   get pageTypesList() { return this.state.pageTypes.data }
@@ -144,7 +149,7 @@ class BannersGetters extends Getters<BannersState> {
     formData.activeFrom = this.getters.formActiveFrom.value && this.getters.formActiveFrom.value.toString() || ''
     formData.activeTo = this.getters.formActiveTo.value && this.getters.formActiveTo.value.toString() || ''
     formData.appLink = this.getters.formAppLink.value && this.getters.formAppLink.value.toString() || ''
-    formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || (this.getters.bannerCurrentStatus === 'delayed').toString()
+    formData.isActive = this.getters.formIsActive.value && this.getters.formIsActive.value.toString() || this.getters.bannerCurrentIsDelayed.toString()
     formData.newsId = this.getters.formNewsId.value && this.getters.formNewsId.value.toString() || ''
     formData.pageType = this.getters.formPageType.value && this.getters.formPageType.value.toString() || ''
     formData.sort = (this.getters.formIsActive.value || this.state.bannerCurrent.data.delayStart) && this.getters.formSort.value && this.getters.formSort.value.toString() || this.state.activeAmount.value && (this.state.activeAmount.value).toString()
@@ -174,7 +179,7 @@ class BannersGetters extends Getters<BannersState> {
 }
 
 class BannersMutations extends Mutations<BannersState> {
-  // GENERAL LOADING
+  // GENERAL LOADING (deleteBanner, deactivateBanner)
   startLoading() {
     this.state.isLoading = true
     this.state.loadingError = null
@@ -202,7 +207,7 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.list.error = err
     this.state.list.isLoading = false
   }
-  // BANNER CURRENT LOADING
+  // BANNER CURRENT (SINGLE) LOADING
   startBannerCurrentLoading() {
     this.state.bannerCurrent.isLoading = true
     this.state.bannerCurrent.error = null
@@ -217,7 +222,20 @@ class BannersMutations extends Mutations<BannersState> {
     this.state.bannerCurrent.error = err
     this.state.bannerCurrent.isLoading = false
   }
-  // ACTIVE AMOUNT LOADING
+  // BANNER UPDATE SORT
+  startSortUpdate() {
+    this.state.sorting.isLoading = true
+    this.state.sorting.error = null
+  }
+  setSortUpdateSuccess() {
+    this.state.sorting.isLoading = false
+    this.state.sorting.error = null
+  }
+  setSortUpdateFail(err) {
+    this.state.sorting.isLoading = false
+    this.state.sorting.error = err
+  }
+  // ACTIVE AMOUNT LOADING / UPDATE
   startActiveAmountLoading() {
     this.state.activeAmount.isLoading = true
     this.state.activeAmount.error = null
@@ -303,9 +321,10 @@ class BannersMutations extends Mutations<BannersState> {
 }
 
 class BannersActions extends Actions<BannersState, BannersGetters, BannersMutations, BannersActions> {
+  // FETCH DATA ACTIONS
   async loadGlobalData() {
     return new Promise((resolve, reject) => {
-      const promisesArr = [this.dispatch('getList', null), this.dispatch('getActiveAmount', null)]
+      const promisesArr = [this.dispatch('getList', true), this.dispatch('getActiveAmount', null)]
       Promise.all(promisesArr)
         .then(() => resolve())
         .catch((err) => reject(err))
@@ -319,9 +338,9 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .catch((err) => reject(err))
     })
   }
-  async getList() {
+  async getList(loadingIsShown: boolean) {
     return new Promise((resolve, reject) => {
-      this.commit('startListLoading', null)
+      if (loadingIsShown) this.commit('startListLoading', null)
 
       axios.get('/api/v1/banners-list')
         .then((res: AxiosResponse<any>) => {
@@ -339,6 +358,29 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
+  /** Get single banner data by bannerId */
+  getBannerById(id: Banner['id']) {
+    return new Promise((resolve, reject) => {
+      this.commit('startBannerCurrentLoading')
+
+      axios.get(`/api/v1/banner/${id}`)
+        .then((res: AxiosResponse<any>) => {
+          this.commit('setBannerCurrentSuccess', res.data)
+          this.dispatch('updateFormByBannerData', res.data)
+          if (isDev) console.log('Success: get single banner id=' + id)
+          resolve()
+        })
+        .catch((error: AxiosError<any>) => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setBannerCurrentFail', errMsg)
+          reject()
+        })
+    })
+  }
+  // BANNERS MODIFY ACTIONS
   async createBanner() {
     return new Promise((resolve, reject) => {
       const formIsValid = this.getters.formIsValid
@@ -444,28 +486,48 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Get single banner data by bannerId */
-  getBannerById(id: Banner['id']) {
+  /** Deactivate banner by Id */
+  deactivateBanner(id: Banner['id']) {
     return new Promise((resolve, reject) => {
-      this.commit('startBannerCurrentLoading', null)
-
-      axios.get(`/api/v1/banner/${id}`)
-        .then((res: AxiosResponse<any>) => {
-          this.commit('setBannerCurrentSuccess', res.data)
-          this.dispatch('updateFormByBannerData', res.data)
-          if (isDev) console.log('Success: get single banner id=' + id)
+      this.commit('startLoading')
+      axios.post(`/api/v1/inactivate/${id}`)
+        .then(() => {
+          if (isDev) console.log('Success: deactivate banner id=' + id)
+          this.commit('setLoadingSuccess')
           resolve()
         })
-        .catch((error: AxiosError<any>) => {
-          if (isDev && error && error.response) console.log(error.response)
+        .catch((err: AxiosError) => {
+          if (isDev && err && err.response) console.log(err.response)
           else console.log('error')
 
-          const errMsg = error && error.response && error.response.data && error.response.data.message || null
-          this.commit('setBannerCurrentFail', errMsg)
+          const errMsg = err && err.response && err.response.data && err.response.data.message
+          this.commit('setLoadingFail', errMsg)
           reject()
         })
     })
   }
+  updateBannerSort(payload: SortUpdate) {
+    return new Promise((resolve, reject) => {
+      if (payload.loadingIsShown) this.commit('startSortUpdate')
+
+      axios.post('/api/v1/drag-n-drop', payload)
+        .then(() => {
+          if (isDev) console.log('Success: move banner id=' + payload.id + ' from position ' + payload.oldPosition + ' to ' + payload.position)
+          this.commit('setSortUpdateSuccess')
+          this.dispatch('getList', false)
+          resolve()
+        })
+        .catch((err: AxiosError) => {
+          if (isDev && err && err.response) console.log(err.response)
+          else console.log('error')
+
+          const errMsg = err && err.response && err.response.data && err.response.data.message
+          this.commit('setSortUpdateFail', errMsg)
+          reject()
+        })
+    })
+  }
+  // ACTIONS FOR DATA UPDATE THROUGH MUTATIONS COMMIT (setField, updateField)
   /** Action for form v-model fields. Updates proposed field and all related fields if they exist.
    * For example: activeFrom/activeTo, pageType / newsId / appLink
    */
@@ -518,7 +580,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       case 'isActive':
         if (field.value && isFormEdit) {
           // if delayedBanner was activated on pageEdit, runs immediate activation
-          const isDelayedBanner = this.getters.bannerCurrentStatus === 'delayed'
+          const isDelayedBanner = this.getters.bannerCurrentIsDelayed
           if (isDelayedBanner) {
             this.dispatch('updateField', { name: 'activeFrom', value: null })
             this.dispatch('updateField', { name: 'activeTo', value: null })
@@ -590,26 +652,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
       }
     })
   }
-  /** Deactivate banner by Id */
-  deactivateBanner(id: Banner['id']) {
-    return new Promise((resolve, reject) => {
-      this.commit('startLoading', null)
-      axios.post(`/api/v1/inactivate/${id}`)
-        .then(() => {
-          if (isDev) console.log('Success: deactivate banner id=' + id)
-          this.commit('setLoadingSuccess', null)
-          resolve()
-        })
-        .catch((err: AxiosError) => {
-          if (isDev && err && err.response) console.log(err.response)
-          else console.log('error')
-
-          const errMsg = err && err.response && err.response.data && err.response.data.message
-          this.commit('setLoadingFail', errMsg)
-          reject()
-        })
-    })
-  }
+  // ACTIVE AMOUNT ACTIONS
   /** Get active banners amount */
   async getActiveAmount() {
     return new Promise((resolve, reject) => {
@@ -653,7 +696,8 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Get banners pageTypes list */
+  // OTHER ACTIONS
+  /** Get bannes pageTypes list */
   getPageTypesList() {
     return new Promise(async (resolve, reject) => {
       this.commit('startPageTypesLoading', null)
