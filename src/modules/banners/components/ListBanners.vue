@@ -23,7 +23,7 @@ import ItemBanner from './ItemBanner.vue'
 import { bannersMapper } from '../module/store'
 import sleep from '@/mixins/sleep'
 import draggable from 'vuedraggable'
-import { uiMapper } from '../../ui/module/store'
+import { uiMapper } from '@/services/store/modules/ui/store'
 
 const BannersMapper = Vue.extend({
   computed: {

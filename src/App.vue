@@ -195,7 +195,7 @@ export default class App extends Mixins(UiMappers, AuthMappers) {
     flex-grow 1
 
   &__menu
-    z-index 5
+    z-index 10
     position fixed
     top 0
     bottom 0
