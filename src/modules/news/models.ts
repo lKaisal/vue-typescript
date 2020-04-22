@@ -1,3 +1,15 @@
+type News = {
+  id: number
+  header: string
+  headerMobile: string
+  body: string
+  bodyMobile: string
+  published: boolean
+  pushed: boolean
+  created_at: boolean
+  updated_at: boolean
+}
+
 type RequestStatus = RequestStatuses[RequestType]
 
 type RequestType = 'success' | 'fail'
@@ -7,4 +19,4 @@ type RequestStatuses = {
   fail: 'failFetchList'
 }
 
-export { RequestStatus, RequestStatuses, RequestType }
+export { News, RequestStatus, RequestStatuses, RequestType }

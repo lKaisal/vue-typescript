@@ -1,13 +1,13 @@
 import { AxiosResponse, AxiosError } from 'axios'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import sleep from '@/mixins/sleep'
+import { News } from '../models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class NewsState {
-  list = { data: null, isLoading: null, error: null }
+  list: { data: News[], isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
 }
 
 class NewsGetters extends Getters<NewsState> {
@@ -21,7 +21,7 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.list.isLoading = true
     this.state.list.error = null
   }
-  setListLoadingSuccess(payload) {
+  setListLoadingSuccess(payload: News[]) {
     this.state.list.data = payload
     this.state.list.error = null
     this.state.list.isLoading = false
@@ -54,6 +54,34 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
         })
     })
   }
+}
+
+const dateParser = (date) => {
+  const dateParser = /(\d{2})\-(\d{2})\-(\d{4}) (\d{2}):(\d{2})/;
+  const match = date.match(dateParser);
+  const newDate = new Date(
+      Number(match[3]),  // year
+      Number(match[2])-1,  // monthIndex
+      Number(match[1]),  // day
+      Number(match[4]),  // hours
+      Number(match[5]),  // minutes
+  );
+
+  return Date.parse(newDate.toString())
+}
+
+const getDateTime = (date: string) => {
+  const dateSplit = date.split('-')
+
+  const dateDate = new Date()
+  dateDate.setDate(Number(dateSplit[0]))
+  dateDate.setMonth(Number(dateSplit[1]))
+  dateDate.setFullYear(Number(dateSplit[2]))
+  dateDate.setHours(0,0,0,0)
+
+  const dateTime = dateDate.getTime()
+
+  return dateTime
 }
 
 export const NewsStore = new Module({
