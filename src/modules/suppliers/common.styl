@@ -16,6 +16,8 @@
 .table-row
   padding-top 0px
   padding-bottom 0px
+  +gt-md()
+    border-bottom 0
   +lt-md()
     &:nth-of-type(2n)
       background-color white
@@ -34,11 +36,14 @@
       display none
 
 .table-cell
+  .table-row:last-child &
+    border-bottom none
   +lt-md()
     width 100%
     justify-content flex-start
     text-align left
   +gt-md()
+    border-bottom 1px solid $cLighterBorder
     .table-row:nth-of-type(2n) &
       background-color white
     .table-row:nth-of-type(2n + 1) &

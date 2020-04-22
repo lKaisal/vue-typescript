@@ -9,11 +9,10 @@
           +e.title.table-cell(v-for="(field, index) in fields" ref="titleRef" :style="setCellStyle(index)"
             :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium,
               'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
-            +e.title-wrapper(@click="field.isSortable && onTitleClick(index)" :class="{ 'is-disabled': !field.isSortable || !list || !list.length }")
-              +e.title-text(v-html="field.title")
-              +e.title-sort(v-if="field.isSortable")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && isAscSorted }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && isDescSorted }")
+            TitleTable(:title="field.title" :isSortable="field.isSortable && !!list && !!list.length"
+              :isAscSorted="listSortField === fields[index].field && isAscSorted"
+              :isDescSorted="listSortField === fields[index].field && isDescSorted"
+              @titleClicked="field.isSortable && onTitleClick(index)")
         //- table body
         ItemSuppliers(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields" :widths="minWidths"
           @clicked="onItemClick(item)" ref="itemRef"
@@ -32,6 +31,7 @@ import MessageBox from '@/components/MessageBox.vue'
 import { mapState } from 'vuex'
 import { uiMapper } from '@/services/store/modules/ui/store'
 import sleep from '@/mixins/sleep'
+import TitleTable from '@/components/table/TitleTable.vue'
 
 const UiMappers = Vue.extend({
   computed: {
@@ -52,7 +52,8 @@ const SuppliersMappers = Vue.extend({
   components: {
     ItemSuppliers,
     ButtonApp,
-    MessageBox
+    MessageBox,
+    TitleTable
   },
 })
 
@@ -154,8 +155,6 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
     this.checkTableOverscroll()
     if (this.isHorizontalOverscroll) this.initHorizontalScroll()
   }
-
-  // TODO: при обновлении списка не затирается фильтр по поиску
 
   // HOOKS
   async mounted() {
@@ -328,47 +327,11 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
       overflow-x scroll
       cursor grab
 
-  &__sort
-    margin-bottom 50px
-
   &__title
     position relative
     fontMedium()
     &:first-letter
       text-transform uppercase
-
-  &__title-wrapper
-    display flex
-    align-items center
-    padding 10px
-    margin -10px
-    transition(opacity)
-    cursor pointer
-    user-select none
-    &:hover
-      opacity .75
-    &.is-disabled
-      pointer-events none
-
-  &__title-text
-    margin-right 3px
-
-  &__title-sort
-    display flex
-    flex-direction column
-    i
-      color $cSecondaryText
-      transition(color)
-      &:first-child
-        transform translateY(4px)
-        +lt-lg()
-          transform translateY(3px)
-      &:last-child
-        transform translateY(-4px)
-        +lt-lg()
-          transform translateY(-3px)
-      &.is-active
-        color $cBrand
 
   &__item
     display flex

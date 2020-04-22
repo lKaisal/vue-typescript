@@ -109,7 +109,6 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
   }
   @Watch('list', { deep: true, immediate: true })
   onListChange(val) {
-    console.log('list changed ' + val)
     this.updateBannerData()
   }
 

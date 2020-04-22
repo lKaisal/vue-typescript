@@ -124,9 +124,6 @@ h1.page-title
   align-items center
   max-width 1500px
   min-width 28px
-  border-bottom 1px solid $cLighterBorder
-  .table-row:last-child &
-    border-bottom none
   +lt-md()
     padding 10px
 
@@ -136,6 +133,9 @@ h1.page-title
   width-between-property 'padding-top' 1441 10 1920 15 false true
   width-between-property 'padding-bottom' 600 5 1000 10 true true
   width-between-property 'padding-bottom' 1441 10 1920 15 false true
+  border-bottom 1px solid $cLighterBorder
+  &:last-child
+    border-bottom none
   // padding-top 25px
   // padding-bottom 25px
   // &:before
@@ -184,6 +184,10 @@ h1.page-title
     color white
   .is-disabled &
     pointer-events none
+
+.checkbox-text
+  margin-left 10px
+  white-space nowrap
 
 .js-voa
   transition(opacity\, transform)

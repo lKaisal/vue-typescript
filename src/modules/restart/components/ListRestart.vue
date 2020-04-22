@@ -9,17 +9,15 @@
           //- +e.title.table-cell.col-05
           +e.title.table-cell(v-for="(field, index) in fields"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list || !list.length }")
-              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
-                +e.I.checkbox-icon.el-icon-check.checkbox-icon
-            +e.title-wrapper(v-else @click="onTitleClick(index)" :class="{ 'is-disabled': !list || !list.length }")
-              +e.title-text(v-html="field.title")
-              +e.title-sort
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': list && list.length && listSortField === fields[index].field && isAscSorted }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': list && list.length && listSortField === fields[index].field && isDescSorted }")
+            CheckboxTable(v-if="index === 0" :isActive="allAreSelected" :isDisabled="!list || !list.length" @selectAllClicked="onSelectAllClick()")
+            TitleTable(v-else :title="field.title" :isSortable="!(!list || !list.length)"
+              :isAscSorted="list && list.length && listSortField === fields[index].field && isAscSorted"
+              :isDescSorted="list && list.length && listSortField === fields[index].field && isDescSorted"
+              @titleClicked="onTitleClick(index)" )
         //- table body
         +e.body(v-if="list && list.length")
-          ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0" @checkboxClicked="onItemCheckboxClick(item.serviceName)"
+          ItemRestart(v-for="(item, index) in list" :key="index" :section="item" :fields="fields" :isActive="namesSelected.indexOf(item.serviceName) >= 0"
+            @checkboxClicked="onItemCheckboxClick(item.serviceName)"
             class="list-restart__item table-row")
 
       +e.btns
@@ -39,6 +37,8 @@ import MessageBox from '@/components/MessageBox.vue'
 import { TableField } from '../models'
 import { mapState } from 'vuex'
 import { uiMapper } from '@/services/store/modules/ui/store'
+import CheckboxTable from '@/components/table/CheckboxTable.vue'
+import TitleTable from '@/components/table/TitleTable.vue'
 
 const UiMappers = Vue.extend({
   computed: {
@@ -60,13 +60,14 @@ const RestartMappers = Vue.extend({
   components: {
     ItemRestart,
     ButtonApp,
-    MessageBox
+    MessageBox,
+    CheckboxTable,
+    TitleTable
   },
 })
 
 export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBoxToolsApp, MsgBoxTools) {
   @Prop() list: Service[]
-  checkboxIsActive: boolean = false
   namesSelected: string[] = []
 
   get fields(): TableField[] { return [
@@ -103,7 +104,6 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
   }
   resetSelect() {
     this.namesSelected = []
-    this.checkboxIsActive = false
   }
   // SORT METHODS (TABLE HEAD)
   onTitleClick(index) {
@@ -136,8 +136,7 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
 @import '../common'
 
 .list-restart
-
-  &\ontainer
+  &__сontainer
     width 100%
     transition(opacity)
     &:not(:last-child)
@@ -154,9 +153,6 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
     margin-bottom 50px
     width 100%
 
-  &__sort
-    margin-bottom 50px
-
   &__title
     fontMedium()
     &:first-letter
@@ -166,35 +162,6 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
     +gt-sm()
       white-space nowrap
 
-  &__title-wrapper
-    display flex
-    align-items center
-    padding 10px
-    margin -10px
-    transition(opacity)
-    .list-restart__title:not(:first-child) &
-      cursor pointer
-      &:hover
-        opacity .75
-    &.is-disabled
-      pointer-events none
-
-  &__title-text
-    margin-right 3px
-
-  &__title-sort
-    display flex
-    flex-direction column
-    i
-      color $cSecondaryText
-      transition(color)
-      &:first-child
-        transform translateY(4px)
-      &:last-child
-        transform translateY(-4px)
-      &.is-active
-        color $cBrand
-
   &__item
     background-color white
     .is-long-list &
@@ -203,8 +170,9 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
 
   &__btns
     display flex
+    flex-wrap wrap
 
   &__btn
-    &:not(:last-child)
-      margin-right 10px
+    margin-right 10px
+    margin-bottom 10px
 </style>

@@ -8,15 +8,12 @@
         +e.row.table-row
           +e.title.table-cell(v-for="(field, index) in fieldsShown"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
-            +e.checkbox.checkbox(v-if="index === 0" @click="onSelectAllClick()" :class="{ 'is-active': allAreSelected, 'is-disabled': !list.length }")
-              +e.checkbox-icon-wrapper.checkbox-icon-wrapper
-                +e.I.checkbox-icon.el-icon-check.checkbox-icon
-              +e.checkbox-text.checkbox-text(v-if="isXs") Выбрать все
-            +e.title-wrapper(v-else-if="!isXs" @click="onTitleClick(index)" :class="{ 'is-disabled': !list.length }")
-              +e.title-text(v-html="field.title")
-              +e.title-sort(v-if="index < fields.length - 1")
-                +e.I.title-sort-icon.el-icon-caret-top(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'asc' }")
-                +e.I.title-sort-icon.el-icon-caret-bottom(:class="{ 'is-active': listSortField === fields[index].field && listSortDirection === 'desc' }")
+            CheckboxTable(v-if="index === 0" :isActive="allAreSelected" :isDisabled="!list || !list.length" :text="isXs && 'Выбрать все'"
+              @selectAllClicked="onSelectAllClick()")
+            TitleTable(v-else-if="!isXs" :title="field.title" :isSortable="!(!list || !list.length)"
+              :isAscSorted="list && list.length && listSortField === fields[index].field && isAscSorted"
+              :isDescSorted="list && list.length && listSortField === fields[index].field && isDescSorted"
+              @titleClicked="onTitleClick(index)" )
         //- table body
         ItemFeatures(v-for="(item, index) in list" :key="index" :section="item" :fields="fieldsShown" :isActive="idsSelected.indexOf(item.id) >= 0" @checkboxClicked="onItemCheckboxClick(item.id)"
           class="list-features__item table-row")
@@ -36,6 +33,8 @@ import MessageBox from '@/components/MessageBox.vue'
 import { TableField } from '../models'
 import { mapState } from 'vuex'
 import { uiMapper } from '@/services/store/modules/ui/store'
+import CheckboxTable from '@/components/table/CheckboxTable.vue'
+import TitleTable from '@/components/table/TitleTable.vue'
 
 const UiMappers = Vue.extend({
   computed: {
@@ -58,7 +57,9 @@ const FeatureMappers = Vue.extend({
   components: {
     ItemFeatures,
     ButtonApp,
-    MessageBox
+    MessageBox,
+    CheckboxTable,
+    TitleTable
   },
 })
 
@@ -84,6 +85,8 @@ export default class ListFeatures extends Mixins(UiMappers, FeatureMappers, MsgB
   get allIds() { return this.list && this.list.map(item => item.id) }
   get listSortField() { return this.listSort.by }
   get listSortDirection() { return this.listSort.direction }
+  get isAscSorted() { return this.listSortDirection === 'asc' }
+  get isDescSorted() { return this.listSortDirection === 'desc' }
   get btn() { return this.isActive ? { text: 'Деактивировать', type: 'warning' } : { text: 'Активировать', type: 'success' } }
 
   @Watch('isActive', { immediate: true })
@@ -162,7 +165,6 @@ export default class ListFeatures extends Mixins(UiMappers, FeatureMappers, MsgB
   &__title
     fontMedium()
     width-between-property 'font-size' 601 14 1000 16 true true
-    border-bottom 1px solid $cLighterBorder
     &:first-letter
       text-transform uppercase
     &.col-2:nth-of-type(2)
@@ -202,10 +204,6 @@ export default class ListFeatures extends Mixins(UiMappers, FeatureMappers, MsgB
           transform translateY(-3px)
       &.is-active
         color $cBrand
-
-  &__checkbox-text
-    margin-left 10px
-    white-space nowrap
 
   &__item
     background-color white

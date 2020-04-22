@@ -4,7 +4,7 @@
   +b.page-main.page
     +e.container
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      ListNews(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
+      //- ListNews(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
 </template>
 
 <script lang="ts">
