@@ -17,20 +17,9 @@
           IMG.item-banner__img(v-if="banner && imgLoaded" :src="banner.bannerImageUrl")
           +e.img.bg-empty(v-else :class="{ 'item-banner__img_loading': imgIsLoading }")
       +e.info(v-if="banner")
-        +e.info-item(v-if="banner.title")
-          +e.title Имя баннера:&nbsp;<span class="item-banner__text">{{ banner.title }}</span>
-        +e.info-item(v-if="banner.position && (banner.isActive || banner.delayStart)")
-          +e.title Порядок вывода:&nbsp;<span class="item-banner__text">{{ Math.abs(banner.position) }}</span>
-        +e.info-item(v-if="banner.appLink")
-          +e.title Ссылка:&nbsp;<span class="item-banner__text">{{ banner.appLink }}</span>
-        +e.info-item(v-if="banner.updatedAt")
-          +e.title Обновлен:&nbsp;<span class="item-banner__text">{{ banner.updatedAt }}</span>
-        +e.info-item(v-if="banner.createdAt")
-          +e.title Создан:&nbsp;<span class="item-banner__text">{{ banner.createdAt }}</span>
-        +e.info-item
-          +e.title(v-html="activeFromToText")
-          //- +e.title Действует до:
-          //- +e.text {{ banner.activeFrom  }}
+        +e.info-item(v-for="(item, index) in infoShown" :key="index")
+          +e.SPAN.title(v-html="item.title")
+          +e.SPAN.text(v-html="item.value")
       +e.info(v-else)
         +e.info-item._empty.bg-empty(v-for="n in 4")
 </template>
@@ -78,6 +67,19 @@ export default class ItemBanners extends Mixins(UiMappers) {
     }
   }
   get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get info(): {isShown: boolean, title: string, value: Banner[keyof Banner]}[] {
+    return [
+      { isShown: !!this.banner.title, title: 'Имя баннера:&nbsp;', value: this.banner.title },
+      { isShown: !!this.banner.position && (this.banner.isActive || this.banner.delayStart), title: 'Порядок вывода:&nbsp;', value: Math.abs(this.banner.position) },
+      { isShown: !!this.banner.appLink, title: 'Ссылка:&nbsp;', value: this.banner.appLink },
+      { isShown: !!this.banner.updatedAt, title: 'Обновлен:&nbsp;', value: this.banner.updatedAt },
+      { isShown: !!this.banner.createdAt, title: 'Создан:&nbsp;', value: this.banner.createdAt },
+      { isShown: true, title: this.activeFromToText, value: null },
+    ]
+  }
+  get infoShown() {
+    return this.info.filter(item => item.isShown)
+  }
 
   async mounted() {
     await this.$nextTick()

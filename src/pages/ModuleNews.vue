@@ -3,7 +3,7 @@
 
   +b.module-news.page(v-loading.fullscreen.lock="isLoading")
     +e.container
-      +e.title.H1.page-title(v-html="activeSection && activeSection.title")
+      //- +e.title.H1.page-title(v-html="activeSection && activeSection.title")
       router-view
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"

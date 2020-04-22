@@ -1,7 +1,7 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.drag-drop
+  +b.form-img
     +e.TRANSITION-GROUP.container(tag="div" :class="{ 'is-filled': !!file }")
       +e.loaders(v-show="!file" key="loaders")
         +e.I.drop-plus.el-icon-plus
@@ -11,7 +11,7 @@
       +e.img-preview._loading(v-if="!imgLoaded && imgUrl" key="loading")
       +e.img(v-show="file" @mouseenter.self="dropDeleteIsShown=true" @mouseleave="dropDeleteIsShown=false" @click.stop="!isTouchDevice && removeImg()" key="img")
         transition(mode="in-out")
-          IMG(v-if="imgLoaded" :src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="drag-drop__img-preview")
+          IMG(v-if="imgLoaded" :src="imgUrl" :class="{ 'is-faded': dropDeleteIsShown }" class="form-img__img-preview")
         +e.I.drop-delete.el-icon-delete-solid(v-show="dropDeleteIsShown" @click="isTouchDevice && dropDeleteIsShown && removeImg()" )
 </template>
 
@@ -108,7 +108,7 @@ export default class DragDrop extends Mixins(BannersMapper, UiMappers) {
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.drag-drop
+.form-img
 
   &__container
     position relative
@@ -204,7 +204,7 @@ export default class DragDrop extends Mixins(BannersMapper, UiMappers) {
     transition(color\, transform)
 
   &__drop-plus
-    .drag-drop__container:hover &
+    .form-img__container:hover &
       color $cBrand
       transform scale(.75)
       transform-origin center

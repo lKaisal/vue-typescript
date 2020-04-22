@@ -6,7 +6,7 @@
       +e.column
         //- file (image)
         +e.field._img.form-field(:class="{ 'is-invalid': isInvalid(fileField), 'is-disabled': allFieldsDisabled }")
-          DragDrop(class="form-banners__drag-drop")
+          FormImg
           +e.error.form-error(v-html="fileField.errorMsg")
         //- isActive
         transition
@@ -41,7 +41,7 @@ import { ElInput } from 'element-ui/types/input'
 import { MsgBoxContent } from '@/models'
 import { Banner, BannerForm, FormField } from '../models'
 import { bannersMapper } from '../module/store'
-import DragDrop from './DragDrop.vue'
+import FormImg from './FormImg.vue'
 import { ElSelect } from 'element-ui/types/select'
 import FormPagetype from '../components/FormPagetype.vue'
 import FormPickr from '../components/FormPickr.vue'
@@ -60,7 +60,7 @@ const Mappers = Vue.extend({
 
 @Component({
   components: {
-    DragDrop,
+    FormImg,
     FormPagetype,
     FormPickr
   }

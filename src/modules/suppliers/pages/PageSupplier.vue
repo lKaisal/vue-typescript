@@ -3,9 +3,7 @@
 
   +b.page-supplier.page
     +e.container(v-if="currentSupplier" v-click-outside="onClickOutside")
-      +e.row-back(@click="goToPageMain")
-        i(class="el-icon-back page-supplier__icon-back")
-        +e.text-back Вернуться к списку
+      RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-supplier__row-back")
       CardSupplier(:supplier="currentSupplier" :timer="timerValue" @showPhoneManage="showPhoneManage" @resetSmsCount="initSmsCountReset"
         @updateIdentity="getIdentityData" @deleteIdentity="initDeleteIdentity"
         class="page-supplier__info-wrapper")
@@ -31,6 +29,7 @@ import CardSupplier from '../components/CardSupplier.vue'
 import PhoneManage from '../components/PhoneManage.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
+import RowBack from '@/components/RowBack.vue'
 
 const SuppliersMappers = Vue.extend({
   computed: {
@@ -51,6 +50,7 @@ const SuppliersMappers = Vue.extend({
     CardSupplier,
     MessageBox,
     PhoneManage,
+    RowBack
   }
 })
 
@@ -263,33 +263,14 @@ export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, Su
       jsVoaStart()
 
   &__row-back
-    display flex
-    flex-wrap nowrap
-    padding 10px
-    margin -10px
     width-between-property 'top' 600 -30 1000 -20 true false
     width-between-property 'top' 1000 -20 1440 -40 false false
     width-between-property 'top' 1441 -40 1920 -50 false true
-    cursor pointer
-    fontMedium()
-    &:hover
-      opacity .75
     +gt-md()
       position absolute
       left 0
     +lt-md()
       margin-bottom 25px
-    &.v-enter
-      jsVoaStart()
-
-  &__icon-back
-    transition(transform)
-    .page-supplier__row-back:hover &
-      transform translateX(-5px)
-
-  &__text-back
-    margin-left 10px
-    white-space nowrap
 
   &__info-wrapper
     padding-top 50px

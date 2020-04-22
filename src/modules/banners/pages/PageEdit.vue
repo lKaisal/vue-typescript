@@ -4,9 +4,7 @@
   +b.page-edit.page
     transition(appear)
       +e.container.js-voa(v-if="banner && formAdditionalDataLoaded" v-click-outside="onClickOutside")
-        +e.row-back(key="rowBack" @click="goToPageMain")
-          i(class="el-icon-back page-edit__icon-back")
-          +e.text-back Вернуться к списку
+        RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-edit__row-back")
         +e.form-wrapper(key="form")
           +e.H1.title.page-title Редактирование баннера
           FormBanners(class="page-edit__form")
@@ -36,6 +34,7 @@ import FormBanners from '../components/FormBanners.vue'
 import PopupConflict from '../components/PopupConflict.vue'
 import vClickOutside from 'v-click-outside'
 import animateIfVisible from '@/mixins/animateIfVisible'
+import RowBack from '@/components/RowBack.vue'
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -62,6 +61,7 @@ const Mappers = Vue.extend({
     MessageBox,
     PopupConflict,
     ButtonApp,
+    RowBack
   }
 })
 
@@ -330,34 +330,14 @@ export default class PageEdit extends Mixins(MsgBoxTools, MsgBoxToolsApp, Mapper
       jsVoaStart()
 
   &__row-back
-    display flex
-    flex-wrap nowrap
-    padding 10px
-    margin -10px
     width-between-property 'top' 600 -30 1000 -20 true false
     width-between-property 'top' 1000 -20 1440 -40 false false
     width-between-property 'top' 1441 -40 1920 -50 false true
-    cursor pointer
-    fontMedium()
-    &:hover
-      opacity .75
     +gt-md()
       position absolute
-      // top -50px
       left 0
     +lt-md()
       margin-bottom 25px
-    &.v-enter
-      jsVoaStart()
-
-  &__icon-back
-    transition(transform)
-    .page-edit__row-back:hover &
-      transform translateX(-5px)
-
-  &__text-back
-    margin-left 10px
-    white-space nowrap
 
   &__form-wrapper
     padding 50px

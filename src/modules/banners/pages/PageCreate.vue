@@ -3,9 +3,7 @@
 
   +b.page-create.page
     +e.container.js-voa.js-voa-start(v-click-outside="onClickOutside")
-      +e.row-back(@click="goToPageMain")
-        i(class="el-icon-back page-create__icon-back")
-        +e.text-back Вернуться к списку
+      RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-create__row-back")
       +e.form-wrapper
         +e.H1.title.page-title Создание баннера
         FormBanners(class="page-create__form")
@@ -34,6 +32,7 @@ import FormBanners from '../components/FormBanners.vue'
 import PopupConflict from '../components/PopupConflict.vue'
 import animateIfVisible from '../../../mixins/animateIfVisible'
 import MsgBoxTools from '../mixins/MsgBoxTools'
+import RowBack from '@/components/RowBack.vue'
 
 const BannersMappers = Vue.extend({
   computed: {
@@ -53,7 +52,8 @@ const BannersMappers = Vue.extend({
     FormBanners,
     MessageBox,
     PopupConflict,
-    ButtonApp
+    ButtonApp,
+    RowBack
   }
 })
 
@@ -260,33 +260,14 @@ export default class PageCreate extends Mixins(MsgBoxTools, MsgBoxToolsApp, Bann
       jsVoaStart()
 
   &__row-back
-    display flex
-    flex-wrap nowrap
-    padding 10px
-    margin -10px
     width-between-property 'top' 600 -30 1000 -20 true false
     width-between-property 'top' 1000 -20 1440 -40 false false
     width-between-property 'top' 1441 -40 1920 -50 false true
-    cursor pointer
-    fontMedium()
-    &:hover
-      opacity .75
     +gt-md()
       position absolute
       left 0
     +lt-md()
       margin-bottom 25px
-    &.v-enter
-      jsVoaStart()
-
-  &__icon-back
-    transition(transform)
-    .page-create__row-back:hover &
-      transform translateX(-5px)
-
-  &__text-back
-    margin-left 10px
-    white-space nowrap
 
   &__form-wrapper
     padding 50px
