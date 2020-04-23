@@ -3,7 +3,7 @@
 
   +b.item-suppliers
     +e.info
-      +e.cell.table-cell(v-for="(field, index) in fields" :key="index" :style="setCellStyle(index)"
+      +e.cell.table-cell(v-for="(field, index) in fields" :key="index"
         :class=`[{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge,
           'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
         +e.cell-title(v-if="titleIsShown && field.title" v-html="`${field.title}:&ensp;`")
@@ -13,8 +13,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Mixins, Watch } from 'vue-property-decorator'
-import { suppliersMapper } from '../module/store'
-import { Supplier, TableField } from '../models'
+import { News, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 
 @Component({
@@ -23,34 +22,24 @@ import ButtonApp from '@/components/ButtonApp.vue'
   }
 })
 
-export default class ItemSuppliers extends Vue {
-  @Prop() supplier: Supplier
+export default class ItemNews extends Vue {
+  @Prop() supplier: News
   @Prop() fields: TableField[]
   @Prop() titleIsShown: boolean
-  @Prop() widths: number[]
 
   onBtnClick() {
     this.$emit('clicked')
   }
   getFieldContent(field: TableField) {
     const value = this.supplier[field.field]
-    const isConfirmed = field.field === 'confirmed'
-    const isPhone = field.field === 'phone'
-    const contracts = field.field === 'contractsNames'
+    const isDateField = field.field === 'created_at' || field.field === 'updated_at'
+    const published = field.field === 'published'
+    const pushed = field.field === 'pushed'
 
-    if (isConfirmed) return value ? 'Подтвержден' : 'Не подтвержден'
-    // @ts-ignore
-    else if (contracts) return value && value.length && [...value].sort().join(' / ')
-    else return isPhone ? `+${value}` : value
-  }
-  setCellStyle(index) {
-    if (!this.widths.length) return
-
-    const width = this.widths && this.widths[index]
-
-    if (index === 1) return `left: ${this.widths[0]}px;`
-    if (width) return `min-width: ${width}px;`
-    // if (width) return `min-width: ${width}px; background-color: rgba(256, 0, 0, .3);`
+    if (published) return value ? 'Опубликована' : 'Не опубликована'
+    else if (pushed) return value ? 'Отправлен' : 'Не отправлен'
+    else if (isDateField) return value.toString().match(/[^\s]+/)[0]
+    else return value
   }
 }
 </script>

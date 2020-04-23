@@ -1,21 +1,60 @@
-import { AxiosResponse, AxiosError } from 'axios'
+import { AxiosResponse } from 'axios'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import { News } from '../models'
+import { News, ListSort } from '../models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class NewsState {
   list: { data: News[], isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
+  listSort: ListSort = { by: 'created_at', direction: 'desc' }
 }
 
 class NewsGetters extends Getters<NewsState> {
   get isLoading() { return this.state.list.isLoading }
   get loadingError() { return this.state.list.error }
+  get listSorted() {
+    if (!this.state.list.data || !this.state.list.data.length) return
+
+    const list = [...this.state.list.data]
+    const sortBy = this.state.listSort.by
+    const sortDirection = this.state.listSort.direction
+
+    return list.sort((a,b) => {
+      let sortA = a[sortBy]
+      let sortB = b[sortBy]
+
+      switch (sortBy) {
+        case 'header':
+        case 'headerMobile':
+          sortA = sortA.toString().toLowerCase()
+          sortB = sortB.toString().toLowerCase()
+          break
+
+        case 'id':
+          sortA = Number(sortA)
+          sortB = Number(sortB)
+          break
+
+        case 'created_at':
+        case 'updated_at':
+          sortA = dateParser(sortA)
+          sortB = dateParser(sortB)
+          break
+      }
+
+      if ((sortA > sortB && sortDirection === 'asc') || (sortA < sortB && sortDirection === 'desc')) return 1
+      else return -1
+    })
+  }
 }
 
 class NewsMutations extends Mutations<NewsState> {
+  updateListSort(payload: ListSort) {
+    this.state.listSort.by = payload.by
+    this.state.listSort.direction = payload.direction
+  }
   // BANNERS LIST LOADING
   startListLoading() {
     this.state.list.isLoading = true
@@ -34,9 +73,9 @@ class NewsMutations extends Mutations<NewsState> {
 }
 
 class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsActions> {
-  async getList(loadingIsShown: boolean) {
+  async getList() {
     return new Promise((resolve, reject) => {
-      if (loadingIsShown) this.commit('startListLoading', null)
+      this.commit('startListLoading', null)
 
       axios.get('/api/v1/news-list')
         .then((res: AxiosResponse<any>) => {

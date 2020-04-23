@@ -192,7 +192,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
   }
   setListFiltered(payload) {
     this.state.listFiltered = payload
-  } 
+  }
   // Mutations List loading
   startListLoading() {
     this.state.list.isLoading = true

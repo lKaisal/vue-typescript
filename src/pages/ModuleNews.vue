@@ -47,6 +47,10 @@ export default class ModuleNews extends Mixins(NewsMappers, AuthMappers, MsgBoxT
   get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
   get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
 
+  created() {
+    this.updateList()
+  }
+
   goToPageApp() { this.$router.push({ path: '/' }) }
   onFirstBtnClick() {
     if (this.msgBoxIsShown) this.closeMsgBox()

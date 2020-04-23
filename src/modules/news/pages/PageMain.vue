@@ -4,7 +4,7 @@
   +b.page-main.page
     +e.container
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      //- ListNews(:list="currentList" @itemClicked="goToPageSupplier" class="page-main__list")
+      ListNews(:list="list.data" class="page-main__list")
 </template>
 
 <script lang="ts">
@@ -19,8 +19,12 @@ import MsgBoxTools from '../mixins/MsgBoxTools'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import { authMapper } from '@/modules/auth/module/store'
 import { News } from '../models'
+import ListNews from '../components/ListNews.vue'
 
 const NewsMappers = Vue.extend({
+  computed: {
+    ...newsMapper.mapState(['list'])
+  }
 })
 const AuthMappers = Vue.extend({
   computed: {
@@ -32,6 +36,7 @@ const AuthMappers = Vue.extend({
   components: {
     MessageBox,
     ButtonApp,
+    ListNews
   },
   mixins: [
     MsgBoxTools
