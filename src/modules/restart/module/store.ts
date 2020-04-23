@@ -29,8 +29,8 @@ class RestartGetters extends Getters<RestartState> {
 
       switch (sortBy) {
         case 'serviceName':
-          sortA = sortA.toString().toLowerCase()
-          sortB = sortB.toString().toLowerCase()
+          sortA = sortA.toString().trim().toLowerCase()
+          sortB = sortB.toString().trim().toLowerCase()
           break
 
         case 'replicas':

@@ -30,8 +30,8 @@ class FeaturesGetters extends Getters<FeaturesState> {
 
       switch (sortBy) {
         case 'feature':
-          sortA = sortA.toString().toLowerCase()
-          sortB = sortB.toString().toLowerCase()
+          sortA = sortA.toString().trim().toLowerCase()
+          sortB = sortB.toString().trim().toLowerCase()
           break
 
         case 'updatedAt':

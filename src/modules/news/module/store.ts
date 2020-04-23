@@ -28,8 +28,8 @@ class NewsGetters extends Getters<NewsState> {
       switch (sortBy) {
         case 'header':
         case 'headerMobile':
-          sortA = sortA.toString().toLowerCase()
-          sortB = sortB.toString().toLowerCase()
+          sortA = sortA.toString().trim().toLowerCase()
+          sortB = sortB.toString().trim().toLowerCase()
           break
 
         case 'id':
@@ -98,13 +98,12 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
 const dateParser = (date) => {
   const dateParser = /(\d{2})\-(\d{2})\-(\d{4}) (\d{2}):(\d{2})/;
   const match = date.match(dateParser);
-  const newDate = new Date(
-      Number(match[3]),  // year
-      Number(match[2])-1,  // monthIndex
-      Number(match[1]),  // day
-      Number(match[4]),  // hours
-      Number(match[5]),  // minutes
-  );
+  const year = Number(match[3]) // year
+  const monthIndex = Number(match[2])-1 // monthIndex
+  const day = Number(match[1]) // day
+  const hours = Number(match[4]) // hours
+  const minutes = Number(match[5]) // minutes
+  const newDate = new Date(year, monthIndex, day, hours, minutes)
 
   return Date.parse(newDate.toString())
 }

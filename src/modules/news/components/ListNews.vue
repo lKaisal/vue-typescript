@@ -67,7 +67,7 @@ export default class ListNews extends Mixins(NewsMappers, UiMappers, MsgBoxTools
     { field: 'header', title: 'Заголовок новости', isSortable: true, isXLarge: true },
     { field: 'created_at', title: 'Дата создания', isSortable: true, isXMedium: true, isCentered: !this.isLtMd },
     { field: 'updated_at', title: 'Дата обновления', isSortable: true, isXMedium: true, isCentered: !this.isLtMd },
-    { field: 'published', title: 'Новость опубликована<br>в&nbsp;веб&#8209;версии&nbsp;/&nbsp;в&nbsp;приложении', isLarge: true, isCentered: !this.isLtMd },
+    { field: 'published', title: 'Новость опубликована<br>веб&#8209;версия&nbsp;/&nbsp;приложение', isLarge: true, isCentered: !this.isLtMd },
     { field: null, title: !this.isLtMd && 'Открыть', isMedium: true, isCentered: !this.isLtMd }, // btn column
   ]}
   // BREAKPOINTS GETTERS
@@ -142,6 +142,7 @@ export default class ListNews extends Mixins(NewsMappers, UiMappers, MsgBoxTools
   &__title
     position relative
     fontMedium()
+    line-height 1.2
     &:first-letter
       text-transform uppercase
 

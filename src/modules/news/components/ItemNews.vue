@@ -43,7 +43,12 @@ export default class ItemNews extends Vue {
       return valuePublished + '&nbsp;/&nbsp;' + valueApproved
     }
     else if (pushed) return value ? 'Отправлен' : 'Не отправлен'
-    else if (isDateField) return value.toString().match(/[^\s]+/)[0]
+    else if (isDateField) {
+      const date = value.toString().match(/[^\s]+/)[0]
+      const year = Number(date.split('-')[2])
+
+      return year < 2000 ? '-' : date
+    }
     else return value
   }
 }
@@ -72,6 +77,7 @@ export default class ItemNews extends Vue {
       align-items flex-start
       flex-wrap wrap
       border-bottom none
+    +xs()
       &:nth-last-child(2)
         flex-wrap nowrap
 
@@ -81,6 +87,7 @@ export default class ItemNews extends Vue {
     margin-bottom 5px
 
   &__cell-text
-    .item-news__cell:nth-last-child(2) &
-      transform translateY(100%)
+    +sm()
+      .item-news__cell:nth-last-child(2) &
+        transform translateY(100%)
 </style>

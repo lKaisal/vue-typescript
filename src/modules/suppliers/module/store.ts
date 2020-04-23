@@ -73,8 +73,8 @@ class SuppliersGetters extends Getters<SuppliersState> {
           break
 
         default:
-          sortA = sortA.toString().toLowerCase()
-          sortB = sortB.toString().toLowerCase()
+          sortA = sortA.toString().trim().toLowerCase()
+          sortB = sortB.toString().trim().toLowerCase()
           break
       }
 
