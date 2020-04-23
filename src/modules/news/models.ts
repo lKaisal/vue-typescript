@@ -17,16 +17,16 @@ type ListSort = {
 }
 
 type TableField = {
-  field: keyof News,
-  title: string,
-  isWidthCalculable?: boolean,
-  isSortable?: boolean,
-  isSmall?: boolean,
-  isMedium?: boolean,
-  isLarge?: boolean,
-  isXLarge?: boolean,
-  isCentered?: boolean,
-  isSticky?: boolean,
+  field: keyof News
+  title: string
+  isWidthCalculable?: boolean
+  isSortable?: boolean
+  isSmall?: boolean
+  isMedium?: boolean
+  isXMedium?: boolean
+  isLarge?: boolean
+  isXLarge?: boolean
+  isCentered?: boolean
 }
 
 type RequestStatus = RequestStatuses[RequestType]

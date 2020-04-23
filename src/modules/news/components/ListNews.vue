@@ -1,22 +1,22 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.list-suppliers
+  +b.list-news
     +e.container
       +e.table.is-long-list
         //- table head
         +e.row.table-row.table-head(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields"
             :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium,
-              'col-15': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
+              'col-15': field.isXMedium, 'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
             TitleTable(:title="field.title" :isSortable="field.isSortable && !!list && !!list.length"
               :isAscSorted="listSortField === fields[index].field && isAscSorted"
               :isDescSorted="listSortField === fields[index].field && isDescSorted"
               @titleClicked="field.isSortable && onTitleClick(index)")
         //- table body
-        ItemNews(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :supplier="item" :fields="fields"
+        ItemNews(v-for="(item, index) in list" :key="index" :titleIsShown="isLtMd" :news="item" :fields="fields"
           @clicked="onItemClick(item)" ref="itemRef"
-          class="list-suppliers__item table-row")
+          class="list-news__item table-row")
 </template>
 
 <script lang="ts">
@@ -65,14 +65,9 @@ export default class ListNews extends Mixins(NewsMappers, UiMappers, MsgBoxTools
   get fields(): TableField[] { return [
     { field: 'id', title: 'ID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
     { field: 'header', title: 'Заголовок новости', isSortable: true, isXLarge: true },
-    // { field: 'headerMobile', title: 'Название (моб.)', isSortable: true, isMedium: true, isCentered: !this.isLtMd },
-    // { field: 'body', title: 'Текст', isLarge: true, isCentered: !this.isLtMd },
-    // { field: 'bodyMobile', title: 'Текст(моб.)', isSortable: true, isSmall: this.isMd, isMedium: !this.isLtMd, isCentered: !this.isLtMd },
-    { field: 'published', title: 'Опубликована', isLarge: true, isCentered: !this.isLtMd },
-    { field: 'approved', title: 'Опубликована в&nbsp;приложении', isLarge: true, isCentered: !this.isLtMd },
-    // { field: 'pushed', title: 'Push-уведомление', isSortable: true, isLarge: true, isCentered: !this.isLtMd },
-    { field: 'created_at', title: 'Дата создания', isSortable: true, isLarge: true, isCentered: !this.isLtMd },
-    { field: 'updated_at', title: 'Дата обновления', isSortable: true, isLarge: true, isCentered: !this.isLtMd },
+    { field: 'created_at', title: 'Дата создания', isSortable: true, isXMedium: true, isCentered: !this.isLtMd },
+    { field: 'updated_at', title: 'Дата обновления', isSortable: true, isXMedium: true, isCentered: !this.isLtMd },
+    { field: 'published', title: 'Новость опубликована<br>в&nbsp;веб&#8209;версии&nbsp;/&nbsp;в&nbsp;приложении', isLarge: true, isCentered: !this.isLtMd },
     { field: null, title: !this.isLtMd && 'Открыть', isMedium: true, isCentered: !this.isLtMd }, // btn column
   ]}
   // BREAKPOINTS GETTERS
@@ -112,7 +107,7 @@ export default class ListNews extends Mixins(NewsMappers, UiMappers, MsgBoxTools
 @import '../../../styles/tools'
 @import '../common'
 
-.list-suppliers
+.list-news
 
   &__container
     width 100%
