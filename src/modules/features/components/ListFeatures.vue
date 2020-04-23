@@ -5,7 +5,7 @@
     +e.container
       +e.table(:class="{ 'is-long-list': list.length > 2 }")
         //- table head
-        +e.row.table-row
+        +e.row.table-row.table-head
           +e.title.table-cell(v-for="(field, index) in fieldsShown"
             :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
             CheckboxTable(v-if="index === 0" :isActive="allAreSelected" :isDisabled="!list || !list.length" :text="isXs && 'Выбрать все'"

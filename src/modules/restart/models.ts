@@ -12,7 +12,8 @@ type TableField = {
   field: keyof Service,
   title: string,
   isSmall?: boolean,
-  isMedium?: boolean
+  isMedium?: boolean,
+  isCentered?: boolean
 }
 
 type EditPayload = { serviceName: string }[]

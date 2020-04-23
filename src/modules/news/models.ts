@@ -1,4 +1,5 @@
 type News = {
+  approved: boolean
   id: number
   header: string
   headerMobile: string

@@ -23,7 +23,8 @@ import ListNews from '../components/ListNews.vue'
 
 const NewsMappers = Vue.extend({
   computed: {
-    ...newsMapper.mapState(['list'])
+    ...newsMapper.mapState(['list']),
+    ...newsMapper.mapGetters(['listSorted'])
   }
 })
 const AuthMappers = Vue.extend({

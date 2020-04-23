@@ -5,10 +5,10 @@
     +e.container
       +e.table(:class="{ 'is-long-list': list && list.length > 2 }")
         //- table head
-        +e.row.table-row
+        +e.row.table-row.table-head
           //- +e.title.table-cell.col-05
           +e.title.table-cell(v-for="(field, index) in fields"
-            :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+            :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium, 'is-centered': field.isCentered }")
             CheckboxTable(v-if="index === 0" :isActive="allAreSelected" :isDisabled="!list || !list.length" @selectAllClicked="onSelectAllClick()")
             TitleTable(v-else :title="field.title" :isSortable="!(!list || !list.length)"
               :isAscSorted="list && list.length && listSortField === fields[index].field && isAscSorted"
@@ -73,7 +73,7 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
   get fields(): TableField[] { return [
     { field: null, title: '', isSmall: true }, // checkbox column
     { field: 'serviceName', title: 'Название' },
-    { field: 'replicas', title: (this.isXs ? 'Кол-во реплик' : 'Количество реплик'), isMedium: true },
+    { field: 'replicas', title: (this.isXs ? 'Кол-во реплик' : 'Количество реплик'), isMedium: true, isCentered: true },
   ]}
   get isXs() { return this.breakpoint === 'xs' }
   get amountTotal() { return this.list && this.list.length }
@@ -161,12 +161,6 @@ export default class ListRestart extends Mixins(UiMappers, RestartMappers, MsgBo
       flex-grow 1
     +gt-sm()
       white-space nowrap
-
-  &__item
-    background-color white
-    .is-long-list &
-      &:nth-of-type(2n + 1)
-        background-color $cDisabled
 
   &__btns
     display flex

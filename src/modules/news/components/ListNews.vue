@@ -3,12 +3,12 @@
 
   +b.list-suppliers
     +e.container
-      +e.table
+      +e.table.is-long-list
         //- table head
-        +e.row.table-row(v-if="!isLtMd")
+        +e.row.table-row.table-head(v-if="!isLtMd")
           +e.title.table-cell(v-for="(field, index) in fields"
-            :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium,
-              'col-2': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
+            :class=`[{ 'is-sticky': field.isSticky && isHorizontalOverscroll, 'col-075': field.isSmall, 'col-1': field.isMedium,
+              'col-15': field.isLarge, 'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
             TitleTable(:title="field.title" :isSortable="field.isSortable && !!list && !!list.length"
               :isAscSorted="listSortField === fields[index].field && isAscSorted"
               :isDescSorted="listSortField === fields[index].field && isDescSorted"
@@ -63,16 +63,17 @@ export default class ListNews extends Mixins(NewsMappers, UiMappers, MsgBoxTools
   breakpoint!: string
 
   get fields(): TableField[] { return [
-    { field: 'id', title: 'ID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: true },
-    { field: 'header', title: 'Название', isSortable: true, isXLarge: true },
-    // { field: 'headerMobile', title: 'Название (моб.)', isSortable: true, isMedium: true, isCentered: true },
-    // { field: 'body', title: 'Текст', isLarge: true, isCentered: true },
-    // { field: 'bodyMobile', title: 'Текст(моб.)', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
-    { field: 'published', title: 'Опубликована', isSortable: true, isMedium: true, isCentered: true },
-    { field: 'pushed', title: 'Отправлен пуш', isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
-    { field: 'created_at', title: 'Дата создания', isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isCentered: true },
-    { field: 'updated_at', title: 'Дата обновления', isSortable: false, isSmall: this.isMd, isMedium: !this.isMd, isCentered: true },
-    { field: null, title: !this.isLtMd && 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true }, // btn column
+    { field: 'id', title: 'ID', isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: !this.isLtMd },
+    { field: 'header', title: 'Заголовок новости', isSortable: true, isXLarge: true },
+    // { field: 'headerMobile', title: 'Название (моб.)', isSortable: true, isMedium: true, isCentered: !this.isLtMd },
+    // { field: 'body', title: 'Текст', isLarge: true, isCentered: !this.isLtMd },
+    // { field: 'bodyMobile', title: 'Текст(моб.)', isSortable: true, isSmall: this.isMd, isMedium: !this.isLtMd, isCentered: !this.isLtMd },
+    { field: 'published', title: 'Опубликована', isLarge: true, isCentered: !this.isLtMd },
+    { field: 'approved', title: 'Опубликована в&nbsp;приложении', isLarge: true, isCentered: !this.isLtMd },
+    // { field: 'pushed', title: 'Push-уведомление', isSortable: true, isLarge: true, isCentered: !this.isLtMd },
+    { field: 'created_at', title: 'Дата создания', isSortable: true, isLarge: true, isCentered: !this.isLtMd },
+    { field: 'updated_at', title: 'Дата обновления', isSortable: true, isLarge: true, isCentered: !this.isLtMd },
+    { field: null, title: !this.isLtMd && 'Открыть', isMedium: true, isCentered: !this.isLtMd }, // btn column
   ]}
   // BREAKPOINTS GETTERS
   get isGtMd() { return this.breakpoint === 'xl' || this.breakpoint === 'lg' }

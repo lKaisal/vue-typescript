@@ -75,16 +75,16 @@ export default class ListSuppliers extends Mixins(SuppliersMappers, UiMappers, M
   isStickyRight: boolean = false
 
   get fields(): TableField[] { return [
-    { field: 'supplierId', title: 'SupplierID', isWidthCalculable: true, isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: true },
+    { field: 'supplierId', title: 'SupplierID', isWidthCalculable: true, isSortable: true, isSmall: this.isLg || this.isMd, isMedium: this.isXl, isCentered: this.isGtMd },
     { field: 'supplierName', title: 'Название поставщика', isSortable: true, isXLarge: true, isSticky: this.isStickyLeft },
-    { field: 'createdAt', title: 'Дата регистрации', isWidthCalculable: true, isSortable: true, isMedium: true, isCentered: true },
-    { field: 'contractsNames', title: 'Тип договора', isLarge: true, isCentered: true },
-    { field: 'userId', title: 'UserID', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
-    { field: 'userName', title: 'Имя пользователя', isSortable: true, isWidthCalculable: true, isMedium: true, isCentered: true },
-    { field: 'inn', title: 'ИНН', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true },
-    { field: 'phone', title: 'Телефон', isWidthCalculable: true, isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: true },
-    { field: 'confirmed', title: 'Статус пользователя', isSortable: false, isSmall: this.isMd, isMedium: !this.isMd, isCentered: true },
-    { field: null, title: !this.isLtMd && 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: true, isSticky: this.isStickyRight }, // btn column
+    { field: 'createdAt', title: 'Дата регистрации', isWidthCalculable: true, isSortable: true, isMedium: true, isCentered: this.isGtMd },
+    { field: 'contractsNames', title: 'Тип договора', isLarge: true, isCentered: this.isGtMd },
+    { field: 'userId', title: 'UserID', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: this.isGtMd },
+    { field: 'userName', title: 'Имя пользователя', isSortable: true, isWidthCalculable: true, isMedium: true, isCentered: this.isGtMd },
+    { field: 'inn', title: 'ИНН', isWidthCalculable: true, isSortable: true, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: this.isGtMd },
+    { field: 'phone', title: 'Телефон', isWidthCalculable: true, isSortable: true, isSmall: false, isMedium: this.isLg || this.isMd, isXMedium: this.isXl, isCentered: this.isGtMd },
+    { field: 'confirmed', title: 'Статус пользователя', isSortable: false, isSmall: this.isMd, isMedium: !this.isMd, isCentered: this.isGtMd },
+    { field: null, title: !this.isLtMd && 'Открыть', isSortable: false, isSmall: this.isMd, isMedium: this.isGtMd, isCentered: this.isGtMd, isSticky: this.isStickyRight }, // btn column
   ]}
   get isHorizontalOverscroll() { return this.horizontalOverscroll > 20 && !this.isLtMd }
   // COLUMNS WIDTHS GETTERS

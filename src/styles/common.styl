@@ -126,6 +126,9 @@ h1.page-title
   min-width 28px
   +lt-md()
     padding 10px
+  &.is-centered
+    justify-content center
+    text-align center
 
 .table-row
   position relative
@@ -134,18 +137,12 @@ h1.page-title
   width-between-property 'padding-bottom' 600 5 1000 10 true true
   width-between-property 'padding-bottom' 1441 10 1920 15 false true
   border-bottom 1px solid $cLighterBorder
+  background-color white
   &:last-child
     border-bottom none
-  // padding-top 25px
-  // padding-bottom 25px
-  // &:before
-  //   content ''
-  //   position absolute
-  //   right 0
-  //   bottom 0
-  //   left 0
-  //   height 1px
-  //   background-color $cLighterBorder
+  .is-long-list &
+    &:nth-of-type(2n + 1):not(.table-head)
+      background-color $cDisabled
 
 .checkbox
   padding 5px

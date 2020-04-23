@@ -4,7 +4,7 @@
   +b.item-restart
     +e.info
       +e.cell.table-cell(v-for="(field, index) in fields"
-        :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium }")
+        :class="{ 'col-05': field.isSmall, 'col-1': field.isMedium, 'col-2': !field.isSmall && !field.isMedium, 'is-centered': field.isCentered }")
         +e.checkbox.checkbox(v-if="index === 0" @click="onCheckboxClick" :class="{ 'is-active': isActive, 'is-hovered': checkboxIsHovered }")
           +e.checkbox-icon-wrapper.checkbox-icon-wrapper
             +e.I.checkbox-icon.el-icon-check.checkbox-icon

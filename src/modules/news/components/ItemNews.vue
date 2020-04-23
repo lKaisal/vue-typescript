@@ -4,7 +4,7 @@
   +b.item-suppliers
     +e.info
       +e.cell.table-cell(v-for="(field, index) in fields" :key="index"
-        :class=`[{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-11': field.isXMedium, 'col-2': field.isLarge,
+        :class=`[{ 'is-sticky': field.isSticky, 'col-075': field.isSmall, 'col-1': field.isMedium, 'col-15': field.isLarge,
           'col-3': field.isXLarge, 'is-centered': field.isCentered }]`)
         +e.cell-title(v-if="titleIsShown && field.title" v-html="`${field.title}:&ensp;`")
         +e.cell-text(v-if="field.field" v-html="getFieldContent(field)")
@@ -33,10 +33,10 @@ export default class ItemNews extends Vue {
   getFieldContent(field: TableField) {
     const value = this.supplier[field.field]
     const isDateField = field.field === 'created_at' || field.field === 'updated_at'
-    const published = field.field === 'published'
+    const published = field.field === 'published' || field.field === 'approved'
     const pushed = field.field === 'pushed'
 
-    if (published) return value ? 'Опубликована' : 'Не опубликована'
+    if (published) return value ? 'Да' : 'Нет'
     else if (pushed) return value ? 'Отправлен' : 'Не отправлен'
     else if (isDateField) return value.toString().match(/[^\s]+/)[0]
     else return value
