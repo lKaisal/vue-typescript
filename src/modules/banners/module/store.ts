@@ -358,7 +358,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         })
     })
   }
-  /** Get single banner data by bannerId */
+  /** Get item banner data by bannerId */
   getBannerById(id: Banner['id']) {
     return new Promise((resolve, reject) => {
       this.commit('startBannerCurrentLoading')
@@ -367,7 +367,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
         .then((res: AxiosResponse<any>) => {
           this.commit('setBannerCurrentSuccess', res.data)
           this.dispatch('updateFormByBannerData', res.data)
-          if (isDev) console.log('Success: get single banner id=' + id)
+          if (isDev) console.log('Success: get item banner id=' + id)
           resolve()
         })
         .catch((error: AxiosError<any>) => {

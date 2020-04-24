@@ -2,9 +2,8 @@
   include ../tools/bemto.pug
 
   +b.module-news.page(v-loading.fullscreen.lock="isLoading")
-    +e.container
-      //- +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      router-view
+    transition(mode="out-in")
+      router-view(class="module-news__page page")
     transition
       MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"
         @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"

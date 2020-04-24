@@ -1,10 +1,10 @@
 import PageNews from '../pages/PageMain.vue'
-import PageEdit from '../pages/PageEdit.vue'
+import PageNewsItem from '../pages/PageItem.vue'
 
 const children = [
   { path: 'list', component: PageNews, name: 'PageNews' },
-  { path: 'edit', redirect: { name: 'PageNews' } },
-  // { path: 'edit/:id', component: PageEdit, name: 'PageEdit' },
+  { path: 'news', redirect: { name: 'PageNews' } },
+  { path: 'item/:id', component: PageNewsItem, name: 'PageNewsItem' },
   { path: '*', redirect: { name: 'PageNews' } },
 ]
 

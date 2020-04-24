@@ -98,7 +98,7 @@ export default class ListNews extends Mixins(NewsMappers, UiMappers, MsgBoxTools
   }
   // ITEMS METHODS
   onItemClick(item: News) {
-    // this.$emit('itemClicked', item.userId)
+    this.$emit('itemClicked', item.id)
   }
 }
 </script>

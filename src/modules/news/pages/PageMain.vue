@@ -4,7 +4,7 @@
   +b.page-main.page
     +e.container
       +e.title.H1.page-title(v-html="activeSection && activeSection.title")
-      ListNews(:list="currentList" class="page-main__list")
+      ListNews(:list="currentList" @itemClicked="goToPageNews" class="page-main__list")
       PaginationApp(:total="listSorted && listSorted.length" :pageSize="pageSize" :pagerCount="pagPagerCount"
         @currentChange="onCurrentChange" @pageSizeChange="onPageSizeChange" class="page-main__pag")
 </template>
@@ -58,8 +58,8 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
   currentPage: number = 1
 
   get isXs() { return this.breakpoint === 'xs' }
-  get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
-  get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
+  get moduleLink() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
+  get activeSection() { return this.moduleLink && this.activeMenuSectionByLink(this.moduleLink) }
   // list getters
   get pagesAmount() { return this.listSorted && this.listSorted.length / this.pageSize }
   get listByPages() {
@@ -84,6 +84,10 @@ export default class PageMain extends Mixins(MsgBoxTools, MsgBoxToolsApp, AuthMa
   }
   onPageSizeChange(n) {
     this.pageSize = n
+  }
+  // LIST click handlers
+  goToPageNews(id) {
+    this.$router.push({ path: `/${this.moduleLink}/item/${id}` }).catch(() => {})
   }
 }
 </script>

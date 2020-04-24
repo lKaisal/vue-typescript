@@ -7,13 +7,14 @@ const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
 
 class NewsState {
+  currentNews: { data: News, isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   list: { data: News[], isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   listSort: ListSort = { by: 'created_at', direction: 'desc' }
 }
 
 class NewsGetters extends Getters<NewsState> {
-  get isLoading() { return this.state.list.isLoading }
-  get loadingError() { return this.state.list.error }
+  get isLoading() { return this.state.list.isLoading || this.state.currentNews.isLoading }
+  get loadingError() { return this.state.list.error || this.state.currentNews.error }
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
@@ -48,6 +49,9 @@ class NewsGetters extends Getters<NewsState> {
       else return -1
     })
   }
+  get newsById() {
+    return (id: News['id']) => this.state.list.data.find(s => s.id === id)
+  }
 }
 
 class NewsMutations extends Mutations<NewsState> {
@@ -55,7 +59,7 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.listSort.by = payload.by
     this.state.listSort.direction = payload.direction
   }
-  // BANNERS LIST LOADING
+  // LIST LOADING
   startListLoading() {
     this.state.list.isLoading = true
     this.state.list.error = null
@@ -69,6 +73,21 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.list.data = null
     this.state.list.error = err
     this.state.list.isLoading = false
+  }
+  // ADDITIONA DATA LOADING
+  startCurrentNewsLoading() {
+    this.state.currentNews.isLoading = true
+    this.state.currentNews.error = null
+  }
+  setCurrentNewsLoadingSuccess(payload: News) {
+    this.state.currentNews.data = payload
+    this.state.currentNews.isLoading = false
+    this.state.currentNews.error = null
+  }
+  setCurrentNewsLoadingFail(err) {
+    this.state.currentNews.data = null
+    this.state.currentNews.isLoading = false
+    this.state.currentNews.error = err
   }
 }
 
@@ -88,6 +107,30 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
         .catch(error => {
           const errMsg = error && error.response && error.response.data && error.response.data.message || null
           this.commit('setListLoadingFail', errMsg)
+          if (error && error.response) reject(error.response)
+          else reject()
+        })
+    })
+  }
+  async getCurrentNews(id: News['id']) {
+    return new Promise(async (resolve, reject) => {
+      this.commit('startCurrentNewsLoading')
+
+      axios.get(`/api/v1/news-detail/${id}`)
+        .then((res: AxiosResponse<any>) => {
+          // while (!Array.isArray(res)) res = res.data
+          const data = res.data
+
+          this.commit('setCurrentNewsLoadingSuccess', data)
+          if (isDev) console.log('Success: load list')
+          resolve()
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setCurrentNewsLoadingFail', errMsg)
           if (error && error.response) reject(error.response)
           else reject()
         })

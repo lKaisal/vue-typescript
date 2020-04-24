@@ -55,7 +55,6 @@ const SuppliersMappers = Vue.extend({
 })
 
 export default class PageSupplier extends Mixins(MsgBoxTools, MsgBoxToolsApp, SuppliersMappers) {
-  bannerId: number = null
   newPhone: Supplier['phone'] = null // for repeated request
   phoneManageIsShown: boolean = false
   secondBtn: Button = null
