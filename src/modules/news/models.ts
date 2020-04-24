@@ -1,13 +1,15 @@
 type News = {
   approved: boolean
-  id: number
-  header: string
-  headerMobile: string
   body: string
   bodyMobile: string
+  created_at: boolean
+  header: string
+  headerMobile: string
+  id: number
+  preview: string
+  previewMobile: string
   published: boolean
   pushed: boolean
-  created_at: boolean
   updated_at: boolean
 }
 
@@ -19,7 +21,7 @@ type ListSort = {
 type TableField = {
   field: keyof News
   title: string
-  isWidthCalculable?: boolean
+  value?: News[keyof News]
   isSortable?: boolean
   isSmall?: boolean
   isMedium?: boolean

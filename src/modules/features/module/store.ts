@@ -92,7 +92,7 @@ class FeaturesActions extends Actions<FeaturesState, FeaturesGetters, FeaturesMu
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load features list')
           resolve()
         })
         .catch(error => {

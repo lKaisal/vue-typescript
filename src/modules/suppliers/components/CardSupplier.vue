@@ -2,24 +2,24 @@
   include ../../../tools/bemto.pug
 
   +b.card-supplier
-    +e.H1.title.page-title Информация о пользователе
+    +e.H1.title.page-title.card-title Информация о пользователе
     +e.info-block
       +e.info
-        +e.field._title
-          +e.field-title(v-html="`${supplierName.title}`")
-          +e.field-content(v-html="supplier[supplierName.field]")
+        +e.field._title.card-field
+          +e.field-title.card-field-title(v-html="`${supplierName.title}`")
+          +e.field-content.card-field-content(v-html="supplier[supplierName.field]")
         +e.row
           +e.column(v-for="(col, colIndex) in columns")
-            +e.H4.subtitle(v-html="col.subtitle")
+            +e.H4.subtitle.card-subtitle(v-html="col.subtitle")
             +e.fields
-              +e.field(v-for="(field, fIndex) in col.fields")
-                +e.field-title(v-html="`${field.title}`")
-                +e.field-content
+              +e.field.card-field(v-for="(field, fIndex) in col.fields")
+                +e.field-title.card-field-title(v-html="`${field.title}`")
+                +e.field-content.card-field-content
                   +e.field-content-inner(v-html="getFieldContent(field, colIndex)")
-                  +e.H5.field-manage(v-if="field.isVariable && getFieldContent(field, colIndex)" @click="onFieldManageClick(field)" v-html="field.variableText")
-      +e.btns
-        ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-supplier__btn")
-        ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-supplier__btn")
+                  +e.H5.field-manage.card-field-manage(v-if="field.isVariable && getFieldContent(field, colIndex)" @click="onFieldManageClick(field)" v-html="field.variableText")
+      +e.btns.card-btns
+        ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-supplier__btn card-btn")
+        ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-supplier__btn card-btn")
 </template>
 
 <script lang="ts">
@@ -163,38 +163,6 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
 
 .card-supplier
 
-  &__container
-    position relative
-    +xl()
-      width 50vw
-    +lg()
-      width 55vw
-    +md()
-      width 65vw
-    +lt-md()
-      font-size 14px
-    +sm()
-      width 90vw
-    +xs()
-      width 100%
-      height 100%
-      display flex
-      flex-direction column
-      justify-content center
-      align-items center
-
-  &__btn-close
-    position absolute
-    top 15px
-    right 15px
-    cursor pointer
-
-  &__title
-    margin-bottom 50px
-    text-align center
-    +xs()
-      margin-bottom 25px
-
   &__info-block
     width 100%
     // margin-bottom 50px
@@ -233,65 +201,15 @@ export default class CardSupplier extends Mixins(MsgBoxToolsApp, MsgBoxTools, Su
       &:not(:last-child)
         margin-bottom 50px
 
-  &__subtitle
-    margin-bottom 25px
-
   &__fields
     &:not(:last-child)
       margin-bottom 25px
 
   &__field
-    &:not(:last-child)
-      margin-bottom 15px
-    +xs()
-      margin-bottom 15px
     &_title
       +gt-md()
         padding-right 25px
         padding-left 25px
       +gt-sm()
         margin-bottom 25px !important
-
-  &__field-title
-    margin-bottom 5px
-    // fontMedium()
-    color $cSecondaryText
-    font-size 12px
-
-  &__field-content
-    display flex
-    align-items center
-
-  &__field-manage
-    display inline
-    padding 5px
-    margin -5px 0
-    margin-left 5px
-    color $cBrand
-    fontReg()
-    cursor pointer
-    transition(opacity\, border-color)
-    transition-delay $tFast
-    &:hover
-      opacity .75
-    &_item
-      margin -5px
-      color $cGreen
-    &.is-disabled
-      transition-delay 0s
-      pointer-events none
-
-  &__btns
-    // margin-top 75px
-    width-between-property 'margin-top' 600 40 1440 75 true true
-    display flex
-    flex-wrap wrap
-    +gt-md()
-      margin-right 25px
-      margin-left 25px
-
-  &__btn
-    &:not(:last-child)
-      margin-right 10px
-      margin-bottom 10px
 </style>

@@ -118,6 +118,8 @@ h1.page-title
 .bg-empty
   background linear-gradient(to right, #fafafa 8%, #f4f4f4 38%, #fafafa 54%)
 
+// TABLE STYLES
+
 .table-cell
   padding 10px 15px
   display flex
@@ -144,6 +146,8 @@ h1.page-title
     &:nth-of-type(2n + 1):not(.table-head)
       background-color $cDisabled
 
+// CHECKBOX STYLES
+
 .checkbox
   padding 5px
   margin -5px
@@ -163,6 +167,9 @@ h1.page-title
   .is-active &
     background-color $cBrand
     border-color $cBrand
+  .is-disabled &
+    background-color $cPlaceholderText
+    border-color $cPlaceholderText
 
 .checkbox-icon
   font-size 14px
@@ -185,6 +192,69 @@ h1.page-title
 .checkbox-text
   margin-left 10px
   white-space nowrap
+
+// CARD STYLES
+
+.card-title
+  margin-bottom 50px
+  text-align center
+  +xs()
+    margin-bottom 25px
+
+.card-subtitle
+  margin-bottom 25px
+
+.card-btn-close
+  position absolute
+  top 15px
+  right 15px
+  cursor pointer
+
+.card-field
+  &:not(:last-child)
+    margin-bottom 15px
+  +xs()
+    margin-bottom 15px
+
+.card-field-title
+  margin-bottom 5px
+  // fontMedium()
+  color $cSecondaryText
+  font-size 12px
+
+.card-field-content
+  display flex
+  align-items center
+
+.card-field-manage
+  display inline
+  padding 5px
+  margin -5px 0
+  margin-left 5px
+  color $cBrand
+  fontReg()
+  cursor pointer
+  transition(opacity\, border-color)
+  transition-delay $tFast
+  &:hover
+    opacity .75
+  &.is-disabled
+    transition-delay 0s
+    pointer-events none
+
+.card-btns
+  // margin-top 75px
+  width-between-property 'margin-top' 600 40 1440 75 true true
+  display flex
+  flex-wrap wrap
+  +gt-md()
+    margin-right 25px
+    margin-left 25px
+
+.card-btn
+  &:not(:last-child)
+    margin-right 10px
+    margin-bottom 10px
 
 .js-voa
   transition(opacity\, transform)

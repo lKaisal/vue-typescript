@@ -347,7 +347,7 @@ class BannersActions extends Actions<BannersState, BannersGetters, BannersMutati
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load banners list')
           resolve()
         })
         .catch(error => {

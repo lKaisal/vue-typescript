@@ -2,35 +2,43 @@
   include ../../../tools/bemto.pug
 
   +b.card-news
-    +e.H1.title.page-title Информация о пользователе
-    +e.info-block
+    +e.H1.title.page-title.card-title Информация о новости
+    +e.info-block(v-if="news")
       +e.info
-        +e.field._title
-          +e.field-title(v-html="`${newsName.title}`")
-          +e.field-content(v-html="news[newsName.field]")
-        +e.row
-          +e.column(v-for="(col, colIndex) in columns")
-            +e.H4.subtitle(v-html="col.subtitle")
-            +e.fields
-              +e.field(v-for="(field, fIndex) in col.fields")
-                +e.field-title(v-html="`${field.title}`")
-                +e.field-content
-                  +e.field-content-inner(v-html="getFieldContent(field, colIndex)")
-                  +e.H5.field-manage(v-if="field.isVariable && getFieldContent(field, colIndex)" @click="onFieldManageClick(field)" v-html="field.variableText")
-              //- +e.H5.field-manage._item(v-if="colIndex === 1" @click="emitUpdateIdentity" v-html="identityFieldManageText")
-      +e.btns
+        +e.fields
+          +e.block._id
+            +e.field._id.card-field
+              +e.field-title.card-field-title(v-html="`${fieldId.title}`")
+              +e.field-content.card-field-content
+                +e.field-content-inner(v-html="fieldId.value")
+          +e.block._dates
+            +e.fields._dates
+              +e.field._dates.card-field(v-for="(field, index) in fieldsDates" :key="index")
+                +e.field-title.card-field-title(v-html="`${field.title}`")
+                +e.field-content.card-field-content
+                  +e.field-content-inner(v-html="field.value")
+          +e.block._published
+            +e.field-title.card-field-title Новость опубликована
+            +e.fields._published
+              +e.field._published.card-field(v-for="(field, fieldIndex) in fieldsPublished")
+                +e.checkbox.checkbox(:class="{ 'is-active': true, 'is-disabled': field.field === 'published' }")
+                  +e.icon-wrapper.checkbox-icon-wrapper
+                    +e.I.icon.el-icon-check.checkbox-icon
+                  +e.text.checkbox-text(v-html="field.title")
+          +e.block._texts(v-for="(fields, blockIndex) in textsBlocks" :key="blockIndex")
+            FieldsTexts(:fields="fields" :isLargeField="blockIndex === 2")
+      //- +e.btns
         ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-news__btn")
-        ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-news__btn")
+        //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-news__btn")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 import { newsMapper } from '../module/store'
-import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
-import MsgBoxTools from '../mixins/MsgBoxTools'
 import { News, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
+import FieldsTexts from '../components/FieldsTexts.vue'
 
 const NewsMappers = Vue.extend({
   computed: {
@@ -47,65 +55,74 @@ const NewsMappers = Vue.extend({
   },
   components: {
     ButtonApp,
+    FieldsTexts
   }
 })
 
-export default class CardNews extends Mixins(MsgBoxToolsApp, MsgBoxTools, NewsMappers) {
+export default class CardNews extends Mixins(NewsMappers) {
   @Prop() news: News
   @Prop() timer: number
 
-  subtitles: string[] = ['Учетные данные', 'Контактная информация', 'Помощь с авторизацией']
-
-  get identityFieldManageText() {
-    return this.identity.error ? 'Загрузить данные' : 'Обновить данные'
+  get fieldId(): TableField {
+    return { field: 'id', title: 'ID', value: this.getFieldContent('id') }
+  }
+  get fieldsDates(): TableField[] {
+    return [
+      { field: 'created_at', title: 'Дата создания', value: this.getFieldContent('created_at') },
+      { field: 'updated_at', title: 'Дата обновления', value: this.getFieldContent('updated_at') }
+    ]
+  }
+  get fieldsPublished(): TableField[] {
+    return [
+      { field: 'approved', title: 'в приложении', value: this.getFieldContent('approved') },
+      { field: 'published', title: 'в  веб-версии', value: this.getFieldContent('published') }
+    ]
+  }
+  get fieldsHeaders(): TableField[] {
+    return [
+      { field: 'headerMobile', title: 'Заголовок (моб. версия)', value: this.getFieldContent('headerMobile') },
+      { field: 'header', title: 'Заголовок (веб-версия)', value: this.getFieldContent('header') },
+    ]
+  }
+  get fieldsPreviews(): TableField[] {
+    return [
+      { field: 'previewMobile', title: 'Превью (моб. версия)', value: this.getFieldContent('previewMobile') },
+      { field: 'preview', title: 'Превью (веб-версия)', value: this.getFieldContent('preview') },
+    ]
+  }
+  get fieldsTexts(): TableField[] {
+    return [
+      { field: 'bodyMobile', title: 'Текст (моб. версия)', value: this.getFieldContent('bodyMobile') },
+      { field: 'body', title: 'Текст (веб-версия)', value: this.getFieldContent('body') },
+    ]
+  }
+  get blocks() {
+    return [ this.fieldId, this.fieldsDates, this.fieldsHeaders, this.fieldsPreviews, this.fieldsTexts ]
+  }
+  get textsBlocks() {
+    return [ this.fieldsHeaders, this.fieldsPreviews, this.fieldsTexts ]
   }
 
-  getFieldContent(field: TableField, colIndex: number) {
-    try {
-      const isIdentityField = colIndex === 1
-  
-      if (isIdentityField) {
-        const value = field.fields.map(f => this.identity.data[f]).join(' / ')
-        const isStatus = field.fields.includes('status')
-        const isExpire = field.fields.includes('lastCodeExpired')
 
-        if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
-        else if (isExpire) return this.formattedTimer
-        else return value
-      } else {
-        const value = this.news[field.field]
-        const isPhone = field.field === 'phone'
-        const isStatus = field.field === 'confirmed'
-        const isCreatedAt = field.field === 'createdAt'
-        const contracts = field.field === 'contractsNames'
+  getFieldContent(field: keyof News) {
+    if (!this.news) return
 
-        if (isPhone) return `+${value}`
-        // else if (isCreatedAt) return value.toString().split(' ')[0]
-        // @ts-ignore
-        else if (contracts) return [...value].sort().join(' / ')
-        else if (isStatus) return value ? 'Подтвержден' : 'Не подтвержден'
-        else return value
-      }
-    } catch{}
-  }
-  // click methods
-  onFieldManageClick(field: TableField | SmsTableField) {
-    if (field.field === 'phone') this.showPhoneManage()
-    else if (field.fields.includes('smsTryCount')) this.emitResetSmsCount('smsTryCount')
-    else if (field.fields.includes('smsSendCount')) this.emitResetSmsCount('smsSendCount')
-  }
-  // emit methods
-  showPhoneManage() {
-    this.$emit('showPhoneManage')
-  }
-  emitResetSmsCount(field: keyof SmsFields) {
-    this.$emit('resetSmsCount', field)
-  }
-  emitUpdateIdentity() {
-    this.$emit('updateIdentity')
-  }
-  emitDeleteIdentity(){
-    this.$emit('deleteIdentity')
+    const value = this.news[field]
+    const isDateField = field === 'created_at' || field === 'updated_at'
+    const isHeader = field === 'headerMobile'
+    const isPreview = field === 'previewMobile'
+    const isBody = field === 'bodyMobile'
+
+    if (isDateField) {
+      const date = value.toString().match(/[^\s]+/)[0]
+      const year = Number(date.split('-')[2])
+
+      return year < 2000 ? '-' : date
+    }
+    else if (isHeader && !value) return this.news['header']
+    else if (isPreview && !value) return this.news['preview']
+    else if (isBody && !value) return this.news['body']
+    else return value
   }
 }
 </script>
@@ -115,135 +132,22 @@ export default class CardNews extends Mixins(MsgBoxToolsApp, MsgBoxTools, NewsMa
 
 .card-news
 
-  &__container
-    position relative
-    +xl()
-      width 50vw
-    +lg()
-      width 55vw
-    +md()
-      width 65vw
-    +lt-md()
-      font-size 14px
-    +sm()
-      width 90vw
-    +xs()
-      width 100%
-      height 100%
-      display flex
-      flex-direction column
-      justify-content center
-      align-items center
-
-  &__btn-close
-    position absolute
-    top 15px
-    right 15px
-    cursor pointer
-
-  &__title
-    margin-bottom 50px
-    text-align center
-    +xs()
-      margin-bottom 25px
-
   &__info-block
     width 100%
     // margin-bottom 50px
 
-  &__row
-    +gt-sm()
-      display flex
-      justify-content space-between
-      flex-wrap wrap
-
-  &__column
-    position relative
-    +gt-lg()
-      width 33.3%
-    +lt-lg()
-      width 50%
-    +xs()
-      width 100%
-    padding-top 5px
-    +gt-md()
-      padding-right 25px
-      padding-left 25px
-    +md()
-      &:nth-of-type(3)
-        margin-top 25px
-        padding-top 25px
-    +sm()
-      &:first-child
-        padding-right 25px
-      &:nth-of-type(2)
-        padding-left 25px
-      &:nth-of-type(3)
-        margin-top 25px
-        padding-top 25px
-    +xs()
-      &:not(:last-child)
-        margin-bottom 50px
-
-  &__subtitle
-    margin-bottom 25px
+  &__block
+    margin-bottom 15px
 
   &__fields
+    &_dates
+    &_published
+      display flex
     &:not(:last-child)
       margin-bottom 25px
 
   &__field
-    &:not(:last-child)
-      margin-bottom 15px
-    +xs()
-      margin-bottom 15px
-    &_title
-      +gt-md()
-        padding-right 25px
-        padding-left 25px
-      +gt-sm()
-        margin-bottom 25px !important
-
-  &__field-title
-    margin-bottom 5px
-    // fontMedium()
-    color $cSecondaryText
-    font-size 12px
-
-  &__field-content
-    display flex
-    align-items center
-
-  &__field-manage
-    display inline
-    padding 5px
-    margin -5px 0
-    margin-left 5px
-    color $cBrand
-    fontReg()
-    cursor pointer
-    transition(opacity\, border-color)
-    transition-delay $tFast
-    &:hover
-      opacity .75
-    &_item
-      margin -5px
-      color $cGreen
-    &.is-disabled
-      transition-delay 0s
-      pointer-events none
-
-  &__btns
-    // margin-top 75px
-    width-between-property 'margin-top' 600 40 1440 75 true true
-    display flex
-    flex-wrap wrap
-    +gt-md()
-      margin-right 25px
-      margin-left 25px
-
-  &__btn
-    &:not(:last-child)
-      margin-right 10px
-      margin-bottom 10px
+    &_dates
+    &_published
+      margin-right 50px
 </style>

@@ -312,7 +312,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load suppliers list')
           console.log('list load resolve ' + res.length + ' ' + new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds())
           resolve()
         })
@@ -338,7 +338,7 @@ class SuppliersActions extends Actions<SuppliersState, SuppliersGetters, Supplie
           const data: SmsFields = res.data
 
           this.commit('setIdentityLoadingSuccess', data)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load identity, id: ' + userId)
           resolve()
         })
         .catch(error => {

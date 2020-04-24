@@ -89,6 +89,11 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.currentNews.isLoading = false
     this.state.currentNews.error = err
   }
+  clearCurrentNews() {
+    this.state.currentNews.data = null
+    this.state.currentNews.isLoading = false
+    this.state.currentNews.error = null
+  }
 }
 
 class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsActions> {
@@ -101,7 +106,7 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
           while (!Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load news list')
           resolve()
         })
         .catch(error => {
@@ -122,7 +127,7 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
           const data = res.data
 
           this.commit('setCurrentNewsLoadingSuccess', data)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load current news')
           resolve()
         })
         .catch(error => {

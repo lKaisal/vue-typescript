@@ -89,7 +89,7 @@ class RestartActions extends Actions<RestartState, RestartGetters, RestartMutati
           while (res && !Array.isArray(res)) res = res.data
 
           this.commit('setListLoadingSuccess', res)
-          if (isDev) console.log('Success: load list')
+          if (isDev) console.log('Success: load restart services list')
           resolve()
         })
         .catch(error => {

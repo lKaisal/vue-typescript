@@ -1,35 +1,29 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.page-news.page
+  +b.page-item.page
     +e.container(v-if="currentNews" v-click-outside="onClickOutside")
-      RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-news__row-back")
-      //- CardNews(:news="currentNews" :timer="timerValue" @showPhoneManage="showPhoneManage" @resetSmsCount="initSmsCountReset"
-        @updateIdentity="getCurrentNews" @deleteIdentity="initDeleteIdentity"
-        class="page-news__info-wrapper")
+      RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-item__row-back")
+      CardNews(:news="currentNews && currentNews.data" class="page-item__card")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
-        class="page-news__msg-box modal modal-msg")
-      //- PhoneManage(v-show="phoneManageIsShown" key="phone" :inputIsShown="phoneManageIsShown" :prevNumber="currentNews.phone"
-          @confirm="onEditPhone" @discard="hidePhoneManage"
-          class="page-news__phone-manage modal modal-phone")
+        class="page-item__msg-box modal modal-msg")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Watch } from 'vue-property-decorator'
 import vClickOuside from 'v-click-outside'
 import MessageBox from '@/components/MessageBox.vue'
+import RowBack from '@/components/RowBack.vue'
 import { MsgBoxContent, Button } from '@/models'
 import MsgBoxToolsApp from '@/mixins/MsgBoxToolsApp'
+import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
 import { newsMapper } from '../module/store'
 import { News } from '../models'
-// import CardNews from '../components/CardNews.vue'
-// import PhoneManage from '../components/PhoneManage.vue'
-import animateIfVisible from '../../../mixins/animateIfVisible'
+import CardNews from '../components/CardNews.vue'
 import MsgBoxTools from '../mixins/MsgBoxTools'
-import RowBack from '@/components/RowBack.vue'
 
 const NewsMappers = Vue.extend({
   computed: {
@@ -37,7 +31,7 @@ const NewsMappers = Vue.extend({
     ...newsMapper.mapGetters(['newsById'])
   },
   methods: {
-    // ...newsMapper.mapMutations(['clearIdentity']),
+    ...newsMapper.mapMutations(['clearCurrentNews']),
     ...newsMapper.mapActions(['getCurrentNews'])
   }
 })
@@ -47,9 +41,8 @@ const NewsMappers = Vue.extend({
     clickOutside: vClickOuside.directive
   },
   components: {
-    // CardNews,
+    CardNews,
     MessageBox,
-    // PhoneManage,
     RowBack
   }
 })
@@ -59,7 +52,6 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
 
   get failedFetchList() { return this.requestStatus === 'failFetchList' }
   get currentId() { return this.$route.params.id }
-  // get currentNews() { return this.currentId && this.newsById(Number(this.currentId)) }
 
   // HOOKS
   created() {
@@ -72,7 +64,7 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
   }
   beforeDestroy() {
     document.removeEventListener('keydown', this.keydownHandler)
-    // this.clearIdentity()
+    this.clearCurrentNews()
   }
 
   goToPageMain() { this.$router.push({ name: 'PageNews' }).catch(err => {}) }
@@ -89,57 +81,22 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
         return
       })
   }
-  initDeleteIdentity() {
-    // this.requestStatus = 'beforeDeleteIdentity'
-    // this.secondBtn = { type: 'danger', isPlain: true }
-    // this.openMsgBox()
-  }
-  deleteIdentity() {
-    // this.destroyIdentityTimer()
-    // this.deletePhoneAuth(Number(this.currentId))
-    //   .then(async () => {
-    //     this.requestStatus = 'successDeleteIdentity'
-    //     this.openMsgBox()
-    //     await sleep(3000)
-    //     this.closeMsgBox()
-    //     this.goToPageMain()
-    //   })
-    //   .catch(() => {
-    //     this.requestStatus = 'failDeleteIdentity'
-    //     this.secondBtn = { type: 'danger', isPlain: true }
-    //     this.openMsgBox()
-    //     return
-    //   })
-  }
   // CLICK HANDLERS
   onFirstBtnClick() {
     this.closeMsgBox()
-    // switch (this.requestStatus) {
-    //   case 'failEdit':
-    //     this.onEditPhone()
-    //     break;
-    //   case 'failFetchIdentity':
-    //     this.getCurrentNews()
-    //     break
-    //   case 'failResetSmsTryCount':
-    //     this.initSmsCountReset(this.smsReset.field)
-    //     break
-    //   case 'successDeleteIdentity':
-    //     this.goToPageMain()
-    //     break
-    //   case 'failDeleteIdentity':
-    //   case 'beforeDeleteIdentity':
-    //     this.deleteIdentity()
-    //     break
-    // }
+    switch (this.requestStatus) {
+      case 'failFetchCurrentNews':
+        this.getCurrentNews()
+        break;
+    }
   }
   onSecondBtnClick() {
     this.closeMsgBox()
-    // switch (this.requestStatus) {
-    //   case 'successEdit':
-    //     this.goToPageMain()
-    //     break
-    // }
+    switch (this.requestStatus) {
+      case 'failFetchCurrentNews':
+        this.goToPageMain()
+        break
+    }
   }
   // OTHER HANDLERS
   keydownHandler(evt: KeyboardEvent) {
@@ -148,7 +105,7 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
     }
   }
   onClickOutside(evt) {
-    const targetIsPage = evt.srcElement.classList.contains('page-news')
+    const targetIsPage = evt.srcElement.classList.contains('page-item')
     if (targetIsPage) this.goToPageMain()
   }
 }
@@ -157,7 +114,7 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.page-news
+.page-item
 
   &__container
     grid-size(4, 4, 5.5, 6, 8)
@@ -183,16 +140,16 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
     +lt-md()
       margin-bottom 25px
 
-  &__info-wrapper
+  &__card
     padding-top 50px
     padding-bottom 50px
     width 100%
     +gt-sm()
-      width-between-property 'padding-right' 601 25 1000 50 true true
-      width-between-property 'padding-left' 601 25 1000 50 true true
-      border-radius 6px
-      border 2px solid $cBrand
-      box-shadow 0 1rem 3rem rgba(0,0,0,.175)!important
+      // width-between-property 'padding-right' 601 25 1000 50 true true
+      // width-between-property 'padding-left' 601 25 1000 50 true true
+      // border-radius 6px
+      // border 2px solid $cBrand
+      // box-shadow 0 1rem 3rem rgba(0,0,0,.175) !important
     +xs()
       position relative
       left 50%
