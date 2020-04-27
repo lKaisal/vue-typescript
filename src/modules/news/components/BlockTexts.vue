@@ -1,33 +1,45 @@
 <template lang="pug">
   include ../../../tools/bemto.pug
 
-  +b.fields-texts
+  +b.block-texts
     +e.container
       +e.tabs
         +e.tab.card-field-title(v-for="(tab, index) in tabs" :key="index" v-html="tab" @click="setActiveIndex(index)"
           :class="{ 'is-active': activeIndex === index }")
       +e.fields
-        +e.field(v-for="(field, index) in fields" :key="index")
-          +e.title.card-field-title(v-html="field[activeIndex].title")
-          +e.field-content.card-field-content
-            +e.field-content-inner(v-html="field[activeIndex].value")
+        +e.edit-icon-wrapper.card-btn-close(v-if="!editMode && activeIndex === 0" @click="turnOnEditMode")
+          +e.edit-icon.el-icon-edit
+        FieldText(v-for="(field, index) in activeFields" :key="index" :editMode="editMode" :field="field" class="block-texts__field")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
 import { News, TableField } from '../models'
+import FieldText from '../components/FieldText.vue'
 
 @Component({
+  components: {
+    FieldText
+  }
 })
 
-export default class FieldsTexts extends Vue {
-  @Prop() fields: TableField[]
+export default class BlockTexts extends Vue {
+  @Prop() fields: (TableField[])[]
 
   activeIndex: number = 0
   tabs = ['Мобильное приложение', 'Веб-версия']
+  editMode: boolean = false
+
+  get activeFields() {
+    return this.fields[this.activeIndex]
+  }
 
   setActiveIndex(index) {
     this.activeIndex = index
+  }
+
+  turnOnEditMode() {
+    this.editMode = true
   }
 }
 </script>
@@ -35,10 +47,11 @@ export default class FieldsTexts extends Vue {
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
 
-.fields-texts
+.block-texts
 
   &__tabs
     z-index 5
+    position relative
     display flex
     transform translateY(1px)
 
@@ -66,7 +79,8 @@ export default class FieldsTexts extends Vue {
       background-color white
 
   &__fields
-    padding 25px 10px
+    position relative
+    padding 25px 10px 10px
     border 1px solid $cLightBorder
     border-radius 0 4px 4px 4px
 
@@ -74,14 +88,18 @@ export default class FieldsTexts extends Vue {
     &:not(:last-child)
       margin-bottom 25px
 
-  &__field-content
-    font-size 14px
+  &__edit-icon-wrapper
+    padding 5px
+    border 1px solid $cBrand
+    border-radius 50%
+    background-color white
+    transition(background-color)
+    &:hover
+      background-color $cBrand
 
-  &__field-content-inner
-    >>> p
-      line-height 1.5 !important
-      fontReg()
-    >>> span
-      line-height 1.5 !important
-      font inherit !important
+  &__edit-icon
+    color $cBrand
+    transition(background-color)
+    .block-texts__edit-icon-wrapper:hover &
+      color white
 </style>

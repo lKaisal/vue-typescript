@@ -5,6 +5,9 @@
     +e.container(v-if="currentNews" v-click-outside="onClickOutside")
       RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-item__row-back")
       CardNews(:news="currentNews && currentNews.data" class="page-item__card")
+      +e.btns
+        ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="goToPageMain" class="page-item__btn")
+        //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="page-item__btn")
     transition-group(tag="div")
       MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
@@ -24,6 +27,7 @@ import { newsMapper } from '../module/store'
 import { News } from '../models'
 import CardNews from '../components/CardNews.vue'
 import MsgBoxTools from '../mixins/MsgBoxTools'
+import ButtonApp from '@/components/ButtonApp.vue'
 
 const NewsMappers = Vue.extend({
   computed: {
@@ -43,7 +47,8 @@ const NewsMappers = Vue.extend({
   components: {
     CardNews,
     MessageBox,
-    RowBack
+    RowBack,
+    ButtonApp
   }
 })
 

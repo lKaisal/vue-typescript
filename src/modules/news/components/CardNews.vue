@@ -6,11 +6,6 @@
     +e.info-block(v-if="news")
       +e.info
         +e.fields
-          //- +e.block._id
-            +e.field._id.card-field
-              +e.field-title._id.card-field-title(v-html="`${fieldId.title}`")
-              +e.field-content.card-field-content
-                +e.field-content-inner(v-html="fieldId.value")
           +e.block._dates
             +e.fields._dates
               +e.field._dates.card-field(v-for="(field, index) in fieldsDates" :key="index")
@@ -21,13 +16,10 @@
             +e.field-title.card-field-title Новость опубликована
             +e.fields._published
               +e.field._published.card-field(v-for="(field, fieldIndex) in fieldsPublished")
-                //- +e.checkbox.checkbox(:class="{ 'is-active': true, 'is-disabled': field.field === 'published' }")
-                  +e.icon-wrapper.checkbox-icon-wrapper
-                    +e.I.icon.el-icon-check.checkbox-icon
                 +e.icon-wrapper.checkbox-icon-wrapper
                   +e.I.icon.checkbox-icon(:class="{'el-icon-check': field.value, 'el-icon-close': !field.value}")
                 +e.text.field-content(v-html="field.title")
-          FieldsTexts(:fields="textsBlocks")
+          BlockTexts(:fields="fieldsTexts" class="card-news__block card-news__block_texts")
       //- +e.btns
         ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-news__btn")
         //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-news__btn")
@@ -39,7 +31,7 @@ import { newsMapper } from '../module/store'
 import { News, TableField } from '../models'
 import ButtonApp from '@/components/ButtonApp.vue'
 import vClickOutside from 'v-click-outside'
-import FieldsTexts from '../components/FieldsTexts.vue'
+import BlockTexts from '../components/BlockTexts.vue'
 
 const NewsMappers = Vue.extend({
   computed: {
@@ -56,7 +48,7 @@ const NewsMappers = Vue.extend({
   },
   components: {
     ButtonApp,
-    FieldsTexts
+    BlockTexts
   }
 })
 
@@ -65,11 +57,11 @@ export default class CardNews extends Mixins(NewsMappers) {
   @Prop() timer: number
 
   get fieldId(): TableField {
-    return { field: 'id', title: 'ID:', value: this.getFieldContent('id') }
+    return { field: 'id', title: 'ID', value: this.getFieldContent('id') }
   }
   get fieldsDates(): TableField[] {
     return [
-      { field: 'id', title: 'ID', value: this.getFieldContent('id') },
+      this.fieldId,
       { field: 'created_at', title: 'Дата создания', value: this.getFieldContent('created_at') },
       { field: 'updated_at', title: 'Дата обновления', value: this.getFieldContent('updated_at') }
     ]
@@ -81,28 +73,19 @@ export default class CardNews extends Mixins(NewsMappers) {
       { field: 'pushed', title: 'отправлено push-уведомление', value: this.getFieldContent('pushed') }
     ]
   }
-  get fieldsHeaders(): TableField[] {
+  get fieldsTexts() {
     return [
-      { field: 'headerMobile', title: 'Заголовок', value: this.getFieldContent('headerMobile') },
-      { field: 'header', title: 'Заголовок', value: this.getFieldContent('header') },
-    ]
-  }
-  get fieldsPreviews(): TableField[] {
-    return [
-      { field: 'previewMobile', title: 'Превью', value: this.getFieldContent('previewMobile') },
-      { field: 'preview', title: 'Превью', value: this.getFieldContent('preview') },
-    ]
-  }
-  get fieldsTexts(): TableField[] {
-    return [
-      { field: 'bodyMobile', title: 'Текст', value: this.getFieldContent('bodyMobile') },
-      { field: 'body', title: 'Текст', value: this.getFieldContent('body') },
-    ]
-  }
-  get textsBlocks() {
-    return [ this.fieldsHeaders, this.fieldsPreviews, this.fieldsTexts ]
-  }
-
+      [
+        { field: 'headerMobile', title: 'Заголовок', value: this.getFieldContent('headerMobile') },
+        { field: 'previewMobile', title: 'Превью', value: this.getFieldContent('previewMobile') },
+        { field: 'bodyMobile', title: 'Текст', value: this.getFieldContent('bodyMobile') },
+      ],
+      [
+        { field: 'header', title: 'Заголовок', value: this.getFieldContent('header') },
+        { field: 'preview', title: 'Превью', value: this.getFieldContent('preview') },
+        { field: 'body', title: 'Текст', value: this.getFieldContent('body') },
+      ]
+    ]}
 
   getFieldContent(field: keyof News) {
     if (!this.news) return
@@ -134,25 +117,30 @@ export default class CardNews extends Mixins(NewsMappers) {
 
   &__info-block
     width 100%
-    // margin-bottom 50px
 
   &__block
-    margin-bottom 35px
+    margin-bottom 30px
 
   &__fields
     &_dates
     &_published
-      display flex
+      +gt-sm()
+        display flex
+        flex-wrap wrap
 
   &__field
     &_published
       display flex
-      align-items center
-      margin-bottom 0
+      flex-wrap nowrap
     &_dates
     &_published
-      margin-right 50px
+      width-between-property 'margin-right' 601 25 1000 50 true true
       margin-bottom 0
+      +lt-md()
+        margin-bottom 5px
+
+  &__text
+    white-space nowrap
 
   &__icon-wrapper
     margin-right 5px
@@ -167,4 +155,32 @@ export default class CardNews extends Mixins(NewsMappers) {
       color $cDanger
     &.el-icon-check
       color $cBrand
+
+  &__tabs
+    z-index 5
+    display flex
+    transform translateY(1px)
+
+  &__tab
+    margin-bottom 0
+    position relative
+    padding 10px
+    border 1px solid $cLightBorder
+    background-color $cDisabled
+    user-select none
+    cursor pointer
+    transition(opacity\, background-color\, color\, border-color\, box-shadow)
+    &:first-child
+      border-radius 4px 0 0 0
+    &:last-child
+      border-radius 0 4px 0 0
+    &:hover
+      color $cBrandMedium
+    &:not(:last-child)
+      border-right none
+    &.is-active
+      color $cBrand !important
+      border-color $cLightBorder $cLightBorder white $cLightBorder
+      box-shadow 0px -4px 12px -2px rgba(0,0,0,0.1)
+      background-color white
 </style>
