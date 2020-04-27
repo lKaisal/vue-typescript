@@ -6,9 +6,9 @@
     +e.info-block(v-if="news")
       +e.info
         +e.fields
-          +e.block._id
+          //- +e.block._id
             +e.field._id.card-field
-              +e.field-title.card-field-title(v-html="`${fieldId.title}`")
+              +e.field-title._id.card-field-title(v-html="`${fieldId.title}`")
               +e.field-content.card-field-content
                 +e.field-content-inner(v-html="fieldId.value")
           +e.block._dates
@@ -21,11 +21,12 @@
             +e.field-title.card-field-title Новость опубликована
             +e.fields._published
               +e.field._published.card-field(v-for="(field, fieldIndex) in fieldsPublished")
-                +e.checkbox.checkbox(:class="{ 'is-active': true, 'is-disabled': field.field === 'published' }")
+                //- +e.checkbox.checkbox(:class="{ 'is-active': true, 'is-disabled': field.field === 'published' }")
                   +e.icon-wrapper.checkbox-icon-wrapper
                     +e.I.icon.el-icon-check.checkbox-icon
-                  +e.text.checkbox-text(v-html="field.title")
-          //- +e.block._texts(v-for="(fields, blockIndex) in textsBlocks" :key="blockIndex")
+                +e.icon-wrapper.checkbox-icon-wrapper
+                  +e.I.icon.checkbox-icon(:class="{'el-icon-check': field.value, 'el-icon-close': !field.value}")
+                +e.text.field-content(v-html="field.title")
           FieldsTexts(:fields="textsBlocks")
       //- +e.btns
         ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-news__btn")
@@ -64,10 +65,11 @@ export default class CardNews extends Mixins(NewsMappers) {
   @Prop() timer: number
 
   get fieldId(): TableField {
-    return { field: 'id', title: 'ID', value: this.getFieldContent('id') }
+    return { field: 'id', title: 'ID:', value: this.getFieldContent('id') }
   }
   get fieldsDates(): TableField[] {
     return [
+      { field: 'id', title: 'ID', value: this.getFieldContent('id') },
       { field: 'created_at', title: 'Дата создания', value: this.getFieldContent('created_at') },
       { field: 'updated_at', title: 'Дата обновления', value: this.getFieldContent('updated_at') }
     ]
@@ -75,7 +77,8 @@ export default class CardNews extends Mixins(NewsMappers) {
   get fieldsPublished(): TableField[] {
     return [
       { field: 'approved', title: 'в приложении', value: this.getFieldContent('approved') },
-      { field: 'published', title: 'в  веб-версии', value: this.getFieldContent('published') }
+      { field: 'published', title: 'в  веб-версии', value: this.getFieldContent('published') },
+      { field: 'pushed', title: 'отправлено push-уведомление', value: this.getFieldContent('pushed') }
     ]
   }
   get fieldsHeaders(): TableField[] {
@@ -95,9 +98,6 @@ export default class CardNews extends Mixins(NewsMappers) {
       { field: 'bodyMobile', title: 'Текст', value: this.getFieldContent('bodyMobile') },
       { field: 'body', title: 'Текст', value: this.getFieldContent('body') },
     ]
-  }
-  get blocks() {
-    return [ this.fieldId, this.fieldsDates, this.fieldsHeaders, this.fieldsPreviews, this.fieldsTexts ]
   }
   get textsBlocks() {
     return [ this.fieldsHeaders, this.fieldsPreviews, this.fieldsTexts ]
@@ -137,17 +137,34 @@ export default class CardNews extends Mixins(NewsMappers) {
     // margin-bottom 50px
 
   &__block
-    margin-bottom 15px
+    margin-bottom 35px
 
   &__fields
     &_dates
     &_published
       display flex
-    &:not(:last-child)
-      margin-bottom 25px
 
   &__field
+    &_published
+      display flex
+      align-items center
+      margin-bottom 0
     &_dates
     &_published
       margin-right 50px
+      margin-bottom 0
+
+  &__icon-wrapper
+    margin-right 5px
+    display flex
+    align-items center
+    justify-content center
+    border none
+
+  &__icon
+    transform none
+    &.el-icon-close
+      color $cDanger
+    &.el-icon-check
+      color $cBrand
 </style>
