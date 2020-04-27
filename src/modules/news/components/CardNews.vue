@@ -70,7 +70,7 @@ export default class CardNews extends Mixins(NewsMappers) {
     return [
       { field: 'approved', title: 'в приложении', value: this.getFieldContent('approved') },
       { field: 'published', title: 'в  веб-версии', value: this.getFieldContent('published') },
-      { field: 'pushed', title: 'отправлено push-уведомление', value: this.getFieldContent('pushed') }
+      // { field: 'pushed', title: 'отправлено push-уведомление', value: this.getFieldContent('pushed') }
     ]
   }
   get fieldsTexts() {

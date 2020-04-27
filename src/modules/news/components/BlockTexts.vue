@@ -9,7 +9,8 @@
       +e.fields
         +e.edit-icon-wrapper.card-btn-close(v-if="!editMode && activeIndex === 0" @click="turnOnEditMode")
           +e.edit-icon.el-icon-edit
-        FieldText(v-for="(field, index) in activeFields" :key="index" :editMode="editMode" :field="field" class="block-texts__field")
+        FieldText(v-for="(field, index) in activeFields" :key="index" :editMode="editMode" :isEditorField="index === 2" :field="field"
+          class="block-texts__field")
 </template>
 
 <script lang="ts">
