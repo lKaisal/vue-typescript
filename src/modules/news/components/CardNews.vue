@@ -25,8 +25,8 @@
                   +e.icon-wrapper.checkbox-icon-wrapper
                     +e.I.icon.el-icon-check.checkbox-icon
                   +e.text.checkbox-text(v-html="field.title")
-          +e.block._texts(v-for="(fields, blockIndex) in textsBlocks" :key="blockIndex")
-            FieldsTexts(:fields="fields" :isLargeField="blockIndex === 2")
+          //- +e.block._texts(v-for="(fields, blockIndex) in textsBlocks" :key="blockIndex")
+          FieldsTexts(:fields="textsBlocks")
       //- +e.btns
         ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-news__btn")
         //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-news__btn")
@@ -80,20 +80,20 @@ export default class CardNews extends Mixins(NewsMappers) {
   }
   get fieldsHeaders(): TableField[] {
     return [
-      { field: 'headerMobile', title: 'Заголовок (моб. версия)', value: this.getFieldContent('headerMobile') },
-      { field: 'header', title: 'Заголовок (веб-версия)', value: this.getFieldContent('header') },
+      { field: 'headerMobile', title: 'Заголовок', value: this.getFieldContent('headerMobile') },
+      { field: 'header', title: 'Заголовок', value: this.getFieldContent('header') },
     ]
   }
   get fieldsPreviews(): TableField[] {
     return [
-      { field: 'previewMobile', title: 'Превью (моб. версия)', value: this.getFieldContent('previewMobile') },
-      { field: 'preview', title: 'Превью (веб-версия)', value: this.getFieldContent('preview') },
+      { field: 'previewMobile', title: 'Превью', value: this.getFieldContent('previewMobile') },
+      { field: 'preview', title: 'Превью', value: this.getFieldContent('preview') },
     ]
   }
   get fieldsTexts(): TableField[] {
     return [
-      { field: 'bodyMobile', title: 'Текст (моб. версия)', value: this.getFieldContent('bodyMobile') },
-      { field: 'body', title: 'Текст (веб-версия)', value: this.getFieldContent('body') },
+      { field: 'bodyMobile', title: 'Текст', value: this.getFieldContent('bodyMobile') },
+      { field: 'body', title: 'Текст', value: this.getFieldContent('body') },
     ]
   }
   get blocks() {

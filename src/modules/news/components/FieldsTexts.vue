@@ -3,15 +3,14 @@
 
   +b.fields-texts
     +e.container
-      +e.titles
-        +e.field-title.card-field-title(v-for="(field, index) in fields" v-html="field.title" @click="setActiveIndex(index)"
+      +e.tabs
+        +e.tab.card-field-title(v-for="(tab, index) in tabs" :key="index" v-html="tab" @click="setActiveIndex(index)"
           :class="{ 'is-active': activeIndex === index }")
-      //- transition(mode="out-in")
-      +e.content(:key="activeIndex" :class="{ 'is-large': isLargeField }")
-        +e.field-content.card-field-content
-          +e.field-content-inner(v-html="fields[activeIndex].value")
-        //- +e.icon-wrapper._edit
-          +e.I.icon._edit.el-icon-edit
+      +e.fields
+        +e.field(v-for="(field, index) in fields" :key="index")
+          +e.title.card-field-title(v-html="field[activeIndex].title")
+          +e.field-content.card-field-content
+            +e.field-content-inner(v-html="field[activeIndex].value")
 </template>
 
 <script lang="ts">
@@ -23,9 +22,9 @@ import { News, TableField } from '../models'
 
 export default class FieldsTexts extends Vue {
   @Prop() fields: TableField[]
-  @Prop() isLargeField: boolean
 
   activeIndex: number = 0
+  tabs = ['Мобильное приложение', 'Веб-версия']
 
   setActiveIndex(index) {
     this.activeIndex = index
@@ -38,12 +37,12 @@ export default class FieldsTexts extends Vue {
 
 .fields-texts
 
-  &__titles
+  &__tabs
     z-index 5
     display flex
     transform translateY(1px)
 
-  &__field-title
+  &__tab
     margin-bottom 0
     position relative
     padding 10px
@@ -57,37 +56,26 @@ export default class FieldsTexts extends Vue {
     &:last-child
       border-radius 0 4px 0 0
     &:hover
-      // opacity .75
       color $cBrandMedium
     &:not(:last-child)
       border-right none
-      // &:before
-      //   content ''
-      //   position absolute
-      //   top 0
-      //   right 0
-      //   bottom 0
-      //   background-color white
-      //   width 1px
-      //   height 100%
-      // // margin-right 10px
     &.is-active
       color $cBrand !important
       border-color $cLightBorder $cLightBorder white $cLightBorder
       box-shadow 0px -4px 12px -2px rgba(0,0,0,0.1)
       background-color white
-      // background-color $cBrand
-      // color white
 
-  &__content
-    display flex
-    padding 15px
+  &__fields
+    padding 25px 10px
     border 1px solid $cLightBorder
     border-radius 0 4px 4px 4px
+
+  &__field
+    &:not(:last-child)
+      margin-bottom 25px
+
+  &__field-content
     font-size 14px
-    &.is-large
-      padding-top 20px
-      line-height 1.3
 
   &__field-content-inner
     >>> p
@@ -96,27 +84,4 @@ export default class FieldsTexts extends Vue {
     >>> span
       line-height 1.5 !important
       font inherit !important
-
-  &__icon-wrapper
-    width 100%
-    height 100%
-    display flex
-    justify-content center
-    align-items center
-    background-color $cBrand
-    border 1px solid $cBrand
-    border-left none
-    color white
-    cursor pointer
-    transition(color\, background-color\, border-color)
-    &:hover
-      color $cBrand
-      background-color white
-    &_edit
-      position relative
-      width 38px
-      height auto
-      display flex
-      justify-content center
-      align-items center
 </style>
