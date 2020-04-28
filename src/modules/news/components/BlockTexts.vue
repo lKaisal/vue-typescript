@@ -7,16 +7,19 @@
         +e.tab.card-field-title(v-for="(tab, index) in tabs" :key="index" v-html="tab" @click="setActiveIndex(index)"
           :class="{ 'is-active': activeIndex === index, 'is-disabled': editMode && activeIndex !== index }")
       +e.fields
-        transition
-          +e.edit-icons.card-btn-close(v-if="!editMode && activeIndex === 0")
-            +e.edit-icon-wrapper(@click="turnOnEditMode")
-              +e.edit-icon.el-icon-edit
-          +e.edit-icons.card-btn-close(v-else-if="editMode")
-            +e.edit-icon-wrapper(@click="resetChanges")
-              +e.edit-icon.el-icon-refresh
-            +e.edit-icon-wrapper._close(@click="turnOffEditMode")
-              +e.edit-icon.el-icon-close
-        FieldText(v-for="(field, index) in activeFields" :key="index" :editMode="editMode" :isEditorField="index === 2" :field="field"
+        //- +e.edit-icons.card-btn-close(v-if="!editMode && activeIndex === 0")
+        //-   +e.edit-icon-wrapper(@click="turnOnEditMode")
+        //-     +e.edit-icon.el-icon-edit
+        +e.edit-icons.card-btn-close(v-if="activeIndex === 0")
+          +e.edit-icon-wrapper(v-if="!editMode" @click="turnOnEditMode")
+            +e.edit-icon.el-icon-edit
+          +e.edit-icon-wrapper(v-if="editMode" @click="confirmEdit")
+            +e.edit-icon.el-icon-check
+          +e.edit-icon-wrapper._reset(v-if="editMode" @click="resetChanges")
+            +e.edit-icon.el-icon-refresh
+          +e.edit-icon-wrapper._close(v-if="editMode" @click="turnOffEditMode")
+            +e.edit-icon.el-icon-close
+        FieldText(v-for="(field, index) in activeEditableFields" :key="index" :editMode="editMode" :isEditorField="index === 2" :field="field"
           class="block-texts__field")
 </template>
 
@@ -37,9 +40,17 @@ export default class BlockTexts extends Vue {
   activeIndex: number = 0
   tabs = ['Мобильное приложение', 'Веб-версия']
   editMode: boolean = false
+  editableFields: (TableField[])[] = null
 
   get activeFields() {
     return this.fields[this.activeIndex]
+  }
+  get activeEditableFields() {
+    return this.editableFields && this.editableFields[this.activeIndex]
+  }
+
+  mounted() {
+    this.editableFields = [...this.fields]
   }
 
   setActiveIndex(index) {
@@ -49,42 +60,23 @@ export default class BlockTexts extends Vue {
   turnOnEditMode() {
     this.editMode = true
   }
-  resetChanges() {
-
+  confirmEdit() {
+    this.editMode = false
+  }
+  async resetChanges() {
+    this.turnOffEditMode()
+    await this.$nextTick()
+    const activeEditableFields = this.editableFields[this.activeIndex]
+    activeEditableFields.forEach((editableField, index) => {
+      editableField.value = this.activeFields[index].value
+    })
+    this.turnOnEditMode()
   }
   turnOffEditMode() {
     this.editMode = false
   }
 }
 </script>
-
-<style lang="stylus">
-@import '../../../styles/tools'
-
-.fr-box.fr-basic
-  border 1px solid $cLightBorder
-  border-radius 4px
-
-.fr-toolbar.fr-top,
-.fr-box .fr-wrapper,
-.fr-box.fr-basic .fr-wrapper
-  border none !important
-
-.fr-box.fr-basic .fr-element
-  font-family inherit
-  font-size inherit
-  color inherit
-
-.fr-toolbar .fr-command.fr-btn
-  margin 0 !important
-
-.fr-toolbar .fr-command.fr-btn svg.fr-svg
-  height 18px !important
-
-.fr-toolbar .fr-more-toolbar.fr-expanded
-  height 40px !important
-
-</style>
 
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
@@ -135,6 +127,10 @@ export default class BlockTexts extends Vue {
 
   &__edit-icons
     display flex
+    transition(background-color\, opacity)
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__edit-icon-wrapper
     padding 5px
@@ -146,6 +142,10 @@ export default class BlockTexts extends Vue {
       margin-right 10px
     &:hover
       background-color $cBrand
+    &_reset
+      border-color $cWarning
+      &:hover
+        background-color $cWarning
     &_close
       border-color $cDanger
       &:hover
@@ -158,6 +158,8 @@ export default class BlockTexts extends Vue {
     color $cBrand
     &.el-icon-close
       color $cDanger
+    &.el-icon-refresh
+      color $cWarning
     transition(background-color)
     .block-texts__edit-icon-wrapper:hover &
       color white
