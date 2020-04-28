@@ -5,10 +5,10 @@
     +e.container
       +e.title.card-field-title(v-html="field.title")
       +e.TRANSITION-GROUP.content.card-field-content(:style="setContentStyle()" tag="div")
-          +e.content-inner._main(v-if="!editMode && (inputHeight || isEditorField)" key="main" v-html="editableText")
-          +e.EL-INPUT.content-inner._input(v-else-if="(editMode || !inputHeight) && !isEditorField" key="input" ref="inputRef" v-model="editableText" clearable
-            :placeholder="field.title")
-          +e.content-inner._editable#editor-field(v-if="isEditorField" v-html="editableText" key="editable" :class="{ 'is-transparent': !editMode }")
+        +e.content-inner._main(v-if="!editMode && (inputHeight || isEditorField)" key="main" v-html="editableText")
+        +e.EL-INPUT.content-inner._input(v-else-if="(editMode || !inputHeight) && !isEditorField" key="input" ref="inputRef" v-model="editableText" clearable
+          :placeholder="field.title" @input="emitInputChange")
+        +e.content-inner._editable#editor-field(v-if="isEditorField" v-html="editableText" key="editable" :class="{ 'is-transparent': !editMode }")
 </template>
 
 <script lang="ts">
@@ -90,27 +90,11 @@ export default class FieldText extends Mixins(UiMappers) {
     }
   }
 
-  @Watch('editMode')
-  async onEditModeChange(val) {
-    if (!this.isEditorField) return
-
-    if (val) {
-      await this.$nextTick()
-      // this.initEditor()
-    } else {
-      // this.destroyEditor()
-      // await this.$nextTick()
-      // this.initEditor()
-    }
-  }
-
   async mounted() {
     this.editableText = this.field.value.toString()
     await this.$nextTick()
     this.initEditor()
     this.getInputHeight()
-    // await this.$nextTick()
-    // this.destroyEditor()
   }
 
   async getInputHeight() {
@@ -131,11 +115,8 @@ export default class FieldText extends Mixins(UiMappers) {
 
     return `height: ${this.inputHeight}px;`
   }
-
-  setContentInnerStyle() {
-    if (!this.inputHeight) return
-
-    return `position: absolute; top: 0; right: 0; bottom: 0; left: 0;`
+  emitInputChange() {
+    this.$emit('inputChange', this.editableText, this.field.field)
   }
 }
 </script>

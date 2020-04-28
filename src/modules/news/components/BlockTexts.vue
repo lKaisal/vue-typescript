@@ -17,10 +17,10 @@
             +e.edit-icon.el-icon-check
           +e.edit-icon-wrapper._reset(v-if="editMode" @click="resetChanges")
             +e.edit-icon.el-icon-refresh
-          +e.edit-icon-wrapper._close(v-if="editMode" @click="turnOffEditMode")
+          +e.edit-icon-wrapper._close(v-if="editMode" @click="onTurnOffClick")
             +e.edit-icon.el-icon-close
-        FieldText(v-for="(field, index) in activeEditableFields" :key="index" :editMode="editMode" :isEditorField="index === 2" :field="field"
-          class="block-texts__field")
+        FieldText(v-for="(field, index) in activeEditableFields" :key="field.value" :editMode="editMode" :isEditorField="index === 2" :field="field"
+          @inputChange="onInputChange" class="block-texts__field")
 </template>
 
 <script lang="ts">
@@ -41,6 +41,7 @@ export default class BlockTexts extends Vue {
   tabs = ['Мобильное приложение', 'Веб-версия']
   editMode: boolean = false
   editableFields: (TableField[])[] = null
+  resetCount: number = 0
 
   get activeFields() {
     return this.fields[this.activeIndex]
@@ -50,7 +51,7 @@ export default class BlockTexts extends Vue {
   }
 
   mounted() {
-    this.editableFields = [...this.fields]
+    this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
   }
 
   setActiveIndex(index) {
@@ -63,17 +64,26 @@ export default class BlockTexts extends Vue {
   confirmEdit() {
     this.editMode = false
   }
-  async resetChanges() {
+  onResetClick() {
     this.turnOffEditMode()
-    await this.$nextTick()
-    const activeEditableFields = this.editableFields[this.activeIndex]
-    activeEditableFields.forEach((editableField, index) => {
-      editableField.value = this.activeFields[index].value
-    })
+    this.resetChanges()
     this.turnOnEditMode()
+  }
+  async resetChanges() {
+    await this.$nextTick()
+    this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
   }
   turnOffEditMode() {
     this.editMode = false
+  }
+  onTurnOffClick() {
+    this.resetChanges()
+    this.turnOffEditMode()
+  }
+  onInputChange(value, field: keyof News) {
+    const activeEditableFields = this.editableFields[this.activeIndex]
+    const activeField = activeEditableFields.find(f => f.field === field)
+    activeField.value = value
   }
 }
 </script>
