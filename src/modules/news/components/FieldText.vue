@@ -11,13 +11,11 @@
       +e.content.card-field-content
         +e.EL-INPUT.content-inner(v-if="!isEditorField" v-model="editableText" clearable :placeholder="field.title")
         +e.content-inner#editor-field(v-else v-html="editableText")
-        //- +e.FROALA.content-inner#editor-field(v-else tag="textarea" :config="config" v-model="editableText")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { News, TableField } from '../models'
-// import VueFroala from 'vue-froala-wysiwyg'
 import FroalaEditor from 'froala-editor'
 import { uiMapper } from '@/services/store/modules/ui/store'
 
@@ -49,13 +47,13 @@ export default class FieldText extends Mixins(UiMappers) {
         linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
         toolbarButtons: {
           'moreText': {
-            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontSize', 'textColor', 'backgroundColor', 'clearFormatting'],
+            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting'],
           },
           'moreParagraph': {
             'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'lineHeight', 'outdent', 'indent'],
           },
           'moreRich': {
-            'buttons': ['insertLink', 'insertImage', 'insertTable', 'emoticons', 'fontAwesome', 'specialCharacters', 'embedly', 'insertHR'],
+            'buttons': ['insertLink', 'insertImage', 'specialCharacters', 'insertHR'],
           },
           'moreMisc': {
             'buttons': ['undo', 'redo', 'selectAll', 'print', 'fullscreen'],
@@ -71,7 +69,7 @@ export default class FieldText extends Mixins(UiMappers) {
         linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
         toolbarButtons: {
           'moreText': {
-            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontSize', 'textColor', 'backgroundColor', 'clearFormatting'],
+            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting'],
             'buttonsVisible': 0
           },
           'moreParagraph': {
@@ -79,7 +77,7 @@ export default class FieldText extends Mixins(UiMappers) {
             'buttonsVisible': 0
           },
           'moreRich': {
-            'buttons': ['insertLink', 'insertImage', 'insertTable', 'emoticons', 'fontAwesome', 'specialCharacters', 'embedly', 'insertHR'],
+            'buttons': ['insertLink', 'insertImage', 'specialCharacters', 'insertHR'],
             'buttonsVisible': 0
           },
           'moreMisc': {
@@ -131,6 +129,8 @@ export default class FieldText extends Mixins(UiMappers) {
   &__content-inner
     line-height 1.5 !important
     fontReg()
+    >>> input
+      font-size 14px
     >>> p
       line-height 1.5 !important
       fontReg()

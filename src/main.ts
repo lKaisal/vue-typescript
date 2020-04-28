@@ -8,7 +8,7 @@ import VueMeta from 'vue-meta'
 import news from '@/modules/news/module'
 
 //Import Froala Editor 
-// import 'froala-editor/js/plugins.pkgd.min.js';
+import 'froala-editor/js/plugins.pkgd.min.js';
 // //Import third party plugins
 // import 'froala-editor/js/third_party/embedly.min';
 // import 'froala-editor/js/third_party/font_awesome.min';
@@ -16,9 +16,9 @@ import news from '@/modules/news/module'
 // import 'froala-editor/js/third_party/image_tui.min';
 // // Import Froala Editor css files.
 import 'froala-editor/css/froala_editor.pkgd.min.css';
-// require('froala-editor/js/languages/ru')
+require('froala-editor/js/languages/ru')
 // import VueFroala from 'vue-froala-wysiwyg'
-import 'froala-editor/js/plugins/align.min.js'
+// import 'froala-editor/js/plugins/align.min.js'
 
 // Vue.use(VueFroala)
 Vue.use(ElementUI)
