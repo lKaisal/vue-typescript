@@ -10,13 +10,15 @@
       +e.title.card-field-title(v-html="field.title")
       +e.content.card-field-content
         +e.EL-INPUT.content-inner(v-if="!isEditorField" v-model="editableText" clearable :placeholder="field.title")
-        +e.FROALA.content-inner#editor-field(v-else tag="textarea" :config="config" v-model="editableText")
+        +e.content-inner#editor-field(v-else v-html="editableText")
+        //- +e.FROALA.content-inner#editor-field(v-else tag="textarea" :config="config" v-model="editableText")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch } from 'vue-property-decorator'
 import { News, TableField } from '../models'
-import VueFroala from 'vue-froala-wysiwyg'
+// import VueFroala from 'vue-froala-wysiwyg'
+import FroalaEditor from 'froala-editor'
 import { uiMapper } from '@/services/store/modules/ui/store'
 
 const UiMappers = Vue.extend({
@@ -90,8 +92,30 @@ export default class FieldText extends Mixins(UiMappers) {
     }
   }
 
+  @Watch('editMode')
+  async onEditModeChange(val) {
+    if (!this.isEditorField) return
+
+    if (val) {
+      await this.$nextTick()
+      this.initEditor()
+    } else {
+      this.destroyEditor()
+    }
+  }
+
   mounted() {
     this.editableText = this.field.value.toString()
+  }
+
+  initEditor() {
+    this.froala = new FroalaEditor('#editor-field', this.config)
+  }
+  destroyEditor() {
+    if (this.froala) {
+      this.froala.destroy()
+      this.froala = null
+    }
   }
 }
 </script>

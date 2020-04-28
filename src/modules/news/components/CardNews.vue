@@ -119,7 +119,8 @@ export default class CardNews extends Mixins(NewsMappers) {
     width 100%
 
   &__block
-    margin-bottom 30px
+    &:not(:last-child)
+      margin-bottom 30px
 
   &__fields
     &_dates

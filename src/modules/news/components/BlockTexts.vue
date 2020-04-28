@@ -5,10 +5,17 @@
     +e.container
       +e.tabs
         +e.tab.card-field-title(v-for="(tab, index) in tabs" :key="index" v-html="tab" @click="setActiveIndex(index)"
-          :class="{ 'is-active': activeIndex === index }")
+          :class="{ 'is-active': activeIndex === index, 'is-disabled': editMode && activeIndex !== index }")
       +e.fields
-        +e.edit-icon-wrapper.card-btn-close(v-if="!editMode && activeIndex === 0" @click="turnOnEditMode")
-          +e.edit-icon.el-icon-edit
+        transition
+          +e.edit-icons.card-btn-close(v-if="!editMode && activeIndex === 0")
+            +e.edit-icon-wrapper(@click="turnOnEditMode")
+              +e.edit-icon.el-icon-edit
+          +e.edit-icons.card-btn-close(v-else-if="editMode")
+            +e.edit-icon-wrapper(@click="resetChanges")
+              +e.edit-icon.el-icon-refresh
+            +e.edit-icon-wrapper._close(@click="turnOffEditMode")
+              +e.edit-icon.el-icon-close
         FieldText(v-for="(field, index) in activeFields" :key="index" :editMode="editMode" :isEditorField="index === 2" :field="field"
           class="block-texts__field")
 </template>
@@ -42,8 +49,42 @@ export default class BlockTexts extends Vue {
   turnOnEditMode() {
     this.editMode = true
   }
+  resetChanges() {
+
+  }
+  turnOffEditMode() {
+    this.editMode = false
+  }
 }
 </script>
+
+<style lang="stylus">
+@import '../../../styles/tools'
+
+.fr-box.fr-basic
+  border 1px solid $cLightBorder
+  border-radius 4px
+
+.fr-toolbar.fr-top,
+.fr-box .fr-wrapper,
+.fr-box.fr-basic .fr-wrapper
+  border none !important
+
+.fr-box.fr-basic .fr-element
+  font-family inherit
+  font-size inherit
+  color inherit
+
+.fr-toolbar .fr-command.fr-btn
+  margin 0 !important
+
+.fr-toolbar .fr-command.fr-btn svg.fr-svg
+  height 18px !important
+
+.fr-toolbar .fr-more-toolbar.fr-expanded
+  height 40px !important
+
+</style>
 
 <style lang="stylus" scoped>
 @import '../../../styles/tools'
@@ -78,10 +119,13 @@ export default class BlockTexts extends Vue {
       border-color $cLightBorder $cLightBorder white $cLightBorder
       box-shadow 0px -4px 12px -2px rgba(0,0,0,0.1)
       background-color white
+    &.is-disabled
+      pointer-events none
+      opacity .75
 
   &__fields
     position relative
-    padding 25px 10px 10px
+    padding 30px 10px 10px
     border 1px solid $cLightBorder
     border-radius 0 4px 4px 4px
 
@@ -89,17 +133,31 @@ export default class BlockTexts extends Vue {
     &:not(:last-child)
       margin-bottom 25px
 
+  &__edit-icons
+    display flex
+
   &__edit-icon-wrapper
     padding 5px
     border 1px solid $cBrand
     border-radius 50%
     background-color white
-    transition(background-color)
+    transition(background-color\, opacity)
+    &:not(:last-child)
+      margin-right 10px
     &:hover
       background-color $cBrand
+    &_close
+      border-color $cDanger
+      &:hover
+        background-color $cDanger
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__edit-icon
     color $cBrand
+    &.el-icon-close
+      color $cDanger
     transition(background-color)
     .block-texts__edit-icon-wrapper:hover &
       color white
