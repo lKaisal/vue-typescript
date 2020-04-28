@@ -33,6 +33,9 @@ export default class SearchApp extends Vue {
   created() {
     this.initSearch()
   }
+  beforeDestroy() {
+    this.$emit('searchFinished')
+  }
 
   // watchListOnce() {
   //   try {

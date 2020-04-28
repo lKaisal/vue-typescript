@@ -29,7 +29,7 @@ class SuppliersState {
   smsReset: { error: string, isLoading: boolean, field: keyof SmsFields } = { error: null, isLoading: false, field: null }
   phoneAuthDelete: { error: string, isLoading: boolean } = { error: null, isLoading: false }
   // FILTER STATE
-  filter: FilterItem[] = []
+  filters: FilterItem[] = []
 }
 
 class SuppliersGetters extends Getters<SuppliersState> {
@@ -89,7 +89,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
 
     if (!list) return
 
-    const filters = this.state.filter
+    const filters = this.state.filters
 
     const res = list.filter(supplier => {
       return filters.every(filter => {
@@ -110,7 +110,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
 
       if (!list) return
 
-      const filters = [...this.state.filter]
+      const filters = [...this.state.filters]
       filters.splice(fieldIndex, 1)
 
       const res = list.filter(supplier => {
@@ -129,7 +129,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
     }
   }
   get smthIsSelected() {
-    const filters = [...this.state.filter]
+    const filters = [...this.state.filters]
 
     return filters.some(filter => filter.valuesSelected.length)
   }
@@ -160,7 +160,7 @@ class SuppliersGetters extends Getters<SuppliersState> {
   }
   get selectedFields() {
     return (field: keyof Supplier) => {
-      return this.state.filter.find(item => item.field === field).valuesSelected
+      return this.state.filters.find(item => item.field === field).valuesSelected
     }
   }
   get availableFields() {
@@ -279,13 +279,19 @@ class SuppliersMutations extends Mutations<SuppliersState> {
   }
   // Mutations Filter
   addFilterFields(filters: FilterItem[]) {
-    this.state.filter = []
+    this.state.filters = []
     for (const filter of filters) {
-      this.state.filter.push(filter)
+      this.state.filters.push(filter)
+    }
+  }
+  clearAllFilters() {
+    const filters = this.state.filters
+    for (const filter of filters) {
+      filter.valuesSelected = []
     }
   }
   updateFilterSelected(payload: {field: FilterItem['field'], value: (FilterItem['valuesSelected'])[0]}) {
-    const filterField = this.state.filter.find(f => f.field === payload.field)
+    const filterField = this.state.filters.find(f => f.field === payload.field)
     const valuesSelected = filterField.valuesSelected
     const indexInSelected = valuesSelected.indexOf(payload.value)
 
@@ -296,7 +302,7 @@ class SuppliersMutations extends Mutations<SuppliersState> {
     }
   }
   clearFilterSelected(field: FilterItem['field']) {
-    const filterField = this.state.filter.find(f => f.field === field)
+    const filterField = this.state.filters.find(f => f.field === field)
     filterField.valuesSelected = []
   }
 }
