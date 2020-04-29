@@ -31,12 +31,12 @@ import FieldText from '../components/FieldText.vue'
 import { newsMapper } from '../module/store'
 
 const NewsMappers = Vue.extend({
-  // computed: {
-  //   ...newsMapper.mapState(['textsPublished'])
-  // },
-  // methods: {
-  //   ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
-  // }
+  computed: {
+    ...newsMapper.mapState(['textsPublished'])
+  },
+  methods: {
+    ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
+  }
 })
 
 @Component({
@@ -71,7 +71,7 @@ export default class BlockTexts extends Mixins(NewsMappers) {
 
   mounted() {
     this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
-    // this.setTextPublished(this.editableFieldsPublished.map(obj => ({...obj})))
+    this.setTextPublished(this.editableFieldsPublished.map(obj => ({...obj})))
   }
 
   setActiveIndex(index) {
@@ -85,7 +85,7 @@ export default class BlockTexts extends Mixins(NewsMappers) {
   }
   resetChanges() {
     this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
-    // this.setTextPublished(this.initialFieldsPublished.map(obj => ({...obj})))
+    this.setTextPublished(this.initialFieldsPublished.map(obj => ({...obj})))
   }
   turnOffEditMode() {
     this.editMode = false
@@ -99,7 +99,7 @@ export default class BlockTexts extends Mixins(NewsMappers) {
     const activeEditableFields = this.editableFields[this.activeIndex]
     const activeField = activeEditableFields.find(f => f.field === field)
     activeField.value = value
-    // this.updateTextPublished({field, value})
+    this.updateTextPublished({field, value})
   }
 }
 </script>

@@ -178,7 +178,7 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
       this.commit('startPublish')
       const payload = this.getters.publishPayload
 
-      axios.post(`/api/v1/news-update/${0}`, payload)
+      axios.post(`/api/v1/news-update/${id}`, payload)
         .then((res: AxiosResponse<any>) => {
           const data = res.data
 

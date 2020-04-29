@@ -4,11 +4,7 @@
   +b.page-item.page
     +e.container(v-if="currentNews" v-click-outside="onClickOutside")
       RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-item__row-back")
-      CardNews(:news="currentNews && currentNews.data" class="page-item__card")
-      +e.btns
-        ButtonApp(btnType="primary" :isPlain="true" text="Опубликовать новость" @clicked="submitPublish" class="page-item__btn")
-        ButtonApp(btnType="warning" :isPlain="true" text="Отменить изменения" @clicked="resetChanges" class="page-item__btn")
-        //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="page-item__btn")
+      CardNews(:news="currentNews && currentNews.data" @submitPublish="submitPublish" class="page-item__card")
     transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
@@ -56,7 +52,7 @@ const NewsMappers = Vue.extend({
 export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMappers) {
   secondBtn: Button = null
 
-  get failedFetchList() { return this.requestStatus === 'failFetchList' }
+  get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get currentId() { return this.$route.params.id }
 
   // HOOKS
@@ -74,7 +70,6 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
   }
 
   goToPageMain() { this.$router.push({ name: 'PageNews' }).catch(err => {}) }
-  resetChanges() { }
   // IDENTITY DATA METHODS
   getData() {
     this.getCurrentNews(Number(this.currentId))

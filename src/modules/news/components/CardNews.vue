@@ -20,8 +20,9 @@
                   +e.I.icon.checkbox-icon(:class="{'el-icon-check': field.value, 'el-icon-close': !field.value}")
                 +e.text.field-content(v-html="field.title")
           BlockTexts(:fields="fieldsTexts" class="card-news__block card-news__block_texts")
-      //- +e.btns
-        ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="emitUpdateIdentity" class="card-news__btn")
+      +e.btns
+        ButtonApp(btnType="primary" :isPlain="true" text="Опубликовать новость" @clicked="submitPublish" class="card-news__btn")
+        ButtonApp(btnType="warning" :isPlain="true" text="Отменить изменения" @clicked="resetChanges" class="card-news__btn")
         //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-news__btn")
 </template>
 
@@ -38,7 +39,7 @@ const NewsMappers = Vue.extend({
     // ...newsMapper.mapState(['identity']),
   },
   methods: {
-    // ...newsMapper.mapActions(['getIdentity'])
+    ...newsMapper.mapMutations(['setTextPublished'])
   }
 })
 
@@ -105,6 +106,13 @@ export default class CardNews extends Mixins(NewsMappers) {
     else if (isPreview && !value) return this.news['preview']
     else if (isBody && !value) return this.news['body']
     else return value
+  }
+  submitPublish() {
+    this.$emit('submitPublish')
+  }
+  resetChanges() {
+    // @ts-ignore
+    this.setTextPublished(this.fieldsTexts[0])
   }
 }
 </script>
@@ -183,4 +191,12 @@ export default class CardNews extends Mixins(NewsMappers) {
       border-color $cLightBorder $cLightBorder white $cLightBorder
       box-shadow 0px -4px 12px -2px rgba(0,0,0,0.1)
       background-color white
+
+  &__btns
+    display flex
+    flex-wrap wrap
+
+  &__btn
+    margin-right 10px
+    margin-bottom 10px
 </style>
