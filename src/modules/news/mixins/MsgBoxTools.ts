@@ -20,7 +20,7 @@ export default class MsgBoxTools extends Mixins<IMixinInterface>(Mappers, MsgBox
   titles: {[key in RequestType]: string} = { 'success': 'Готово!', 'fail': 'Ошибка!' }
   statuses: {[key in RequestType]: RequestStatuses[RequestType][]} = {
     success: [ ],
-    fail: [ 'failFetchList' ],
+    fail: [ 'failFetchList', 'failFetchCurrentNews' ],
   }
   btns: { [key in RequestStatus]: MsgBoxBtns } = {
     successFetchList: { firstBtn: 'Закрыть' },

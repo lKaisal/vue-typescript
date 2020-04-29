@@ -8,8 +8,8 @@
       +e.btns
         ButtonApp(btnType="primary" :isPlain="true" text="Обновить данные" @clicked="goToPageMain" class="page-item__btn")
         //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="page-item__btn")
-    transition-group(tag="div")
-      MessageBox(v-show="msgBoxIsShown" key="msg" :content="msgBoxContent" @close="closeMsgBox"
+    transition
+      MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
         class="page-item__msg-box modal modal-msg")
 </template>
@@ -91,7 +91,7 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
     this.closeMsgBox()
     switch (this.requestStatus) {
       case 'failFetchCurrentNews':
-        this.getCurrentNews()
+        this.getData()
         break;
     }
   }

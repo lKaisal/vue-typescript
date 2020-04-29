@@ -5,7 +5,7 @@
     transition(mode="out-in")
       router-view(class="module-news__page page")
     transition
-      MessageBox(v-show="msgBoxIsShown" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"
+      MessageBox(v-show="msgBoxIsShown && fetchListFailed" :content="msgBoxContent" :secondBtn="secondBtn" @close="goToPageApp"
         @firstBtnClicked="onFirstBtnClick()" @secondBtnClicked="goToPageApp()"
         class="module-news__msg-box modal modal-msg")
 </template>
@@ -43,6 +43,8 @@ const AuthMappers = Vue.extend({
 
 export default class ModuleNews extends Mixins(NewsMappers, AuthMappers, MsgBoxToolsApp, MsgBoxTools) {
   secondBtn: Button = { type: 'success', isPlain: true }
+
+  get fetchListFailed() { return this.requestStatus === 'failFetchList' }
   get link() { return this.$route && this.$route.matched && this.$route.matched[0].path.slice(1) }
   get activeSection() { return this.link && this.activeMenuSectionByLink(this.link) }
 

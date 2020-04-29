@@ -13,12 +13,16 @@
         +e.edit-icons.card-btn-close(v-if="activeIndex === 0")
           +e.edit-icon-wrapper(v-if="!editMode" @click="turnOnEditMode")
             +e.edit-icon.el-icon-edit
+            +e.icon-tooltip Редактировать новость
           +e.edit-icon-wrapper(v-if="editMode" @click="confirmEdit")
             +e.edit-icon.el-icon-check
+            +e.icon-tooltip Сохранить новость
           +e.edit-icon-wrapper._reset(v-if="editMode" @click="resetChanges")
             +e.edit-icon.el-icon-refresh
+            +e.icon-tooltip Отменить изменения
           +e.edit-icon-wrapper._close(v-if="editMode" @click="onTurnOffClick")
             +e.edit-icon.el-icon-close
+            +e.icon-tooltip Закрыть
         FieldText(v-for="(field, index) in activeEditableFields" :key="field.value" :editMode="editMode" :isEditorField="index === 2" :field="field"
           @inputChange="onInputChange" class="block-texts__field")
 </template>
@@ -41,7 +45,6 @@ export default class BlockTexts extends Vue {
   tabs = ['Мобильное приложение', 'Веб-версия']
   editMode: boolean = false
   editableFields: (TableField[])[] = null
-  resetCount: number = 0
 
   get activeFields() {
     return this.fields[this.activeIndex]
@@ -57,20 +60,13 @@ export default class BlockTexts extends Vue {
   setActiveIndex(index) {
     this.activeIndex = index
   }
-
   turnOnEditMode() {
     this.editMode = true
   }
   confirmEdit() {
     this.editMode = false
   }
-  onResetClick() {
-    this.turnOffEditMode()
-    this.resetChanges()
-    this.turnOnEditMode()
-  }
-  async resetChanges() {
-    await this.$nextTick()
+  resetChanges() {
     this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
   }
   turnOffEditMode() {
@@ -143,6 +139,7 @@ export default class BlockTexts extends Vue {
       opacity 0
 
   &__edit-icon-wrapper
+    position relative
     padding 5px
     border 1px solid $cBrand
     border-radius 50%
@@ -173,4 +170,21 @@ export default class BlockTexts extends Vue {
     transition(background-color)
     .block-texts__edit-icon-wrapper:hover &
       color white
+
+  &__icon-tooltip
+    position absolute
+    top -75%
+    left 50%
+    transform translate3d(-50%,0,0)
+    padding 2px 3px
+    background-color $cLighterBorder
+    white-space nowrap
+    font-size 11px
+    fontLight()
+    transition(opacity)
+    transition-duration $tFast
+    opacity 0
+    user-select none
+    .block-texts__edit-icon-wrapper:hover &
+      opacity 1
 </style>
