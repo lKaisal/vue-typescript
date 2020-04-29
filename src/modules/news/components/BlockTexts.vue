@@ -6,7 +6,7 @@
       +e.tabs
         +e.tab.card-field-title(v-for="(tab, index) in tabs" :key="index" v-html="tab" @click="setActiveIndex(index)"
           :class="{ 'is-active': activeIndex === index, 'is-disabled': editMode && activeIndex !== index }")
-      +e.fields(:key="activeIndex")
+      +e.fields
         +e.edit-icons.card-btn-close(v-if="activeIndex === 0")
           +e.edit-icon-wrapper(v-if="!editMode" @click="turnOnEditMode")
             +e.edit-icon.el-icon-edit
@@ -14,14 +14,14 @@
           +e.edit-icon-wrapper(v-if="editMode" @click="confirmEdit")
             +e.edit-icon.el-icon-check
             +e.icon-tooltip Сохранить новость
-          +e.edit-icon-wrapper._reset(v-if="editMode" @click="resetChanges")
+          //- +e.edit-icon-wrapper._reset(v-if="editMode" @click="resetChanges")
             +e.edit-icon.el-icon-refresh
             +e.icon-tooltip Отменить изменения
           +e.edit-icon-wrapper._close(v-if="editMode" @click="onTurnOffClick")
             +e.edit-icon.el-icon-close
             +e.icon-tooltip Закрыть
-        FieldText(v-for="(field, index) in activeEditableFields" :key="field.value || field.title" :editMode="editMode" :isEditorField="index === 2" :field="field"
-          @inputChange="onInputChange" class="block-texts__field")
+        FieldText(v-for="(field, index) in activeEditableFields" :key="index" :editMode="editMode" :isEditorField="index === 2"
+          :field="field" @inputChange="onInputChange" class="block-texts__field")
 </template>
 
 <script lang="ts">
@@ -31,12 +31,12 @@ import FieldText from '../components/FieldText.vue'
 import { newsMapper } from '../module/store'
 
 const NewsMappers = Vue.extend({
-  computed: {
-    ...newsMapper.mapState(['textsPublished'])
-  },
-  methods: {
-    ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
-  }
+  // computed: {
+  //   ...newsMapper.mapState(['textsPublished'])
+  // },
+  // methods: {
+  //   ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
+  // }
 })
 
 @Component({
@@ -57,8 +57,8 @@ export default class BlockTexts extends Mixins(NewsMappers) {
   get activeFields() { return this.fields[this.activeIndex] }
   get activeIsEditable() { return this.activeIndex === this.editableIndex }
   get activeEditableFields() {
-    return this.activeIsEditable ? this.textsPublished : this.activeFields
-    // return this.editableFields && this.editableFields[this.activeIndex]
+    // return this.activeIsEditable ? this.textsPublished : this.activeFields
+    return this.editableFields && this.editableFields[this.activeIndex]
   }
   get initialFieldsPublished(): TextPublished[] {
     // @ts-ignore
@@ -71,7 +71,7 @@ export default class BlockTexts extends Mixins(NewsMappers) {
 
   mounted() {
     this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
-    this.setTextPublished(this.editableFieldsPublished.map(obj => ({...obj})))
+    // this.setTextPublished(this.editableFieldsPublished.map(obj => ({...obj})))
   }
 
   setActiveIndex(index) {
@@ -84,20 +84,21 @@ export default class BlockTexts extends Mixins(NewsMappers) {
     this.editMode = false
   }
   resetChanges() {
-    // this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
-    this.setTextPublished(this.initialFieldsPublished.map(obj => ({...obj})))
+    this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
+    // this.setTextPublished(this.initialFieldsPublished.map(obj => ({...obj})))
   }
   turnOffEditMode() {
     this.editMode = false
   }
-  onTurnOffClick() {
+  async onTurnOffClick() {
     this.resetChanges()
+    await this.$nextTick()
     this.turnOffEditMode()
   }
   onInputChange(value, field: TextPublished['field']) {
-    // const activeEditableFields = this.editableFields[this.activeIndex]
-    // const activeField = activeEditableFields.find(f => f.field === field)
-    // activeField.value = value
+    const activeEditableFields = this.editableFields[this.activeIndex]
+    const activeField = activeEditableFields.find(f => f.field === field)
+    activeField.value = value
     // this.updateTextPublished({field, value})
   }
 }
@@ -145,6 +146,10 @@ export default class BlockTexts extends Mixins(NewsMappers) {
     padding 30px 10px 10px
     border 1px solid $cLightBorder
     border-radius 0 4px 4px 4px
+    transition(opacity)
+    &.v-enter
+    &.v-leave-to
+      opacity 0
 
   &__field
     &:not(:last-child)

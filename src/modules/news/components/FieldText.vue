@@ -19,12 +19,12 @@ import { uiMapper } from '@/services/store/modules/ui/store'
 import { newsMapper } from '../module/store'
 
 const NewsMappers = Vue.extend({
-  computed: {
-    ...newsMapper.mapState(['textsPublished'])
-  },
-  methods: {
-    ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
-  }
+  // computed: {
+  //   ...newsMapper.mapState(['textsPublished'])
+  // },
+  // methods: {
+  //   ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
+  // }
 })
 
 const UiMappers = Vue.extend({
@@ -49,66 +49,109 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
   inputHeight: number = null
 
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
-  get config() {
-    if (!this.isLtMd) {
+  get fieldTitle() { return this.field.title }
+  get fieldValue() { return this.field.value }
+  get configToolbarButtons() {
+    if (!this.isLtMd) { 
       return {
-        charCounterCount: false,
-        language: 'ru',
-        quickInsertButtons: ['image', 'embedly', 'table', 'ul', 'ol', 'hr'],
-        keepFormatOnDelete: true,
-        linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
-        toolbarButtons: {
-          'moreText': {
-            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting'],
-          },
-          'moreParagraph': {
-            'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'lineHeight', 'outdent', 'indent'],
-          },
-          'moreRich': {
-            'buttons': ['insertLink', 'insertImage', 'specialCharacters', 'insertHR'],
-          },
-          'moreMisc': {
-            'buttons': ['undo', 'redo', 'selectAll', 'print', 'fullscreen'],
-            'align': 'right',
-          }
+        'moreText': {
+          'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting'],
         },
-        events: {
-          'contentChanged': () => {
-            this.onEditorInputChange()
-          }
+        'moreParagraph': {
+          'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'lineHeight', 'outdent', 'indent'],
+        },
+        'moreRich': {
+          'buttons': ['insertLink', 'insertImage', 'specialCharacters', 'insertHR'],
+        },
+        'moreMisc': {
+          'buttons': ['undo', 'redo', 'selectAll', 'print', 'fullscreen'],
+          'align': 'right',
         }
       }
     } else {
       return {
-        charCounterCount: false,
-        language: 'ru',
-        quickInsertButtons: null,
-        keepFormatOnDelete: true,
-        linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
-        toolbarButtons: {
-          'moreText': {
-            'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting'],
-            'buttonsVisible': 0
-          },
-          'moreParagraph': {
-            'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'lineHeight', 'outdent', 'indent'],
-            'buttonsVisible': 0
-          },
-          'moreRich': {
-            'buttons': ['insertLink', 'insertImage', 'specialCharacters', 'insertHR'],
-            'buttonsVisible': 0
-          },
-          'moreMisc': {
-            'buttons': ['undo', 'redo', 'selectAll', 'print', 'fullscreen'],
-            'align': 'right',
-            'buttonsVisible': 0
-          }
+        'moreText': {
+          'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting'],
+          'buttonsVisible': 0
         },
-        events: {
-          'contentChanged': () => {
-            this.onEditorInputChange()
-          }
+        'moreParagraph': {
+          'buttons': ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'lineHeight', 'outdent', 'indent'],
+          'buttonsVisible': 0
+        },
+        'moreRich': {
+          'buttons': ['insertLink', 'insertImage', 'specialCharacters', 'insertHR'],
+          'buttonsVisible': 0
+        },
+        'moreMisc': {
+          'buttons': ['undo', 'redo', 'selectAll', 'print', 'fullscreen'],
+          'align': 'right',
+          'buttonsVisible': 0
         }
+      }
+    }
+  }
+  get configQuickInsertOptions() {
+    if (!this.isLtMd) return ['image', 'embedly', 'table', 'ul', 'ol', 'hr']
+    else return null
+  }
+  get config() {
+    return {
+      charCounterCount: false,
+      language: 'ru',
+      quickInsertButtons: this.configQuickInsertOptions,
+      keepFormatOnDelete: true,
+      linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
+      toolbarButtons: this.configToolbarButtons,
+      events: {
+        'contentChanged': () => {
+          this.onEditorInputChange()
+        }
+      }
+    }
+  }
+
+  // @Watch('fieldTitle')
+  // async onFieldTitleChange(val) {
+  //   this.destroyEditor()
+  //   this.inputHeight = null
+  //   this.editableText = this.field.value.toString()
+  //   await this.$nextTick()
+  //   if (this.isEditorField) this.initEditor()
+  //   else this.getInputHeight()
+  // }
+  @Watch('fieldValue')
+  async onFieldChange(val) {
+    if (val !== this.editableText) {
+      // this.inputHeight = null
+      // this.editableText = this.field.value.toString()
+      // await this.$nextTick()
+      // this.getInputHeight()
+      this.inputHeight = null
+      if (!this.isEditorField) {
+        this.editableText = val
+        await this.$nextTick()
+        this.getInputHeight()
+      }
+    }
+  }
+  @Watch('editMode')
+  async onEditModeChange(val) {
+    if (val && this.isEditorField && !this.froala) {
+      await this.$nextTick()
+      this.initEditor()
+    }
+    if (!val && this.isEditorField) {
+      if (this.froala.html.get() !== this.field.value) {
+        this.destroyEditor()
+        this.editableText = this.field.value.toString()
+        this.froala.html.set(this.field.value)
+        await this.$nextTick()
+        this.initEditor()
+      } else if (this.editableText !== this.fieldValue) {
+        this.destroyEditor()
+        this.editableText = this.field.value
+        await this.$nextTick()
+        this.initEditor()
       }
     }
   }
@@ -125,9 +168,11 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
     if (ref) this.inputHeight = ref.$el ? ref.$el.firstElementChild.offsetHeight : ref.offsetHeight
   }
   initEditor() {
+    console.log('init editor')
     this.froala = new FroalaEditor('#editor-field', this.config)
   }
   destroyEditor() {
+    console.log('destroy editor')
     if (this.froala) {
       this.froala.destroy()
       this.froala = null
@@ -145,9 +190,9 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
     this.emitInputChange()
   }
   emitInputChange() {
-    // this.$emit('inputChange', this.editableText, this.field.field)
     const value = this.isEditorField ? this.editorHtmlText : this.editableText
-    this.updateTextPublished({field: this.field.field, value})
+    this.$emit('inputChange', value, this.field.field)
+    // this.updateTextPublished({field: this.field.field, value})
   }
 }
 </script>
