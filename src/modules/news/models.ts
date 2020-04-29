@@ -18,6 +18,12 @@ type ListSort = {
   direction: 'asc' | 'desc'
 }
 
+type TextPublished = {
+  field: 'bodyMobile' |'headerMobile' | 'previewMobile'
+  title: string
+  value?: News[TextPublished['field']]
+}
+
 type TableField = {
   field: keyof News
   title: string
@@ -40,4 +46,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failFetchCurrentNews'
 }
 
-export { News, ListSort, TableField, RequestStatus, RequestStatuses, RequestType }
+export { News, ListSort, TextPublished, TableField, RequestStatus, RequestStatuses, RequestType }

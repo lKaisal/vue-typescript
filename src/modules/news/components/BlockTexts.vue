@@ -23,14 +23,24 @@
           +e.edit-icon-wrapper._close(v-if="editMode" @click="onTurnOffClick")
             +e.edit-icon.el-icon-close
             +e.icon-tooltip Закрыть
-        FieldText(v-for="(field, index) in activeEditableFields" :key="field.value" :editMode="editMode" :isEditorField="index === 2" :field="field"
+        FieldText(v-for="(field, index) in activeEditableFields" :key="field.value || field.title" :editMode="editMode" :isEditorField="index === 2" :field="field"
           @inputChange="onInputChange" class="block-texts__field")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop } from 'vue-property-decorator'
-import { News, TableField } from '../models'
+import { News, TextPublished, TableField } from '../models'
 import FieldText from '../components/FieldText.vue'
+import { newsMapper } from '../module/store'
+
+const NewsMappers = Vue.extend({
+  computed: {
+    ...newsMapper.mapState(['textsPublished'])
+  },
+  methods: {
+    ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
+  }
+})
 
 @Component({
   components: {
@@ -38,23 +48,33 @@ import FieldText from '../components/FieldText.vue'
   }
 })
 
-export default class BlockTexts extends Vue {
+export default class BlockTexts extends Mixins(NewsMappers) {
   @Prop() fields: (TableField[])[]
 
-  activeIndex: number = 0
   tabs = ['Мобильное приложение', 'Веб-версия']
+  activeIndex: number = 0
+  editableIndex: number = 0 // индекс вкладки, которую можно мутировать (и будем публиковать)
   editMode: boolean = false
-  editableFields: (TableField[])[] = null
+  editableFields: (TableField[])[] = null // объект полей, которые можно менять (передавать в v-model)
 
-  get activeFields() {
-    return this.fields[this.activeIndex]
-  }
+  get activeFields() { return this.fields[this.activeIndex] }
+  get activeIsEditable() { return this.activeIndex === this.editableIndex }
   get activeEditableFields() {
-    return this.editableFields && this.editableFields[this.activeIndex]
+    return this.activeIsEditable ? this.textsPublished : this.activeFields
+    // return this.editableFields && this.editableFields[this.activeIndex]
+  }
+  get initialFieldsPublished(): TextPublished[] {
+    // @ts-ignore
+    return this.fields[this.editableIndex]
+  }
+  get editableFieldsPublished(): TextPublished[] { // мутируемые поля, которые будут передаваться для публикации
+    // @ts-ignore
+    return this.editableFields[this.editableIndex]
   }
 
   mounted() {
     this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
+    this.setTextPublished(this.editableFieldsPublished.map(obj => ({...obj})))
   }
 
   setActiveIndex(index) {
@@ -67,7 +87,8 @@ export default class BlockTexts extends Vue {
     this.editMode = false
   }
   resetChanges() {
-    this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
+    // this.editableFields = this.fields.map(arr => arr.map(obj => ({...obj})))
+    this.setTextPublished(this.initialFieldsPublished.map(obj => ({...obj})))
   }
   turnOffEditMode() {
     this.editMode = false
@@ -76,10 +97,11 @@ export default class BlockTexts extends Vue {
     this.resetChanges()
     this.turnOffEditMode()
   }
-  onInputChange(value, field: keyof News) {
-    const activeEditableFields = this.editableFields[this.activeIndex]
-    const activeField = activeEditableFields.find(f => f.field === field)
-    activeField.value = value
+  onInputChange(value, field: TextPublished['field']) {
+    // const activeEditableFields = this.editableFields[this.activeIndex]
+    // const activeField = activeEditableFields.find(f => f.field === field)
+    // activeField.value = value
+    // this.updateTextPublished({field, value})
   }
 }
 </script>

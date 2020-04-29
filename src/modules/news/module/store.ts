@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import { News, ListSort } from '../models'
+import { News, ListSort, TextPublished } from '../models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -10,6 +10,7 @@ class NewsState {
   currentNews: { data: News, isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   list: { data: News[], isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   listSort: ListSort = { by: 'created_at', direction: 'desc' }
+  textsPublished: TextPublished[] = null
 }
 
 class NewsGetters extends Getters<NewsState> {
@@ -93,6 +94,15 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.currentNews.data = null
     this.state.currentNews.isLoading = false
     this.state.currentNews.error = null
+  }
+  // TEXTS PUBLISHED MUTATIONS
+  setTextPublished(payload: TextPublished[]) {
+    this.state.textsPublished = payload
+  }
+  updateTextPublished(payload: {field: TextPublished['field'], value: TextPublished['value']}) {
+    const texts = this.state.textsPublished
+    const field = texts.find(f => f.field === payload.field)
+    field.value = payload.value
   }
 }
 

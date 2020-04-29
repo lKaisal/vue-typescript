@@ -54,7 +54,6 @@ const NewsMappers = Vue.extend({
 
 export default class CardNews extends Mixins(NewsMappers) {
   @Prop() news: News
-  @Prop() timer: number
 
   get fieldId(): TableField {
     return { field: 'id', title: 'ID', value: this.getFieldContent('id') }

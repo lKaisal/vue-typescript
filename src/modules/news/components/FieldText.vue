@@ -13,9 +13,19 @@
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch, Ref } from 'vue-property-decorator'
-import { News, TableField } from '../models'
+import { News, TableField, TextPublished } from '../models'
 import FroalaEditor from 'froala-editor'
 import { uiMapper } from '@/services/store/modules/ui/store'
+import { newsMapper } from '../module/store'
+
+const NewsMappers = Vue.extend({
+  computed: {
+    ...newsMapper.mapState(['textsPublished'])
+  },
+  methods: {
+    ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
+  }
+})
 
 const UiMappers = Vue.extend({
   computed: {
@@ -26,8 +36,8 @@ const UiMappers = Vue.extend({
 @Component({
 })
 
-export default class FieldText extends Mixins(UiMappers) {
-  @Prop() field: TableField
+export default class FieldText extends Mixins(UiMappers, NewsMappers) {
+  @Prop() field: TextPublished
   @Prop() editMode: boolean
   @Prop() isEditorField: boolean
   @Ref() inputRef
@@ -35,6 +45,7 @@ export default class FieldText extends Mixins(UiMappers) {
   breakpoint!: string
   froala = null
   editableText: string = null
+  editorHtmlText: string = null
   inputHeight: number = null
 
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -44,6 +55,7 @@ export default class FieldText extends Mixins(UiMappers) {
         charCounterCount: false,
         language: 'ru',
         quickInsertButtons: ['image', 'embedly', 'table', 'ul', 'ol', 'hr'],
+        keepFormatOnDelete: true,
         linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
         toolbarButtons: {
           'moreText': {
@@ -60,12 +72,18 @@ export default class FieldText extends Mixins(UiMappers) {
             'align': 'right',
           }
         },
+        events: {
+          'contentChanged': () => {
+            this.onEditorInputChange()
+          }
+        }
       }
     } else {
       return {
         charCounterCount: false,
         language: 'ru',
         quickInsertButtons: null,
+        keepFormatOnDelete: true,
         linkEditButtons: ['linkOpen', 'linkEdit', 'linkRemove'],
         toolbarButtons: {
           'moreText': {
@@ -86,6 +104,11 @@ export default class FieldText extends Mixins(UiMappers) {
             'buttonsVisible': 0
           }
         },
+        events: {
+          'contentChanged': () => {
+            this.onEditorInputChange()
+          }
+        }
       }
     }
   }
@@ -93,8 +116,8 @@ export default class FieldText extends Mixins(UiMappers) {
   async mounted() {
     this.editableText = this.field.value.toString()
     await this.$nextTick()
-    this.initEditor()
-    this.getInputHeight()
+    if (this.isEditorField) this.initEditor()
+    else this.getInputHeight()
   }
 
   async getInputHeight() {
@@ -115,8 +138,16 @@ export default class FieldText extends Mixins(UiMappers) {
 
     return `height: ${this.inputHeight}px;`
   }
+  onEditorInputChange() {
+    const html = this.froala.html.get()
+    // if (!html) this.froala.html.set('<a></a>')
+    this.editorHtmlText = html
+    this.emitInputChange()
+  }
   emitInputChange() {
-    this.$emit('inputChange', this.editableText, this.field.field)
+    // this.$emit('inputChange', this.editableText, this.field.field)
+    const value = this.isEditorField ? this.editorHtmlText : this.editableText
+    this.updateTextPublished({field: this.field.field, value})
   }
 }
 </script>
@@ -184,6 +215,7 @@ export default class FieldText extends Mixins(UiMappers) {
       bottom 0
       left 0
     &_editable
+      width 100%
       padding 10px
       border 1px solid $cLighterBorder
       border-radius 4px
