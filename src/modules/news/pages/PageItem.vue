@@ -6,7 +6,7 @@
       RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-item__row-back")
       CardNews(:news="currentNews && currentNews.data" class="page-item__card")
       +e.btns
-        ButtonApp(btnType="primary" :isPlain="true" text="Опубликовать новость" @clicked="goToPageMain" class="page-item__btn")
+        ButtonApp(btnType="primary" :isPlain="true" text="Опубликовать новость" @clicked="submitPublish" class="page-item__btn")
         ButtonApp(btnType="warning" :isPlain="true" text="Отменить изменения" @clicked="resetChanges" class="page-item__btn")
         //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="page-item__btn")
     transition
@@ -37,7 +37,7 @@ const NewsMappers = Vue.extend({
   },
   methods: {
     ...newsMapper.mapMutations(['clearCurrentNews']),
-    ...newsMapper.mapActions(['getCurrentNews'])
+    ...newsMapper.mapActions(['getCurrentNews', 'publishNews'])
   }
 })
 
@@ -88,12 +88,27 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
         return
       })
   }
+  submitPublish() {
+    this.publishNews(Number(this.currentId))
+      .then(() => {
+        this.getData()
+      })
+      .catch(() => {
+        this.requestStatus = 'failPublish'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+        return
+      })
+  }
   // CLICK HANDLERS
   onFirstBtnClick() {
     this.closeMsgBox()
     switch (this.requestStatus) {
       case 'failFetchCurrentNews':
         this.getData()
+        break;
+      case 'failPublish':
+        this.submitPublish()
         break;
     }
   }
@@ -102,6 +117,8 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
     switch (this.requestStatus) {
       case 'failFetchCurrentNews':
         this.goToPageMain()
+        break
+      case 'failPublish':
         break
     }
   }

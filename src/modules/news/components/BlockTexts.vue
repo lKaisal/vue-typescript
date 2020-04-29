@@ -6,10 +6,7 @@
       +e.tabs
         +e.tab.card-field-title(v-for="(tab, index) in tabs" :key="index" v-html="tab" @click="setActiveIndex(index)"
           :class="{ 'is-active': activeIndex === index, 'is-disabled': editMode && activeIndex !== index }")
-      +e.fields
-        //- +e.edit-icons.card-btn-close(v-if="!editMode && activeIndex === 0")
-        //-   +e.edit-icon-wrapper(@click="turnOnEditMode")
-        //-     +e.edit-icon.el-icon-edit
+      +e.fields(:key="activeIndex")
         +e.edit-icons.card-btn-close(v-if="activeIndex === 0")
           +e.edit-icon-wrapper(v-if="!editMode" @click="turnOnEditMode")
             +e.edit-icon.el-icon-edit

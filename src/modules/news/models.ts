@@ -24,6 +24,13 @@ type TextPublished = {
   value?: News[TextPublished['field']]
 }
 
+type PublishPayload = {
+  approve: true
+  header: News['headerMobile']
+  preview: News['previewMobile']
+  body: News['bodyMobile']
+}
+
 type TableField = {
   field: keyof News
   title: string
@@ -42,8 +49,8 @@ type RequestStatus = RequestStatuses[RequestType]
 type RequestType = 'success' | 'fail'
 
 type RequestStatuses = {
-  success: 'successFetchList' | 'successFetchCurrentNews'
-  fail: 'failFetchList' | 'failFetchCurrentNews'
+  success: 'successFetchList' | 'successFetchCurrentNews' | 'successPublish'
+  fail: 'failFetchList' | 'failFetchCurrentNews' | 'failPublish'
 }
 
-export { News, ListSort, TextPublished, TableField, RequestStatus, RequestStatuses, RequestType }
+export { News, ListSort, TextPublished, PublishPayload, TableField, RequestStatus, RequestStatuses, RequestType }

@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import { News, ListSort, TextPublished } from '../models'
+import { News, ListSort, TextPublished, PublishPayload } from '../models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -11,11 +11,12 @@ class NewsState {
   list: { data: News[], isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   listSort: ListSort = { by: 'created_at', direction: 'desc' }
   textsPublished: TextPublished[] = null
+  publish: { isLoading: boolean, error: string } = { isLoading: false, error: null }
 }
 
 class NewsGetters extends Getters<NewsState> {
-  get isLoading() { return this.state.list.isLoading || this.state.currentNews.isLoading }
-  get loadingError() { return this.state.list.error || this.state.currentNews.error }
+  get isLoading() { return this.state.list.isLoading || this.state.currentNews.isLoading || this.state.publish.isLoading }
+  get loadingError() { return this.state.list.error || this.state.currentNews.error || this.state.publish.error }
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
@@ -52,6 +53,15 @@ class NewsGetters extends Getters<NewsState> {
   }
   get newsById() {
     return (id: News['id']) => this.state.list.data.find(s => s.id === id)
+  }
+  get publishPayload(): PublishPayload {
+    const fields = this.state.textsPublished
+    const header = fields.find(f => f.field === 'headerMobile').value
+    const preview = fields.find(f => f.field === 'previewMobile').value
+    const body = fields.find(f => f.field === 'bodyMobile').value
+    const payload: PublishPayload = { 'approve': true, header, preview, body }
+
+    return payload
   }
 }
 
@@ -104,6 +114,18 @@ class NewsMutations extends Mutations<NewsState> {
     const field = texts.find(f => f.field === payload.field)
     field.value = payload.value
   }
+  startPublish() {
+    this.state.publish.isLoading = true
+    this.state.publish.error = null
+  }
+  setPublishSuccess() {
+    this.state.publish.isLoading = false
+    this.state.publish.error = null
+  }
+  setPublishFail(err) {
+    this.state.publish.isLoading = false
+    this.state.publish.error = err
+  }
 }
 
 class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsActions> {
@@ -146,6 +168,30 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
 
           const errMsg = error && error.response && error.response.data && error.response.data.message || null
           this.commit('setCurrentNewsLoadingFail', errMsg)
+          if (error && error.response) reject(error.response)
+          else reject()
+        })
+    })
+  }
+  async publishNews(id: News['id']) {
+    return new Promise(async (resolve, reject) => {
+      this.commit('startPublish')
+      const payload = this.getters.publishPayload
+
+      axios.post(`/api/v1/news-update/${id}`, payload)
+        .then((res: AxiosResponse<any>) => {
+          const data = res.data
+
+          this.commit('setPublishSuccess', data)
+          if (isDev) console.log('Success: publish news, id: ' + id)
+          resolve()
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setPublishFail', errMsg)
           if (error && error.response) reject(error.response)
           else reject()
         })
