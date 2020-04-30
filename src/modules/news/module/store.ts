@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import { News, ListSort, TextForPublish, PublishPayload } from '../models'
+import { News, ListSort, TextForPublish, PublishPayload, TableField } from '../models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -58,9 +58,13 @@ class NewsGetters extends Getters<NewsState> {
   }
   get publishPayload(): PublishPayload {
     const fields = this.state.textsForPublish
-    const header = fields.find(f => f.field === 'headerMobile').value
-    const preview = fields.find(f => f.field === 'previewMobile').value
-    const body = fields.find(f => f.field === 'bodyMobile').value
+    const currentNews = this.state.currentNews.data
+    // const header = (currentNews['headerMobile'] || currentNews['header'] !== fields.find(f => f.field === 'headerMobile').value) ? fields.find(f => f.field === 'headerMobile').value : null
+    // const preview = fields.find(f => f.field === 'previewMobile').value
+    // const body = fields.find(f => f.field === 'bodyMobile').value
+    const header = this.getters.publishPayloadField('header')
+    const preview = this.getters.publishPayloadField('preview')
+    const body = this.getters.publishPayloadField('body')
     const payload: PublishPayload = Object.assign({})
     payload.approve = true
     if (header) payload.header = header
@@ -68,6 +72,30 @@ class NewsGetters extends Getters<NewsState> {
     if (body) payload.body = body
 
     return payload
+  }
+  get publishPayloadField() {
+    return (field: keyof News) => {
+      const fields = this.state.textsForPublish
+      const currentNews = this.state.currentNews.data
+
+      if (!currentNews || !fields) return
+
+      const fieldMobile = `${field}Mobile`
+      const currentValue = currentNews[field]
+      const currentValueMobile = currentNews[fieldMobile]
+      const publishValue = fields.find(f => f.field === fieldMobile).value
+
+      const valueChanged = (currentValueMobile && currentValueMobile !== publishValue) || (!currentValueMobile && currentValue !== publishValue)
+
+      return valueChanged ? publishValue : null
+    }
+  }
+  get fieldsNeedToBePublished() {
+    const header = this.getters.publishPayloadField('header')
+    const preview = this.getters.publishPayloadField('preview')
+    const body = this.getters.publishPayloadField('body')
+
+    return !!header || !!preview || !!body
   }
 }
 
