@@ -49,8 +49,8 @@ type RequestStatus = RequestStatuses[RequestType]
 type RequestType = 'success' | 'fail'
 
 type RequestStatuses = {
-  success: 'successFetchList' | 'successFetchCurrentNews' | 'successPublish'
-  fail: 'failFetchList' | 'failFetchCurrentNews' | 'failPublish'
+  success: 'successFetchList' | 'successFetchCurrentNews' | 'successPublish' | 'successDelete'
+  fail: 'failFetchList' | 'failFetchCurrentNews' | 'failPublish' | 'failDelete'
 }
 
 export { News, ListSort, TextPublished, PublishPayload, TableField, RequestStatus, RequestStatuses, RequestType }

@@ -12,11 +12,12 @@ class NewsState {
   listSort: ListSort = { by: 'created_at', direction: 'desc' }
   textsPublished: TextPublished[] = null
   publish: { isLoading: boolean, error: string } = { isLoading: false, error: null }
+  delete: { isLoading: boolean, error: string } = { isLoading: false, error: null }
 }
 
 class NewsGetters extends Getters<NewsState> {
-  get isLoading() { return this.state.list.isLoading || this.state.currentNews.isLoading || this.state.publish.isLoading }
-  get loadingError() { return this.state.list.error || this.state.currentNews.error || this.state.publish.error }
+  get isLoading() { return this.state.list.isLoading || this.state.currentNews.isLoading || this.state.publish.isLoading || this.state.delete.isLoading }
+  get loadingError() { return this.state.list.error || this.state.currentNews.error || this.state.publish.error || this.state.delete.error }
   get listSorted() {
     if (!this.state.list.data || !this.state.list.data.length) return
 
@@ -126,12 +127,27 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.publish.isLoading = false
     this.state.publish.error = err
   }
+  // DELETE MUTATIONS
+  startDelete() {
+    this.state.publish.isLoading = true
+    this.state.publish.error = null
+  }
+  setDeleteSuccess() {
+    this.state.publish.isLoading = false
+    this.state.publish.error = null
+  }
+  setDeleteFail(err) {
+    this.state.publish.isLoading = false
+    this.state.publish.error = err
+  }
 }
 
 class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsActions> {
-  async getList() {
-    return new Promise((resolve, reject) => {
+  async getList(forceUpdate?: boolean) {
+    return new Promise(async (resolve, reject) => {
       this.commit('startListLoading', null)
+
+      if (forceUpdate) await axios.get('/api/v1/news-migrate') // принудительное обновление списка новостей с портала (автоматически раз в 30сек) 
 
       axios.get('/api/v1/news-list')
         .then((res: AxiosResponse<any>) => {
@@ -149,17 +165,19 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
         })
     })
   }
-  async getCurrentNews(id: News['id']) {
+  async getCurrentNews(payload: {id: News['id'], forceUpdate?: boolean}) {
     return new Promise(async (resolve, reject) => {
       this.commit('startCurrentNewsLoading')
 
-      axios.get(`/api/v1/news-detail/${id}`)
+      if (payload.forceUpdate) await axios.get('/api/v1/news-migrate') // принудительное обновление списка новостей с портала (автоматически раз в 30сек) 
+
+      axios.get(`/api/v1/news-detail/${payload.id}`)
         .then((res: AxiosResponse<any>) => {
           // while (!Array.isArray(res)) res = res.data
           const data = res.data
 
           this.commit('setCurrentNewsLoadingSuccess', data)
-          if (isDev) console.log('Success: load current news')
+          if (isDev) console.log('Success: load current news, id: ' + payload.id)
           resolve()
         })
         .catch(error => {
@@ -192,6 +210,29 @@ class NewsActions extends Actions<NewsState, NewsGetters, NewsMutations, NewsAct
 
           const errMsg = error && error.response && error.response.data && error.response.data.message || null
           this.commit('setPublishFail', errMsg)
+          if (error && error.response) reject(error.response)
+          else reject()
+        })
+    })
+  }
+  async deleteNews(id: News['id']) {
+    return new Promise(async (resolve, reject) => {
+      this.commit('startDelete')
+
+      axios.delete(`/api/v1/news-delete/${id}`)
+        .then((res: AxiosResponse<any>) => {
+          const data = res.data
+
+          this.commit('setDeleteSuccess', data)
+          if (isDev) console.log('Success: delete news, id: ' + id)
+          resolve()
+        })
+        .catch(error => {
+          if (isDev && error && error.response) console.log(error.response)
+          else console.log('error')
+
+          const errMsg = error && error.response && error.response.data && error.response.data.message || null
+          this.commit('setDeleteFail', errMsg)
           if (error && error.response) reject(error.response)
           else reject()
         })

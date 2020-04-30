@@ -20,10 +20,10 @@
                   +e.I.icon.checkbox-icon(:class="{'el-icon-check': field.value, 'el-icon-close': !field.value}")
                 +e.text.field-content(v-html="field.title")
           BlockTexts(:fields="fieldsTexts" class="card-news__block card-news__block_texts")
-      +e.btns
-        ButtonApp(btnType="primary" :isPlain="true" text="Опубликовать новость" @clicked="submitPublish" class="card-news__btn")
-        ButtonApp(btnType="warning" :isPlain="true" text="Отменить изменения" @clicked="resetChanges" class="card-news__btn")
-        //- ButtonApp(btnType="danger" :isPlain="true" text="Удалить учетную запись" @clicked="emitDeleteIdentity" class="card-news__btn")
+      +e.btns.card-btns
+        ButtonApp(btnType="primary" :isPlain="true" :text="!newsIsPublished ? 'Опубликовать новость' : 'Обновить данные'" @clicked="submitPublish" class="card-news__btn card-btn")
+        //- ButtonApp(btnType="warning" :isPlain="true" text="Отменить изменения" @clicked="resetChanges" class="card-news__btn")
+        ButtonApp(btnType="danger" :isPlain="true" text="Снять с публикации" @clicked="submitDelete" class="card-news__btn")
 </template>
 
 <script lang="ts">
@@ -56,6 +56,7 @@ const NewsMappers = Vue.extend({
 export default class CardNews extends Mixins(NewsMappers) {
   @Prop() news: News
 
+  get newsIsPublished() { return this.news.approved }
   get fieldId(): TableField {
     return { field: 'id', title: 'ID', value: this.getFieldContent('id') }
   }
@@ -110,6 +111,9 @@ export default class CardNews extends Mixins(NewsMappers) {
   submitPublish() {
     this.$emit('submitPublish')
   }
+  submitDelete() {
+    this.$emit('submitDelete')
+  }
   resetChanges() {
     // @ts-ignore
     this.setTextPublished(this.fieldsTexts[0])
@@ -124,6 +128,10 @@ export default class CardNews extends Mixins(NewsMappers) {
 
   &__info-block
     width 100%
+
+  &__btns
+    margin-top 30px
+    margin-left 0
 
   &__block
     &:not(:last-child)

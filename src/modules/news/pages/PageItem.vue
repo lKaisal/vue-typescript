@@ -4,7 +4,7 @@
   +b.page-item.page
     +e.container(v-if="currentNews" v-click-outside="onClickOutside")
       RowBack(text="Вернуться к списку" @clicked="goToPageMain" class="page-item__row-back")
-      CardNews(:news="currentNews && currentNews.data" @submitPublish="submitPublish" class="page-item__card")
+      CardNews(:news="currentNews && currentNews.data" @submitPublish="submitPublish" @submitDelete="submitDelete" class="page-item__card")
     transition
       MessageBox(v-show="msgBoxIsShown && !fetchListFailed" key="msg" :content="msgBoxContent" @close="closeMsgBox"
         @firstBtnClicked="onFirstBtnClick" @secondBtnClicked="onSecondBtnClick" :secondBtn="secondBtn"
@@ -33,7 +33,7 @@ const NewsMappers = Vue.extend({
   },
   methods: {
     ...newsMapper.mapMutations(['clearCurrentNews']),
-    ...newsMapper.mapActions(['getCurrentNews', 'publishNews'])
+    ...newsMapper.mapActions(['getCurrentNews', 'publishNews', 'deleteNews'])
   }
 })
 
@@ -57,7 +57,7 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
 
   // HOOKS
   created() {
-    this.getData()
+    this.getData(false)
     document.addEventListener('keydown', this.keydownHandler)
   }
   async mounted() {
@@ -71,11 +71,8 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
 
   goToPageMain() { this.$router.push({ name: 'PageNews' }).catch(err => {}) }
   // IDENTITY DATA METHODS
-  getData() {
-    this.getCurrentNews(Number(this.currentId))
-      .then(() => {
-        // 
-      })
+  getData(forceUpdate: boolean) {
+    this.getCurrentNews({id: Number(this.currentId), forceUpdate})
       .catch(() => {
         this.requestStatus = 'failFetchCurrentNews'
         this.secondBtn = { type: 'success', isPlain: true }
@@ -86,7 +83,19 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
   submitPublish() {
     this.publishNews(Number(this.currentId))
       .then(() => {
-        this.getData()
+        this.getData(true)
+      })
+      .catch(() => {
+        this.requestStatus = 'failPublish'
+        this.secondBtn = { type: 'danger', isPlain: true }
+        this.openMsgBox()
+        return
+      })
+  }
+  submitDelete() {
+    this.deleteNews(Number(this.currentId))
+      .then(() => {
+        this.getData(true)
       })
       .catch(() => {
         this.requestStatus = 'failPublish'
@@ -100,11 +109,14 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
     this.closeMsgBox()
     switch (this.requestStatus) {
       case 'failFetchCurrentNews':
-        this.getData()
+        this.getData(false)
         break;
       case 'failPublish':
         this.submitPublish()
         break;
+      case 'failDelete':
+        this.submitDelete()
+        break
     }
   }
   onSecondBtnClick() {
@@ -114,6 +126,7 @@ export default class PageNews extends Mixins(MsgBoxTools, MsgBoxToolsApp, NewsMa
         this.goToPageMain()
         break
       case 'failPublish':
+      case 'failDelete':
         break
     }
   }
