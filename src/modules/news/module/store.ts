@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios'
 import axios from '@/services/axios'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
-import { News, ListSort, TextPublished, PublishPayload } from '../models'
+import { News, ListSort, TextForPublish, PublishPayload } from '../models'
 
 const namespaced = true
 const isDev = process && process.env && process.env.NODE_ENV === 'development'
@@ -10,7 +10,8 @@ class NewsState {
   currentNews: { data: News, isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   list: { data: News[], isLoading: boolean, error: string } = { data: null, isLoading: null, error: null }
   listSort: ListSort = { by: 'created_at', direction: 'desc' }
-  textsPublished: TextPublished[] = null
+  textsForEdit: TextForPublish[] = null // мутируемые тексты по всем изменения инпутов и редакторов
+  textsForPublish: TextForPublish[] = null // тексты для экшена публикации, мутируются только после подтверждения на странице
   publish: { isLoading: boolean, error: string } = { isLoading: false, error: null }
   delete: { isLoading: boolean, error: string } = { isLoading: false, error: null }
 }
@@ -56,11 +57,15 @@ class NewsGetters extends Getters<NewsState> {
     return (id: News['id']) => this.state.list.data.find(s => s.id === id)
   }
   get publishPayload(): PublishPayload {
-    const fields = this.state.textsPublished
+    const fields = this.state.textsForPublish
     const header = fields.find(f => f.field === 'headerMobile').value
     const preview = fields.find(f => f.field === 'previewMobile').value
     const body = fields.find(f => f.field === 'bodyMobile').value
-    const payload: PublishPayload = { 'approve': true, header, preview, body }
+    const payload: PublishPayload = Object.assign({})
+    payload.approve = true
+    if (header) payload.header = header
+    if (preview) payload.preview = preview
+    if (body) payload.body = body
 
     return payload
   }
@@ -106,15 +111,27 @@ class NewsMutations extends Mutations<NewsState> {
     this.state.currentNews.isLoading = false
     this.state.currentNews.error = null
   }
-  // TEXTS PUBLISHED MUTATIONS
-  setTextPublished(payload: TextPublished[]) {
-    this.state.textsPublished = payload
+  // TEXTS PUBLISHED AND EDITED MUTATIONS
+  setTextsForPublish(payload: TextForPublish[]) {
+    this.state.textsForPublish = payload
   }
-  updateTextPublished(payload: {field: TextPublished['field'], value: TextPublished['value']}) {
-    const texts = this.state.textsPublished
+  updateTextForPublish(payload: {field: TextForPublish['field'], value: TextForPublish['value']}) {
+    const texts = this.state.textsForPublish
     const field = texts.find(f => f.field === payload.field)
     field.value = payload.value
   }
+  setTextsForEdit(payload: TextForPublish[]) {
+    this.state.textsForEdit = payload
+  }
+  updateTextForEdit(payload: {field: TextForPublish['field'], value: TextForPublish['value']}) {
+    const texts = this.state.textsForEdit
+    const field = texts.find(f => f.field === payload.field)
+    field.value = payload.value
+  }
+  resetTextsForEdit() {
+    this.state.textsForEdit = this.state.textsForPublish
+  }
+  // PUBLISJ MUTATIONS
   startPublish() {
     this.state.publish.isLoading = true
     this.state.publish.error = null

@@ -29,9 +29,6 @@ Vue.config.productionTip = false
 // Store.registerModule('ui', ui.store)
 // Router.addRoutes(ui.routes)
 
-/* Initialize News Module */
-Store.dispatch('initializeModule', { module: news, path: 'news', title: 'Новости' })
-
 // Vue.config.errorHandler = function(err, vm, info) {
 //   console.log(`Error: ${err.toString()}\nInfo: ${info}`);
 // }

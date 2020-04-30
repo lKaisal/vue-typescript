@@ -87,7 +87,7 @@ class AuthMutations extends Mutations<AuthState> {
 
     this.state.form.validationIsShown = false
   }
-  setMenu(payload: MenuItem[]) { this.state.menu = [...payload, { 'alias': 'news', 'order': 5, 'pertuttiLink': 'news', 'title': 'Новости' }] }
+  setMenu(payload: MenuItem[]) { this.state.menu = payload }
   setAccessToken(payload: string) { this.state.tokens.access = payload }
   setRefreshToken(payload: string) { this.state.tokens.refresh = payload }
 }

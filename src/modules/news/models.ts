@@ -18,10 +18,10 @@ type ListSort = {
   direction: 'asc' | 'desc'
 }
 
-type TextPublished = {
+type TextForPublish = {
   field: 'bodyMobile' |'headerMobile' | 'previewMobile'
   title: string
-  value?: News[TextPublished['field']]
+  value?: News[TextForPublish['field']]
 }
 
 type PublishPayload = {
@@ -53,4 +53,4 @@ type RequestStatuses = {
   fail: 'failFetchList' | 'failFetchCurrentNews' | 'failPublish' | 'failDelete'
 }
 
-export { News, ListSort, TextPublished, PublishPayload, TableField, RequestStatus, RequestStatuses, RequestType }
+export { News, ListSort, TextForPublish, PublishPayload, TableField, RequestStatus, RequestStatuses, RequestType }

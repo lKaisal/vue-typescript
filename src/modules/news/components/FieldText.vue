@@ -4,26 +4,27 @@
   +b.field-text
     +e.container
       +e.title.card-field-title(v-html="field.title")
-      +e.TRANSITION-GROUP.content.card-field-content(:style="setContentStyle()" tag="div")
-        +e.content-inner._main(v-if="!editMode && (inputHeight || isEditorField)" key="main" v-html="editableText")
-        +e.EL-INPUT.content-inner._input(v-else-if="(editMode || !inputHeight) && !isEditorField" key="input" ref="inputRef" v-model="editableText" clearable
-          :placeholder="field.title" @input="emitInputChange")
-        +e.content-inner._editable#editor-field(v-if="isEditorField" v-html="editableText" key="editable" :class="{ 'is-transparent': !editMode }")
+      +e.content.card-field-content(:style="setContentStyle()" tag="div")
+        transition
+          +e.content-inner._main(v-if="!editMode && (inputHeight || isEditorField)" key="main" v-html="editableText")
+          +e.EL-INPUT.content-inner._input(v-else-if="(editMode || !inputHeight) && !isEditorField" key="input" ref="inputRef" v-model="editableText" clearable
+            :placeholder="field.title" @input="emitInputChange")
+        +e.content-inner._editable#editor-field(v-if="isEditorField" v-html="editorHtmlTextInitial" key="editable" :class="{ 'is-transparent': !editMode }")
 </template>
 
 <script lang="ts">
 import { Vue, Component, Mixins, Prop, Watch, Ref } from 'vue-property-decorator'
-import { News, TableField, TextPublished } from '../models'
+import { News, TableField, TextForPublish } from '../models'
 import FroalaEditor from 'froala-editor'
 import { uiMapper } from '@/services/store/modules/ui/store'
 import { newsMapper } from '../module/store'
 
 const NewsMappers = Vue.extend({
   // computed: {
-  //   ...newsMapper.mapState(['textsPublished'])
+  //   ...newsMapper.mapState(['textsForPublish'])
   // },
   // methods: {
-  //   ...newsMapper.mapMutations(['setTextPublished', 'updateTextPublished'])
+  //   ...newsMapper.mapMutations(['setTextsForPublish', 'updateTextForPublish'])
   // }
 })
 
@@ -37,15 +38,15 @@ const UiMappers = Vue.extend({
 })
 
 export default class FieldText extends Mixins(UiMappers, NewsMappers) {
-  @Prop() field: TextPublished
+  @Prop() field: TextForPublish
   @Prop() editMode: boolean
   @Prop() isEditorField: boolean
   @Ref() inputRef
 
   breakpoint!: string
   froala = null
-  editableText: string = null
-  editorHtmlText: string = null
+  editableText: string = null // мутируемый текст для отображения в статичном поле (любого, в т.ч. редактора) и в инпутах (не редакторе)
+  editorHtmlTextInitial: string = null // текст для инициализации редактора - объявляется один раз при создании объекта и больше не меняется
   inputHeight: number = null
 
   get isLtMd() { return this.breakpoint === 'xs' || this.breakpoint === 'sm' }
@@ -131,6 +132,9 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
         this.editableText = val
         await this.$nextTick()
         this.getInputHeight()
+      } else {
+        this.editableText = val
+        this.froala.html.set(val)
       }
     }
   }
@@ -142,22 +146,23 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
     }
     if (!val && this.isEditorField) {
       if (this.froala.html.get() !== this.field.value) {
-        this.destroyEditor()
+        // this.destroyEditor()
         this.editableText = this.field.value.toString()
         this.froala.html.set(this.field.value)
         await this.$nextTick()
-        this.initEditor()
+        // this.initEditor()
       } else if (this.editableText !== this.fieldValue) {
-        this.destroyEditor()
+        // this.destroyEditor()
         this.editableText = this.field.value
         await this.$nextTick()
-        this.initEditor()
+        // this.initEditor()
       }
     }
   }
 
   async mounted() {
     this.editableText = this.field.value.toString()
+    this.editorHtmlTextInitial = this.field.value.toString()
     await this.$nextTick()
     if (this.isEditorField) this.initEditor()
     else this.getInputHeight()
@@ -168,11 +173,9 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
     if (ref) this.inputHeight = ref.$el ? ref.$el.firstElementChild.offsetHeight : ref.offsetHeight
   }
   initEditor() {
-    console.log('init editor')
     this.froala = new FroalaEditor('#editor-field', this.config)
   }
   destroyEditor() {
-    console.log('destroy editor')
     if (this.froala) {
       this.froala.destroy()
       this.froala = null
@@ -183,16 +186,15 @@ export default class FieldText extends Mixins(UiMappers, NewsMappers) {
 
     return `height: ${this.inputHeight}px;`
   }
-  onEditorInputChange() {
+  async onEditorInputChange() {
+    await this.$nextTick()
     const html = this.froala.html.get()
-    // if (!html) this.froala.html.set('<a></a>')
-    this.editorHtmlText = html
+    this.editableText = html
     this.emitInputChange()
   }
   emitInputChange() {
-    const value = this.isEditorField ? this.editorHtmlText : this.editableText
+    const value = this.editableText
     this.$emit('inputChange', value, this.field.field)
-    // this.updateTextPublished({field: this.field.field, value})
   }
 }
 </script>
