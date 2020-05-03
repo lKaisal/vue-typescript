@@ -1,4 +1,4 @@
-import { CurrentDevice, MenuItem } from '@/models'
+import { CurrentDevice } from '@/models'
 import { Getters, Mutations, Actions, Module, createMapper } from 'vuex-smart-module'
 
 const namespaced = true

@@ -24,46 +24,4 @@ type CurrentDevice = {
   os: string
 }
 
-type LocalStorageObj = {
-  access_token: string,
-  refresh_token: string,
-  menu: MenuItem[]
-}
-
-type LocalStorageRefreshObj = {
-  token: string,
-  refresh: string,
-  menu: MenuItem[]
-}
-
-type MenuItem = {
-  alias: string,
-  order: number,
-  pertuttiLink: string,
-  title: string,
-}
-
-type InitedModule = {
-  module: DynamicModule,
-  path: string,
-  title: string
-}
-
-type DynamicModule = {
-  name: string,
-  store: Module<any, any, any, any>,
-  routes: any[]
-}
-
-type SearchField = {
-  field: string,
-  title: string
-}
-
-type FilterItem = {
-  field: string
-  title: string
-  values: string[]
-}
-
-export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice, SearchField, LocalStorageObj, LocalStorageRefreshObj, MenuItem, InitedModule, DynamicModule, FilterItem }
+export { MsgBoxContent, MsgBoxBtns, Button, CurrentDevice }
