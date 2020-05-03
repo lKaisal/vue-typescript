@@ -3,17 +3,9 @@
 
   +b.app
     +e.container.container
-      //- nav
-      +e.nav
-        transition(appear)
-          LogOut(v-show="logOutIsShown && isAuthorized" @logOut="onLogOut" key="logout" class="app__log-out")
-        transition(appear)
-          MenuApp(v-show="menuIsShown && isAuthorized" key="menu" :closeIsDisabled="!logOutIsShown || !isAuthorized" @logOut="onLogOut"
-            class="app__menu")
-
       //- content
       transition(mode="out-in")
-        router-view(v-if="!isRootPage" key="router" @loggedIn="onLoggedIn" @goToPageAuth="goToPageAuth" class="app__page page")
+        router-view(key="router" class="app__page page")
 </template>
 
 <script lang="ts">
@@ -21,9 +13,6 @@
 import { Vue, Component, Watch, Mixins } from 'vue-property-decorator'
 import ButtonApp from '@/components/ButtonApp.vue'
 import IconSvg from '@/components/IconSvg.vue'
-import LogOut from '@/components/LogOut.vue'
-import MenuApp from '@/components/MenuApp.vue'
-import LocalStorageService from './services/LocalStorageService'
 import device from 'current-device'
 import animateIfVisible from '@/mixins/animateIfVisible'
 import sleep from '@/mixins/sleep'
